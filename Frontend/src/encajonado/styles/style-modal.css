@@ -1,0 +1,21 @@
+.modal {
+    text-align: center;
+  }
+  
+.modal:before {
+content: '';
+display: inline-block;
+height: 100%;
+vertical-align: middle;
+margin-right: -4px; /* Ajusta el espacio vertical */
+}
+
+.modal-dialog {
+display: inline-block;
+text-align: left;
+vertical-align: middle;
+}
+
+.modal-content {
+    background-color: #badbed;
+}

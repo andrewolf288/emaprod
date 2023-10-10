@@ -1,0 +1,632 @@
+{
+    "message_error": "",
+    "description_error": "",
+    "result": {
+        "productos_finales": [
+            {
+                "id": 5,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 52525252,
+                "nomProd": "AJO MOLIDO GIGANTE BATAN X 16 GRS",
+                "simMed": "SBS",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "108.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 6,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 69,
+                "nomProd": "AJO MOLIDO BATAN X 500 GR",
+                "simMed": "BLS",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "56.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 7,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 27,
+                "nomProd": "AJO MOLIDO GIGANTE BATAN X 02 SBS",
+                "simMed": "PQT",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "150.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 8,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 38,
+                "nomProd": "AJO MOLIDO BATAN X 50 GRS",
+                "simMed": "FCO",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "240.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 9,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 60,
+                "nomProd": "AJO MOLIDO BATAN X 250 GR",
+                "simMed": "BLS",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "100.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 10,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 91,
+                "nomProd": "AJO MOLIDO BATAN X 01 KG",
+                "simMed": "BLS",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "30.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 11,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 389,
+                "nomProd": "AJO FRASCO X 280 GRS",
+                "simMed": "FCO",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "100.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 12,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 7,
+                "nomProd": "AJO MOLIDO GIGANTE BATAN X 42 SBS",
+                "simMed": "DS",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "6049.738",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 6,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 69,
+                "nomProd": "AJO MOLIDO BATAN X 500 GR",
+                "simMed": "BLS",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "56.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 7,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 27,
+                "nomProd": "AJO MOLIDO GIGANTE BATAN X 02 SBS",
+                "simMed": "PQT",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "150.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 6,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 69,
+                "nomProd": "AJO MOLIDO BATAN X 500 GR",
+                "simMed": "BLS",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "56.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 7,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 27,
+                "nomProd": "AJO MOLIDO GIGANTE BATAN X 02 SBS",
+                "simMed": "PQT",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "150.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 6,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 69,
+                "nomProd": "AJO MOLIDO BATAN X 500 GR",
+                "simMed": "BLS",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "56.000",
+                "canTotIngProdFin": "0.000"
+            },
+            {
+                "id": 7,
+                "idProdcProdtFinEst": 1,
+                "desProProFinEst": "Creado",
+                "idProdt": 27,
+                "nomProd": "AJO MOLIDO GIGANTE BATAN X 02 SBS",
+                "simMed": "PQT",
+                "desCla": "Producto Final",
+                "canTotProgProdFin": "150.000",
+                "canTotIngProdFin": "0.000"
+            }
+        ],
+        "produccion": {
+            "id": 22,
+            "numop": "OP20230821",
+            "idProdt": 207,
+            "nomProd": "AJO MOLIDO",
+            "idProdEst": 1,
+            "desEstPro": "Produccion iniciada",
+            "idProdTip": 1,
+            "desProdTip": "Polvos",
+            "codLotProd": "61",
+            "klgLotProd": "1.000",
+            "canLotProd": "4265.0",
+            "fecVenLotProd": "2027-07-07 00:00:00"
+        },
+        "requisiciones": [
+            {
+                "id": 53,
+                "idProdc": 22,
+                "idReqEst": 1,
+                "desReqEst": "Requerido",
+                "idAre": 2,
+                "desAre": "Molienda",
+                "fecPedReq": "2023-08-07 12:55:44",
+                "fecEntReq": null,
+                "detalles": [
+                    {
+                        "id": 40,
+                        "idProdt": 147,
+                        "nomProd": "AJO DESHIDRATADO SELECCIONADO",
+                        "simMed": "KGM",
+                        "idReq": 53,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "446.119"
+                    },
+                    {
+                        "id": 41,
+                        "idProdt": 164,
+                        "nomProd": "AJO EN POLVO",
+                        "simMed": "KGM",
+                        "idReq": 53,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "446.119"
+                    },
+                    {
+                        "id": 42,
+                        "idProdt": 178,
+                        "nomProd": "SAL YODADA",
+                        "simMed": "KGM",
+                        "idReq": 53,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "2379.444"
+                    },
+                    {
+                        "id": 43,
+                        "idProdt": 168,
+                        "nomProd": "BB",
+                        "simMed": "KGM",
+                        "idReq": 53,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "746.375"
+                    },
+                    {
+                        "id": 44,
+                        "idProdt": 182,
+                        "nomProd": "GLUTAMATO MONOSODICO - AJN",
+                        "simMed": "KGM",
+                        "idReq": 53,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "162.070"
+                    },
+                    {
+                        "id": 45,
+                        "idProdt": 183,
+                        "nomProd": "GLUTAMATO MONOSODICO - NKM",
+                        "simMed": "KGM",
+                        "idReq": 53,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "28.149"
+                    },
+                    {
+                        "id": 46,
+                        "idProdt": 185,
+                        "nomProd": "DIÓXIDO DE SILÍCIO",
+                        "simMed": "KGM",
+                        "idReq": 53,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "11.942"
+                    },
+                    {
+                        "id": 47,
+                        "idProdt": 181,
+                        "nomProd": "ACEITE VEGETAL",
+                        "simMed": "KGM",
+                        "idReq": 53,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "44.783"
+                    }
+                ]
+            },
+            {
+                "id": 54,
+                "idProdc": 22,
+                "idReqEst": 1,
+                "desReqEst": "Requerido",
+                "idAre": 5,
+                "desAre": "Envasado",
+                "fecPedReq": "2023-08-07 12:55:44",
+                "fecEntReq": null,
+                "detalles": [
+                    {
+                        "id": 48,
+                        "idProdt": 227,
+                        "nomProd": "ENV. IMPRESA - AJO MOLIDO GIGANTE LAMINADO 600 MM",
+                        "simMed": "KGM",
+                        "idReq": 54,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "5.897"
+                    },
+                    {
+                        "id": 49,
+                        "idProdt": 227,
+                        "nomProd": "ENV. IMPRESA - AJO MOLIDO GIGANTE LAMINADO 600 MM",
+                        "simMed": "KGM",
+                        "idReq": 54,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "0.330"
+                    },
+                    {
+                        "id": 50,
+                        "idProdt": 227,
+                        "nomProd": "ENV. IMPRESA - AJO MOLIDO GIGANTE LAMINADO 600 MM",
+                        "simMed": "KGM",
+                        "idReq": 54,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "330.316"
+                    }, {
+                        "id": 50,
+                        "idProdt": 227,
+                        "nomProd": "ENV. IMPRESA - AJO MOLIDO GIGANTE LAMINADO 600 MM",
+                        "simMed": "KGM",
+                        "idReq": 54,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "330.316"
+                    }, {
+                        "id": 50,
+                        "idProdt": 227,
+                        "nomProd": "ENV. IMPRESA - AJO MOLIDO GIGANTE LAMINADO 600 MM",
+                        "simMed": "KGM",
+                        "idReq": 54,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "330.316"
+                    }
+                ]
+            },
+            {
+                "id": 55,
+                "idProdc": 22,
+                "idReqEst": 1,
+                "desReqEst": "Requerido",
+                "idAre": 6,
+                "desAre": "Encajado",
+                "fecPedReq": "2023-08-07 12:55:44",
+                "fecEntReq": null,
+                "detalles": [
+                    {
+                        "id": 51,
+                        "idProdt": 273,
+                        "nomProd": "CAJA CARTON CORRUGADO 27.8X42.5X31.5",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "3.600"
+                    },
+                    {
+                        "id": 52,
+                        "idProdt": 276,
+                        "nomProd": "BOLSA DE POLIOLEFINA 15 MIC 40X20",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "108.000"
+                    },
+                    {
+                        "id": 53,
+                        "idProdt": 273,
+                        "nomProd": "CAJA CARTON CORRUGADO 27.8X42.5X31.5",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "1.000"
+                    },
+                    {
+                        "id": 54,
+                        "idProdt": 337,
+                        "nomProd": "STICKERS REDONDOS 10.5X10.5 - AJO MOLIDO BATAN X 500 GR",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "56.000"
+                    },
+                    {
+                        "id": 55,
+                        "idProdt": 262,
+                        "nomProd": "BOLSA FLEXIBLE 19X32X70 MIC TRANSPARANTE",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "56.000"
+                    },
+                    {
+                        "id": 56,
+                        "idProdt": 288,
+                        "nomProd": "CDG. BARRA - AJO MOLIDO GIGANTE BATAN X 02 SBS - 142",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "150.000"
+                    },
+                    {
+                        "id": 57,
+                        "idProdt": 267,
+                        "nomProd": "BOLSA PPP 11X21X2.1 CON IMPRESIÓN SOBRE EMPQ. X 02 SBS",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "150.000"
+                    },
+                    {
+                        "id": 58,
+                        "idProdt": 270,
+                        "nomProd": "BOLSA PP CRISTAL 6X12X2",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "15.000"
+                    },
+                    {
+                        "id": 59,
+                        "idProdt": 319,
+                        "nomProd": "LINERS DE ESPUMA DE POLIESTIRENO 36.20 MM SIN IMPRESIÓN",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "240.000"
+                    },
+                    {
+                        "id": 60,
+                        "idProdt": 315,
+                        "nomProd": "PRECINTOS PVC FRASCO 7X5 CM",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "240.000"
+                    },
+                    {
+                        "id": 61,
+                        "idProdt": 306,
+                        "nomProd": "ETQ. FRASCO - AJO MOLIDO BATAN X 50 GRS",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "240.000"
+                    },
+                    {
+                        "id": 62,
+                        "idProdt": 273,
+                        "nomProd": "CAJA CARTON CORRUGADO 27.8X42.5X31.5",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "0.998"
+                    },
+                    {
+                        "id": 63,
+                        "idProdt": 258,
+                        "nomProd": "TAPAS DOSIFICADORAS",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "240.000"
+                    },
+                    {
+                        "id": 64,
+                        "idProdt": 256,
+                        "nomProd": "FRASCOS CONDIMENTERO 130 CC",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "240.000"
+                    },
+                    {
+                        "id": 65,
+                        "idProdt": 275,
+                        "nomProd": "BOLSA DE POLIOLEFINA 15 MIC 15X30",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "39.998"
+                    },
+                    {
+                        "id": 66,
+                        "idProdt": 273,
+                        "nomProd": "CAJA CARTON CORRUGADO 27.8X42.5X31.5",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "1.000"
+                    },
+                    {
+                        "id": 67,
+                        "idProdt": 328,
+                        "nomProd": "STICKERS REDONDOS 10.5X10.5 - AJO MOLIDO BATAN X 250 GR",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "100.000"
+                    },
+                    {
+                        "id": 68,
+                        "idProdt": 262,
+                        "nomProd": "BOLSA FLEXIBLE 19X32X70 MIC TRANSPARANTE",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "100.000"
+                    },
+                    {
+                        "id": 69,
+                        "idProdt": 273,
+                        "nomProd": "CAJA CARTON CORRUGADO 27.8X42.5X31.5",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "1.000"
+                    },
+                    {
+                        "id": 70,
+                        "idProdt": 344,
+                        "nomProd": "STICKERS REDONDOS 10.5X10.5 - AJO MOLIDO BATAN X 01 KG",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "30.000"
+                    },
+                    {
+                        "id": 71,
+                        "idProdt": 262,
+                        "nomProd": "BOLSA FLEXIBLE 19X32X70 MIC TRANSPARANTE",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "30.000"
+                    },
+                    {
+                        "id": 72,
+                        "idProdt": 257,
+                        "nomProd": "FRASCO DE 230 CC TAPA DOBLE VENTANA",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "100.000"
+                    },
+                    {
+                        "id": 73,
+                        "idProdt": 321,
+                        "nomProd": "LINERS DE ALUMINIO PLASTIFICADO 55 MM SIN IMPRESIÓN SELLADO POR INDUCCION",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "100.000"
+                    },
+                    {
+                        "id": 74,
+                        "idProdt": 322,
+                        "nomProd": "TAPAS DE DOBLE VENTANA",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "100.000"
+                    },
+                    {
+                        "id": 75,
+                        "idProdt": 323,
+                        "nomProd": "STICKERS TROQUELADO 20.6X7.6 - AJO X 280 GRS",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "100.000"
+                    },
+                    {
+                        "id": 76,
+                        "idProdt": 324,
+                        "nomProd": "BOLSA DE POLIOLEFINA 15 MIC 45X50",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "11.111"
+                    },
+                    {
+                        "id": 77,
+                        "idProdt": 325,
+                        "nomProd": "CAJA CARTON CORRUGADO 27.8X42.5X31.5",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "2.777"
+                    },
+                    {
+                        "id": 78,
+                        "idProdt": 326,
+                        "nomProd": "DISPLAY - AJO MOLIDO GIGANTE BATAN X 42 SBS",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "7000.000"
+                    },
+                    {
+                        "id": 79,
+                        "idProdt": 327,
+                        "nomProd": "CAJA CARTON CORRUGADO 27.8X42.5X31.5 ",
+                        "simMed": "UND",
+                        "idReq": 55,
+                        "idReqDetEst": 1,
+                        "desReqDetEst": "Requerido",
+                        "canReqDet": "500.000"
+                    }
+                ]
+            }
+        ]
+    }
+}

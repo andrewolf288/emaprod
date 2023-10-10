@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>React Test</title>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+
+  <script type="text/babel">
+    // Definimos una función para mostrar el contenido de la ventana modal
+    function showModalData() {
+      alert("Mostrar ventana modal con datos");
+    }
+
+    // Definimos el componente que contiene el botón y la ventana modal
+    function MyComponent() {
+      return (
+        <div>
+          {/* Botón */}
+          <div className="btn-toolbar">
+            <button
+              onClick={showModalData}
+              className="btn btn-primary me-2 btn"
+            >
+              {/* Contenido del botón */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-eye-fill"
+                viewBox="0 0 16 16"
+              >
+                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Ventana modal */}
+          <div>
+            <div>
+              <strong>Número de Lote:</strong> 28
+            </div>
+            <div>
+              <strong>Producto:</strong> COMINO MOLIDO
+            </div>
+            <div>
+              <strong>Peso de Lote:</strong> 1.000
+            </div>
+            <div>
+              <strong>Tipo de Producción:</strong> Frescos
+            </div>
+            <div>
+              <strong>Fecha de Vencimiento:</strong> 2027-01-08 00:00:00
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Renderizamos el componente en el elemento con ID "root"
+    ReactDOM.render(<MyComponent />, document.getElementById("root"));
+  </script>
+</body>
+</html>
