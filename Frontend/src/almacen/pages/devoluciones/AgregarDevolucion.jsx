@@ -145,7 +145,6 @@ export const AgregarDevolucion = () => {
         handleClickFeeback();
       } else {
         const resultPeticion = await getMateriaPrimaById(idProdDev);
-        //console.log(resultPeticion)
 
         const { message_error, description_error, result } = resultPeticion;
         if (message_error.length === 0) {
@@ -170,6 +169,23 @@ export const AgregarDevolucion = () => {
             idMed: idMed,
             simMed: simMed, // medida del producto
             canProdDev: cantidadDevuelta, // cantidad devuelta
+            motivos: [
+              {
+                idProdDevMot: 1,
+                nomDevMot: "Sobrantes de requisicion",
+                canProdDev: cantidadDevuelta,
+              },
+              {
+                idProdDevMot: 2,
+                nomDevMot: "Desmedros de produccion",
+                canProdDev: 0,
+              },
+              {
+                idProdDevMot: 3,
+                nomDevMot: "Otros",
+                canProdDev: 0,
+              },
+            ],
           };
 
           const dataDetalle = [...detalleProductosDevueltos, detalle];
@@ -194,30 +210,36 @@ export const AgregarDevolucion = () => {
   // ACCION PARA EDITAR CAMPOS EN DETALLE DE PRODUCTO DEVUELTO
   const handleChangeInputProductoDevuelto = async (
     { target },
-    val,
+    detalle,
     indexProd
   ) => {
     const { value } = target;
+    // Crear una copia del arreglo de detalles
     const editFormDetalle = detalleProductosDevueltos.map((element) => {
-      element.motivos?.map((item, index) => {
-        if (indexProd === index) {
-          item.canProdDev = value;
+      // Si el idProdt coincide con el detalle proporcionado, actualiza los motivos
+      if (detalle.idProdt === element.idProdt) {
+        // Crear una copia del arreglo de motivos
+        const nuevosMotivos = [...element.motivos];
+
+        // Si el índice coincide con el índice proporcionado, actualiza canProdDev
+        if (nuevosMotivos[indexProd]) {
+          nuevosMotivos[indexProd].canProdDev = value;
         }
-      });
-      return {
-        ...element,
-        canProdDev: value,
-      };
-      /**
-       if (element.idProdt === idItem) {
-        return {
-          ...element,
-          canProdDev: value,
-        };
-      } else {
-        return element;
+
+        // Actualiza los motivos en el detalle
+        element.motivos = nuevosMotivos;
+
+        // Calcula la suma de canProdDev en motivos
+        const sumaMotivos = nuevosMotivos.reduce(
+          (suma, motivo) => suma + Number(motivo.canProdDev || 0),
+          0
+        );
+
+        // Actualiza canProdDev en el detalle del producto con la suma de motivos
+        element.canProdDev = sumaMotivos;
       }
-       */
+
+      return element;
     });
     setdetalleProductosDevueltos(editFormDetalle);
   };
@@ -242,7 +264,6 @@ export const AgregarDevolucion = () => {
   };
 
   const handleDeleteProductoDevuelto = async (idItem) => {
-    console.log(idItem);
     const dataDetalleProductosDevueltos = detalleProductosDevueltos.filter(
       (element) => {
         if (element.idProdt !== idItem) {
@@ -375,7 +396,9 @@ export const AgregarDevolucion = () => {
       const resultPeticion = await getProduccionLoteWithDevolucionesById(
         idLotProdc
       );
+      console.log(resultPeticion);
       var productos = await getProductToDev(idLotProdc);
+      console.log(productos);
 
       var devoluciones = [];
       await Promise.all(
@@ -494,7 +517,6 @@ export const AgregarDevolucion = () => {
           });
         });
       });
-      console.log(dataDetalle);
       setdetalleProductosDevueltos(dataDetalle);
 
       if (message_error.length === 0) {
@@ -514,18 +536,26 @@ export const AgregarDevolucion = () => {
       (obj) => parseFloat(obj.canProdDev) > 0
     );
 
-    var sss = []
-    productos.map((item)=>{
-      item.motivos.map((motivo)=>{
-        sss.push({
+    const desmedrosAux = [];
 
-        })
-      })
-    })
-    
-    console.log(productos);
-    return;
-    const resultPeticion = await createDevolucionesLoteProduccion(productos);
+    productos.forEach((objeto) => {
+      objeto.motivos.forEach((motivo) => {
+        const canProdDevMot = motivo.canProdDev;
+        const idMotivo = motivo.idProdDevMot;
+        if (canProdDevMot !== 0) {
+          const nuevoObjeto = {
+            ...objeto,
+            canProdDev: canProdDevMot,
+            idProdDevMot: idMotivo,
+          };
+          delete nuevoObjeto.motivos;
+          desmedrosAux.push(nuevoObjeto);
+        }
+      });
+    });
+
+    console.log(desmedrosAux);
+    const resultPeticion = await createDevolucionesLoteProduccion(desmedrosAux);
 
     const { message_error, description_error } = resultPeticion;
 

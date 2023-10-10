@@ -17,9 +17,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pdo) {
 
         /*
-        EN LAS DEVOLUCIONES TENEMOS 2 OPCIONES
+        EN LAS DEVOLUCIONES TENEMOS 3 OPCIONES
         1.- DEVOLUCION DE DESMEDRO (NO GENERA ENTRADAS INTERINAS)
         2.- DEVOLUCION DE SOBRANTE (GENERA ENTRADA INTERINA)
+        3.- DEVOLUCION OTROS (NO GENERA ENTRADAS INTERINAS, SOLO TRANSPASO A ALMACEN)
         */
         $idAlm = 0; // Almacen destino
 
@@ -39,11 +40,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 case 2: // desmedros de produccion
                     $idAlm = 7; // almacen de desmedros
                     break;
+                case 3: // otros motivos
+                    $idAlm = 7;
+                    break;
                 default:
-                    $idAlm = 1; // almacen principal
+                    $idAlm = 7; // almacen desmesdros
             }
 
-            if ($idProdDevMot != 2) {
+            if ($idProdDevMot == 1) {
 
                 $salidasEmpleadas = []; // salidas empleadas
                 $totalRequisicionProducto = 0; // total de la requisicion inicial
@@ -69,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 try {
 
-                    
+
                     $stmt_salidas_empleadas_requisicion_detalle = $pdo->prepare($sql_salidas_empleadas_requisicion_detalle);
                     $stmt_salidas_empleadas_requisicion_detalle->bindParam(1, $idProdt, PDO::PARAM_INT);
                     $stmt_salidas_empleadas_requisicion_detalle->bindParam(2, $idProdc, PDO::PARAM_INT);
@@ -80,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     //    $totalRequisicionProducto += $row_salidas_empleadas["canSalStoReq"];
                     //}
                     //die(json_encode($salidasEmpleadas));
-                    
+
 
                     if ($stmt_salidas_empleadas_requisicion_detalle->rowCount() != 0) {
 
@@ -89,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $totalRequisicionProducto += $row_salidas_empleadas["canSalStoReq"];
                         }
 
-                       // die(json_encode($salidasEmpleadas));
+                        // die(json_encode($salidasEmpleadas));
 
 
                         $idLastInsertion = 0;

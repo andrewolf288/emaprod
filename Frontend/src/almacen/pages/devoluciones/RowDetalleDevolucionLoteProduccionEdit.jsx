@@ -96,7 +96,7 @@ export const RowDetalleDevolucionLoteProduccionEdit = ({
                       <TableCell align="left">
                         <input
                           type="text"
-                          defaultValue={item.motivo}
+                          defaultValue={item.nomDevMot}
                           className="form-control"
                           readOnly
                         />
