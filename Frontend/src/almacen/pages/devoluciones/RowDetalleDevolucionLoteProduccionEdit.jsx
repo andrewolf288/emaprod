@@ -17,15 +17,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 export const RowDetalleDevolucionLoteProduccionEdit = ({
   detalle,
   onChangeInputDetalle,
-  onChangeMotivoDevolucion,
+  // onChangeMotivoDevolucion,
   onDeleteItemDetalle,
 }) => {
   const [disabledInput, setdisabledInput] = useState(true);
   const [open, setOpen] = React.useState(false);
 
-  const handleDetalleChangeMotivoDevolucion = (value) => {
-    onChangeMotivoDevolucion(value.id, detalle.idProdt);
-  };
+  // const handleDetalleChangeMotivoDevolucion = (value) => {
+  //   onChangeMotivoDevolucion(value.id, detalle.idProdt);
+  // };
   return (
     <React.Fragment>
       <TableRow>

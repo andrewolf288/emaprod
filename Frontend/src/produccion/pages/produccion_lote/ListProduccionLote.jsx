@@ -1354,6 +1354,7 @@ export const ListProduccionLote = () => {
       }
 
       const response = await axios.get(url);
+      console.log(response);
       var productosFinal =
         response.data.result.prodFinalWithAgreg.detAgr.filter(
           (obj) => obj.id == null
@@ -1395,38 +1396,61 @@ export const ListProduccionLote = () => {
         }
 
         if (req.desAre === "Encajado") {
-          var productosEncajado = req.detalles.reduce(
-            (accumulator, currentValue) => {
-              if (
-                accumulator.some(
-                  (obj) => obj.codProd2 === currentValue.codProd2
-                )
-              ) {
-                accumulator.map((obj) => {
-                  if (obj.codProd2 === currentValue.codProd2) {
-                    currentValue.acu =
-                      parseFloat(obj.acu) + parseFloat(currentValue.canReqDet);
-                    currentValue.isDuplicated = true;
-                    accumulator.push(currentValue);
-                  }
-                });
-              } else {
-                currentValue.acu = currentValue.canReqDet;
-                accumulator.push(currentValue);
-              }
-              return accumulator;
-            },
-            []
-          );
-          req.detalles = productosEncajado;
-          productosEncajado = productosEncajado.filter(
-            (obj) => obj.isDuplicated
-          );
-          req.resumenProductos = removeDuplicates(productosEncajado);
+          // var productosEncajado = req.detalles.reduce(
+          //   (accumulator, currentValue) => {
+          //     if (
+          //       accumulator.some(
+          //         (obj) => obj.codProd2 === currentValue.codProd2
+          //       )
+          //     ) {
+          //       // fragmento de codigo erroneo
+          //       accumulator.map((obj) => {
+          //         if (obj.codProd2 === currentValue.codProd2) {
+          //           currentValue.acu =
+          //             parseFloat(obj.acu) + parseFloat(currentValue.canReqDet);
+          //           currentValue.isDuplicated = true;
+          //           accumulator.push(currentValue);
+          //         }
+          //       });
+          //     } else {
+          //       currentValue.acu = currentValue.canReqDet;
+          //       accumulator.push(currentValue);
+          //     }
+          //     return accumulator;
+          //   },
+          //   []
+          // );
+          // console.log(productosEncajado);
+          // req.detalles = productosEncajado;
+          // productosEncajado = productosEncajado.filter(
+          //   (obj) => obj.isDuplicated
+          // );
+          // console.log(productosEncajado);
+          // req.resumenProductos = removeDuplicates(productosEncajado);
+          const totales = {};
+          const repetidos = [];
+
+          req.detalles.forEach((item) => {
+            const { idProdt, canReqDet } = item;
+            if (!totales[idProdt]) {
+              totales[idProdt] = 0;
+            } else {
+              repetidos[idProdt] = { ...item, isDuplicated: true };
+            }
+            totales[idProdt] += parseFloat(canReqDet);
+            item.acu = totales[idProdt];
+          });
+
+          const totalesFinales = Object.keys(repetidos).map((item) => ({
+            ...item,
+            acu: totales[item.idProdt],
+          }));
+          console.log("repetidos", repetidos);
+
+          console.log(req.detalles);
+          console.log(totalesFinales);
         }
       });
-
-      //console.log(response.data.result.requisiciones);
 
       generatePDF(response.data, show);
     } catch (error) {
@@ -1615,20 +1639,19 @@ export const ListProduccionLote = () => {
                         inputs={inputs}
                       />
                     </TableCell>
-                    <TableCell align="left" width={100}>
+                    {/* <TableCell align="left" width={100}>
                       <b>Tipo</b>
                       <FilterTipoProduccion
                         onNewInput={onChangeTipoProduccion}
                         inputs={inputs}
                       />
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell align="left" width={140}>
                       <b>Inicio</b>
-                      {/**
-                        <FechaPickerDay
+                      {/* *
+                      <FechaPickerDay
                         onNewfecEntSto={onChangeDateFechaIniciado}
-                      />
-                       */}
+                      /> */}
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Inicio Programado</b>
@@ -1670,7 +1693,7 @@ export const ListProduccionLote = () => {
                         <TableCell align="left">{row.numop}</TableCell>
                         <TableCell align="left">{row.nomProd}</TableCell>
                         <TableCell align="left">{row.desEstPro}</TableCell>
-                        <TableCell align="left">{row.desProdTip}</TableCell>
+                        {/* <TableCell align="left">{row.desProdTip}</TableCell> */}
                         <TableCell align="center">{row.fecProdIni}</TableCell>
                         <TableCell align="center">
                           {row.fecProdIniProg}
