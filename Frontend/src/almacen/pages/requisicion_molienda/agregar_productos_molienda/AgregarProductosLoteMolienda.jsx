@@ -30,8 +30,6 @@ import {
   _parseInt,
 } from "../../../../utils/functions/FormatDate";
 import { DetalleProductosFinales } from "./DetalleProductosFinales";
-import FechaPicker from "../../../../../src/components/Fechas/FechaPicker";
-import FechaPickerYear from "../../../../components/Fechas/FechaPickerYear";
 import { viewMoliendaRequisicionId } from "./../../../helpers/requisicion-molienda/viewMoliendaRequisicionId";
 import Checkbox from "@mui/material/Checkbox";
 import { useAuth } from "../../../../hooks/useAuth";
@@ -48,7 +46,6 @@ export const AgregarProductosLoteMolienda = () => {
   const [finalizarOrden, setFinalizarOrden] = useState(false);
 
   const { user } = useAuth();
-
 
   // ESTADOS DE LOS PRODUCTOS FINALES DE LA PRODUCCION
   const [proFinProd, setProFinProd] = useState({
@@ -95,39 +92,6 @@ export const AgregarProductosLoteMolienda = () => {
     fecVenSto: "",
   });
   const { idProdFin, cantidadIngresada, fecEntSto, fecVenSto } = productoFinal;
-
-  // ******* ACCIONES DE FILTER PRODUCTO FINAL ******
-  // MANEJADOR DE PRODUCTO
-  const onAddProductoFinalSubProducto = (value) => {
-    setproductoFinal({
-      ...productoFinal,
-      idProdFin: value.id, // id de producto de la tabla productos
-      idProdfinal: value.idProdFin, // id record de la tabla produccion_producto_final
-    });
-  };
-
-  // MANEJADOR DE CANTIDAD
-  const handledFormCantidadIngresada = ({ target }) => {
-    const { name, value } = target;
-    setproductoFinal({
-      ...productoFinal,
-      [name]: value,
-    });
-  };
-
-  const onAddFecEntSto = (newfecEntSto) => {
-    setproductoFinal({
-      ...productoFinal,
-      fecEntSto: newfecEntSto,
-    });
-  };
-
-  const onAddFecVenSto = (newfecEntSto) => {
-    setproductoFinal({
-      ...productoFinal,
-      fecVenSto: newfecEntSto,
-    });
-  };
 
   // ********* ESTADO PARA CONTROLAR EL FEEDBACK **********
   const [feedbackCreate, setfeedbackCreate] = useState(false);
@@ -222,8 +186,6 @@ export const AgregarProductosLoteMolienda = () => {
       window.close();
     }
 
-    //console.log(result[0]);
-
     getProdIntermedio(result[0]);
 
     if (message_error.length === 0) {
@@ -302,8 +264,6 @@ export const AgregarProductosLoteMolienda = () => {
       codLot: codLotProd,
     };
 
-    // console.log(dataEntrada);
-    // return;
     detalleProductosFinales.map((obj) => {
       obj.letAniEntSto = letraAnio(obj.fecEntSto);
       obj.diaJulEntSto = DiaJuliano(obj.fecEntSto);
@@ -316,28 +276,11 @@ export const AgregarProductosLoteMolienda = () => {
         productoFin.check = true;
       }
     });
-
-    //console.log(detalleProductosFinales, idProdTip, dataEntrada, productoFin);
-
-    if (false && productoFin.check) {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error:
-          "la suma de la cantidad ingresada para " +
-          productoFin.nomProd +
-          " supera a la cantidad programada",
-      });
-      handleClickFeeback();
-      return;
-    }
-
     const resultPeticion = await createProductoIntermedioLoteMolienda(
       detalleProductosFinales,
       idProdTip,
       dataEntrada
     );
-    //console.log(resultPeticion);
-    //return;
     const { message_error, description_error } = resultPeticion;
     if (message_error.length === 0) {
       // regresamos a la anterior vista

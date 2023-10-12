@@ -223,6 +223,14 @@ export const CrearProduccionLote = () => {
         fecVenLotProd: "",
       });
       setKlgLotProd(0);
+
+      // Mostramos una alerta
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error:
+          "No hay en stock el producto intermedio seleccionado",
+      });
+      handleClickFeeback();
     }
   };
 

@@ -13,7 +13,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = json_decode($json, true);
 
     $detProdFinLotProd = $data["detProdFinLotProd"];
-    //$idProdTip = $data["idProdTip"];
     $datEntSto = $data["datEntSto"];
     $pedidoCompletado = (int)$datEntSto["pedidoCompletado"];
     $variacion = floatval($datEntSto["variacion"]);
@@ -34,10 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idProdt = $row["idProdt"]; // producto
             $canProdFin = floatval($row["canProdFin"]); // cantidad total
             $fecVenEntProdFin = $row["fecVenEntProdFin"]; // fecha de vencimiento
-            //$idProdFinal = $row["idProdFinal"];  
-
-
-            //die(json_encode($pedidoCompletado));
 
             try {
                 $sql_update_producto_final =
@@ -89,10 +84,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             WHERE idProd = ? AND YEAR(fecEntSto) = ?
                             ORDER BY refNumIngEntSto DESC LIMIT 1";
                         try {
-
                             // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
                             $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
-                            $stmt_numero_entrada->bindParam(1, $idProd, PDO::PARAM_INT);
+                            $stmt_numero_entrada->bindParam(1, $idProdt, PDO::PARAM_INT);
                             $stmt_numero_entrada->bindParam(2, $anioActual);
                             $stmt_numero_entrada->execute();
 
