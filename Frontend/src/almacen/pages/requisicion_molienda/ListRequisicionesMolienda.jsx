@@ -370,7 +370,7 @@ export const ListRequisicionesMolienda = () => {
                       },
                     }}
                   >
-                    <TableCell align="left" width={70}>
+                    <TableCell align="left" width={80}>
                       <b>Lote</b>
                       <TextField
                         name="filterLoteProduccion"
@@ -401,12 +401,12 @@ export const ListRequisicionesMolienda = () => {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="left" width={100}>
+                    {/* <TableCell align="left" width={100}>
                       <b>Tipo</b>
                       <FilterTipoProduccion
                         onNewInput={onChangeTipoProduccion}
                       />
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell align="left" width={140}>
                       <b>Producto</b>
                       <FilterProductoProduccion onNewInput={onChangeProducto} />
@@ -435,19 +435,9 @@ export const ListRequisicionesMolienda = () => {
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Fecha requerido</b>
-                      {/**
-                         <FechaPickerDay
-                        onNewfecEntSto={onChangeDateFechaPedido}
-                      />
-                         */}
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Fecha terminado</b>
-                      {/**
-                        <FechaPickerDay
-                        onNewfecEntSto={onChangeDateFechaTerminado}
-                      />
-                       */}
                     </TableCell>
                     <TableCell align="left" width={100}>
                       <b>Acciones</b>
@@ -468,7 +458,7 @@ export const ListRequisicionesMolienda = () => {
                           {row.codLotProd}
                         </TableCell>
                         <TableCell align="left">{row.codReq}</TableCell>
-                        <TableCell align="left">{row.desProdTip}</TableCell>
+                        {/* <TableCell align="left">{row.desProdTip}</TableCell> */}
                         <TableCell align="left">{row.nomProd}</TableCell>
                         <TableCell align="right">{row.canLotProd}</TableCell>
                         <TableCell align="center">

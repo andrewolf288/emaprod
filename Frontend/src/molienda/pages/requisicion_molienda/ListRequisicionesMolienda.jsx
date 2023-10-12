@@ -256,8 +256,6 @@ export const ListRequisicionesMolienda = () => {
   const obtenerDataRequisicionMolienda = async (body = formState) => {
     const resultPeticion = await getRequisicionMoliendaWithDetalle(body);
     const { message_error, description_error, result } = resultPeticion;
-
-    console.log(resultPeticion);
     if (message_error.length === 0) {
       setdataRequisicion(result);
       setdataRequisicionTemp(result);
@@ -284,9 +282,6 @@ export const ListRequisicionesMolienda = () => {
     //var ss = dataRequisicionTemp[idPosElement].reqMolDet
     var ss = dataRequisicionTemp[idPosElement].reqDet;
     const requisicionMoliendaDetalle = ss;
-
-    //console.log(requisicionMoliendaDetalle, idPosElement, dataRequisicionTemp);
-
     //return;
     setDetalleSeleccionado(requisicionMoliendaDetalle);
     setMostrarDetalle(true);
@@ -369,7 +364,7 @@ export const ListRequisicionesMolienda = () => {
                       },
                     }}
                   >
-                    <TableCell align="left" width={70}>
+                    <TableCell align="left" width={80}>
                       <b>Lote</b>
                       <TextField
                         name="filterLoteProduccion"
@@ -402,12 +397,12 @@ export const ListRequisicionesMolienda = () => {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="left" width={100}>
+                    {/* <TableCell align="left" width={100}>
                       <b>Tipo</b>
                       <FilterTipoProduccion
                         onNewInput={onChangeTipoProduccion}
                       />
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell align="left" width={140}>
                       <b>Producto</b>
                       <FilterProductoProduccion onNewInput={onChangeProducto} />
@@ -430,25 +425,12 @@ export const ListRequisicionesMolienda = () => {
                     </TableCell>
                     <TableCell align="left" width={100}>
                       <b>Estado</b>
-                      <FilterEstadoRequisicionMolienda
-                        onNewInput={onChangeEstadoRequisicionMolienda}
-                      />
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Fecha requerido</b>
-                      {/**
-                         <FechaPickerDay
-                        onNewfecEntSto={onChangeDateFechaPedido}
-                      />
-                         */}
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Fecha terminado</b>
-                      {/**
-                        <FechaPickerDay
-                        onNewfecEntSto={onChangeDateFechaTerminado}
-                      />
-                       */}
                     </TableCell>
                     <TableCell align="left" width={100}>
                       <b>Acciones</b>
@@ -471,9 +453,9 @@ export const ListRequisicionesMolienda = () => {
                         <TableCell component="th" scope="row">
                           {row.codReq}
                         </TableCell>
-                        <TableCell align="left">
+                        {/* <TableCell align="left">
                           {row.desProdTip ? row.desProdTip : "POLVOS"}
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell align="left">{row.nomProd}</TableCell>
                         <TableCell align="left">{row.canLotProd}</TableCell>
                         <TableCell align="center">

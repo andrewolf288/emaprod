@@ -31,7 +31,7 @@ export const FilterTipoProduccion = ({ onNewInput, inputs }) => {
   }, []);
 
   const handledChange = (event, value) => {
-    setValue(value)
+    setValue(value);
     onNewInput(value);
   };
 
@@ -46,13 +46,11 @@ export const FilterTipoProduccion = ({ onNewInput, inputs }) => {
       <Autocomplete
         options={result}
         disableClearable
-        //{...d}
         value={value}
         getOptionLabel={(option) => option.label}
         onChange={handledChange}
         onInputChange={(event, value, reason) => {
           if (reason == "input" && value == "") {
-            console.log("reason: ", reason, "value:", value);
             onNewInput({ label: value });
           }
         }}

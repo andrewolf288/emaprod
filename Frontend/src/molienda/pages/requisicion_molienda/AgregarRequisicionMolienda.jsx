@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 // IMPORTACIONES PARA TABLE MUI
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,13 +12,9 @@ import TablePagination from "@mui/material/TablePagination";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
-import { FilterFormula } from "./../../components/FilterFormula";
-import { getFormulaWithDetalleById } from "./../../helpers/formula/getFormulaWithDetalleById";
 import { getMateriaPrimaById } from "../../../helpers/Referenciales/producto/getMateriaPrimaById";
 import { createRequisicionWithDetalle } from "./../../helpers/requisicion/createRequisicionWithDetalle";
 import { FilterMateriaPrima } from "./../../../components/ReferencialesFilters/Producto/FilterMateriaPrima";
-import { FilterLoteProduccion } from "./../../components/FilterLoteProduccion";
-import { getLoteProduccionById } from "./../../helpers/requisicion/getLoteProduccionById";
 import { RowDetalleFormula } from "../../components/RowDetalleFormula";
 import { getFormulaWithDetalleByPrioridad } from "./../../helpers/formula/getFormulaWithDetalleByPrioridad";
 import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
@@ -37,16 +33,7 @@ export const AgregarRequisicionMolienda = () => {
     canLotProd: "",
     nomProd: "",
   });
-  const { idProd, codLotProd, klgLotProd, canLotProd, nomProd } =
-    produccionLote;
-
-  var idMol = 51;
-  // ESTADO PARA LOS DATOS DEL FILTRO POR FORMULA
-  const [formula, setformula] = useState({
-    idFor: 0,
-  });
-
-  const { idFor } = formula;
+  const { codLotProd, klgLotProd, canLotProd } = produccionLote;
 
   // ESTADOS PARA LOS DATOS DE REQUISICION
   const [requisicion, setRequisicion] = useState({
@@ -105,7 +92,9 @@ export const AgregarRequisicionMolienda = () => {
     setPage(0);
   };
 
-  // MANEJADOR DE AGREGAR MATERIA PRIMA A DETALLE DE FORMULA
+  /* Manejadores de detalles de requisicion y agregado de materia prima*/
+
+  // Añadir una materia prima
   const onMateriaPrimaId = ({ id }) => {
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
@@ -113,6 +102,7 @@ export const AgregarRequisicionMolienda = () => {
     });
   };
 
+  // Añadir cantidad de la materia prima
   const handleCantidadMateriaPrima = ({ target }) => {
     const { name, value } = target;
     setmateriaPrimaDetalle({
@@ -121,7 +111,7 @@ export const AgregarRequisicionMolienda = () => {
     });
   };
 
-  // ELIMINAR DETALLE DE REQUISICION
+  // Eliminar detalle de requisicion
   const deleteDetalleRequisicion = (idItem) => {
     // FILTRAMOS EL ELEMENTO ELIMINADO
     const nuevaDataDetalleRequisicion = requisicion.reqMolDet.filter(
@@ -141,8 +131,7 @@ export const AgregarRequisicionMolienda = () => {
     });
   };
 
-  // ACTUALIZAR DETALLE DE REQUISICION
-  // MANEJADOR PARA ACTUALIZAR REQUISICION
+  // Actualizacion el detalle de la requisicion
   const handledFormularioDetalle = ({ target }, idItem) => {
     const { value } = target;
     const editFormDetalle = requisicion.reqMolDet.map((element) => {
@@ -162,206 +151,7 @@ export const AgregarRequisicionMolienda = () => {
     });
   };
 
-  // FUNCION ASINCRONA PARA CREAR LA REQUISICION CON SU DETALLE
-  const crearRequisicion = async () => {
-    requisicion.klgLotProd = produccionLote.klgLotProd;
-    requisicion.codLotProd = produccionLote.codLotProd;
-    requisicion.canLotProd = produccionLote.canLotProd;
-
-    console.log(requisicion);
-
-    //return;
-    var response = await createRequisicionWithDetalle(requisicion);
-    console.log(requisicion, response);
-
-    const { message_error, description_error } = response;
-
-    if (message_error.length === 0) {
-      // regresamos a la anterior vista
-      onNavigateBack();
-    } else {
-      console.log("No se pudo crear");
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
-    }
-    setdisableButton(false);
-  };
-
-  // SUBMIT FORMULARIO DE REQUISICION (M-D)
-  const handleSubmitRequisicion = (e) => {
-    e.preventDefault();
-
-    if (
-      produccionLote.codLotProd.length === 0 ||
-      requisicion.idProdc === 0 ||
-      requisicion.reqMolDet.length === 0
-    ) {
-      setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error:
-          "Asegurate de completar los campos requeridos",
-      });
-      handleClickFeeback();
-    } else {
-      crearRequisicion();
-    }
-  };
-
-  // FUNCION ASINCRONA PARA TRAER A LA FORMULA Y SUS DETALLES
-  const traerDatosFormulaDetalle = async () => {
-    const resultPeticion = await getFormulaWithDetalleById(idFor);
-    const { message_error, description_error, result } = resultPeticion;
-    if (message_error.length === 0) {
-      const { forDet } = result[0];
-      setRequisicion({
-        ...requisicion,
-        reqMolDet: forDet,
-      });
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
-    }
-  };
-
-  // FUNCION ASINCRONA PARA TRAER LA FORMULA APROPIADA
-  async function getProductosFormulaDetalle(body, requisicion) {
-    const resultPeticion = await getFormulaWithDetalleByPrioridad(body);
-
-    console.log(resultPeticion);
-    // return;
-    const { message_error, description_error, result } = resultPeticion;
-    if (message_error.length === 0) {
-      if (result.length === 0) {
-      } else {
-        var { forDet } = result[0];
-
-        var klgLotProd = 0;
-        forDet.map((obj) => {
-          if (obj.canMatPriFor) {
-            obj.canMatPriForCopy = parseFloat(obj.canMatPriFor);
-            klgLotProd += obj.canMatPriForCopy;
-            //obj.canMatPriFor =
-            //  parseFloat(obj.canMatPriFor) * parseFloat(body.canLotProd);
-            //obj.canMatPriFor = obj.canMatPriFor.toFixed(3);
-          }
-        });
-
-        setRequisicion({
-          ...requisicion,
-          reqMolDet: forDet,
-        });
-
-        console.log(klgLotProd);
-        if (!body.klgLotProd) {
-          setProduccionLote({
-            ...produccionLote,
-            canLotProd: 1,
-            klgLotProd: klgLotProd,
-          });
-        }
-      }
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
-    }
-  }
-
-  // FUNCION ASINCRONA PARA TRAER AL LOTE DE PRODUCCION Y SUS DATOS
-  const traerDatosLoteProduccion = async (idProdc, produccionLote) => {
-    //console.log(produccionLote);
-    var idProdt = "";
-    var nomProd = "";
-    var canLotProd = "";
-    var id = "";
-    var klgLotProd = "";
-    if (idProdc !== "none") {
-      const { result } = await getLoteProduccionById(idProdc);
-      var { id, idProdt, codLotProd, nomProd, canLotProd, klgLotProd } =
-        result[0];
-
-      //console.log(result[0]);
-
-      setProduccionLote({
-        ...produccionLote,
-        idProdt: idProdt,
-        codLotProd: codLotProd,
-        nomProd: nomProd,
-        canLotProd: canLotProd,
-        klgLotProd: klgLotProd,
-      });
-    } else {
-      setProduccionLote({
-        ...produccionLote,
-        idProdt: idProdt,
-        codLotProd: codLotProd,
-        nomProd: nomProd,
-        canLotProd: canLotProd,
-        klgLotProd: klgLotProd,
-      });
-    }
-
-    if (id) {
-      var requisicion = {
-        ...requisicion,
-        idProdc: id,
-        idProdt: idProdt,
-      };
-      const body = {
-        idProd: idProdt,
-        lotKgrFor: klgLotProd,
-        canLotProd: canLotProd,
-      };
-      getProductosFormulaDetalle(body, requisicion);
-    } else {
-      setRequisicion({
-        ...requisicion,
-        idProdc: -1, // orden de molienda no sera vinculado a orden de produccion
-        reqMolDet: [],
-      });
-    }
-  };
-
-  const onAddProductoIntermedio = ({ id }) => {
-    var requisicion = {
-      ...requisicion,
-      idProdc: -1,
-      idProdt: id,
-    };
-    const body = {
-      idProd: id,
-      canLotProd: canLotProd,
-      klgLotProd: "",
-    };
-    console.log(body);
-
-    //console.log(body);
-    getProductosFormulaDetalle(body, requisicion);
-  };
-
-  // FILTER POR PRODUCCION LOTE
-  const onProduccionLote = (valueId) => {
-    var _produccionLote = {
-      ...produccionLote,
-      canLotProd: 0.0,
-      idProd: valueId,
-    };
-    traerDatosLoteProduccion(valueId, _produccionLote);
-  };
-
-  useEffect(() => {
-    //console.log(idProd);
-  }, [idProd]);
-
-  // AGREGAR MATERIA PRIMA A DETALLE DE REQUISICION
+  // Agregamos nueva materia prima al detalle
   const handleAddNewMateriPrimaDetalle = async (e) => {
     e.preventDefault();
     // PRIMERO VERIFICAMOS QUE LOS INPUTS TENGAN DATOS
@@ -421,25 +211,113 @@ export const AgregarRequisicionMolienda = () => {
     }
   };
 
+  /* MANEJAMOS LAS FORMULAS DE LOS PRODUCTOS INTERMEDIOS PARA DETALLES AUTOMATICOS*/
+
+  // Manejamos la seleccion de un producto intermedio
+  const onAddProductoIntermedio = ({ id }) => {
+    var requisicion = {
+      ...requisicion,
+      idProdc: -1,
+      idProdt: id,
+    };
+    const body = {
+      idProd: id,
+      canLotProd: canLotProd,
+      klgLotProd: "",
+    };
+    getProductosFormulaDetalle(body, requisicion);
+  };
+
+  // funcion asyncrona para traer la formula de producto intermedio y su detalle
+  async function getProductosFormulaDetalle(body, requisicion) {
+    const resultPeticion = await getFormulaWithDetalleByPrioridad(body);
+    // return;
+    const { message_error, description_error, result } = resultPeticion;
+    if (message_error.length === 0) {
+      if (result.length === 0) {
+      } else {
+        var { forDet } = result[0];
+
+        var klgLotProd = 0;
+        forDet.map((obj) => {
+          if (obj.canMatPriFor) {
+            obj.canMatPriForCopy = parseFloat(obj.canMatPriFor);
+            klgLotProd += obj.canMatPriForCopy;
+          }
+        });
+
+        // actualizamos la requisicion detalle de molienda
+        setRequisicion({
+          ...requisicion,
+          reqMolDet: forDet,
+        });
+
+        // actualizamos la informacion de reuqisicion de molienda
+        if (!body.klgLotProd) {
+          setProduccionLote({
+            ...produccionLote,
+            canLotProd: 1,
+            klgLotProd: klgLotProd,
+          });
+        }
+      }
+    } else {
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error,
+      });
+      handleClickFeeback();
+    }
+  }
+
+  /* Funciones para crear requisicion de molienda */
+  // Funcion para validar el ingreso de los datos
+  const handleSubmitRequisicion = (e) => {
+    e.preventDefault();
+
+    if (
+      produccionLote.codLotProd.length === 0 ||
+      requisicion.idProdc === 0 ||
+      requisicion.reqMolDet.length === 0
+    ) {
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error:
+          "Asegurate de completar los campos requeridos",
+      });
+      handleClickFeeback();
+    } else {
+      crearRequisicion();
+    }
+  };
+
+  // Funcion asyncrona para crear requisicion de molienda con su detalle
+  const crearRequisicion = async () => {
+    requisicion.klgLotProd = produccionLote.klgLotProd;
+    requisicion.codLotProd = produccionLote.codLotProd;
+    requisicion.canLotProd = produccionLote.canLotProd;
+
+    console.log(requisicion);
+    var response = await createRequisicionWithDetalle(requisicion);
+
+    const { message_error, description_error } = response;
+
+    if (message_error.length === 0) {
+      onNavigateBack();
+    } else {
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error,
+      });
+      handleClickFeeback();
+    }
+    setdisableButton(false);
+  };
+
   return (
     <>
       <div className="container-fluid mx-3">
         <h1 className="mt-4 text-center">Agregar Requisicion</h1>
-        {/*
-           <div className="row mt-4 mx-4">
-          <div className="card d-flex">
-            <h6 className="card-header">Lote de produccion</h6>
-            <div className="card-body d-flex justify-content-between align-items-center">
-              <div className="col-md-5">
-                <label htmlFor="inputPassword4" className="form-label">
-                  Lote de produccion
-                </label>
-                <FilterLoteProduccion onNewInput={onProduccionLote} />
-              </div>
-            </div>
-          </div>
-        </div>
-       */}
 
         {/* DATOS DE LA REQUISICION */}
         <div className="row mt-4 mx-4">
@@ -452,9 +330,10 @@ export const AgregarRequisicionMolienda = () => {
                 </label>
                 <div className="col-md-3">
                   {produccionLote.idProd == "none" ? (
+                    // Ingresamos idMol = 51 para traer los datos de polvos
                     <FilterProductoProduccion
                       onNewInput={onAddProductoIntermedio}
-                      idMol={idMol}
+                      idMol={51}
                     />
                   ) : (
                     <input
@@ -474,6 +353,7 @@ export const AgregarRequisicionMolienda = () => {
                   <input
                     type="number"
                     name="codLotProd"
+                    autoComplete="off"
                     onChange={(e) => {
                       const { name, value } = e.target;
                       setProduccionLote({
