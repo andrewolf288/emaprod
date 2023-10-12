@@ -34,7 +34,7 @@ export const AgregarDevolucion = () => {
   const location = useLocation();
   const { idLotProdc = "" } = queryString.parse(location.search);
 
-  // ESTADOS PARA LA DATA DE DEVOLUCIONES
+  // Data de devoluciones asociadas a un procesao de produccion
   const [devolucionesProduccionLote, setdevolucionesProduccionLote] = useState({
     id: 0,
     canLotProd: 0,
@@ -63,11 +63,12 @@ export const AgregarDevolucion = () => {
     numop,
   } = devolucionesProduccionLote;
 
+  // detalle de productos devueltos
   const [detalleProductosDevueltos, setdetalleProductosDevueltos] = useState(
     []
   );
 
-  // STATES PARA AGREGAR PRODUCTOS
+  // Estados para el producto agregado
   const [productoDevuelto, setproductoDevuelto] = useState({
     idProdDev: 0,
     cantidadDevuelta: 0.0,
@@ -112,14 +113,14 @@ export const AgregarDevolucion = () => {
   };
 
   // MANEJADOR DE MOTIVO DE DEVOLUCION
-  const onAddMotivoDevolucion = (value) => {
-    setproductoDevuelto({
-      ...productoDevuelto,
-      idProdDevMot: value.id,
-    });
-  };
+  // const onAddMotivoDevolucion = (value) => {
+  //   setproductoDevuelto({
+  //     ...productoDevuelto,
+  //     idProdDevMot: value.id,
+  //   });
+  // };
 
-  // MANEJADOR DE CANTIDAD
+  // Manejador de cantidad del filtro
   const handledFormCantidadDevuelta = ({ target }) => {
     const { name, value } = target;
     setproductoDevuelto({
@@ -128,6 +129,7 @@ export const AgregarDevolucion = () => {
     });
   };
 
+  // Manejador de agregar materia prima al detalle de devolucion
   const handleAddProductoDevuelto = async (e) => {
     e.preventDefault();
     if (idProdDev !== 0 && cantidadDevuelta > 0.0) {
@@ -245,24 +247,25 @@ export const AgregarDevolucion = () => {
   };
 
   // ACCION PARA CAMBIAR EL MOTIVO DEL DETALLE DE UN PRODUCTO DEVUELTO
-  const handleChangeMotivoDevolucionProductoDevuelto = async (
-    idProdDevMot,
-    idItem
-  ) => {
-    const editFormDetalle = detalleProductosDevueltos.map((element) => {
-      if (element.idProdt === idItem) {
-        return {
-          ...element,
-          idProdDevMot: idProdDevMot,
-        };
-      } else {
-        return element;
-      }
-    });
+  // const handleChangeMotivoDevolucionProductoDevuelto = async (
+  //   idProdDevMot,
+  //   idItem
+  // ) => {
+  //   const editFormDetalle = detalleProductosDevueltos.map((element) => {
+  //     if (element.idProdt === idItem) {
+  //       return {
+  //         ...element,
+  //         idProdDevMot: idProdDevMot,
+  //       };
+  //     } else {
+  //       return element;
+  //     }
+  //   });
 
-    setdetalleProductosDevueltos(editFormDetalle);
-  };
+  //   setdetalleProductosDevueltos(editFormDetalle);
+  // };
 
+  // Manejador de eliminacion de un detalle de devolucion
   const handleDeleteProductoDevuelto = async (idItem) => {
     const dataDetalleProductosDevueltos = detalleProductosDevueltos.filter(
       (element) => {
@@ -277,6 +280,7 @@ export const AgregarDevolucion = () => {
     setdetalleProductosDevueltos(dataDetalleProductosDevueltos);
   };
 
+  // esta funcion se encarga de traer
   async function handleAddProductoProduccionLote(
     detalleRequisiciones,
     idProdFin,
@@ -348,7 +352,10 @@ export const AgregarDevolucion = () => {
 
     return copyProducts;
   }
+
+  // funcion que trae
   async function getProductToDev(idLotProdc) {
+    // se trae los productos utilizados en la orden de proceso junto con sus insumos de envasado y encajado
     const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
     const { result } = resultPeticion;
     var products = result[0].proFinProdDet;
@@ -396,9 +403,9 @@ export const AgregarDevolucion = () => {
       const resultPeticion = await getProduccionLoteWithDevolucionesById(
         idLotProdc
       );
+
       console.log(resultPeticion);
       var productos = await getProductToDev(idLotProdc);
-      console.log(productos);
 
       var devoluciones = [];
       await Promise.all(
@@ -511,9 +518,9 @@ export const AgregarDevolucion = () => {
         item.motivos = [];
         motivos.map((val, index) => {
           item.motivos.push({
-            motivo: val.desProdDevMot,
+            nomDevMot: val.desProdDevMot,
             canProdDev: index === 0 ? item.canProdDev : 0,
-            id: val.id,
+            idProdDevMot: val.id,
           });
         });
       });
@@ -554,7 +561,6 @@ export const AgregarDevolucion = () => {
       });
     });
 
-    console.log(desmedrosAux);
     const resultPeticion = await createDevolucionesLoteProduccion(desmedrosAux);
 
     const { message_error, description_error } = resultPeticion;
@@ -917,9 +923,9 @@ export const AgregarDevolucion = () => {
                               onChangeInputDetalle={
                                 handleChangeInputProductoDevuelto
                               }
-                              onChangeMotivoDevolucion={
-                                handleChangeMotivoDevolucionProductoDevuelto
-                              }
+                              // onChangeMotivoDevolucion={
+                              //   handleChangeMotivoDevolucionProductoDevuelto
+                              // }
                               onDeleteItemDetalle={handleDeleteProductoDevuelto}
                             />
                           );
