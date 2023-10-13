@@ -137,8 +137,6 @@ export const AgregarDevolucion = () => {
         (element) => element.idProdt === idProdDev
       );
 
-      //return
-
       if (itemFound) {
         setfeedbackMessages({
           style_message: "warning",
@@ -353,11 +351,15 @@ export const AgregarDevolucion = () => {
     return copyProducts;
   }
 
-  // funcion que trae
+  /* 
+  Esta funcion se encarga de traer los insumos utilizados en las requisiciones de envasado y encajado por producto final
+  Ademas, calcula cuanto ha sido la cantidad ingresada por el momento de cada producto final.
+  */
   async function getProductToDev(idLotProdc) {
     // se trae los productos utilizados en la orden de proceso junto con sus insumos de envasado y encajado
     const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
     const { result } = resultPeticion;
+    console.log(result);
     var products = result[0].proFinProdDet;
 
     var copyProducts = products.reduce((accumulator, currentValue) => {
@@ -394,17 +396,29 @@ export const AgregarDevolucion = () => {
       }
       return accumulator;
     }, []);
+    console.log(copyProducts);
 
     return copyProducts;
   }
 
+  /* Esta es una fucnion que se encarga cuando carga la vista y se encarga de traer toda la data necesaria
+     para mostrar las devoluciones correspondientes a un proceso de produccion 
+  */
+
   const traerDatosProduccionLoteWithDevoluciones = async () => {
     if (idLotProdc.length !== 0) {
+      /* Se realiza una consulta al backend donde se obtiene informacion de las devoluciones por proceso de produccion:
+        - informacion del proceso de produccion
+        - informacion de las requisiciones utilizadas en el proceso de produccion (requisiciones)
+        - información del detalle de devoluciones (detDev)
+      */
       const resultPeticion = await getProduccionLoteWithDevolucionesById(
         idLotProdc
       );
 
       console.log(resultPeticion);
+
+      /* Se realiza una consulta al backend que trae la informacion de los productos finales de el proceso de */
       var productos = await getProductToDev(idLotProdc);
 
       var devoluciones = [];
