@@ -14,17 +14,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { getProduccionLoteWithAgregacionesById } from "./../../../produccion/helpers/produccion_lote/getProduccionLoteWithAgregacionesById";
-import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { TextField } from "@mui/material";
 import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
 import { RowDetalleAgregacionLoteProduccion } from "./../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccion";
-import { RowDetalleAgregacionLoteProduccionEdit } from "./../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccionEdit";
-import { FilterAreaEncargada } from "./../../../produccion/components/FilterAreaEncargada";
 import { createAgregacionesLoteProduccion } from "./../../helpers/agregaciones-lote-produccion/createAgregacionesLoteProduccion";
 import { getAgregacionByIdProduccion } from "./../../helpers/agregaciones-lote-produccion/getAgregacionByIdProduccion";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { FilterPresentacionFinal } from "../../../components/ReferencialesFilters/Producto/FilterPresentacionFinal";
 import DetalleProducts from "./DetalleProducts";
 import {
   FormatDateTimeMYSQLNow,
@@ -236,9 +229,6 @@ export const AgregarAgregacion = () => {
   const handleSubmitAgregacionesLoteProduccion = (e) => {
     e.preventDefault();
 
-    //console.log(produccionLote)
-    //console.log(detalleProductosAgregados)
-
     detalleProductosAgregados = [];
     produccionLote.reqDetProdc.map((obj) => {
       detalleProductosAgregados.push({
@@ -295,52 +285,6 @@ export const AgregarAgregacion = () => {
   };
 
   async function crearAgregacionesLoteProduccion() {
-    /**
-      canProdAgr: "1"
-      codProd: null
-      desCla: "Envase y Embalaje"
-      desSubCla: undefined
-      idAre: 5
-      idFinalProduct: undefined
-      idProdAgrMot: 2
-      idProdc: 189
-      idProdt: 221
-      nomProd: "ENV. IMPRESA - SAZONADOR COMPLETO MOLIDO GIGANTE LAMINADO POLYSTER-BOPP 600 MM"
-      simMed : "KGM"
-     */
-
-    /**
-      const detalle = {
-        idProdc: id, // lote de produccion asociado
-        idProdt: idProd, // producto
-        idProdAgrMot: 0, // motivo de devolucion
-        idAre: idAreaEncargada,
-        codProd: codProd, // codigo de producto
-        desCla: desCla, // clase del producto
-        desSubCla: desSubCla, // subclase del producto
-        nomProd: nomProd, // nombre del producto
-        simMed: simMed, // medida del producto
-        canProdAgr: cantidadAgregada, // cantidad devuelta
-        idFinalProduct:productoAgregado.finalProduct,
-      };
-       */
-
-    // function nextLetter(s) {
-    //   return s.replace(/([a-zA-Z])[^a-zA-Z]*$/, function (a) {
-    //     var c = a.charCodeAt(0);
-    //     //console.log("a",a.charCodeAt(0))
-    //     switch (c) {
-    //       case 90:
-    //         return "A";
-    //       case 122:
-    //         return "a";
-    //       default:
-    //         return String.fromCharCode(++c);
-    //     }
-    //   });
-    // }
-
-    // console.log(nextLetter("B"))
     const res = await getAgregacionByIdProduccion(idLotProdc);
 
     const { result } = res;
@@ -357,16 +301,9 @@ export const AgregarAgregacion = () => {
     detalleProductosAgregados.map((obj) => {
       obj.flag = flag;
     });
-
-    //console.log(detalleProductosAgregados)
-    //return
     const resultPeticion = await createAgregacionesLoteProduccion(
       detalleProductosAgregados
     );
-
-    //console.log( detalleProductosAgregados, resultPeticion);
-    //return;
-
     const { message_error, description_error, noDisponible } = resultPeticion;
 
     if (noDisponible?.length) {
@@ -397,8 +334,6 @@ export const AgregarAgregacion = () => {
         setdisableButton(false);
       }
     }
-
-    //setdisableButton(false);
   }
 
   useEffect(() => {
@@ -588,8 +523,7 @@ export const AgregarAgregacion = () => {
               </div>
             </div>
           </div>
-
-          <div className="card d-flex mt-4">
+          {/* <div className="card d-flex mt-4">
             <h6 className="card-header">Fecha de programación</h6>
             <div className="card-body">
               <div className="mb-3 row">
@@ -607,7 +541,7 @@ export const AgregarAgregacion = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <DetalleProducts
             produccionLote={produccionLote}

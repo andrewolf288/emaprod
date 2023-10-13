@@ -13,31 +13,1033 @@ import MuiAlert from "@mui/material/Alert";
 import { getProduccionLote } from "./../../helpers/produccion_lote/getProduccionLote";
 import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
 import { FilterEstadoProduccion } from "./../../../components/ReferencialesFilters/Produccion/FilterEstadoProduccion";
+import { FilterTipoProduccion } from "./../../../components/ReferencialesFilters/TipoProduccion/FilterTipoProduccion";
 import { FilterEstadoInicioProgramadoProduccion } from "./../../../components/ReferencialesFilters/Produccion/FilterEstadoInicioProgramadoProduccion";
 import { useForm } from "./../../../hooks/useForm";
 import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
 import { TextField } from "@mui/material";
+import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
 import { AccionesProduccionLote } from "./../../components/AccionesProduccionLote";
 import { updateFechasProduccion } from "./../../helpers/produccion_lote/updateFechasProduccion";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
-import ReactDOM from "react-dom";
+//import PDFExample from "../../pdf/PDFExample";
+import {
+  PDFViewer,
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
+import ReactDOM from "react-dom"; // Importa ReactDOM
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import dataj from "./data.json";
+import logo from "./emaran.png";
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import SvgIcon from "@mui/material/SvgIcon";
 import iconAddFile from "../../../../src/assets/add-file-icon.svg";
 import iconReturns from "../../../../src/assets/easy_returns.svg";
+import ButtonPdf from "./ButtonPdf";
+import { getProduccionLoteWithAgregacionesById } from "./../../helpers/produccion_lote/getProduccionLoteWithAgregacionesById";
 import config from "../../../config";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import BlockIcon from "@mui/icons-material/Block";
-import { PDFExample } from "../../components/pdf-components/PDFExample";
-import { _parseInt } from "../../../utils/functions/ParseInt";
 
 const domain = config.API_URL;
 
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: "row",
+    backgroundColor: "white",
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1,
+  },
+  section_io: {
+    margin: 1,
+    padding: 1,
+    flexGrow: 1,
+  },
+  title: {
+    fontSize: 15, // Modifica el tamaño de letra del título
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  content: {
+    fontSize: 10, // Modifica el tamaño de letra del contenido
+  },
+  item: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 5,
+  },
+  row: {
+    flexDirection: "row",
+  },
+  column: {
+    flexDirection: "column",
+    flexGrow: 1,
+    fontWeight: "bold",
+  },
+  rightAlign: {
+    textAlign: "right",
+  },
+  grayBox: {
+    backgroundColor: "#F0F0F0", // Color de fondo gris
+    padding: 10,
+    borderRadius: 5, // Bordes redondeados
+    marginBottom: 10,
+    width: "70%",
+  },
+  vertical: {
+    flexDirection: "column",
+    marginRight: 10,
+  },
+  grayBox_yellow: {
+    backgroundColor: "#ecf7ab", // Color de fondo gris
+    padding: 10,
+    borderRadius: 5, // Bordes redondeados
+    marginBottom: 10,
+    width: "70%",
+  },
+
+  grayBox_blue: {
+    backgroundColor: "#bef0f7", // Color de fondo gris
+    padding: 10,
+    borderRadius: 5, // Bordes redondeados
+    marginBottom: 10,
+    width: "70%",
+  },
+
+  gridContainer: {
+    marginTop: 10,
+    borderWidth: 0.7,
+    borderColor: "#000",
+    flexDirection: "column",
+  },
+
+  gridContainer_row: {
+    marginTop: 10,
+    //borderWidth: 0.7,
+    borderColor: "#000",
+    flexDirection: "row", // Cambiado a 'row' para alinear elementos horizontalmente
+    justifyContent: "space-between", // Distribuye los elementos equitativamente en el eje X
+    alignItems: "center", // Centra verticalmente los elementos en el eje Y
+  },
+  gridHeader: {
+    flexDirection: "row",
+    backgroundColor: "#E4E4E4",
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderBottomWidth: 0.4,
+    borderColor: "#000",
+  },
+  gridRow: {
+    flexDirection: "row",
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderBottomWidth: 0.1,
+    borderColor: "#000",
+    fontSize: 15,
+  },
+  gridTitle: {
+    flex: 1,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 7,
+  },
+  gridContent: {
+    flex: 1,
+    textAlign: "center",
+  },
+  gridContent_p: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 5.5,
+  },
+  gridContent_num: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 6.5,
+  },
+
+  container: {
+    position: "relative", // Establece la posición del contenedor como relativa
+  },
+  logo: {
+    position: "absolute", // Establece la posición del logo como absoluta
+    top: 0, // Ajusta la posición vertical del logo (0 para estar en la parte superior)
+    left: 0, // Ajusta la posición horizontal del logo (0 para estar en la parte izquierda)
+    width: 150,
+    height: 150,
+  },
+  greenBackground: {
+    backgroundColor: "#baeaf7",
+  },
+  greenText: {
+    color: "green",
+  },
+  green_: {
+    backgroundColor: "#bdf0da",
+  },
+  yellow_: {
+    backgroundColor: "#faf4b9",
+  },
+  sectionWithBorder: {
+    backgroundColor: "#F0F0F0",
+    borderRadius: 5,
+    marginBottom: 10,
+    borderColor: "#000", // Color del borde
+    borderWidth: 0.1, // Ancho del borde
+  },
+});
+
+function _parseInt(str, property) {
+  // console.log(str)
+  if (str.canProdAgr) {
+    str.canReqDet = str.canProdAgr;
+  }
+  if (str.canTotProgProdFin) {
+    str.canReqDet = str.canTotProgProdFin;
+  }
+
+  if (property) {
+    str.canReqDet = str[property];
+  }
+  str.canReqDet = parseFloat(str.canReqDet).toFixed(2);
+  let index = str.canReqDet.toString().indexOf(".");
+  let result = str.canReqDet.toString().substring(index + 1);
+  //console.log("index: ",index, "result: ", result)
+  let val =
+    parseInt(result) >= 1 && str.simMed !== "KGM"
+      ? Math.trunc(str.canReqDet) + 1
+      : str.canReqDet;
+  return val;
+}
+
+const PDFExample = ({ data, show }) => {
+  console.log(data);
+  return (
+    <PDFViewer width="100%" height="100%">
+      <Document>
+        <Page
+          size="A4"
+          style={{
+            ...styles.page,
+            marginTop: 20,
+            paddingTop: 20,
+            paddingBottom: 40,
+          }}
+        >
+          <View style={styles.section}>
+            <View style={styles.container}>
+              <Image
+                src={logo}
+                style={{ ...styles.logo, marginTop: -105, marginLeft: 20 }}
+              />
+            </View>
+
+            <View style={{ ...styles.row, marginTop: -10 }}>
+              <View style={styles.column}>
+                <Text
+                  style={{
+                    ...styles.content,
+                    fontWeight: "bold",
+                    fontSize: 9,
+                    maxWidth: "50%",
+                    marginBottom: 2,
+                    marginLeft: 20,
+                  }}
+                >
+                  Producto Intermedio: {data.result.produccion.nomProd}
+                </Text>
+                <Text
+                  style={{
+                    ...styles.content,
+                    fontWeight: "bold",
+                    fontSize: 9,
+                    maxWidth: "50%",
+                    marginBottom: 2,
+                    marginLeft: 20,
+                  }}
+                >
+                  Fecha de Inicio Programado:{" "}
+                  {data.result.produccion.fecProdIniProg}
+                </Text>
+                ,
+                <Text
+                  style={{
+                    ...styles.content,
+                    fontWeight: "bold",
+                    fontSize: 9,
+                    maxWidth: "50%",
+                    marginBottom: 2,
+                    marginLeft: 20,
+                  }}
+                >
+                  Fecha de Fin Programado:{" "}
+                  {data.result.produccion.fecProdFinProg}
+                </Text>
+                <Text
+                  style={{
+                    ...styles.content,
+                    fontWeight: "bold",
+                    fontSize: 9,
+                    maxWidth: "50%",
+                    marginBottom: 2,
+                    marginLeft: 20,
+                  }}
+                >
+                  Fecha de Vencimiento Lt:{" "}
+                  {data.result.produccion.fecVenLotProd}
+                </Text>
+                <Text
+                  style={{
+                    ...styles.content,
+                    fontSize: 9,
+                    maxWidth: "50%",
+                    marginBottom: 2,
+                    marginTop: 2,
+                    marginLeft: 20,
+                  }}
+                >
+                  Observaciones
+                </Text>
+                <View
+                  style={{
+                    padding: 1,
+                    fontWeight: "bold",
+                    maxWidth: "90%",
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: "#000",
+                    height: 25,
+                    marginTop: 2,
+                    marginLeft: 20,
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...styles.content,
+                      fontSize: 9,
+                      marginLeft: 10,
+                      marginRight: 0,
+                      paddingRight: 0,
+                      inlineSize: "50px",
+                      overflowWrap: "break-word",
+                      maxWidth: 275,
+                      maxHeight: 275,
+                    }}
+                  >
+                    {data.result.produccion.obsProd}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={{ ...styles.row, marginTop: -40 }}>
+                <View style={styles.column}>
+                  <Text
+                    style={{
+                      ...styles.content,
+                      fontWeight: "bold",
+                      borderRadius: 5,
+                      fontSize: 16,
+                      marginBottom: 1,
+                      backgroundColor: "#d8dbe3",
+                      padding: 5,
+                      marginRight: 20,
+                    }}
+                  >
+                    ORDEN DE PROCESO
+                  </Text>
+                  <View
+                    style={{
+                      ...styles.row,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        ...styles.gridContent,
+                        marginLeft: 50,
+                        marginTop: 10,
+                      }}
+                    >
+                      {data.result.produccion.numop}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      ...styles.sectionWithBorder,
+                      marginTop: 10,
+                      backgroundColor: "#d8dbe3",
+                      width: 220,
+                      height: 70,
+                      borderRadius: 5,
+                      marginRight: 20,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        ...styles.content,
+                        marginLeft: 10,
+                        marginTop: 7,
+                        maxWidth: "100%",
+                      }}
+                    >
+                      Tipo de Producción: {data.result.produccion.desProdTip}
+                    </Text>
+
+                    <Text
+                      style={{
+                        ...styles.content,
+                        marginLeft: 10,
+                        marginTop: 4,
+                        maxWidth: "100%",
+                      }}
+                    >
+                      Número de Lote: {data.result.produccion.codLotProd}
+                    </Text>
+                    <Text
+                      style={{
+                        ...styles.content,
+                        marginLeft: 10,
+                        marginTop: 4,
+                      }}
+                    >
+                      Peso Total de Lote:{" "}
+                      {parseFloat(data.result.produccion.canLotProd).toFixed(
+                        2
+                      ) + " KG"}
+                    </Text>
+
+                    <Text
+                      style={{
+                        ...styles.content,
+                        marginLeft: 10,
+                        marginTop: 4,
+                        maxWidth: "100%",
+                      }}
+                    >
+                      Peso Programado:{" "}
+                      {parseFloat(
+                        data.result.produccion.klgTotalLoteProduccion
+                      ).toFixed(2) + " KG"}
+                    </Text>
+
+                    {/**
+                       <Text
+                      style={{
+                        ...styles.content,
+                        marginLeft: 10,
+                        marginTop: 4,
+                        maxWidth: "100%",
+                      }}
+                    >
+                      Total Unidades: 
+                      {data.result.produccion.totalUnidadesLoteProduccion}
+                    </Text>
+                       */}
+                  </View>
+
+                  <Text
+                    style={{
+                      ...styles.content,
+                      marginLeft: 130,
+                      marginTop: -10,
+                      maxWidth: "100%",
+                      fontSize: 5,
+                    }}
+                  >
+                    Fecha de Creación: {data.result.produccion.fecCreProd}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {<DetalleOrden data={data} />}
+          </View>
+        </Page>
+      </Document>
+    </PDFViewer>
+  );
+};
+
+const DetalleOrden = ({ data }) => {
+  return (
+    <>
+      <View>
+        <Text
+          style={{
+            ...styles.title,
+            fontWeight: "bold",
+            fontSize: 7,
+            marginLeft: -450,
+            marginTop: -2,
+          }}
+        >
+          Producto Final
+        </Text>
+        <View style={{ ...styles.section, marginTop: -25 }}>
+          <View style={styles.gridContainer}>
+            <View style={[styles.gridHeader, styles.greenBackground]}>
+              <Text style={{ ...styles.gridTitle, flex: 0.7 }}> N°</Text>
+              <Text style={{ ...styles.gridTitle, flex: 0.7 }}>Cód Ref</Text>
+              <Text style={{ ...styles.gridTitle, flex: 1 }}>Código</Text>
+              <Text
+                style={{
+                  ...styles.gridTitle,
+                  flex: 4,
+                  textAlign: "center",
+                }}
+              >
+                Descripción de Item
+              </Text>
+              <Text style={styles.gridTitle}>U.M</Text>
+              <Text style={styles.gridTitle}>Cantidad</Text>
+            </View>
+            {data.result.productos_finales?.map((producto, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.gridRow,
+                  index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {},
+                ]}
+              >
+                <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                  {producto.id}
+                </Text>
+                <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                  {producto.codProd}
+                </Text>
+                <Text style={{ ...styles.gridContent_p, flex: 1 }}>
+                  {producto.codProd2}
+                </Text>
+                <Text
+                  style={{
+                    ...styles.gridContent_p,
+                    flex: 4,
+                    textAlign: "left",
+                  }}
+                >
+                  {producto.nomProd}
+                </Text>
+                <Text style={styles.gridContent_p}>{producto.simMed}</Text>
+                <Text style={styles.gridContent_num}>
+                  {_parseInt(producto)}
+                </Text>{" "}
+                {/** producto.canTotProgProdFin */}
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <Text
+          style={{
+            ...styles.title,
+            fontWeight: "bold",
+            fontSize: 7,
+            marginLeft: -440,
+            marginTop: -12,
+          }}
+        >
+          Detalle Envasado
+        </Text>
+        <View style={{ ...styles.section, marginTop: -25 }}>
+          <View style={styles.gridContainer}>
+            <View style={[styles.gridHeader, styles.green_]}>
+              <Text style={{ ...styles.gridTitle, flex: 0.7 }}> Cód Aso</Text>
+              <Text style={{ ...styles.gridTitle, flex: 0.7 }}>Cód Ref</Text>
+              <Text
+                style={{
+                  flex: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: 7,
+                  //border: "1px solid black",
+                  maxWidth: "40px",
+                }}
+              >
+                Código
+              </Text>
+              <Text
+                style={{
+                  ...styles.gridTitle,
+                  flex: 4,
+                  textAlign: "center",
+                  //border: "1px solid black",
+                }}
+              >
+                Descripción de Item
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: 7,
+                  maxWidth: "30px",
+                  //border: "1px solid black",
+                }}
+              >
+                U.M
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: 7,
+                  //border: "1px solid black",
+                  maxWidth: "40px",
+                }}
+              >
+                Cantidad
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: 7,
+                  //border: "1px solid black",
+                  maxWidth: "40px",
+                }}
+              >
+                Total
+              </Text>
+            </View>
+            {data.result?.requisiciones
+              ?.find((req) => req.desAre === "Envasado")
+              ?.detalles?.map((detalle, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.gridRow,
+                    index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {},
+                  ]}
+                >
+                  <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                    {detalle.prodFCode}
+                  </Text>
+                  <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                    {detalle.codProd}
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      fontSize: 5.5,
+                      //border: "1px solid black",
+                      maxWidth: "40px",
+                    }}
+                  >
+                    {detalle.codProd2}
+                  </Text>
+                  <Text
+                    style={{
+                      ...styles.gridContent_p,
+                      flex: 4,
+                      textAlign: "left",
+                      //border: "1px solid black",
+                    }}
+                  >
+                    {detalle.nomProd}
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      fontSize: 5.5,
+                      maxWidth: "25px",
+                      //border: "1px solid black",
+                    }}
+                  >
+                    {detalle.simMed}
+                  </Text>
+                  {/** <Text style={styles.gridContent_num}>{detalle.canReqDet}</Text> */}
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      fontSize: 6.5,
+                      maxWidth: "40px",
+                      //border: "1px solid black",
+                    }}
+                  >
+                    {_parseInt(detalle, "canReqDet")}
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      fontSize: 6.5,
+                      maxWidth: "40px",
+                      //border: "1px solid black",
+                    }}
+                  >
+                    {_parseInt(detalle, "acu")}
+                  </Text>
+                </View>
+              ))}
+          </View>
+        </View>
+
+        {data.result?.requisiciones?.find((req) => req.desAre === "Envasado")
+          ?.resumenProductos?.length && (
+          <>
+            <Text
+              style={{
+                ...styles.title,
+                fontWeight: "bold",
+                fontSize: 7,
+                marginLeft: -410,
+                marginTop: -12,
+              }}
+            >
+              Acumulacion de envasado
+            </Text>
+            <View style={{ ...styles.section, marginTop: -25 }}>
+              <View style={styles.gridContainer}>
+                <View style={[styles.gridHeader, styles.green_]}>
+                  <Text style={styles.gridTitle}>Código</Text>
+                  <Text
+                    style={{
+                      ...styles.gridTitle,
+                      flex: 4,
+                      textAlign: "left",
+                    }}
+                  >
+                    Descripción de Item
+                  </Text>
+                  <Text style={styles.gridTitle}>U.M</Text>
+                  <Text style={styles.gridTitle}>Total</Text>
+                </View>
+                {data.result?.requisiciones
+                  ?.find((req) => req.desAre === "Envasado")
+                  ?.resumenProductos.map((detalle, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.gridRow,
+                        ...[{ backgroundColor: "#a4a8b0" }],
+                      ]}
+                    >
+                      <Text style={styles.gridContent_p}>
+                        {detalle.codProd2}
+                      </Text>
+                      <Text
+                        style={{
+                          ...styles.gridContent_p,
+                          flex: 4,
+                          textAlign: "left",
+                        }}
+                      >
+                        {detalle.nomProd}
+                      </Text>
+                      <Text style={styles.gridContent_p}>{detalle.simMed}</Text>
+                      <Text style={styles.gridContent_num}>
+                        {_parseInt(detalle, "acu")}
+                      </Text>
+                    </View>
+                  ))}
+              </View>
+            </View>
+          </>
+        )}
+
+        <Text
+          style={{
+            ...styles.title,
+            fontWeight: "bold",
+            fontSize: 7,
+            marginLeft: -440,
+            marginTop: -12,
+          }}
+        >
+          Detalle Encajado
+        </Text>
+        <View style={{ ...styles.section, marginTop: -25 }}>
+          <View style={styles.gridContainer}>
+            <View style={[styles.gridHeader, styles.yellow_]}>
+              <Text style={{ ...styles.gridTitle, flex: 0.7 }}>Cód Aso</Text>
+              <Text style={{ ...styles.gridTitle, flex: 0.7 }}>Cód Ref</Text>
+              <Text
+                style={{
+                  flex: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: 7,
+                  // border: "1px solid black",
+                  maxWidth: "40px",
+                }}
+              >
+                Código
+              </Text>
+              <Text
+                style={{
+                  ...styles.gridTitle,
+                  flex: 4,
+                  textAlign: "center",
+                  //border: "1px solid black",
+                }}
+              >
+                Descripción de Item
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: 7,
+                  maxWidth: "30px",
+                  //border: "1px solid black",
+                }}
+              >
+                U.M
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: 7,
+                  //border: "1px solid black",
+                  maxWidth: "40px",
+                }}
+              >
+                Cantidad
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: 7,
+                  //border: "1px solid black",
+                  maxWidth: "40px",
+                }}
+              >
+                Total
+              </Text>
+            </View>
+            {data.result.requisiciones
+              .find((req) => req.desAre === "Encajado")
+              ?.detalles?.map((detalle, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.gridRow,
+                    index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {},
+                  ]}
+                >
+                  <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                    {detalle.prodFCode}
+                  </Text>
+                  <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                    {detalle.codProd}
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      fontSize: 5.5,
+                      //border: "1px solid black",
+                      maxWidth: "40px",
+                    }}
+                  >
+                    {detalle.codProd2}
+                  </Text>
+                  <Text
+                    style={{
+                      ...styles.gridContent_p,
+                      flex: 4,
+                      textAlign: "left",
+                      //border: "1px solid black",
+                    }}
+                  >
+                    {detalle.nomProd}
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      fontSize: 5.5,
+                      maxWidth: "25px",
+                      //border: "1px solid black",
+                    }}
+                  >
+                    {detalle.simMed}
+                  </Text>
+                  {/** <Text style={styles.gridContent_num}>{detalle.canReqDet}</Text> */}
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      fontSize: 6.5,
+                      maxWidth: "40px",
+                      //border: "1px solid black",
+                    }}
+                  >
+                    {_parseInt(detalle)}
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      fontSize: 6.5,
+                      maxWidth: "40px",
+                      //border: "1px solid black",
+                    }}
+                  >
+                    {_parseInt(detalle, "acu")}
+                  </Text>
+                </View>
+              ))}
+          </View>
+        </View>
+
+        {data.result?.requisiciones?.find((req) => req.desAre === "Encajado")
+          ?.resumenProductos?.length && (
+          <>
+            <Text
+              style={{
+                ...styles.title,
+                fontWeight: "bold",
+                fontSize: 7,
+                marginLeft: -410,
+                marginTop: -12,
+              }}
+            >
+              Acumulacion de Encajado
+            </Text>
+            <View style={{ ...styles.section, marginTop: -25 }}>
+              <View style={styles.gridContainer}>
+                <View style={[styles.gridHeader, styles.yellow_]}>
+                  <Text style={styles.gridTitle}>Código</Text>
+                  <Text
+                    style={{
+                      ...styles.gridTitle,
+                      flex: 4,
+                      textAlign: "center",
+                    }}
+                  >
+                    Descripción de Item
+                  </Text>
+                  <Text style={styles.gridTitle}>U.M</Text>
+                  <Text style={styles.gridTitle}>Total</Text>
+                </View>
+                {data.result?.requisiciones
+                  ?.find((req) => req.desAre === "Encajado")
+                  ?.resumenProductos.map((detalle, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.gridRow,
+                        ...[{ backgroundColor: "#a4a8b0" }],
+                      ]}
+                    >
+                      <Text style={styles.gridContent_p}>
+                        {detalle.codProd2}
+                      </Text>
+                      <Text
+                        style={{
+                          ...styles.gridContent_p,
+                          flex: 4,
+                          textAlign: "left",
+                        }}
+                      >
+                        {detalle.nomProd}
+                      </Text>
+                      <Text style={styles.gridContent_p}>{detalle.simMed}</Text>
+                      <Text style={styles.gridContent_num}>
+                        {_parseInt(detalle, "acu")}
+                      </Text>
+                    </View>
+                  ))}
+              </View>
+            </View>
+          </>
+        )}
+      </View>
+    </>
+  );
+};
+
+const Agregations = ({ data }) => {
+  //console.log(data.result?.agregaciones.detAgr);
+  return (
+    <>
+      <Text
+        style={{
+          ...styles.title,
+          fontWeight: "bold",
+          fontSize: 7,
+          marginLeft: -440,
+          marginTop: 12,
+        }}
+      >
+        agregaciones
+      </Text>
+      <View style={{ ...styles.section, marginTop: -25 }}>
+        <View style={styles.gridContainer}>
+          <View style={[styles.gridHeader, styles.green_]}>
+            <Text style={{ ...styles.gridTitle, flex: 0.4 }}> Cód Aso</Text>
+            <Text style={{ ...styles.gridTitle, flex: 2 }}>Nombre</Text>
+            <Text style={{ ...styles.gridTitle, flex: 1, textAlign: "center" }}>
+              Motivo
+            </Text>
+            <Text style={{ ...styles.gridTitle, flex: 1, textAlign: "center" }}>
+              Almecen destino
+            </Text>
+            <Text style={{ ...styles.gridTitle, flex: 1 }}>Fecha</Text>
+            <Text style={{ ...styles.gridTitle, flex: 1 }}>Cantidad</Text>
+          </View>
+          {data.result?.agregaciones.detAgr?.map((detalle, index) => (
+            <View
+              key={index}
+              style={[
+                styles.gridRow,
+                index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {},
+              ]}
+            >
+              <Text style={{ ...styles.gridContent_p, flex: 0.4 }}>
+                {detalle.id}
+              </Text>
+              <Text style={{ ...styles.gridContent_p, flex: 2 }}>
+                {detalle.nomProd}
+              </Text>
+              <Text style={{ ...styles.gridContent_p, flex: 1 }}>
+                {detalle.desProdAgrMot}
+              </Text>
+              <Text
+                style={{
+                  ...styles.gridContent_p,
+                  flex: 1,
+                  textAlign: "center",
+                }}
+              >
+                {detalle.nomAlm}
+              </Text>
+              <Text style={styles.gridContent_p}>{detalle.fecCreProdAgr}</Text>
+              <Text style={styles.gridContent_num}>{_parseInt(detalle)}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    </>
+  );
+};
 const generatePDF = (data, show) => {
   const windowName = data.result.produccion.numop;
   const newWindow = window.open("", windowName, "fullscreen=yes");
@@ -52,7 +1054,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const ListProduccionLote = () => {
+export const ListProduccionLote2_edgar = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
   const [dataProduccionLote, setdataProduccionLote] = useState([]);
   const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([]);
@@ -93,6 +1095,7 @@ export const ListProduccionLote = () => {
       }
 
       const response = await axios.get(url);
+      //console.log('Datos de la API:', response.data);
       setData(response.data); // Guardar los datos en el estado
       setOpen(true); // Abrir la ventana modal
     } catch (error) {
@@ -100,6 +1103,9 @@ export const ListProduccionLote = () => {
     }
   };
 
+  //----------------------------------------------
+
+  // filtros
   const {
     fecProdLotIni,
     fecProdLotFin,
@@ -144,6 +1150,13 @@ export const ListProduccionLote = () => {
       ...inputs,
       [name]: value,
     });
+    //filter(value, name);
+  };
+
+  // Manejadores de cambios
+  const handleFormFilterop = (event, name) => {
+    const inputValue = event.target.value.toUpperCase(); // Convertir a mayúsculas
+    filter(inputValue, name);
   };
 
   const onChangeProducto = (obj) => {
@@ -153,10 +1166,19 @@ export const ListProduccionLote = () => {
     });
   };
 
+  /************************************************** */
+
   const onChangeEstadoProduccion = (obj) => {
     setInputs({
       ...inputs,
       estado: obj,
+    });
+  };
+
+  const onChangeTipoProduccion = (obj) => {
+    setInputs({
+      ...inputs,
+      tipoProduccion: obj,
     });
   };
 
@@ -166,6 +1188,16 @@ export const ListProduccionLote = () => {
       estadoInicio: obj,
     });
     //filter(label, "filterEstadoInicioProgramado");
+  };
+
+  const onChangeDateFechaIniciado = (newDate) => {
+    const dateFilter = newDate.split(" ");
+    filter(dateFilter[0], "filterFechaInicioProduccion");
+  };
+
+  const onChangeDateFechaIniciadoProgramado = (newDate) => {
+    const dateFilter = newDate.split(" ");
+    filter(dateFilter[0], "filterFechaInicioProgramadoProduccion");
   };
 
   // Filtros generales que hacen nuevas consultas
@@ -210,6 +1242,9 @@ export const ListProduccionLote = () => {
     });
     setdataProduccionLoteTemp(resultSearch);
   }, [inputs, dataProduccionLote]);
+
+  // Funcion para filtrar la data
+  const filter = (terminoBusqueda, name) => {};
 
   // ******** ACTUALIZACION DE FECHAS ********
   const onUpdateDatesProduccion = async (id, body) => {
@@ -261,11 +1296,16 @@ export const ListProduccionLote = () => {
         var resultPeticion = await getAgregationsByOrderProduccion(obj.id);
         const { result } = resultPeticion;
         const { agregaciones, produccion } = result;
+        //console.log(agregaciones.detAgr)
         obj.agregaciones = agregaciones.detAgr;
       })
     );
+    console.log(result);
+
+    //return
 
     if (message_error.length === 0) {
+      //console.log(result); // Imprimir los datos en la consola
       setdataProduccionLote(result);
       setdataProduccionLoteTemp(result);
     } else {
@@ -314,6 +1354,7 @@ export const ListProduccionLote = () => {
       }
 
       const response = await axios.get(url);
+      console.log(response);
       var productosFinal =
         response.data.result.prodFinalWithAgreg.detAgr.filter(
           (obj) => obj.id == null
@@ -324,48 +1365,117 @@ export const ListProduccionLote = () => {
           productosFinal.includes(obj.id)
         );
 
-      // recorremos las requisiciones del proceso de produccion
       response.data.result?.requisiciones?.map((req) => {
-        // esta variable guardara los totales: {idProdt: cantidad, idProdt: cantidad}
-        const totales = {};
-        // esta variable guardara los repetidos: {idProdt: {item}, idProdt: {item}}
-        const repetidos = {};
+        if (req.desAre === "Envasado") {
+          var productsEnvasado = req.detalles.reduce(
+            (accumulator, currentValue) => {
+              if (
+                accumulator.some(
+                  (obj) => obj.codProd2 === currentValue.codProd2
+                )
+              ) {
+                accumulator.map((obj) => {
+                  if (obj.codProd2 === currentValue.codProd2) {
+                    currentValue.acu =
+                      parseFloat(obj.acu) + parseFloat(currentValue.canReqDet);
+                    currentValue.isDuplicated = true;
+                    accumulator.push(currentValue);
+                  }
+                });
+              } else {
+                currentValue.acu = currentValue.canReqDet;
+                accumulator.push(currentValue);
+              }
+              return accumulator;
+            },
+            []
+          );
+          req.detalles = productsEnvasado;
+          productsEnvasado = productsEnvasado.filter((obj) => obj.isDuplicated);
+          req.resumenProductos = removeDuplicates(productsEnvasado);
+        }
 
-        // recorremos el detalle de requisicion
-        req.detalles.forEach((item) => {
-          // obtenemos id y cantidad
-          const { idProdt, canReqDet } = item;
-          // si aun no existe en totales, lo agregamos
-          if (!totales[idProdt]) {
-            totales[idProdt] = 0;
-          } else {
-            // caso contrario chancamos repetios[idProdt] cada vez que se repita
-            repetidos[idProdt] = { ...item };
-          }
+        if (req.desAre === "Encajado") {
+          // var productosEncajado = req.detalles.reduce(
+          //   (accumulator, currentValue) => {
+          //     if (
+          //       accumulator.some(
+          //         (obj) => obj.codProd2 === currentValue.codProd2
+          //       )
+          //     ) {
+          //       // fragmento de codigo erroneo
+          //       accumulator.map((obj) => {
+          //         if (obj.codProd2 === currentValue.codProd2) {
+          //           currentValue.acu =
+          //             parseFloat(obj.acu) + parseFloat(currentValue.canReqDet);
+          //           currentValue.isDuplicated = true;
+          //           accumulator.push(currentValue);
+          //         }
+          //       });
+          //     } else {
+          //       currentValue.acu = currentValue.canReqDet;
+          //       accumulator.push(currentValue);
+          //     }
+          //     return accumulator;
+          //   },
+          //   []
+          // );
+          // console.log(productosEncajado);
+          // req.detalles = productosEncajado;
+          // productosEncajado = productosEncajado.filter(
+          //   (obj) => obj.isDuplicated
+          // );
+          // console.log(productosEncajado);
+          // req.resumenProductos = removeDuplicates(productosEncajado);
 
-          // sumamos el total en totales[idProdt]
-          totales[idProdt] += parseFloat(canReqDet);
-          // añadimos la propiedad acu (acumulado parcial) al item
-          item.acu = totales[idProdt];
-        });
+          // esta variable guardara los totales: {idProdt: cantidad, idProdt: cantidad}
+          const totales = {};
+          // esta variable guardara los repetidos: {idProdt: {item}, idProdt: {item}}
+          const repetidos = {};
 
-        // aqui obtenemos todos los repetidos y le establecemos el acumulado final
-        const totalesFinales = Object.keys(repetidos).map((item) => {
-          return {
-            ...repetidos[item],
-            acu: totales[item],
-          };
-        });
+          // recorremos el detalle de requisicion
+          req.detalles.forEach((item) => {
+            // obtenemos id y cantidad
+            const { idProdt, canReqDet } = item;
+            // si aun no existe en totales, lo agregamos
+            if (!totales[idProdt]) {
+              totales[idProdt] = 0;
+            } else {
+              // caso contrario chancamos repetios[idProdt] cada vez que se repita
+              repetidos[idProdt] = { ...item };
+            }
 
-        // agregamos el resumen de productos acumulados
-        req.resumenProductos = totalesFinales;
-        // }
+            // sumamos el total en totales[idProdt]
+            totales[idProdt] += parseFloat(canReqDet);
+            // añadimos la propiedad acu (acumulado parcial) al item
+            item.acu = totales[idProdt];
+          });
+
+          // aqui obtenemos todos los repetidos y le establecemos el acumulado final
+          const totalesFinales = Object.keys(repetidos).map((item) => {
+            return {
+              ...repetidos[item],
+              acu: totales[item],
+            };
+          });
+
+          // agregamos el resumen de productos acumulados
+          req.resumenProductos = totalesFinales;
+        }
       });
+
       generatePDF(response.data, show);
     } catch (error) {
       console.error("Error al obtener los datos:", error);
     }
   };
+
+  function removeDuplicates(arr) {
+    return arr.filter(
+      ({ codProd2 }, index) =>
+        arr.map((obj) => obj.codProd2).indexOf(codProd2) === index
+    );
+  }
 
   const resetData = () => {
     setdataProduccionLoteTemp(dataProduccionLote);
@@ -536,10 +1646,10 @@ export const ListProduccionLote = () => {
 
                     <TableCell align="left" width={100}>
                       <b>Estado</b>
-                      {/* <FilterEstadoProduccion
+                      <FilterEstadoProduccion
                         onNewInput={onChangeEstadoProduccion}
                         inputs={inputs}
-                      /> */}
+                      />
                     </TableCell>
                     {/* <TableCell align="left" width={100}>
                       <b>Tipo</b>
@@ -565,10 +1675,10 @@ export const ListProduccionLote = () => {
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Estado Inicio</b>
-                      {/* <FilterEstadoInicioProgramadoProduccion
+                      <FilterEstadoInicioProgramadoProduccion
                         onNewInput={onChangeEstadoInicioProduccion}
                         inputs={inputs}
-                      /> */}
+                      />
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Cant. Agreg</b>
@@ -639,6 +1749,37 @@ export const ListProduccionLote = () => {
                               <button
                                 onClick={async () => {
                                   obtenerDataSummary(row.id);
+                                  //console.log("show modal windows",row)
+                                  //  const resultPeticion = await getProduccionLoteWithAgregacionesById(
+                                  //   row.id
+                                  //   );
+                                  //   const { message_error, description_error, result } = resultPeticion;
+                                  //   const { canLotProd, codLotProd, detAgr,
+                                  //     desEstPro,desProdTip } = result[0];
+                                  //   console.log(result)
+                                  //   const agregations = []
+                                  //   const requisiciones = []
+                                  //   const productos_finales = []
+                                  //   const produccion = {
+                                  //     canLotProd: "100.0",
+                                  //     codLotProd: "66",
+                                  //     codProd: null,
+                                  //     codProd2: "230207",
+                                  //     desEstPro: "Produccion iniciada",
+                                  //     desProdTip: "Polvos",
+                                  //     fecCreProd: "2023-08-22 07:29:47",
+                                  //     fecProdFinProg: "2023-08-24 07:21:43",
+                                  //     fecProdIniProg: "2023-08-22 07:21:43",
+                                  //     fecVenLotProd: "2023-09-06 00:00:00",
+                                  //     id: 185,
+                                  //     idProdEst: 1,
+                                  //     idProdTip: 1,
+                                  //     idProdt: 207,
+                                  //     klgLotProd: "1.000",
+                                  //     nomProd: "AJO MOLIDO",
+                                  //     numop: "OP202308184",
+                                  //     obsProd: ""
+                                  //   }
                                 }}
                                 className="btn btn-success me-2"
                               >
@@ -951,6 +2092,7 @@ export const ListProduccionLote = () => {
                                                       fontWeight: "bold",
                                                     }}
                                                   >
+                                                    {/**_parseInt(detalle) + " - "+detalle.canReqDet + " - " +detalle.simMed} */}
                                                     <strong>CANTIDAD : </strong>
                                                     {_parseInt(detalle)}
                                                     <br />

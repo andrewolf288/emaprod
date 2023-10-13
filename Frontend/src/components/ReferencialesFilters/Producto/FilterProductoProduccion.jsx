@@ -12,6 +12,7 @@ export const FilterProductoProduccion = ({
   idMol,
 }) => {
   const [result, setResult] = useState([]);
+  const [selectedValue, setSelectedValue] = useState(null);
 
   const obtenerDataProductoProduccion = async () => {
     const resultPeticion = await getProductosProduccion(
@@ -34,13 +35,9 @@ export const FilterProductoProduccion = ({
   }, []);
 
   const handledChange = (event, value) => {
+    setSelectedValue(value); // Guarda el valor seleccionado en el estado
     onNewInput(value);
   };
-
-  var d = {};
-  if (inputs?.producto) {
-    d.value = inputs.producto;
-  }
 
   return (
     <>
@@ -48,12 +45,10 @@ export const FilterProductoProduccion = ({
         options={result}
         disableClearable
         getOptionLabel={(option) => option.label}
-        {...d}
-        //value={inputs.producto}
+        value={selectedValue} // Utiliza el valor seleccionado desde el estado
         onChange={handledChange}
         onInputChange={(event, value, reason) => {
-          if (reason == "input" && value == "") {
-            console.log("reason: ", reason, "value:", value);
+          if (reason === "input" && value === "") {
             onNewInput({ label: value });
           }
         }}

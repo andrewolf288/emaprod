@@ -538,10 +538,7 @@ export default function DetalleProducts({
     <>
       {/* DATOS DE PRODUCTOS FINALES O LOTES DE SUBPRODUCTOS*/}
       <div className="card d-flex mt-4">
-        <h6 className="card-header">
-          Detalle Presentaciones Finales{" "}
-          <b className="text text-danger">(No Aplica a Lotes de Subproducto)</b>
-        </h6>
+        <h6 className="card-header">Detalle Presentaciones Finales</h6>
         <div className="card-body">
           <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
             {/* AGREGAR PRODUCTO */}
