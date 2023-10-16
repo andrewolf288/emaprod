@@ -359,7 +359,6 @@ export const AgregarDevolucion = () => {
     // se trae los productos utilizados en la orden de proceso junto con sus insumos de envasado y encajado
     const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
     const { result } = resultPeticion;
-    console.log(result);
     var products = result[0].proFinProdDet;
 
     var copyProducts = products.reduce((accumulator, currentValue) => {
@@ -396,7 +395,6 @@ export const AgregarDevolucion = () => {
       }
       return accumulator;
     }, []);
-    console.log(copyProducts);
 
     return copyProducts;
   }
@@ -415,8 +413,6 @@ export const AgregarDevolucion = () => {
       const resultPeticion = await getProduccionLoteWithDevolucionesById(
         idLotProdc
       );
-
-      console.log(resultPeticion);
 
       /* Se realiza una consulta al backend que trae la informacion de los productos finales de el proceso de */
       var productos = await getProductToDev(idLotProdc);
@@ -822,8 +818,11 @@ export const AgregarDevolucion = () => {
                           </TableCell>
                           */}
 
-                          <TableCell align="left" width={20}>
+                          {/* <TableCell align="left" width={20}>
                             <b>Cantidad estimada a devolver</b>
+                          </TableCell> */}
+                          <TableCell align="left" width={20}>
+                            <b>Acciones</b>
                           </TableCell>
                         </TableRow>
                       </TableHead>

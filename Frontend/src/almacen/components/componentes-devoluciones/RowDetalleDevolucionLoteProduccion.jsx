@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
+import { DialogDevolucionByMotivo } from "../../../produccion/components/DialogDevolucionByMotivo";
 
 export const RowDetalleDevolucionLoteProduccion = ({ detalle }) => {
   return (
@@ -13,8 +14,8 @@ export const RowDetalleDevolucionLoteProduccion = ({ detalle }) => {
       {/**
          <TableCell>{detalle.acumulado}</TableCell>
        */}
-      <TableCell>{detalle.cantDev}</TableCell>
-
+      {/* <TableCell>{detalle.cantDev}</TableCell> */}
+      <TableCell>{<DialogDevolucionByMotivo detalle={detalle} />}</TableCell>
     </TableRow>
   );
 };

@@ -295,7 +295,7 @@ const PDFExample = ({ data }) => {
                     ]}
                   >
                     <Text style={{ ...styles.gridContent_p, flex: 0.4 }}>
-                      {detalle.idProdFin}
+                      {data.result.produccion.codLotProd}
                     </Text>
                     <Text style={{ ...styles.gridContent_p, flex: 0.4 }}>
                       {detalle.codProd2}
@@ -638,6 +638,7 @@ export const ListAgregacion = () => {
       var resultPeticion = await getAgregationsByOrderProduccion(idLotProdc);
       const { result } = resultPeticion;
       const { agregaciones, produccion } = result;
+      console.log(agregaciones);
 
       //console.log(agregaciones.detAgr)
       agregaciones.detAgr.sort(function (a, b) {
