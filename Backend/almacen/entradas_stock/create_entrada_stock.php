@@ -156,7 +156,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->execute(); // ejecutamos
 
                 // ACTUALIZAMOS EL STOCK TOTAL DEL ALMACEN Y LA MATERIA PRIMA
-                // SI NO ES UNA ENTRADA DE SELECCION, ENTONCES ACTUALIZAMOS DIRECTAMENTE EL STOCK
 
                 $sql_consult_almacen_stock =
                     "SELECT * FROM almacen_stock 

@@ -22,6 +22,9 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useAuth } from "../../../hooks/useAuth";
+import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic";
+import { FilterProveedorDynamic } from "../../../components/ReferencialesFilters/Proveedor/FilterProveedorDynamic";
+import { FilterAllProductosDynamic } from "../../../components/ReferencialesFilters/Producto/FilterAllProductosDynamic";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -31,7 +34,7 @@ const AgregarEntradaStock = () => {
   const [formState, setFormState] = useState({
     idProd: 0,
     idProv: 0,
-    idAlm: 0,
+    idAlm: 1,
     esSel: false,
     canTotCom: 0,
     canTotEnt: 0,
@@ -41,7 +44,7 @@ const AgregarEntradaStock = () => {
     fecEntSto: "",
     codProd: "",
     codProv: "",
-    codAlm: "",
+    codAlm: "001",
     prestProdt: "",
     certCal: "",
     lotProv: "",
@@ -56,7 +59,6 @@ const AgregarEntradaStock = () => {
     idProd,
     idProv,
     idAlm,
-    esSel,
     canTotCom,
     canTotEnt,
     canVar,
@@ -140,6 +142,7 @@ const AgregarEntradaStock = () => {
 
   // INPUT CODIGO ALMACEN
   const onAddCodAlm = ({ value, id }) => {
+    console.log(value);
     setFormState({ ...formState, codAlm: value, idAlm: id });
   };
 
@@ -175,30 +178,32 @@ const AgregarEntradaStock = () => {
       letAniEntSto: letraAnio(requestJSON.fecEntSto),
     };
 
-    const { message_error, description_error } = await createEntradaStock(
-      requestJSON
-    );
+    console.log(requestJSON);
 
-    if (message_error.length === 0) {
-      // navegamos a la anterior vista
-      onNavigateBack();
-      setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Creado con exito",
-      });
-      handleClickFeeback();
-      setTimeout(() => {
-        window.close();
-      }, "1000");
-    } else {
-      // mostramos el error recepcionado del backend
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
-      // habilitamos el boton de crear
-    }
+    // const { message_error, description_error } = await createEntradaStock(
+    //   requestJSON
+    // );
+
+    // if (message_error.length === 0) {
+    //   // navegamos a la anterior vista
+    //   onNavigateBack();
+    //   setfeedbackMessages({
+    //     style_message: "success",
+    //     feedback_description_error: "Creado con exito",
+    //   });
+    //   handleClickFeeback();
+    //   setTimeout(() => {
+    //     window.close();
+    //   }, "1000");
+    // } else {
+    //   // mostramos el error recepcionado del backend
+    //   setfeedbackMessages({
+    //     style_message: "error",
+    //     feedback_description_error: description_error,
+    //   });
+    //   handleClickFeeback();
+    //   // habilitamos el boton de crear
+    // }
 
     setdisableButton(false);
   };
@@ -313,19 +318,15 @@ const AgregarEntradaStock = () => {
                 </div>
                 {/* SEARCH NAME PRODUCTO */}
                 <div className="col-md-8">
-                  <FilterAllProductos
+                  {/* <FilterAllProductos
                     onNewInput={onAddCodProd}
                     mostrarCodigo={true}
+                  /> */}
+                  <FilterAllProductosDynamic
+                    onNewInput={onAddCodProd}
+                    defaultValue={idProd}
                   />
                 </div>
-                {/* <div className="col-md-3 form-check d-flex justify-content-start align-items-center">
-              <label className="form-check-label">Para seleccionar</label>
-              <Checkbox
-                checked={esSel}
-                onChange={onChangeEsSel}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            </div> */}
               </div>
 
               {/* CODIGO PROVEEDOR*/}
@@ -343,10 +344,16 @@ const AgregarEntradaStock = () => {
                 </div>
                 {/* SEARCH NAME PROVEEDOR */}
                 <div className="col-md-8">
-                  <FilterProveedor
+                  {/* <FilterProveedor
                     onNewInput={onAddCodProv}
                     mostrarCodigo={true}
-                  />
+                  /> */}
+                  {
+                    <FilterProveedorDynamic
+                      onNewInput={onAddCodProv}
+                      defaultValue={idProv}
+                    />
+                  }
                 </div>
               </div>
 
@@ -365,9 +372,13 @@ const AgregarEntradaStock = () => {
                 </div>
                 {/* SEARCH NAME PROVEEDOR */}
                 <div className="col-md-6">
-                  <FilterAlmacen
+                  {/* <FilterAlmacen
                     onNewInput={onAddCodAlm}
                     mostrarCodigo={true}
+                  /> */}
+                  <FilterAlmacenDynamic
+                    onNewInput={onAddCodAlm}
+                    defaultValue={idAlm}
                   />
                 </div>
               </div>
@@ -499,10 +510,7 @@ const AgregarEntradaStock = () => {
           </div>
         </div>
 
-        <div
-          className="row mt-4"
-          //style={{ border: "1px solid black" }}
-        >
+        <div className="row mt-4">
           <div className="card d-flex">
             <h6 className="card-header">Sección de Calidad</h6>
             <div className="card-body">

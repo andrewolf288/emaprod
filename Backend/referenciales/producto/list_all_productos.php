@@ -12,19 +12,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pdo) {
         $sql =
             "SELECT
-        M.id,
-        M.idMed,
-        ME.simMed,
-        M.nomProd,
-        M.codProd2,
-        M.esMatPri,
-        M.esProFin,
-        M.esProProd,
-        M.esEnvEnc,
-        M.idCla
-        FROM producto M
-        JOIN medida ME ON M.idMed = ME.id
-        JOIN clase c ON c.id = M.idCla";
+        p.id,
+        p.idMed,
+        me.simMed,
+        p.nomProd,
+        p.codProd2,
+        p.esMatPri,
+        p.esProFin,
+        p.esProProd,
+        p.esEnvEnc,
+        p.idCla,
+        p.idSubCla
+        FROM producto p
+        JOIN medida me ON me.id = p.idMed";
 
         try {
             // Preparamos la consulta
