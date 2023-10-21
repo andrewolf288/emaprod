@@ -250,7 +250,7 @@ export const AgregarAgregacion = () => {
         idProdFin: obj.idProdFin ? obj.idProdFin : 0,
       });
     });
-
+    console.log(detalleProductosAgregados);
     detalleProductosAgregados.sort(function (a, b) {
       return parseFloat(a.indexProdFin) - parseFloat(b.indexProdFin);
     });
@@ -286,7 +286,6 @@ export const AgregarAgregacion = () => {
 
   async function crearAgregacionesLoteProduccion() {
     const res = await getAgregacionByIdProduccion(idLotProdc);
-
     const { result } = res;
     const { detAgr } = result;
     var my_string = "A";
@@ -301,6 +300,7 @@ export const AgregarAgregacion = () => {
     detalleProductosAgregados.map((obj) => {
       obj.flag = flag;
     });
+    console.log(detalleProductosAgregados);
     const resultPeticion = await createAgregacionesLoteProduccion(
       detalleProductosAgregados
     );
