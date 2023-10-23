@@ -18,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idProdTip = $data["idProdTip"]; // tipo de produccion
     $codTipProd = $data["codTipProd"]; // codigo de tipo de produccion
     $codLotProd = $data["codLotProd"]; // codigo de lote de produccion
-    //$canLotProd = intval($data["canLotProd"]); // cantidad del lote
     $canLotProd = $data["canLotProd"];
 
     $klgLotProd = $data["klgLotProd"]; // peso del lote
@@ -29,8 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $reqDetProdc = $data["reqDetProdc"]; // requerimientos
     $prodDetProdc = $data["prodDetProdc"]; // producto finales programados
 
-    $totalUnidadesLoteProduccion = $data["totalUnidadesLoteProduccion"];
-    $klgTotalLoteProduccion = $data["klgTotalLoteProduccion"];
+    $totalUnidadesLoteProduccion = $data["totalUnidadesLoteProduccion"]; // total de unidades esperadas de la produccion
+    $klgTotalLoteProduccion = $data["klgTotalLoteProduccion"]; // total de kilogramos de la produccion
 
 
 

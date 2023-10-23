@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         $codProd = $row["codProd2"]; // codigo de producto
                         $idProv = 1; // proveedor EMARANSAC
-                        $idAlm = 6; // almacen transitorio
+                        $idAlm = 1; // almacen principal
                         $idEntStoEst = 1; // disponible
                         $codProv = "00"; // proveedor EMARANSAC
                         $esSel = 0; // es seleccion

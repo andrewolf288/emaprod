@@ -4,7 +4,11 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { getPresentacionFinal } from "../../../helpers/Referenciales/producto/getPresentacionFinal";
 
-export const FilterPresentacionFinal = ({ onNewInput, finalProducts, idProdt }) => {
+export const FilterPresentacionFinal = ({
+  onNewInput,
+  finalProducts,
+  idProdt,
+}) => {
   const [result, setResult] = useState([]);
 
   const obtenerDataProductos = async () => {

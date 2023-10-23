@@ -1,13 +1,13 @@
 import axios from "axios";
 import config from "../.././../config";
 
-export const getFormulaProductoDetalleByProducto = async (idProdFin) => {
+export const getRequisicionProcesoProduccion = async (body) => {
   const domain = config.API_URL;
-  const path =
-    "/produccion/formula-producto/get_formula_producto_detalle_by_producto.php";
+  const path = "/produccion/produccion-lote/get_requisicion_molienda_lote.php";
   const url = domain + path;
+
   const { data } = await axios.post(url, {
-    idProdFin: idProdFin,
+    ...body,
   });
   return data;
 };

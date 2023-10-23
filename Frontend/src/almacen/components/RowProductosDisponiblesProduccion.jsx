@@ -69,8 +69,7 @@ export const RowProductosDisponiblesProduccion = ({
           }}
         />
       </TableCell>
-      <TableCell align="left" sx={{ display: "flex" }}>
-        {/**
+      {/* <TableCell align="left" sx={{ display: "flex" }}>
             <IconButton
             aria-label="delete"
             size="large"
@@ -81,7 +80,7 @@ export const RowProductosDisponiblesProduccion = ({
           >
             <EditIcon fontSize="inherit" />
           </IconButton>
-           */}
+          
 
         {showButtonDelete && (
           <IconButton
@@ -96,7 +95,7 @@ export const RowProductosDisponiblesProduccion = ({
           </IconButton>
         )}
         {DetProdIntermdio && <DetProdIntermdio />}
-      </TableCell>
+      </TableCell> */}
     </TableRow>
   );
 };

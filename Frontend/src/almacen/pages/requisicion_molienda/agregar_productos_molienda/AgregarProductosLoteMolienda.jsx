@@ -276,6 +276,7 @@ export const AgregarProductosLoteMolienda = () => {
         productoFin.check = true;
       }
     });
+
     const resultPeticion = await createProductoIntermedioLoteMolienda(
       detalleProductosFinales,
       idProdTip,
@@ -511,9 +512,9 @@ export const AgregarProductosLoteMolienda = () => {
                           <TableCell align="left" width={120}>
                             <b>Cantidad</b>
                           </TableCell>
-                          <TableCell align="left" width={100}>
+                          {/* <TableCell align="left" width={100}>
                             <b>Acciones</b>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>

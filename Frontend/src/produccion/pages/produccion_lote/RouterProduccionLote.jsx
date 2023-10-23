@@ -1,6 +1,7 @@
 import { ListProduccionLote } from "./ListProduccionLote";
 import { CrearProduccionLote } from "./CrearProduccionLote";
 import { ListAgregacion } from "./produccion_agregacion/ListAgregacion";
+import { CrearProduccionLote2 } from "./CrearProduccionLote2";
 
 export const RouterProduccionLote = [
   {
@@ -9,7 +10,7 @@ export const RouterProduccionLote = [
   },
   {
     path: "crear",
-    element: <CrearProduccionLote />,
+    element: <CrearProduccionLote2 />,
   },
   {
     path: "produccion-agregacion",

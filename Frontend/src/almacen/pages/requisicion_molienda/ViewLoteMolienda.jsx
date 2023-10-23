@@ -51,6 +51,7 @@ export const ViewLoteMolienda = () => {
     desEstPro,
     desProdTip,
     codLotProd,
+    idProdEst,
     klgLotProd,
     canLotProd,
     fecVenLotProd,
@@ -191,12 +192,6 @@ export const ViewLoteMolienda = () => {
 
     const { message_error, description_error, result } = resultPeticion;
 
-    //result[0].prodLotReq.map((obj) => {
-    // obj.reqDet.map((obj) => {
-    //   obj.numop = result[0].numop;
-    // });
-    //});
-
     if (message_error.length === 0) {
       if (!result[0].desProdTip) {
         result[0].desProdTip = "POLVOS";
@@ -207,6 +202,8 @@ export const ViewLoteMolienda = () => {
       result[0].numop = result[0].prodLotReq[0].codReq;
       result[0].canLotProd = result[0].prodLotReq[0].cantProg;
       result[0].nomProd = result[0].prodLotReq[0].nomProd;
+      result[0].idProdEst = result[0].prodLotReq[0].idReqEst;
+      // ordenamos la requisicion
       result[0].prodLotReq[0].reqDet.sort(function (a, b) {
         if (a.nomProd < b.nomProd) {
           return -1;
@@ -241,8 +238,14 @@ export const ViewLoteMolienda = () => {
               <h6 className="card-header">Acciones</h6>
               <div className="card-body align-self-center">
                 <Link
-                  to={`/almacen/requisicion-molienda/agregar?idReq=${idReq}`}
-                  className="btn btn-primary"
+                  to={
+                    idProdEst !== 3
+                      ? "#"
+                      : `/almacen/requisicion-molienda/agregar?idReq=${idReq}`
+                  }
+                  className={`btn btn-primary ${
+                    idProdEst !== 3 ? "pointer-events-none opacity-50" : ""
+                  }`}
                 >
                   Registrar producto intermedio
                 </Link>
