@@ -180,30 +180,30 @@ const AgregarEntradaStock = () => {
 
     console.log(requestJSON);
 
-    // const { message_error, description_error } = await createEntradaStock(
-    //   requestJSON
-    // );
+    const { message_error, description_error } = await createEntradaStock(
+      requestJSON
+    );
 
-    // if (message_error.length === 0) {
-    //   // navegamos a la anterior vista
-    //   onNavigateBack();
-    //   setfeedbackMessages({
-    //     style_message: "success",
-    //     feedback_description_error: "Creado con exito",
-    //   });
-    //   handleClickFeeback();
-    //   setTimeout(() => {
-    //     window.close();
-    //   }, "1000");
-    // } else {
-    //   // mostramos el error recepcionado del backend
-    //   setfeedbackMessages({
-    //     style_message: "error",
-    //     feedback_description_error: description_error,
-    //   });
-    //   handleClickFeeback();
-    //   // habilitamos el boton de crear
-    // }
+    if (message_error.length === 0) {
+      // navegamos a la anterior vista
+      onNavigateBack();
+      setfeedbackMessages({
+        style_message: "success",
+        feedback_description_error: "Creado con exito",
+      });
+      handleClickFeeback();
+      setTimeout(() => {
+        window.close();
+      }, "1000");
+    } else {
+      // mostramos el error recepcionado del backend
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error,
+      });
+      handleClickFeeback();
+      // habilitamos el boton de crear
+    }
 
     setdisableButton(false);
   };

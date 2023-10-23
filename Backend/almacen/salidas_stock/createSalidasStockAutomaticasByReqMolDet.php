@@ -165,13 +165,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $esSel = $row["esSel"];
                             }
 
-                            // CREAMOS LA SALIDA DE STOCK MOLIENDA CORRESPONDIENTE
+                            // CREAMOS LA SALIDA DE STOCK CORRESPONDIENTE
                             // calculamos la merma correspondiente a la salida
                             $merSalStoReq = 0; // merma de la salida de stock
-                            if ($esSel) {
-                                $merSalStoReq = ($canSalStoReq * $merDis) / $canTotDisEntSto;
-                                $merSalStoReq = round($merSalStoReq);
-                            }
+                            // if ($esSel) {
+                            //     $merSalStoReq = ($canSalStoReq * $merDis) / $canTotDisEntSto;
+                            //     $merSalStoReq = round($merSalStoReq);
+                            // }
                             // sentencia sql
                             $sql =
                                 "INSERT

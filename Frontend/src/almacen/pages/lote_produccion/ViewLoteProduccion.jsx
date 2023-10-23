@@ -106,10 +106,7 @@ export const ViewLoteProduccion = () => {
 
   // crear salidas correspondientes
   const onCreateSalidasStock = async (requisicion_detalle) => {
-    //openLoader();
-    // console.log(requisicion_detalle);
-    // return
-
+    openLoader();
     const resultPeticion = await createSalidasStockAutomaticas(
       requisicion_detalle
     );

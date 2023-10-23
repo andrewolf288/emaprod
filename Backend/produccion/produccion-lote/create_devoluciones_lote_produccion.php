@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $idAlm = 7; // almacen de desmedros
                     break;
                 case 3: // otros motivos
-                    $idAlm = 7;
+                    $idAlm = 11;
                     break;
                 default:
                     $idAlm = 7; // almacen desmesdros
