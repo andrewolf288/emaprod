@@ -372,17 +372,17 @@ export const ListLoteProduccion = () => {
                     </TableCell>
                     <TableCell align="left" width={100}>
                       <b>Estado</b>
-                      <FilterEstadoProduccion
+                      {/* <FilterEstadoProduccion
                         onNewInput={onChangeEstadoProduccion}
                         inputs={inputs}
-                      />
+                      /> */}
                     </TableCell>
                     <TableCell align="left" width={100}>
                       <b>Tipo</b>
-                      <FilterTipoProduccion
+                      {/* <FilterTipoProduccion
                         onNewInput={onChangeTipoProduccion}
                         inputs={inputs}
-                      />
+                      /> */}
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Inicio</b>
@@ -402,10 +402,10 @@ export const ListLoteProduccion = () => {
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Estado Inicio</b>
-                      <FilterEstadoInicioProgramadoProduccion
+                      {/* <FilterEstadoInicioProgramadoProduccion
                         onNewInput={onChangeEstadoInicioProduccion}
                         inputs={inputs}
-                      />
+                      /> */}
                     </TableCell>
                     <TableCell align="left" width={120}>
                       <b>Acciones</b>

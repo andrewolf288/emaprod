@@ -1,7 +1,6 @@
+import { AgregarEntradaStockV2 } from "./AgregarEntradaStockV2";
 import ListEntradaStock from "./ListEntradaStock";
-import AgregarEntradaStock from "./AgregarEntradaStock";
 import { ViewEntradaStock } from "./ViewEntradaStock";
-// import ActualizarEntradaStock from "./ActualizarEntradaStock";
 
 export const RouterAlmacenEntradaStock = [
   {
@@ -10,12 +9,8 @@ export const RouterAlmacenEntradaStock = [
   },
   {
     path: "crear",
-    element: <AgregarEntradaStock />,
+    element: <AgregarEntradaStockV2 />,
   },
-  // {
-  //   path: "actualizar/:id",
-  //   element: <ActualizarEntradaStock />,
-  // },
   {
     path: "view/:id",
     element: <ViewEntradaStock />,

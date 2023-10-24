@@ -1,6 +1,6 @@
 import { ListAgregacion } from "./ListAgregacion";
-import { AgregarAgregacion } from "./AgregarAgregacion";
-import  { AtenderAgregaciones }  from "./AtenderAgregaciones";
+import { AtenderAgregaciones } from "./AtenderAgregaciones";
+import { AgregarAgregacionV2 } from "./AgregarAgregacionV2";
 
 export const RouterAlmacenAgregaciones = [
   {
@@ -9,10 +9,10 @@ export const RouterAlmacenAgregaciones = [
   },
   {
     path: "crear",
-    element: <AgregarAgregacion />,
+    element: <AgregarAgregacionV2 />,
   },
   {
     path: "assist-agregation/:id/:codAgre",
-    element:<AtenderAgregaciones/>
+    element: <AtenderAgregaciones />,
   },
 ];

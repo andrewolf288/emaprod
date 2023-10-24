@@ -1,5 +1,5 @@
 import { ListDevolucion } from "./ListDevolucion";
-import { AgregarDevolucion } from "./AgregarDevolucion";
+import { AgregarDevolucionV2 } from "./AgregarDevolucionV2";
 
 export const RouterAlmacenDevoluciones = [
   {
@@ -8,6 +8,6 @@ export const RouterAlmacenDevoluciones = [
   },
   {
     path: "crear",
-    element: <AgregarDevolucion />,
+    element: <AgregarDevolucionV2 />,
   },
 ];

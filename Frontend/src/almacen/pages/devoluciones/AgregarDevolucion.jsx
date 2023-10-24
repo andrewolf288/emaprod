@@ -112,14 +112,6 @@ export const AgregarDevolucion = () => {
     });
   };
 
-  // MANEJADOR DE MOTIVO DE DEVOLUCION
-  // const onAddMotivoDevolucion = (value) => {
-  //   setproductoDevuelto({
-  //     ...productoDevuelto,
-  //     idProdDevMot: value.id,
-  //   });
-  // };
-
   // Manejador de cantidad del filtro
   const handledFormCantidadDevuelta = ({ target }) => {
     const { name, value } = target;
@@ -244,25 +236,6 @@ export const AgregarDevolucion = () => {
     setdetalleProductosDevueltos(editFormDetalle);
   };
 
-  // ACCION PARA CAMBIAR EL MOTIVO DEL DETALLE DE UN PRODUCTO DEVUELTO
-  // const handleChangeMotivoDevolucionProductoDevuelto = async (
-  //   idProdDevMot,
-  //   idItem
-  // ) => {
-  //   const editFormDetalle = detalleProductosDevueltos.map((element) => {
-  //     if (element.idProdt === idItem) {
-  //       return {
-  //         ...element,
-  //         idProdDevMot: idProdDevMot,
-  //       };
-  //     } else {
-  //       return element;
-  //     }
-  //   });
-
-  //   setdetalleProductosDevueltos(editFormDetalle);
-  // };
-
   // Manejador de eliminacion de un detalle de devolucion
   const handleDeleteProductoDevuelto = async (idItem) => {
     const dataDetalleProductosDevueltos = detalleProductosDevueltos.filter(
@@ -285,6 +258,7 @@ export const AgregarDevolucion = () => {
     cantDevProd
   ) {
     if (idProdFin !== 0) {
+      // traer formula de producto final
       const resultPeticion = await getFormulaProductoDetalleByProducto(
         idProdFin
       );

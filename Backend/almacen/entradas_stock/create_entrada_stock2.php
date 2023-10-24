@@ -13,52 +13,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = json_decode($json, true);
 
     //DATOS RECIBIDOS
-    $idProd = $data["idProd"]; // producto
-    $codProd = $data["codProd"]; // codigo de producto
-    $idProv = $data["idProv"]; // proveedor
-    $codProv = $data["codProv"]; // codigo de proveedor
-    $idAlm = $data["idAlm"]; // almacen dirigido
-    $letAniEntSto = $data["letAniEntSto"]; // letra año
-    $diaJulEntSto = $data["diaJulEntSto"]; // dia juliano
-    $esSel = $data["esSel"]; // es para seleccionar
     $canTotEnt = $data["canTotEnt"]; // cantidad total entrada
-    $canExe = $data["canExe"]; // cantidad exedida
+    $canTotCom =  $data["canTotCom"]; // cantidad total compra
+    $canVar = $data["canVar"]; // cantidad variacion
+    $codProd = $data["codProd"]; // codigo de producto
+    $codProv = $data["codProv"]; // codigo de proveedor
+    $diaJulEntSto = $data["diaJulEntSto"]; // dia juliano
     $docEntSto = $data["docEntSto"]; // documento de entrada
+    $esEntPar = $data["esEntPar"]; // es entrada parcial
+    $esSel = $data["esSel"]; // es para seleccionar
+    $fecEntSto = $data["fecEntSto"]; // fecha de entrada stock
     $fecVenEntSto = $data["fecVenEntSto"]; // fecha de vencimiento
-    $fecEntSto = $data["fecEntSto"];
+    $guiRem = $data["guiRem"]; // guia de remision
+    $idAlm = $data["idAlm"]; // almacen dirigido
+    $idProd = $data["idProd"]; // producto
+    $idProv = $data["idProv"]; // proveedor
+    $letAniEntSto = $data["letAniEntSto"]; // letra año
+    $ordCom = $data["ordCom"]; // orden de compra
+    // esta variable maneja la data de entradas parciales, puede ser un valor nulo cuando no se manejan entradas parciales
+    $entradasParciales = $data["entradasParciales"];
 
-    // SOLO SI ES SELECCION
-    $idEntStoEst = 0; // estado de las entrada
-    $canTotDis = 0; // cantidad total disponible
-    $canSel = 0;
-    $canPorSel = 0;
-    $merTot = 0;
+    // DEMAS DATOS
+    $idEntStoEst = 1; // estado de las entrada
+    $canTotDis = $canTotEnt; // cantidad total disponible
+    $canSel = 0; // canttidad seleccionada
+    $canPorSel = 0; // cantidad por seleccionar
+    $merTot = 0; // merma total
 
 
     if ($pdo) {
+        $codEntSto = ""; // codigo de entrada
+        $refNumIngEntSto = 0; // numero de referencia de ingreso
 
-        // VERIFICAMOS QUE LA ENTRADA SEA DE SELECCION O NO
-        if ($esSel) {
-            // LA CANTIDAD POR SELECCIONAR ES IGUAL A LA CANTIDAD ENTRANTE
-            $canPorSel = $canTotEnt;
-            $idEntStoEst = 3; // ESTADO DE POR PROCESAR
-        } else {
-            // LA CANTIDAD DISPONIBLE ES IGUAL A LA CANTIDAD ENTRANTE
-            $canTotDis = $canTotEnt;
-            $idEntStoEst = 1; // ESTADO DE DISPONIBLE
+
+        // si se proporciona informacion de las entradas parciales
+        if (isset($entradasParciales)) {
+            // tiene el mismo numero de ingreso de referencia
+            $refNumIngEntSto = $entradasParciales["refNumIngEntSto"];
+            // EL CODIGO DE INGRESO ES DE 
+            $refNumIngEntSto = str_pad(strval($refNumIngEntSto), 3, "0", STR_PAD_LEFT);
+            // formamos el codigo
+            $codEntSto = "$codProd" . "$codProv" . "$letAniEntSto" . "$diaJulEntSto" . "$refNumIngEntSto";
+
+            // primero verificamos si es una entrada total
+            if ($entradasParciales["esEntTot"]) {
+                // la ultima entrada parcial pasa a ser entrada total
+                $esEntPar = false;
+                // actualizamos las entradas parciales a entrada total
+                $sql_update_entrada_parcial = "";
+                foreach ($row_entrada_parcial as $entradasParciales["detEntPar"]) {
+                    $idEntSto = $row_entrada_parcial["id"]; // extraemos el id de la entrada de stock
+
+                    $sql_update_entrada_parcial = "UPDATE entrada_stock SET esEntPar = ? WHERE id = ?";
+                    $stmt_update_entrada_parcial = $pdo->prepare($sql_update_entrada_parcial);
+                    $stmt_update_entrada_parcial->bindParam(1, $esEntPar, PDO::PARAM_BOOL);
+                    $stmt_update_entrada_parcial->bindParam(2, $idEntSto, PDO::PARAM_INT);
+                    $stmt_update_entrada_parcial->execute();
+                }
+            }
         }
-
-        // OBTENEMOS EL NUMERO DE INGRESO DE DICHA MATERIA PRIMA
-        $sql_numero_entrada =
-            "SELECT 
-        max(refNumIngEntSto) as refNumIngEntSto
-        FROM entrada_stock
-        WHERE idProd = ?
-        ORDER BY refNumIngEntSto DESC";
-
-        try {
-
-            $pdo->beginTransaction(); // EMPEZAMOS UNA TRANSACCION
+        // si no se proporciona informacion de las entradas parciales, significa que es un ingreso total o que se esta realizando el
+        // primer ingreso parcial
+        else {
+            // OBTENEMOS EL NUMERO DE INGRESO DE DICHA MATERIA PRIMA
+            $sql_numero_entrada =
+                "SELECT 
+            max(refNumIngEntSto) as refNumIngEntSto
+            FROM entrada_stock
+            WHERE idProd = ?
+            ORDER BY refNumIngEntSto DESC";
 
             // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
             $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
@@ -67,7 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Recorremos los resultados
             $result_numero_entrada = [];
-            $refNumIngEntSto = 0;
             while ($row = $stmt_numero_entrada->fetch(PDO::FETCH_ASSOC)) {
                 if (isset($row["refNumIngEntSto"])) {
                     array_push($result_numero_entrada, $row);
@@ -82,32 +104,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $refNumIngEntSto = $result_numero_entrada[0]["refNumIngEntSto"] + 1;
             }
 
+            // EL CODIGO DE INGRESO ES DE 
+            $refNumIngEntSto = str_pad(strval($refNumIngEntSto), 3, "0", STR_PAD_LEFT);
+
             // ***** FORMAMOS EL CODIGO DE ENTRADA ******
             $codEntSto = "$codProd" . "$codProv" . "$letAniEntSto" . "$diaJulEntSto" . "$refNumIngEntSto";
+        }
 
+        // primero debemos comprobar que no se encuentren ingresos parciales pendientes
+        // $siEntTot = 0; // es entrada total
+        // $sql_select_entradas_parciales_pendientes = "SELECT * FROM entrada_stock WHERE idProd = ? AND esEntPar = ?";
+        // $stmt_select_entradas_parciales_pendientes = $pdo->prepare($sql_select_entradas_parciales_pendientes);
+        // $stmt_select_entradas_parciales_pendientes->bindParam();
+
+
+        // ahora iniciamos un proceso de insercion y actualizacion que debe estar envuelto en un rollback
+        try {
+            $pdo->beginTransaction(); // EMPEZAMOS UNA TRANSACCION
             // ***** REALIZAMOS LA ENTRADA RESPECTIVA ******
             $sql =
                 "INSERT INTO
-            entrada_stock
-            (idProd, 
-            idProv,
-            idAlm, 
-            idEntStoEst,
-            codEntSto,
-            letAniEntSto, 
-            diaJulEntSto, 
-            refNumIngEntSto,
-            esSel,
-            canSel,
-            canPorSel,
-            merTot,
-            canTotEnt,
-            canTotDis,
-            docEntSto,
-            fecVenEntSto,
-            fecEntSto)
-            VALUES (?,?,?,?,?,?,?,?,?,$canSel, $canPorSel, $merTot, $canTotEnt, $canTotDis,?,?,?)
-            ";
+                entrada_stock
+                (idProd, 
+                idProv,
+                idAlm, 
+                idEntStoEst,
+                codEntSto,
+                letAniEntSto, 
+                diaJulEntSto, 
+                refNumIngEntSto,
+                esSel,
+                canSel,
+                canPorSel,
+                merTot,
+                canTotCom,
+                canTotEnt,
+                canTotDis,
+                canVar,
+                docEntSto,
+                esEntPar,
+                fecVenEntSto,
+                fecEntSto,
+                ordCom,
+                guiRem)
+                VALUES (?,?,?,?,?,?,?,?,?,$canSel, $canPorSel, $merTot, $canTotCom, $canTotEnt, $canTotDis, $canVar, ?, ?, ?, ?, ?, ?)
+                ";
 
             try {
                 //Preparamos la consulta
@@ -122,17 +163,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bindParam(8, $refNumIngEntSto, PDO::PARAM_INT); // referencia de numero de ingreso
                 $stmt->bindParam(9, $esSel, PDO::PARAM_BOOL); // es seleccion
                 $stmt->bindParam(10, $docEntSto, PDO::PARAM_STR); // documento
-                $stmt->bindParam(11, $fecVenEntSto, PDO::PARAM_STR); // fecha de vencimiento
-                $stmt->bindParam(12, $fecEntSto, PDO::PARAM_STR); // fecha de entrada
+                $stmt->bindParam(11, $esEntPar, PDO::PARAM_BOOL); // es entrada parcial
+                $stmt->bindParam(12, $fecVenEntSto, PDO::PARAM_STR); // fecha de vencimiento
+                $stmt->bindParam(13, $fecEntSto, PDO::PARAM_STR); // fecha de entrada
+                $stmt->bindParam(14, $ordCom, PDO::PARAM_STR); // fecha de vencimiento
+                $stmt->bindParam(15, $guiRem, PDO::PARAM_STR); // fecha de entrada
 
                 $stmt->execute(); // ejecutamos
 
                 // ACTUALIZAMOS EL STOCK TOTAL DEL ALMACEN Y LA MATERIA PRIMA
-                // SI NO ES UNA ENTRADA DE SELECCION, ENTONCES ACTUALIZAMOS DIRECTAMENTE EL STOCK
 
                 $sql_consult_almacen_stock =
                     "SELECT * FROM almacen_stock 
-                    WHERE idProd = ? AND idAlm = ?";
+                        WHERE idProd = ? AND idAlm = ?";
 
                 try {
                     // consultamos si existe un registro de almacen stock con el prod y alm
@@ -145,8 +188,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // UPDATE ALMACEN STOCK
                         $sql_update_almacen_stock =
                             "UPDATE almacen_stock 
-                            SET canSto = canSto + $canTotEnt, canStoDis = canStoDis + $canTotDis, fecActAlmSto = ?
-                            WHERE idProd = ? AND idAlm = ?";
+                                SET canSto = canSto + $canTotEnt, canStoDis = canStoDis + $canTotDis, fecActAlmSto = ?
+                                WHERE idProd = ? AND idAlm = ?";
                         try {
                             $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
                             $stmt_update_almacen_stock->bindParam(1, $fecEntSto, PDO::PARAM_INT);
@@ -163,7 +206,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // CREATE NUEVO REGISTRO ALMACEN STOCK
                         $sql_create_almacen_stock =
                             "INSERT INTO almacen_stock (idProd, idAlm, canSto, canStoDis)
-                        VALUE (?,?,$canTotEnt,$canTotDis)";
+                            VALUE (?,?,$canTotEnt,$canTotDis)";
                         try {
                             $stmt_create_almacen_stock = $pdo->prepare($sql_create_almacen_stock);
                             $stmt_create_almacen_stock->bindParam(1, $idProd, PDO::PARAM_INT);
@@ -176,20 +219,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $description_error = $e->getMessage();
                         }
                     }
-
-                    // $sql_update_producto =
-                    //     "UPDATE producto
-                    //     SET stoActPro = stoActPro + $canTotEnt
-                    //     WHERE id = ?";
-                    // try {
-                    //     $stmt_update_producto = $pdo->prepare($sql_update_producto);
-                    //     $stmt_update_producto->bindParam(1, $idProd, PDO::PARAM_INT);
-                    //     $stmt_update_producto->execute();
-                    // } catch (PDOException $e) {
-                    //     $message_error = "ERROR INTERNO SERVER AL MODIFICAR ALMACEN";
-                    //     $description_error = $e->getMessage();
-                    // }
-
                     // TERMINAMOS LA TRANSACCION
                     $pdo->commit();
                 } catch (PDOException $e) {

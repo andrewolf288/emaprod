@@ -1,5 +1,5 @@
 import { ListProductosLoteProduccion } from "./ListProductosLoteProduccion";
-import { AgregarProductosLoteProduccion } from "./AgregarProductosLoteProduccion";
+import { AgregarProductosLoteProduccionV2 } from "./AgregarProductosLoteProduccionV2";
 
 export const RouterAlmacenProductosLote = [
   {
@@ -8,6 +8,6 @@ export const RouterAlmacenProductosLote = [
   },
   {
     path: "crear",
-    element: <AgregarProductosLoteProduccion />,
+    element: <AgregarProductosLoteProduccionV2 />,
   },
 ];

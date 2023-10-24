@@ -4,7 +4,6 @@ import queryString from "query-string";
 // IMPORTACIONES PARA EL FEEDBACK
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import FechaPicker from "../../../components/Fechas/FechaPicker";
 // IMPORTACIONES PARA TABLE
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -21,18 +20,16 @@ import { RowDetalleAgregacionLoteProduccion } from "./../../components/component
 import { RowDetalleAgregacionLoteProduccionEdit } from "./../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccionEdit";
 import { FilterAreaEncargada } from "./../../../produccion/components/FilterAreaEncargada";
 import { createAgregacionesLoteProduccion } from "./../../helpers/agregaciones-lote-produccion/createAgregacionesLoteProduccion";
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const AgregarAgregacion = () => {
+export const AgregarAgregacionV2 = () => {
   const location = useLocation();
   const { idLotProdc = "" } = queryString.parse(location.search);
-  
+
   // ESTADOS PARA LA DATA DE DEVOLUCIONES
   const [agregacionesProduccionLote, setagregacionesProduccionLote] = useState({
     id: 0,
@@ -138,7 +135,6 @@ export const AgregarAgregacion = () => {
     });
   };
 
-
   // ACCION DE AÑADIR UN PRODUCTO A DEVOLVER AL DETALLE
   const handleAddproductoAgregado = async (e) => {
     e.preventDefault();
@@ -178,7 +174,7 @@ export const AgregarAgregacion = () => {
               nomProd: nomProd, // nombre del producto
               simMed: simMed, // medida del producto
               canProdAgr: cantidadAgregada, // cantidad devuelta
-              idFinalProduct:productoAgregado.finalProduct,
+              idFinalProduct: productoAgregado.finalProduct,
             };
             console.log(productoAgregado);
 
@@ -271,7 +267,7 @@ export const AgregarAgregacion = () => {
       );
       const { message_error, description_error, result } = resultPeticion;
       console.log(resultPeticion);
-        
+
       if (message_error.length === 0) {
         setagregacionesProduccionLote(result[0]);
       } else {
@@ -287,7 +283,7 @@ export const AgregarAgregacion = () => {
   // ********** SUBMIT DE DEVOLUCIONES ***********
   const crearAgregacionesLoteProduccion = async () => {
     console.log(detalleProductosAgregados);
-    return 
+    return;
     const resultPeticion = await createAgregacionesLoteProduccion(
       detalleProductosAgregados
     );
@@ -495,11 +491,10 @@ export const AgregarAgregacion = () => {
           {/* AGREGAR PRODUCTOS AL DETALLE  */}
           <div className="card d-flex mt-4">
             <h6 className="card-header">Detalle de agregaciones</h6>
-            
-            <div className="card-body">
 
-                {/* AGREGAR PRODUCTO */}
-                {/**
+            <div className="card-body">
+              {/* AGREGAR PRODUCTO */}
+              {/**
                    <div className="col-md-5" style={{ display:"flex", flexDirection:"column"}}>
                     <label className="form-label">Producto final</label>
                       <Select
@@ -516,13 +511,9 @@ export const AgregarAgregacion = () => {
                       </Select>
                   </div>
                   */}
-              
-                
-                 
 
-               {/* KILOGRAMOS DE LOTE ASIGNADOS */}
-               {
-                /**
+              {/* KILOGRAMOS DE LOTE ASIGNADOS */}
+              {/**
                  <div className="col-md-2">
                   <label className="form-label">Cantidad Lote (KG)</label>
                   <TextField
@@ -533,9 +524,7 @@ export const AgregarAgregacion = () => {
                     onChange={handledFormcantidadAgregada}
                   />
                 </div>
-                 */
-               }
-
+                 */}
 
               <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
                 {/* AGREGAR PRODUCTO */}
@@ -635,7 +624,9 @@ export const AgregarAgregacion = () => {
                                     onDeleteItemDetalle={
                                       handleDeleteProductoAgregado
                                     }
-                                    agregacionesProduccionLote={agregacionesProduccionLote}
+                                    agregacionesProduccionLote={
+                                      agregacionesProduccionLote
+                                    }
                                   />
                                 );
                               }
@@ -702,7 +693,9 @@ export const AgregarAgregacion = () => {
                                     onDeleteItemDetalle={
                                       handleDeleteProductoAgregado
                                     }
-                                    agregacionesProduccionLote={agregacionesProduccionLote}
+                                    agregacionesProduccionLote={
+                                      agregacionesProduccionLote
+                                    }
                                   />
                                 );
                               }

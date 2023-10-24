@@ -29,7 +29,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const AgregarDevolucion = () => {
+export const AgregarDevolucionV2 = () => {
   const location = useLocation();
   const { idLotProdc = "" } = queryString.parse(location.search);
 
