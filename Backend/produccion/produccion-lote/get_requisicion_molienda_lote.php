@@ -15,17 +15,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idProdt = $data["idProdt"]; // id de producto
     $reqFinEst = 1; // estado de ingreso de producto intermedio
     $idReqEst = 3; // estado de requisicion completado
+    $fueUtiOrdProd = 0; // estado de requisicion no usada aun para produccion
 
     if ($pdo) {
         $sql_select_requisicion_lote =
             "SELECT * FROM requisicion 
-        WHERE idProdt = ? AND reqFinEst = ? AND idReqEst = ? AND canIng <> 0
+        WHERE idProdt = ? AND reqFinEst = ? AND idReqEst = ? AND canIng <> 0 AND fueUtiOrdProd = ?
         ORDER BY fecPedReq DESC";
         try {
             $stmt_select_requisicion_lote = $pdo->prepare($sql_select_requisicion_lote);
             $stmt_select_requisicion_lote->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_select_requisicion_lote->bindParam(2, $reqFinEst, PDO::PARAM_INT);
             $stmt_select_requisicion_lote->bindParam(3, $idReqEst, PDO::PARAM_INT);
+            $stmt_select_requisicion_lote->bindParam(4, $fueUtiOrdProd, PDO::PARAM_BOOL);
             $stmt_select_requisicion_lote->execute();
             while ($row = $stmt_select_requisicion_lote->fetch(PDO::FETCH_ASSOC)) {
                 array_push($result, $row);

@@ -14,11 +14,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $idProdt = $data["idProdt"]; // subproducto
+    $idProdt = $data["idProdt"]; // subproducto o producto intermedio
     $idProdTip = $data["idProdTip"]; // tipo de produccion
     $codTipProd = $data["codTipProd"]; // codigo de tipo de produccion
     $codLotProd = $data["codLotProd"]; // codigo de lote de produccion
-    $canLotProd = $data["canLotProd"];
+    $canLotProd = $data["canLotProd"]; // cantidad de lote de produccion
+    $idReq = $data["idReq"];
 
     $klgLotProd = $data["klgLotProd"]; // peso del lote
     $fecProdIniProg = $data["fecProdIniProg"]; // fecha de inicio programado
@@ -31,20 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $totalUnidadesLoteProduccion = $data["totalUnidadesLoteProduccion"]; // total de unidades esperadas de la produccion
     $klgTotalLoteProduccion = $data["klgTotalLoteProduccion"]; // total de kilogramos de la produccion
 
-
-
     if ($pdo) {
         // ****** CREAMOS LAS INSERCIONES CORRESPONDIENTES *******
-        /* CONDICION:
-                1.- EL CODIGO DE LOTE NO DEBE SER REPETIDO DURANTE TODO EL AÑO DE PRODUCCION
-            */
-        $year = date("Y"); // obtenemos el año actual
-        $sql = "SELECT * FROM produccion WHERE codLotProd = ? AND fecProdIni REGEXP '^$year-*'";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(1, $codLotProd, PDO::PARAM_STR);
-        $stmt->execute();
-        $countRows = $stmt->rowCount();
-
         // CALCULAMOS EL ESTADO DE LA PRODUCCION
         $idProdEst = 1; // iniciado
 
@@ -53,11 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $fechaIniciadoProgramacion = strtotime(explode(" ", $fecProdIniProg)[0]);
         $fechaIniciadoActual = strtotime(date("Y-m-d"));
 
-        /* 
-                    1. A tiempo
-                    2. Atrasado
-                    3. Adelantado
-                */
         if ($fechaIniciadoProgramacion > $fechaIniciadoActual) {
             $idProdIniProgEst = 2; // inicio atrasado
         } else {
@@ -70,11 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // CALCULAMOS EL ESTADO DE LA PRODUCCION SEGUN SU PROGRAMACION DE FIN
         $idProdFinProgEst = 0;
-        /* 
-                    1. A tiempo
-                    2. Atrasado
-                    3. Adelantado
-                */
+
         if ($idProdIniProgEst == 2) {
             $idProdFinProgEst = 2; // fin atrasado
         } else {
@@ -157,9 +137,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $numop = $op . $anio . $mes . $lastInsertId;
             $stmt_insert_produccion->execute();
-
-
-
 
             // verificamos si se realizo la insercion del lote de produccion
             if ($stmt_insert_produccion->rowCount() === 1) {
@@ -352,6 +329,80 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $description_error = $e->getMessage();
                     }
                 }
+
+                /* 
+                    Debemos generar la salida del producto intermedio.
+                    Recordemos que al momento de hacer los ingresos desde molienda se 
+                    generaron entradas respectivamente. Las condiciones son:
+                    codLot, estado disponible, cantDis <> 0, 
+                */
+
+                $idEntStoEst = 1; // ESTADO DE DISPONIBLE
+
+                $sql_select_entradas_producto_intermedio =
+                    "SELECT * FROM entrada_stock 
+                WHERE idProd = ? AND codLot = ? AND idEntStoEst = ? AND canTotDis <> 0";
+
+                $stmt_select_entradas_producto_intermedio = $pdo->prepare($sql_select_entradas_producto_intermedio);
+                $stmt_select_entradas_producto_intermedio->bindParam(1, $idProdt, PDO::PARAM_INT);
+                $stmt_select_entradas_producto_intermedio->bindParam(2, $codLotProd, pdo::PARAM_STR);
+                $stmt_select_entradas_producto_intermedio->bindParam(3, $idEntStoEst, PDO::PARAM_INT);
+                $stmt_select_entradas_producto_intermedio->execute();
+
+                while ($row_entrada_producto_intermedio = $stmt_select_entradas_producto_intermedio->fetch(PDO::FETCH_ASSOC)) {
+                    try {
+                        $pdo->beginTransaction(); // iniciamos una transaccion
+                        $idEntSto = $row_entrada_producto_intermedio["id"]; // entrada
+                        $idProdt = $row_entrada_producto_intermedio["idProd"]; // producto
+                        $idAlmDes = 3; // almacen de envasado
+                        $idEstSalSto = 1; // completado
+                        $canSalStoReq = $row_entrada_producto_intermedio["canTotDis"]; // cantidad total disponible
+                        $merSalStoReq = 0.0;
+
+                        // primero realizamos la salida correspondiente
+                        $sql_create_salida_producto_intermedio =
+                            "INSERT INTO salida_stock (idEntSto, idReq, idProdt, idAlm, idEstSalSto, canSalStoReq, merSalStoReq, numop)
+                        VALUES(?, ?, ?, ?, ?, $canSalStoReq, $merSalStoReq, ?)";
+                        $stmt_create_salida_producto_intermedio = $pdo->prepare($sql_create_salida_producto_intermedio);
+                        $stmt_create_salida_producto_intermedio->bindParam(1, $idEntSto, PDO::PARAM_INT);
+                        $stmt_create_salida_producto_intermedio->bindParam(2, $idReq, PDO::PARAM_INT);
+                        $stmt_create_salida_producto_intermedio->bindParam(3, $idProdt, PDO::PARAM_INT);
+                        $stmt_create_salida_producto_intermedio->bindParam(4, $idAlmDes, PDO::PARAM_INT);
+                        $stmt_create_salida_producto_intermedio->bindParam(5, $idEstSalSto, PDO::PARAM_INT);
+                        $stmt_create_salida_producto_intermedio->bindParam(6, $numop, PDO::PARAM_STR);
+                        $stmt_create_salida_producto_intermedio->execute();
+
+                        // luego actualizamos la entrada correspondiente
+                        $idEntStoEstTer = 2; // estado de entrada terminado
+                        $canTotDisEmpty = 0.0;
+                        $sql_update_entrada_producto_intermedio =
+                            "UPDATE entrada_stock SET canTotDis = $canTotDisEmpty, idEntStoEst = ? WHERE id = ?";
+                        $stmt_update_entrada_producto_intermedio = $pdo->prepare($sql_update_entrada_producto_intermedio);
+                        $stmt_update_entrada_producto_intermedio->bindParam(1, $idEntStoEstTer, PDO::PARAM_INT);
+                        $stmt_update_entrada_producto_intermedio->bindParam(2, $idEntSto, PDO::PARAM_INT);
+                        $stmt_update_entrada_producto_intermedio->execute();
+
+                        $pdo->commit(); // commit de las operaciones
+
+                    } catch (PDOException $e) {
+                        $pdo->rollBack(); // rollback
+                        $message_error = "ERROR INTERNO SERVER: fallo en creacion de salida y actualizacion de entrada";
+                        $description_error = $e->getMessage();
+                    }
+                }
+
+                /* Ahora colocamos un flag en la requisicion de producto intermedio 
+                   que nos permita identificar que esta fue utilizada para una orden
+                   de produccion
+                */
+                $fueUtilizadoEnOrdenProduccion = 1;
+
+                $sql_update_requisicion_producto_intermedio =
+                    "UPDATE requisicion SET fueUtiOrdProd	= ? WHERE id = ?";
+                $stmt_update_requisicion_producto_intermedio = $pdo->prepare($sql_update_requisicion_producto_intermedio);
+                $stmt_update_requisicion_producto_intermedio->bindParam(1, $fueUtilizadoEnOrdenProduccion, PDO::PARAM_BOOL);
+                $stmt_update_requisicion_producto_intermedio->bindParam(2, $idReq, PDO::PARAM_INT);
+                $stmt_update_requisicion_producto_intermedio->execute();
             } else {
                 $message_error = "NO SE PUDO INSERTAR EL LOTE DE PRODUCCION";
                 $description_error = "No se pudo insertar el lote de produccion";

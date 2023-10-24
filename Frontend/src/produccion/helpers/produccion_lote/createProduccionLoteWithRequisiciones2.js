@@ -4,7 +4,7 @@ import config from "../../../config";
 export const createProduccionLoteWithRequisiciones2 = async (body) => {
   const domain = config.API_URL;
   const path =
-    "/produccion/produccion-lote/create_produccion_lote_with_requisiciones.php";
+    "/produccion/produccion-lote/create_produccion_lote_with_requisiciones2.php";
   const url = domain + path;
 
   const { data } = await axios.post(url, {

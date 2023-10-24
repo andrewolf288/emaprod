@@ -51,6 +51,7 @@ export const CrearProduccionLote2 = () => {
     return e.value;
   }
 
+  // se encarga de redondear los valores de las requisiciones
   function _parseInt(str) {
     if (str.canReqProdLot) {
       str.canReqDet = str.canReqProdLot;
@@ -143,14 +144,14 @@ export const CrearProduccionLote2 = () => {
   } = cantidadLoteProduccion;
 
   // useeffect change cantidad lote produccion
-  useEffect(() => {
-    setcantidadLoteProduccion({
-      ...cantidadLoteProduccion,
-      klgLotProd: parseFloat(klgLotProd),
-      klgDisponibleLoteProduccion:
-        parseFloat(klgLotProd) * parseFloat(canLotProd),
-    });
-  }, [klgLotProd, canLotProd]);
+  // useEffect(() => {
+  //   setcantidadLoteProduccion({
+  //     ...cantidadLoteProduccion,
+  //     klgLotProd: parseFloat(klgLotProd),
+  //     klgDisponibleLoteProduccion:
+  //       parseFloat(klgLotProd) * parseFloat(canLotProd),
+  //   });
+  // }, [klgLotProd, canLotProd]);
 
   // STATE PARA CONTROLAR LA AGREGACION DE PRODUCTOS FINALES DEL LOTE
   const [productoLoteProduccion, setproductoLoteProduccion] = useState({
@@ -245,6 +246,7 @@ export const CrearProduccionLote2 = () => {
   const onAddFechaInicioProgramado = (newFecha) => {
     setproduccionLote({ ...produccionLote, fecProdIniProg: newFecha });
   };
+
   // EVENTO DE FECHA FIN PROGRAMADO
   const onAddFechaFinProgramado = (newFecha) => {
     setproduccionLote({ ...produccionLote, fecProdFinProg: newFecha });
@@ -303,13 +305,11 @@ export const CrearProduccionLote2 = () => {
     try {
       const cantidadKlgRequerida = value;
 
-      let cantidadUniRequerida = 0;
-
       if (formulaProductoFinal !== null) {
         // cantidad de klg de producto intermedio por unidad de presentacion final
         const canKlgProdIntByUni = formulaProductoFinal.canForProInt;
         // cantidad de unidades obtenidas segun klg requerido ingresado
-        cantidadUniRequerida = parseInt(
+        const cantidadUniRequerida = parseInt(
           cantidadKlgRequerida / canKlgProdIntByUni
         );
 
@@ -497,7 +497,9 @@ export const CrearProduccionLote2 = () => {
 
   const handleAddProductoProduccionLote = async (e) => {
     e.preventDefault();
+    // equivalente en klg
     const cantidadDeLote = productoLoteProduccion.cantidadDeLote;
+    // equivalente en unidades
     const cantidadDeProducto = productoLoteProduccion.cantidadDeProducto;
 
     // primero verificamos si se ha ingresado la data necesaria
@@ -524,23 +526,24 @@ export const CrearProduccionLote2 = () => {
           console.log(canForProInt);
 
           // primero verificamos si la cantidad nueva ingresada supera nuestro limite de peso de lote
-          let klgTotalOrdenProduccion = parseFloat(klgTotalLoteProduccion);
-          klgTotalOrdenProduccion = klgTotalOrdenProduccion;
+          // total de kilogramos de orden de produccion hasta el momento
+          const klgTotalOrdenProduccion = parseFloat(klgTotalLoteProduccion);
+          // total de kilogramos de la presentacion final
+          const klgTotalPresentacionFinal = parseFloat(cantidadDeLote);
 
-          let klgTotalPresentacionFinal = parseFloat(cantidadDeLote);
-          klgTotalPresentacionFinal = klgTotalPresentacionFinal;
-
+          // cantidad total luego de agregar el total de kilogramos de la presentacion final
           const cantTotKlgAgr =
             klgTotalOrdenProduccion + klgTotalPresentacionFinal;
 
+          // peso total de la orden de produccion
           const pesoOrdenProduccion = parseFloat(klgLotProd);
 
-          console.log(cantTotKlgAgr, pesoOrdenProduccion, klgLotProd);
-
+          // si la cantidad total agregada recientemente no supera el total del peso de la orden
           if (cantTotKlgAgr <= pesoOrdenProduccion) {
             // calculamos el total de unidades
             const canTotUndAgr =
-              parseInt(totalUnidadesLoteProduccion) + cantidadDeProducto;
+              parseInt(totalUnidadesLoteProduccion) +
+              parseInt(cantidadDeProducto);
 
             // actualizamos las cantidades actuales
             setcantidadLoteProduccion({
@@ -574,6 +577,10 @@ export const CrearProduccionLote2 = () => {
                   cantidadDeProducto * detalle.canForProDet
                 ).toFixed(5),
               });
+            });
+
+            detalleRequisicionesFormula.map((obj) => {
+              obj.canReqProdLot = _parseInt(obj);
             });
 
             const detalleRequisicion = [
@@ -693,7 +700,6 @@ export const CrearProduccionLote2 = () => {
           : fecVenLotProd,
     };
     console.log(formatProduccionLote);
-    return;
 
     const resultPeticion = await createProduccionLoteWithRequisiciones2(
       formatProduccionLote
