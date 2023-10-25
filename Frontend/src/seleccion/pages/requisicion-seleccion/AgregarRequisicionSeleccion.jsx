@@ -17,7 +17,12 @@ import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/g
 import { RowDetalleRequisicionSeleccion } from "../../components/RowDetalleRequisicionSeleccion";
 import { FilterAllProductos } from "../../../components/ReferencialesFilters/Producto/FilterAllProductos";
 import FechaPicker from "../../../../src/components/Fechas/FechaPicker";
-import { FormatDateTimeMYSQLNow } from "../../../utils/functions/FormatDate";
+import {
+  FormatDateMYSQL,
+  FormatDateTimeMYSQLNow,
+} from "../../../utils/functions/FormatDate";
+import { FilterMateriaPrimaPorSeleccionar } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaPorSeleccionar";
+import { Typography } from "@mui/material";
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -153,6 +158,9 @@ export const AgregarRequisicionSeleccion = () => {
 
   // FUNCION ASINCRONA PARA CREAR LA REQUISICION CON SU DETALLE
   const crearRequisicion = async () => {
+    // el codigo es de 3 digitos.
+    requisicion.codLotSel = requisicion.codLotSel.padStart(3, "0");
+    console.log(requisicion);
     const { message_error, description_error, result } =
       await createRequisicionSeleccionWithDetalle(requisicion);
 
@@ -174,13 +182,21 @@ export const AgregarRequisicionSeleccion = () => {
   const handleSubmitRequisicion = (e) => {
     e.preventDefault();
 
-    console.log(requisicion);
+    let handleErrors = "";
+
     //return;
     if (codLotSel.length === 0 || reqSelDet.length === 0) {
+      if (codLotSel.length === 0) {
+        handleErrors += "No se proporciono un codigo de lote\n";
+      }
+      if (reqSelDet.length === 0) {
+        handleErrors +=
+          "No hay ninguna materia prima en el detalle del requerimiento\n";
+      }
+
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error:
-          "Asegurate de completar los campos requeridos",
+        feedback_description_error: handleErrors,
       });
       handleClickFeeback();
     } else {
@@ -222,7 +238,7 @@ export const AgregarRequisicionSeleccion = () => {
             desSubCla: desSubCla,
             nomProd: nomProd,
             simMed: simMed,
-            canMatPriFor: cantidadMateriaPrima,
+            canMatPriFor: parseFloat(cantidadMateriaPrima).toFixed(3),
             fechaRequisicion,
           };
           // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
@@ -243,10 +259,23 @@ export const AgregarRequisicionSeleccion = () => {
           handleClickFeeback();
         }
       }
+      setmateriaPrimaDetalle({
+        idMateriaPrima: 0,
+        cantidadMateriaPrima: 0,
+        fechaRequisicion: FormatDateTimeMYSQLNow(),
+      });
     } else {
+      let handleErrors = "";
+
+      if (idMateriaPrima === 0) {
+        handleErrors += "Debes seleccionar una materia prima\n";
+      }
+      if (cantidadMateriaPrima <= 0) {
+        handleErrors += "Debes ingresar una cantidad\n";
+      }
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
+        feedback_description_error: handleErrors,
       });
       handleClickFeeback();
     }
@@ -260,35 +289,13 @@ export const AgregarRequisicionSeleccion = () => {
           <div className="card d-flex">
             <h6 className="card-header">Datos de la requisicion</h6>
             <div className="card-body d-flex align-items-center">
-              <div
-                className="col-md-2"
-                style={
-                  {
-                    //border:"1px solid black"
-                  }
-                }
-              >
-                <label
-                  htmlFor="nombre"
-                  className="col-form-label"
-                  style={
-                    {
-                      //border:"1px solid black"
-                    }
-                  }
-                >
+              <div className="col-md-3">
+                <label htmlFor="nombre" className="col-form-label">
                   Numero de Lote
                 </label>
-                <div
-                  className="col-md-5"
-                  style={
-                    {
-                      //border:"1px solid black"
-                    }
-                  }
-                >
+                <div className="col-md-5">
                   <input
-                    type="text"
+                    type="number"
                     name="codLotSel"
                     onChange={handledForm}
                     value={codLotSel}
@@ -310,10 +317,13 @@ export const AgregarRequisicionSeleccion = () => {
                   <label htmlFor="inputPassword4" className="form-label">
                     Materia Prima
                   </label>
-                  <FilterAllProductos onNewInput={onMateriaPrimaId} />
+                  <FilterMateriaPrimaPorSeleccionar
+                    onNewInput={onMateriaPrimaId}
+                    defaultValue={idMateriaPrima}
+                  />
                 </div>
 
-                <div className="col-md-2">
+                <div className="col-md-3">
                   <label htmlFor="inputPassword4" className="form-label">
                     Fecha de requerimiento
                   </label>
@@ -368,9 +378,6 @@ export const AgregarRequisicionSeleccion = () => {
                         </TableCell>
                         <TableCell align="left" width={120}>
                           <b>Clase</b>
-                        </TableCell>
-                        <TableCell align="left" width={140}>
-                          <b>Sub clase</b>
                         </TableCell>
                         <TableCell align="left" width={150}>
                           <b>Fecha</b>
@@ -450,7 +457,9 @@ export const AgregarRequisicionSeleccion = () => {
           severity={style_message}
           sx={{ width: "100%" }}
         >
-          {feedback_description_error}
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
         </Alert>
       </Snackbar>
     </>

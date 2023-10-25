@@ -1,6 +1,5 @@
 import { ListRequisicionSeleccion } from "./ListRequisicionSeleccion";
 import { AgregarRequisicionSeleccion } from "./AgregarRequisicionSeleccion";
-import { ActualizarRequisicionSeleccion } from "./ActualizarRequisicionSeleccion";
 
 export const RouterRequisicionSeleccion = [
   {
@@ -10,9 +9,5 @@ export const RouterRequisicionSeleccion = [
   {
     path: "crear",
     element: <AgregarRequisicionSeleccion />,
-  },
-  {
-    path: "actualizar/:id",
-    element: <ActualizarRequisicionSeleccion />,
   },
 ];

@@ -10,11 +10,17 @@ $description_error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pdo) {
+
+        $frescosSinSeleccionar = "2401"; // frescos sin seleccionar
+        $materiasPrimasSinSeleccionar = "2402"; // materias primas sin seleccionar
+
         $sql =
             "SELECT
         M.id,
         M.idMed,
         ME.simMed,
+        M.idSubCla,
+        SC.codSubCla,
         M.nomProd,
         M.codProd2,
         M.esMatPri,
@@ -22,14 +28,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         M.esProProd
         FROM producto M
         LEFT JOIN medida ME ON M.idMed = ME.id
-        WHERE M.idSubCla = ?
+        LEFT JOIN sub_clase SC ON M.idSubCla = SC.id   
+        WHERE SC.codSubCla = ? OR SC.codSubCla = ?
         ";
 
         try {
             // Preparamos la consulta
             $stmt = $pdo->prepare($sql);
-            $idSubCla = 4; // filtramos las materias primas por seleccionar
-            $stmt->bindParam(1, $idSubCla, PDO::PARAM_INT);
+            $stmt->bindParam(1, $frescosSinSeleccionar, PDO::PARAM_STR);
+            $stmt->bindParam(2, $materiasPrimasSinSeleccionar, PDO::PARAM_STR);
             // Ejecutamos la consulta
             $stmt->execute();
             // Recorremos los resultados

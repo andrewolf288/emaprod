@@ -40,12 +40,6 @@ export const FilterPresentacionFinalDynamic = ({
     }
   };
 
-  // useEffect(() => {
-  //   const controller = new AbortController();
-  //   obtenerDataProductos();
-  //   return () => controller.abort();
-  // }, [defaultValue]);
-
   useEffect(() => {
     const controller = new AbortController();
     obtenerDataProductos();

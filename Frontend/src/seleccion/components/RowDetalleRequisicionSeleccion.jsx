@@ -21,9 +21,6 @@ export const RowDetalleRequisicionSeleccion = ({
         {detalle.desCla}
       </TableCell>
       <TableCell component="th" scope="row">
-        {detalle.desSubCla}
-      </TableCell>
-      <TableCell component="th" scope="row">
         <FechaPicker
           onNewfecEntSto={(data) => {
             var event = {

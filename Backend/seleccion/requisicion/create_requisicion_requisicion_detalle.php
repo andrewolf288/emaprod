@@ -11,6 +11,7 @@ $description_error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
+
     $idReqSelEst = 1; // Estado de requerido
     $codLotSel = $data["codLotSel"]; // codigo de lote
     $canReqSel = 1; // cantidad de 1
