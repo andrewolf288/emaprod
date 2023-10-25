@@ -72,16 +72,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // primer ingreso parcial
         } else {
             // OBTENEMOS EL NUMERO DE INGRESO DE DICHA MATERIA PRIMA
+            // Recordemos que el numero de ingreso se reinicia cada año es por ello que solo debemos
+            // consultar las entradas que se dieron en el año actual
+
+            $anio_actual = date('Y'); // obtenemos año actual
             $sql_numero_entrada =
                 "SELECT 
             max(refNumIngEntSto) as refNumIngEntSto
             FROM entrada_stock
-            WHERE idProd = ?
-            ORDER BY refNumIngEntSto DESC";
+            WHERE idProd = ? AND YEAR(fecEntSto) = ?
+            ORDER BY refNumIngEntSto DESC LIMIT 1";
 
             // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
             $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
             $stmt_numero_entrada->bindParam(1, $idProd, PDO::PARAM_INT);
+            $stmt_numero_entrada->bindParam(2, $anio_actual, PDO::PARAM_STR);
             $stmt_numero_entrada->execute();
 
             // Recorremos los resultados
@@ -117,13 +122,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $fecha_un_mes_atras = date('Y-m-d', strtotime('-1 month', strtotime($fecha_actual))); //fecha hace un mes
 
         $sql_select_entradas_parciales_pendientes =
-            "SELECT * FROM entrada_stock 
-        WHERE idProd = ? AND esEntPar = ? AND fecEntSto >= DATE_SUB(?, INTERVAL 1 MONTH) AND fecEntSto < ? LIMIT 1";
+            "SELECT * FROM entrada_stock
+        WHERE idProd = ? AND esEntPar = ? AND DATE(fecEntSto) >= ? LIMIT 1";
         $stmt_select_entradas_parciales_pendientes = $pdo->prepare($sql_select_entradas_parciales_pendientes);
         $stmt_select_entradas_parciales_pendientes->bindParam(1, $idProd, PDO::PARAM_INT);
         $stmt_select_entradas_parciales_pendientes->bindParam(2, $siEsEntPar, PDO::PARAM_BOOL);
         $stmt_select_entradas_parciales_pendientes->bindParam(3, $fecha_un_mes_atras);
-        $stmt_select_entradas_parciales_pendientes->bindParam(4, $fecha_actual);
         $stmt_select_entradas_parciales_pendientes->execute();
 
         // con esta operacion nosotros verificamos si hay entradas parciales pendientes
