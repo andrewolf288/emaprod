@@ -22,6 +22,7 @@ import { getLoteProduccionById } from "./../../helpers/requisicion/getLoteProduc
 import { RowDetalleFormula } from "../../components/RowDetalleFormula";
 import { getFormulaWithDetalleByPrioridad } from "./../../helpers/formula/getFormulaWithDetalleByPrioridad";
 import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
+import { Typography } from "@mui/material";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -31,7 +32,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 export const AgregarRequisicionFrescos = () => {
   // ESTADO PARA LOS DATOS DEL FILTRO POR LOTE PRODUCCION
   const [produccionLote, setProduccionLote] = useState({
-    idProd: "none",
+    idProd: 0,
     codLotProd: "",
     klgLotProd: "",
     canLotProd: "",
@@ -44,20 +45,12 @@ export const AgregarRequisicionFrescos = () => {
   const { idProd, codLotProd, klgLotProd, canLotProd, nomProd } =
     produccionLote;
 
-  // ESTADO PARA LOS DATOS DEL FILTRO POR FORMULA
-  const [formula, setformula] = useState({
-    idFor: 0,
-  });
-
-  const { idFor } = formula;
-
   // ESTADOS PARA LOS DATOS DE REQUISICION
   const [requisicion, setRequisicion] = useState({
     idProdc: 0,
     idProdt: 0,
     reqMolDet: [],
   });
-  // const { idProdc, idProdt, reqMolDet } = requisicion;
 
   // ESTADOS PARA DATOS DE DETALLE FORMULA (DETALLE)
   const [materiaPrimaDetalle, setmateriaPrimaDetalle] = useState({
@@ -168,14 +161,11 @@ export const AgregarRequisicionFrescos = () => {
   // FUNCION ASINCRONA PARA CREAR LA REQUISICION CON SU DETALLE
   const crearRequisicion = async () => {
     requisicion.klgLotProd = produccionLote.klgLotProd;
-    requisicion.codLotProd = produccionLote.codLotProd;
+    requisicion.codLotProd = produccionLote.codLotProd.padStart(3, "0");
     requisicion.canLotProd = produccionLote.canLotProd;
 
     console.log(requisicion);
-
-    //return;
     var response = await createRequisicionWithDetalle(requisicion);
-    console.log(requisicion, response);
 
     const { message_error, description_error } = response;
 
@@ -183,7 +173,6 @@ export const AgregarRequisicionFrescos = () => {
       // regresamos a la anterior vista
       onNavigateBack();
     } else {
-      console.log("No se pudo crear");
       setfeedbackMessages({
         style_message: "error",
         feedback_description_error: description_error,
@@ -196,39 +185,45 @@ export const AgregarRequisicionFrescos = () => {
   // SUBMIT FORMULARIO DE REQUISICION (M-D)
   const handleSubmitRequisicion = (e) => {
     e.preventDefault();
+    let handleErrors = "";
 
     if (
       produccionLote.codLotProd.length === 0 ||
-      requisicion.idProdc === 0 ||
+      produccionLote.codLotProd.length > 3 ||
+      isNaN(produccionLote.canLotProd) ||
+      produccionLote.canLotProd <= 0 ||
+      requisicion.idProdt === 0 ||
       requisicion.reqMolDet.length === 0
     ) {
+      if (isNaN(produccionLote.canLotProd)) {
+        handleErrors += "- No se proporciono una cantidad de lote\n";
+      }
+      if (produccionLote.canLotProd <= 0) {
+        handleErrors += "- La cantidad de lote debe ser mayor a 0\n";
+      }
+      if (produccionLote.codLotProd.length === 0) {
+        handleErrors +=
+          "- No se ha proporcionado un codigo de lote de producción\n";
+      }
+      if (produccionLote.codLotProd.length > 3) {
+        handleErrors += "- El codigo de lote solo debe ser de 3 dígitos\n";
+      }
+      if (requisicion.idProdt === 0) {
+        handleErrors += "- No has seleccionado un producto intermedio\n";
+      }
+      if (requisicion.reqMolDet.length === 0) {
+        handleErrors +=
+          "- No se ha agregado ningun elemento al detalle de la requisición\n";
+      }
+
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error:
-          "Asegurate de completar los campos requeridos",
+        feedback_description_error: handleErrors,
       });
       handleClickFeeback();
     } else {
+      // creamos la requisicion
       crearRequisicion();
-    }
-  };
-
-  // FUNCION ASINCRONA PARA TRAER A LA FORMULA Y SUS DETALLES
-  const traerDatosFormulaDetalle = async () => {
-    const resultPeticion = await getFormulaWithDetalleById(idFor);
-    const { message_error, description_error, result } = resultPeticion;
-    if (message_error.length === 0) {
-      const { forDet } = result[0];
-      setRequisicion({
-        ...requisicion,
-        reqMolDet: forDet,
-      });
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
     }
   };
 
@@ -236,8 +231,6 @@ export const AgregarRequisicionFrescos = () => {
   async function getProductosFormulaDetalle(body, requisicion) {
     const resultPeticion = await getFormulaWithDetalleByPrioridad(body);
 
-    //console.log(resultPeticion);
-    // return;
     const { message_error, description_error, result } = resultPeticion;
     if (message_error.length === 0) {
       if (result.length === 0) {
@@ -249,9 +242,6 @@ export const AgregarRequisicionFrescos = () => {
           if (obj.canMatPriFor) {
             obj.canMatPriForCopy = parseFloat(obj.canMatPriFor);
             klgLotProd += obj.canMatPriForCopy;
-            //obj.canMatPriFor =
-            //  parseFloat(obj.canMatPriFor) * parseFloat(body.canLotProd);
-            //obj.canMatPriFor = obj.canMatPriFor.toFixed(3);
           }
         });
 
@@ -278,61 +268,6 @@ export const AgregarRequisicionFrescos = () => {
     }
   }
 
-  // FUNCION ASINCRONA PARA TRAER AL LOTE DE PRODUCCION Y SUS DATOS
-  const traerDatosLoteProduccion = async (idProdc, produccionLote) => {
-    //console.log(produccionLote);
-    var idProdt = "";
-    var nomProd = "";
-    var canLotProd = "";
-    var id = "";
-    var klgLotProd = "";
-    if (idProdc !== "none") {
-      const { result } = await getLoteProduccionById(idProdc);
-      var { id, idProdt, codLotProd, nomProd, canLotProd, klgLotProd } =
-        result[0];
-
-      //console.log(result[0]);
-
-      setProduccionLote({
-        ...produccionLote,
-        idProdt: idProdt,
-        codLotProd: codLotProd,
-        nomProd: nomProd,
-        canLotProd: canLotProd,
-        klgLotProd: klgLotProd,
-      });
-    } else {
-      setProduccionLote({
-        ...produccionLote,
-        idProdt: idProdt,
-        codLotProd: codLotProd,
-        nomProd: nomProd,
-        canLotProd: canLotProd,
-        klgLotProd: klgLotProd,
-      });
-    }
-
-    if (id) {
-      var requisicion = {
-        ...requisicion,
-        idProdc: id,
-        idProdt: idProdt,
-      };
-      const body = {
-        idProd: idProdt,
-        lotKgrFor: klgLotProd,
-        canLotProd: canLotProd,
-      };
-      getProductosFormulaDetalle(body, requisicion);
-    } else {
-      setRequisicion({
-        ...requisicion,
-        idProdc: -1, // orden de molienda no sera vinculado a orden de produccion
-        reqMolDet: [],
-      });
-    }
-  };
-
   const onAddProductoIntermedio = ({ id }) => {
     //console.log(id);
 
@@ -351,14 +286,24 @@ export const AgregarRequisicionFrescos = () => {
     getProductosFormulaDetalle(body, requisicion);
   };
 
-  // FILTER POR PRODUCCION LOTE
-  const onProduccionLote = (valueId) => {
-    var _produccionLote = {
+  const onChangeCantidadLote = (e) => {
+    const { name, value } = e.target;
+    const parseValue = parseFloat(value);
+    var klgLotProd = 0;
+    requisicion.reqMolDet.map((obj) => {
+      obj.canMatPriFor = parseFloat(obj.canMatPriForCopy) * parseValue;
+      klgLotProd += obj.canMatPriFor;
+      obj.canMatPriFor = obj.canMatPriFor.toFixed(3);
+    });
+
+    setProduccionLote({
       ...produccionLote,
-      canLotProd: 0.0,
-      idProd: valueId,
-    };
-    traerDatosLoteProduccion(valueId, _produccionLote);
+      [name]: parseValue,
+      klgLotProd: klgLotProd,
+    });
+    setRequisicion({
+      ...requisicion,
+    });
   };
 
   useEffect(() => {
@@ -440,7 +385,7 @@ export const AgregarRequisicionFrescos = () => {
                   Producto
                 </label>
                 <div className="col-md-3">
-                  {produccionLote.idProd == "none" ? (
+                  {produccionLote.idProd == 0 ? (
                     <FilterProductoProduccion
                       onNewInput={onAddProductoIntermedio}
                       idFrescos={idFrescos}
@@ -484,26 +429,7 @@ export const AgregarRequisicionFrescos = () => {
                   <input
                     type="number"
                     name="canLotProd"
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-
-                      var klgLotProd = 0;
-                      requisicion.reqMolDet.map((obj) => {
-                        obj.canMatPriFor =
-                          parseFloat(obj.canMatPriForCopy) * parseFloat(value);
-                        klgLotProd += obj.canMatPriFor;
-                        obj.canMatPriFor = obj.canMatPriFor.toFixed(3);
-                      });
-
-                      setProduccionLote({
-                        ...produccionLote,
-                        [name]: value,
-                        klgLotProd: klgLotProd,
-                      });
-                      setRequisicion({
-                        ...requisicion,
-                      });
-                    }}
+                    onChange={onChangeCantidadLote}
                     value={canLotProd}
                     className="form-control"
                   />
@@ -514,55 +440,15 @@ export const AgregarRequisicionFrescos = () => {
                   Peso programado
                 </label>
                 <div className="col-md-3">
-                  {/**
-                     <input
-                    disabled
-                    value={canLotProd}
-                    className="form-control me-2"
-                  />
-                     */}
-
                   <input
                     type="number"
                     name="klgLotProd"
                     disabled
-                    onChange={(e) => {
-                      /**
-                       const { name, value } = e.target;
-                      setProduccionLote({
-                        ...produccionLote,
-                        [name]: value,
-                      });
-
-                      requisicion.reqMolDet.map((obj) => {
-                        if (obj.canMatPriFor) {
-                          obj.canMatPriFor =
-                            parseFloat(obj.canMatPriForCopy) *
-                            parseFloat(value);
-                          obj.canMatPriFor = obj.canMatPriFor.toFixed(3);
-                        }
-                      });
-                      setRequisicion({
-                        ...requisicion,
-                      });
-                       */
-                    }}
                     value={klgLotProd}
                     className="form-control"
                   />
                 </div>
               </div>
-              {/* KILOGRAMOS POR LOTE */}
-              {/**
-                <div className="mb-3 row">
-                <label htmlFor="stock" className="col-sm-2 col-form-label">
-                  Kilogramos de lote
-                </label>
-                <div className="col-md-2">
-                  <input disabled value={klgLotProd} className="form-control" />
-                </div>
-              </div>
-               */}
             </div>
           </div>
         </div>
@@ -711,7 +597,9 @@ export const AgregarRequisicionFrescos = () => {
           severity={style_message}
           sx={{ width: "100%" }}
         >
-          {feedback_description_error}
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
         </Alert>
       </Snackbar>
     </>

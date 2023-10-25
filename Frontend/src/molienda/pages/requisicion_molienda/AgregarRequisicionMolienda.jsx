@@ -298,7 +298,6 @@ export const AgregarRequisicionMolienda = () => {
     e.preventDefault();
 
     let handleErrors = "";
-    console.log(produccionLote.canLotProd);
 
     if (
       produccionLote.codLotProd.length === 0 ||
