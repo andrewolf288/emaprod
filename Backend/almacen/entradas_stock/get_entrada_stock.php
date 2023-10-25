@@ -27,14 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $fechaFin = $data["fecEntFinSto"];
             }
         }
-        
-        //select
-        //(@row_num:=@row_num +1) AS num1 
-        //from
-        //entrada_stock,
-        //(select @row_num:=0) AS s;
-
-        //die(json_encode($data));
 
         $sql =
             "SELECT
@@ -60,14 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.merTot,
             es.canVar, 
             es.codLot,
-            es.esMol,
-            es.esFre,
-            es.prestProdt,
-            es.certCal,
-            es.lotProv,
-            es.resbEval,
-            es.fecProduccion,
-            es.humedad,
+            es.esCertCal,
             es.obsEnt,
             es.ordCom,
             es.guiRem
@@ -91,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       
             ORDER BY `es`.`fecEntSto` DESC";
 
-      
+
         try {
             $stmt = $pdo->prepare($sql);
             $stmt->execute(); // ejecutamos

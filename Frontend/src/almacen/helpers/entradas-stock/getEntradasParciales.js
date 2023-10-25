@@ -7,8 +7,8 @@ export const getEntradasParciales = async (idProd, ordCom) => {
   const path = "/almacen/entradas_stock/get_entradas_parciales.php";
   const url = domain + path;
   const { data } = await axios.post(url, {
-    idProd,
-    ordCom,
+    idProd: idProd,
+    ordCom: ordCom,
   });
   return data;
 };

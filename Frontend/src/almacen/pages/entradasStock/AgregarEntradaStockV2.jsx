@@ -4,6 +4,7 @@ import FechaPicker from "./../../../components/Fechas/FechaPicker";
 // FUNCIONES UTILES
 import {
   DiaJuliano,
+  FormatDateMYSQLNative,
   FormatDateTimeMYSQLNow,
   letraAnio,
 } from "../../../utils/functions/FormatDate";
@@ -18,6 +19,8 @@ import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/A
 import { FilterProveedorDynamic } from "../../../components/ReferencialesFilters/Proveedor/FilterProveedorDynamic";
 import { FilterAllProductosDynamic } from "../../../components/ReferencialesFilters/Producto/FilterAllProductosDynamic";
 import { getEntradasParciales } from "../../helpers/entradas-stock/getEntradasParciales";
+import { DialogEntradasParciales } from "../../components/componentes-entradasStock/DialogEntradasParciales";
+import { DialogConfirmarEntradaParcial } from "../../components/componentes-entradasStock/DialogConfirmarEntradaParcial";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -69,7 +72,73 @@ export const AgregarEntradaStockV2 = () => {
   //   esEntTot: false, // es entrada total (se acaban las entradas parciales)
   // });
 
+  // controlador de entradas parciales
   const [entradasParciales, setEntradasParciales] = useState(null);
+
+  const [openDialogEntradasParciales, setOpenDialogEntradasParciales] =
+    useState(false);
+  const handleOpenDialogEntradasParciales = () => {
+    setOpenDialogEntradasParciales(true);
+  };
+
+  const handleCloseDialogEntradasParciales = () => {
+    setOpenDialogEntradasParciales(false);
+    setEntradasParciales(null);
+  };
+
+  const handleAcceptEntradasParciales = (data) => {
+    setFormState({
+      ...formState,
+      ordCom: data["ordCom"],
+      idProv: data["idProv"],
+      codProv: data["codProv"],
+      canTotCom: data["canTotCom"],
+      docEntSto: data["docEntSto"],
+    });
+    setOpenDialogEntradasParciales(false);
+  };
+
+  // controlador para dialog de confirmacion de entrada parcial
+  const [
+    openConfirmDialogEntradasParciales,
+    setOpenConfirmDialogEntradasParciales,
+  ] = useState(false);
+
+  const handleOpenConfirmDialogEntradasParciales = () => {
+    setOpenConfirmDialogEntradasParciales(true);
+  };
+
+  const handleCloseConfirmDialogEntradasParciales = () => {
+    setOpenConfirmDialogEntradasParciales(false);
+  };
+
+  const handleFinEntradasParciales = () => {
+    // agregamos una nueva propiedad que indique que el final de las entradas parciales
+    const formatEntradasParciales = {
+      ...entradasParciales,
+      esEntTot: true, // se termina las entradas parciales
+    };
+    // actualizamos
+    setEntradasParciales(formatEntradasParciales);
+    // cerramos cuadro
+    setOpenConfirmDialogEntradasParciales(false);
+    // creamos la entrada de stock
+    crearEntradaStock(formatEntradasParciales);
+  };
+
+  const handleCrearEntradaParcial = () => {
+    // agregamos una nueva propiedad que indique que el final de las entradas parciales
+    const formatEntradasParciales = {
+      ...entradasParciales,
+      esEntTot: false, // solo ingreso de entrada parcial
+    };
+    // actualizamos
+    setEntradasParciales(formatEntradasParciales);
+    // cerramos cuadro
+    setOpenConfirmDialogEntradasParciales(false);
+    // creamos la entrada de stock
+    crearEntradaStock(formatEntradasParciales);
+  };
 
   // inputs para manejar los inputs de texto
   const onInputChange = ({ target }) => {
@@ -136,7 +205,7 @@ export const AgregarEntradaStockV2 = () => {
   };
 
   // CREAR ENTRADA DE STOCK
-  const crearEntradaStock = async () => {
+  const crearEntradaStock = async (entradasParciales = null) => {
     let requestJSON = { ...formState };
 
     // verificamos si se ingreso una fecha de ingreso
@@ -153,7 +222,8 @@ export const AgregarEntradaStockV2 = () => {
       letAniEntSto: letraAnio(requestJSON.fecEntSto),
     };
 
-    console.log(requestJSON);
+    console.log("Informacion de la entrada: ", requestJSON);
+    console.log("Informacion de las entradas parciales: ", entradasParciales);
     const { message_error, description_error } = await createEntradaStock(
       requestJSON,
       entradasParciales
@@ -196,7 +266,8 @@ export const AgregarEntradaStockV2 = () => {
       docEntSto.length === 0 ||
       canTotEnt <= 0 ||
       canTotCom <= 0 ||
-      (esEntPar && ordCom.length === 0)
+      (esEntPar && ordCom.length === 0) ||
+      parseFloat(canTotEnt) >= parseFloat(canTotCom)
     ) {
       if (idProd === 0) {
         advertenciaFormularioIncompleto +=
@@ -228,6 +299,12 @@ export const AgregarEntradaStockV2 = () => {
           "Si es ingreso parcial, asegurate de ingresar la orden de compra\n";
       }
 
+      if (parseFloat(canTotEnt) >= parseFloat(canTotCom)) {
+        console.log(canTotEnt, canTotCom);
+        advertenciaFormularioIncompleto +=
+          "Si es ingreso parcial, la cantidad ingresada no puede ser igual o mayor al total de la compra\n";
+      }
+
       // mostramos el error recepcionado del backend
       setfeedbackMessages({
         style_message: "error",
@@ -236,17 +313,30 @@ export const AgregarEntradaStockV2 = () => {
       handleClickFeeback();
     } else {
       // DESABILTIAMOS EL BOTON DE ENVIAR
-      setdisableButton(true);
+      // setdisableButton(true);
       // FUNCION DE ENVIAR
-      crearEntradaStock();
+
+      /* 
+        -si se va a realizar una entrada parcial tomando en cuenta las demas entradas parciales
+        - mostramos un dialogo de confirmacion que nos permitira eligir si queremos terminar el ingreso parcial
+      */
+
+      if (entradasParciales !== null) {
+        // abrimos cuadro de dialogo de confirmacion de entradas parciales
+        handleOpenConfirmDialogEntradasParciales();
+      } else {
+        crearEntradaStock();
+      }
     }
   };
 
   const buscarEntradasParciales = async () => {
     const { result, meesage_error, description_error } =
       await getEntradasParciales(idProd, ordCom);
-    const { detEntPar, cantAcuIngPar } = result;
-    if (detEntPar) {
+    console.log(result);
+    if (result.detEntPar.length !== 0) {
+      setEntradasParciales(result);
+      handleOpenDialogEntradasParciales();
     } else {
       // mostramos el error recepcionado del backend
       setfeedbackMessages({
@@ -454,6 +544,7 @@ export const AgregarEntradaStockV2 = () => {
                         className="btn btn-primary ms-4"
                         type="button"
                         onClick={onClickBuscarEntradasParciales}
+                        disabled={!esEntPar}
                       >
                         <span
                           className="bi bi-search"
@@ -566,6 +657,30 @@ export const AgregarEntradaStockV2 = () => {
           </button>
         </div>
       </div>
+      {/* DIALOG DE ENTRADAS PARCIALES */}
+      {entradasParciales && openDialogEntradasParciales && (
+        <DialogEntradasParciales
+          open={openDialogEntradasParciales}
+          handleClose={handleCloseDialogEntradasParciales}
+          data={entradasParciales}
+          handleAccept={handleAcceptEntradasParciales}
+        />
+      )}
+
+      {/* DIALOG DE CONFIRMACION DE ENTRADA PARCIAL */}
+      {entradasParciales &&
+        openConfirmDialogEntradasParciales &&
+        canTotEnt > 0 && (
+          <DialogConfirmarEntradaParcial
+            open={openConfirmDialogEntradasParciales}
+            handleClose={handleCloseConfirmDialogEntradasParciales}
+            data={entradasParciales}
+            handleAccept={handleCrearEntradaParcial}
+            handleAcceptFinEntPar={handleFinEntradasParciales}
+            canTotEnt={canTotEnt}
+          />
+        )}
+
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
