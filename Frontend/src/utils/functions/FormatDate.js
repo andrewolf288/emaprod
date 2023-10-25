@@ -1,7 +1,13 @@
 const FormatDateTimeMYSQL = (date) => {
-  let fecha = date.toISOString().split("T", 1)[0];
-  let hora = date.toLocaleTimeString().split(" ", 1)[0];
-  return fecha + " " + hora;
+  const nowDate = date;
+  const year = nowDate.getFullYear();
+  const month = (nowDate.getMonth() + 1).toString().padStart(2, "0"); // Agregar 1 al mes porque en JavaScript los meses comienzan desde 0.
+  const day = nowDate.getDate().toString().padStart(2, "0");
+  const hours = nowDate.getHours().toString().padStart(2, "0");
+  const minutes = nowDate.getMinutes().toString().padStart(2, "0");
+  const seconds = nowDate.getSeconds().toString().padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
 const FormatDateMYSQL = () => {

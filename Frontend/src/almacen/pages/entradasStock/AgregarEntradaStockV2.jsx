@@ -6,6 +6,7 @@ import {
   DiaJuliano,
   FormatDateMYSQLNative,
   FormatDateTimeMYSQLNow,
+  FormatDateTimeMYSQLNowPlusYears,
   letraAnio,
 } from "../../../utils/functions/FormatDate";
 import Checkbox from "@mui/material/Checkbox";
@@ -65,13 +66,6 @@ export const AgregarEntradaStockV2 = () => {
     guiRem,
   } = formState;
 
-  // const [entradasParciales, setEntradasParciales] = useState({
-  //   cantAcuIngPar: 0, // cantidad de ingresos parciales acumulado
-  //   refNumIngEntSto: 0, // referencia de numeor de ingreso parcial
-  //   detEntPar: [], // detalle de entradas parcailes
-  //   esEntTot: false, // es entrada total (se acaban las entradas parciales)
-  // });
-
   // controlador de entradas parciales
   const [entradasParciales, setEntradasParciales] = useState(null);
 
@@ -86,6 +80,7 @@ export const AgregarEntradaStockV2 = () => {
     setEntradasParciales(null);
   };
 
+  // autocompletamos algunos campos que se repiten
   const handleAcceptEntradasParciales = (data) => {
     setFormState({
       ...formState,
@@ -213,6 +208,7 @@ export const AgregarEntradaStockV2 = () => {
       requestJSON = {
         ...requestJSON,
         fecEntSto: FormatDateTimeMYSQLNow(),
+        fecVenEntSto: FormatDateTimeMYSQLNowPlusYears(4), // se puede poner automaticamente el dato
       };
     }
 
@@ -312,10 +308,7 @@ export const AgregarEntradaStockV2 = () => {
       });
       handleClickFeeback();
     } else {
-      // DESABILTIAMOS EL BOTON DE ENVIAR
-      // setdisableButton(true);
-      // FUNCION DE ENVIAR
-
+      setdisableButton(true);
       /* 
         -si se va a realizar una entrada parcial tomando en cuenta las demas entradas parciales
         - mostramos un dialogo de confirmacion que nos permitira eligir si queremos terminar el ingreso parcial
@@ -333,7 +326,6 @@ export const AgregarEntradaStockV2 = () => {
   const buscarEntradasParciales = async () => {
     const { result, meesage_error, description_error } =
       await getEntradasParciales(idProd, ordCom);
-    console.log(result);
     if (result.detEntPar.length !== 0) {
       setEntradasParciales(result);
       handleOpenDialogEntradasParciales();
