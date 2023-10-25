@@ -18,6 +18,7 @@ import { FilterMateriaPrima } from "./../../../components/ReferencialesFilters/P
 import { RowDetalleFormula } from "../../components/RowDetalleFormula";
 import { getFormulaWithDetalleByPrioridad } from "./../../helpers/formula/getFormulaWithDetalleByPrioridad";
 import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
+import { Typography } from "@mui/material";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -27,11 +28,11 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 export const AgregarRequisicionMolienda = () => {
   // ESTADO PARA LOS DATOS DEL FILTRO POR LOTE PRODUCCION
   const [produccionLote, setProduccionLote] = useState({
-    idProd: "none",
-    codLotProd: "",
-    klgLotProd: "",
-    canLotProd: "",
-    nomProd: "",
+    idProd: 0, // id del producto intermedio
+    codLotProd: "", // codigo del lote
+    klgLotProd: "", // kilogramos del lote
+    canLotProd: "", // cantidad de lotes
+    nomProd: "", // nombre del producto
   });
   const { codLotProd, klgLotProd, canLotProd } = produccionLote;
 
@@ -239,6 +240,7 @@ export const AgregarRequisicionMolienda = () => {
         var { forDet } = result[0];
 
         var klgLotProd = 0;
+        //suma klg de materias prima de formula de producto intermedio
         forDet.map((obj) => {
           if (obj.canMatPriFor) {
             obj.canMatPriForCopy = parseFloat(obj.canMatPriFor);
@@ -270,23 +272,70 @@ export const AgregarRequisicionMolienda = () => {
     }
   }
 
+  const onChangeCantidadLote = (e) => {
+    const { name, value } = e.target;
+    const parseValue = parseFloat(value);
+    var klgLotProd = 0;
+    requisicion.reqMolDet.map((obj) => {
+      obj.canMatPriFor = parseFloat(obj.canMatPriForCopy) * parseValue;
+      klgLotProd += obj.canMatPriFor;
+      obj.canMatPriFor = obj.canMatPriFor.toFixed(3);
+    });
+
+    setProduccionLote({
+      ...produccionLote,
+      [name]: parseValue,
+      klgLotProd: klgLotProd,
+    });
+    setRequisicion({
+      ...requisicion,
+    });
+  };
+
   /* Funciones para crear requisicion de molienda */
   // Funcion para validar el ingreso de los datos
   const handleSubmitRequisicion = (e) => {
     e.preventDefault();
 
+    let handleErrors = "";
+    console.log(produccionLote.canLotProd);
+
     if (
       produccionLote.codLotProd.length === 0 ||
-      requisicion.idProdc === 0 ||
+      produccionLote.codLotProd.length > 3 ||
+      isNaN(produccionLote.canLotProd) ||
+      produccionLote.canLotProd <= 0 ||
+      requisicion.idProdt === 0 ||
       requisicion.reqMolDet.length === 0
     ) {
+      if (isNaN(produccionLote.canLotProd)) {
+        handleErrors += "- No se proporciono una cantidad de lote\n";
+      }
+      if (produccionLote.canLotProd <= 0) {
+        handleErrors += "- La cantidad de lote debe ser mayor a 0\n";
+      }
+      if (produccionLote.codLotProd.length === 0) {
+        handleErrors +=
+          "- No se ha proporcionado un codigo de lote de producción\n";
+      }
+      if (produccionLote.codLotProd.length > 3) {
+        handleErrors += "- El codigo de lote solo debe ser de 3 dígitos\n";
+      }
+      if (requisicion.idProdt === 0) {
+        handleErrors += "- No has seleccionado un producto intermedio\n";
+      }
+      if (requisicion.reqMolDet.length === 0) {
+        handleErrors +=
+          "- No se ha agregado ningun elemento al detalle de la requisición\n";
+      }
+
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error:
-          "Asegurate de completar los campos requeridos",
+        feedback_description_error: handleErrors,
       });
       handleClickFeeback();
     } else {
+      // creamos la requisicion
       crearRequisicion();
     }
   };
@@ -294,7 +343,7 @@ export const AgregarRequisicionMolienda = () => {
   // Funcion asyncrona para crear requisicion de molienda con su detalle
   const crearRequisicion = async () => {
     requisicion.klgLotProd = produccionLote.klgLotProd;
-    requisicion.codLotProd = produccionLote.codLotProd;
+    requisicion.codLotProd = produccionLote.codLotProd.padStart(3, "0");
     requisicion.canLotProd = produccionLote.canLotProd;
 
     console.log(requisicion);
@@ -329,7 +378,7 @@ export const AgregarRequisicionMolienda = () => {
                   Producto
                 </label>
                 <div className="col-md-3">
-                  {produccionLote.idProd == "none" ? (
+                  {produccionLote.idProd == 0 ? (
                     // Ingresamos idMol = 51 para traer los datos de polvos
                     <FilterProductoProduccion
                       onNewInput={onAddProductoIntermedio}
@@ -374,26 +423,7 @@ export const AgregarRequisicionMolienda = () => {
                   <input
                     type="number"
                     name="canLotProd"
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-
-                      var klgLotProd = 0;
-                      requisicion.reqMolDet.map((obj) => {
-                        obj.canMatPriFor =
-                          parseFloat(obj.canMatPriForCopy) * parseFloat(value);
-                        klgLotProd += obj.canMatPriFor;
-                        obj.canMatPriFor = obj.canMatPriFor.toFixed(3);
-                      });
-
-                      setProduccionLote({
-                        ...produccionLote,
-                        [name]: value,
-                        klgLotProd: klgLotProd,
-                      });
-                      setRequisicion({
-                        ...requisicion,
-                      });
-                    }}
+                    onChange={onChangeCantidadLote}
                     value={canLotProd}
                     className="form-control"
                   />
@@ -404,55 +434,15 @@ export const AgregarRequisicionMolienda = () => {
                   Peso programado
                 </label>
                 <div className="col-md-3">
-                  {/**
-                     <input
-                    disabled
-                    value={canLotProd}
-                    className="form-control me-2"
-                  />
-                     */}
-
                   <input
                     type="number"
                     name="klgLotProd"
                     disabled
-                    onChange={(e) => {
-                      /**
-                       const { name, value } = e.target;
-                      setProduccionLote({
-                        ...produccionLote,
-                        [name]: value,
-                      });
-
-                      requisicion.reqMolDet.map((obj) => {
-                        if (obj.canMatPriFor) {
-                          obj.canMatPriFor =
-                            parseFloat(obj.canMatPriForCopy) *
-                            parseFloat(value);
-                          obj.canMatPriFor = obj.canMatPriFor.toFixed(3);
-                        }
-                      });
-                      setRequisicion({
-                        ...requisicion,
-                      });
-                       */
-                    }}
                     value={klgLotProd}
                     className="form-control"
                   />
                 </div>
               </div>
-              {/* KILOGRAMOS POR LOTE */}
-              {/**
-                <div className="mb-3 row">
-                <label htmlFor="stock" className="col-sm-2 col-form-label">
-                  Kilogramos de lote
-                </label>
-                <div className="col-md-2">
-                  <input disabled value={klgLotProd} className="form-control" />
-                </div>
-              </div>
-               */}
             </div>
           </div>
         </div>
@@ -601,7 +591,9 @@ export const AgregarRequisicionMolienda = () => {
           severity={style_message}
           sx={{ width: "100%" }}
         >
-          {feedback_description_error}
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
         </Alert>
       </Snackbar>
     </>

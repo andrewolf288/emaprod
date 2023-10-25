@@ -8,7 +8,6 @@ $pdo = getPDO();
 $result = [];
 $message_error = "";
 $description_error = "";
-//echo ("test");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
