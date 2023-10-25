@@ -105,6 +105,7 @@ export const AgregarEntradaStockV2 = () => {
 
   const handleCloseConfirmDialogEntradasParciales = () => {
     setOpenConfirmDialogEntradasParciales(false);
+    setdisableButton(false);
   };
 
   const handleFinEntradasParciales = () => {
@@ -263,7 +264,7 @@ export const AgregarEntradaStockV2 = () => {
       canTotEnt <= 0 ||
       canTotCom <= 0 ||
       (esEntPar && ordCom.length === 0) ||
-      parseFloat(canTotEnt) >= parseFloat(canTotCom)
+      (esEntPar && parseFloat(canTotEnt) >= parseFloat(canTotCom))
     ) {
       if (idProd === 0) {
         advertenciaFormularioIncompleto +=
@@ -295,7 +296,7 @@ export const AgregarEntradaStockV2 = () => {
           "Si es ingreso parcial, asegurate de ingresar la orden de compra\n";
       }
 
-      if (parseFloat(canTotEnt) >= parseFloat(canTotCom)) {
+      if (esEntPar && parseFloat(canTotEnt) >= parseFloat(canTotCom)) {
         console.log(canTotEnt, canTotCom);
         advertenciaFormularioIncompleto +=
           "Si es ingreso parcial, la cantidad ingresada no puede ser igual o mayor al total de la compra\n";
