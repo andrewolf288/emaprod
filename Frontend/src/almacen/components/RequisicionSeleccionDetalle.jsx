@@ -84,33 +84,17 @@ export const RequisicionSeleccionDetalle = ({
                           {detalle.canReqSelDet}
                         </TableCell>
                         <TableCell align="left">
-                          {/**
-                               className={
-                              detalle.idReqSelDetEst === 1
-                                ? "badge text-bg-danger p-2"
-                                : detalle.idReqSelDetEst === 2
-                                ? "badge text-bg-primary p-2"
-                                : detalle.idReqSelDetEst === 3
-                                ? "badge text-bg-warning p-2"
-                                : "badge text-bg-success p-2"
-                            }
-                               */}
                           <span
                             className={
-                              (detalle.idReqSelDetEstt === 1 &&
-                                " badge text-bg-warning p-2 ") +
-                              (detalle.idReqSelDetEst === 2 &&
-                                " badge text-bg-primary p-2 ") +
-                              // (row.reqSelDet.find(
-                              //</TableCell>   (obj) => obj.idReqDet == row.idReqDet
-                              // ).idReqSelDetEst === 3 &&
-                              //   " badge text-bg-warning p-2 ") +
-                              (detalle.idReqSelDetEst === 4 &&
-                                " badge text-bg-success p-2 ") +
-                              (detalle.idReqSelDetEst === 5 &&
-                                " badge text-bg-danger p-2 ")
-
-                              // "badge text-bg-success p-2"
+                              detalle.idReqSelDetEst === 1 // requerido
+                                ? "badge text-bg-secondary p-2"
+                                : detalle.idReqSelDetEst === 2 // por seleccionar
+                                ? "badge text-bg-primary p-2"
+                                : detalle.idReqSelDetEst === 3 // en proceso
+                                ? "badge text-bg-warning p-2"
+                                : detalle.idReqSelDetEst === 4 // seleccionado
+                                ? "badge text-bg-success p-2"
+                                : "badge text-bg-danger p-2" // anulado
                             }
                           >
                             {detalle.desReqSelDetEst}
@@ -131,8 +115,8 @@ export const RequisicionSeleccionDetalle = ({
                                 } else {
                                 }
                               }}
-                              //disabled={detalle.idReqSelDetEst !== 1}
-                              className={"btn btn-secondary me-2"}
+                              disabled={detalle.idReqSelDetEst !== 1}
+                              className={"btn btn-success me-2"}
                             >
                               {
                                 <Tooltip
@@ -150,18 +134,14 @@ export const RequisicionSeleccionDetalle = ({
                             <Link
                               style={{
                                 pointerEvents:
-                                  detalle.idReqSelDetEst === 4 ||
-                                  detalle.idReqSelDetEst === 1
+                                  detalle.idReqSelDetEst === 4 || // seleccionado
+                                  detalle.idReqSelDetEst === 5 || // anulado
+                                  detalle.idReqSelDetEst === 1 // requerido
                                     ? "none"
                                     : "",
                               }}
                               to={`/almacen/requisicion-seleccion/entrada-stock?idReqSelDet=${detalle.id}`}
-                              className={
-                                detalle.idReqSelDetEst === 4 ||
-                                detalle.idReqSelDetEst === 1
-                                  ? "btn btn-secondary me-2"
-                                  : "btn btn-primary me-2"
-                              }
+                              className={"btn btn-primary me-2"}
                             >
                               <Tooltip
                                 title={
@@ -185,12 +165,8 @@ export const RequisicionSeleccionDetalle = ({
                                   anular(detalle.id);
                                 }
                               }}
-                              disabled={detalle.idReqSelDetEst === 5}
-                              className={
-                                detalle.idReqSelDetEst === 5
-                                  ? "btn btn-secondary me-2"
-                                  : "btn btn-primary me-2"
-                              }
+                              disabled={detalle.idReqSelDetEst !== 1}
+                              className={"btn btn-danger me-2"}
                             >
                               <Tooltip title="Anular">
                                 <DoNotDisturbOnIcon />
