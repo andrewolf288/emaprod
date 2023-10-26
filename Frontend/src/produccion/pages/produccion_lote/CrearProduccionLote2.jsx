@@ -939,7 +939,7 @@ export const CrearProduccionLote2 = () => {
                   <label className="form-label">Presentación Final</label>
                   {/* <FilterAllProductos onNewInput={onProductoId} /> */}
                   <FilterPresentacionFinalDynamic
-                    defaultValue={idProdt}
+                    defaultValue={productoLoteProduccion.idProdFin}
                     onNewInput={onAddProductoFinalLoteProduccion}
                     idProdt={idProdt}
                   />

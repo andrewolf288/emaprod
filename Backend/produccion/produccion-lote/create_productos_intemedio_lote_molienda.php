@@ -12,15 +12,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $detProdFinLotProd = $data["detProdFinLotProd"];
-    $datEntSto = $data["datEntSto"];
-    $pedidoCompletado = (int)$datEntSto["pedidoCompletado"];
-    $variacion = floatval($datEntSto["variacion"]);
-    $codLot = $datEntSto["codLot"];
+    $detProdFinLotProd = $data["detProdFinLotProd"]; // detalle del ingreso de producto intermedio
+    $datEntSto = $data["datEntSto"]; // data de entrada
+    $pedidoCompletado = (int)$datEntSto["pedidoCompletado"]; // estado de ingreso producto intermedio completo
+    $variacion = floatval($datEntSto["variacion"]); // variacion
+    $codLot = $datEntSto["codLot"]; // codigo de lote
 
     $fecha = date('Y-m-d H:i:s');
     $canVar = 0;
-    $variacion = floatval($datEntSto["variacion"]);
+    $variacion = floatval($datEntSto["variacion"]); // variacion de la requisicion con lo ingresado
 
     if (isset($variacion)) {
         $canVar = $variacion;
@@ -29,11 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pdo) {
 
         foreach ($detProdFinLotProd as $row) {
-            $idProdc = $row["idProdc"]; // lote produccion
-            $idProdt = $row["idProdt"]; // producto
+            $idProdc = $row["idProdc"]; // id de la requisicion de produccion
+            $idProdt = $row["idProdt"]; // id d eproducto
             $canProdFin = floatval($row["canProdFin"]); // cantidad total
             $fecVenEntProdFin = $row["fecVenEntProdFin"]; // fecha de vencimiento
 
+            // primero actualizamos la requisicion
+            // se añade la variacion y el flag que indica que se termino los ingresos parciales
             try {
                 $sql_update_producto_final =
                     "UPDATE requisicion
@@ -44,9 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 try {
                     $stmt_update_producto_final = $pdo->prepare($sql_update_producto_final);
-                    //$stmt_update_producto_final->bindParam(1, $fecha); // fecha de actualizacion
-                    //$stmt_update_producto_final->bindParam(2, $idProdc, PDO::PARAM_INT);
-                    //$stmt_update_producto_final->bindParam(3, $idProdt, PDO::PARAM_INT);
                     $stmt_update_producto_final->bindParam(1, $idProdc, PDO::PARAM_INT);
 
                     $stmt_update_producto_final->execute();
@@ -55,28 +54,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $description_error = $e->getMessage();
                 }
 
-
                 try {
-
-
                     if ($idProdc) {
                         // OBTENEMOS LOS DATOS DE LA ENTRADA
-                        //$fecEntSto = $datEntSto["fecEntSto"]; 
-                        $fecEntSto = $row["fecEntSto"];
-
+                        $fecEntSto = $row["fecEntSto"]; // fecha de entrada de stock
                         $codProd = $row["codProd2"]; // codigo de producto
                         $idProv = 1; // proveedor EMARANSAC
                         $idAlm = 1; // almacen principal
                         $idEntStoEst = 1; // disponible
                         $codProv = "00"; // proveedor EMARANSAC
                         $esSel = 0; // es seleccion
-                        //$letAniEntSto = $datEntSto["letAniEntSto"]; 
-                        //$diaJulEntSto =  $datEntSto["diaJulEntSto"];
-
                         $letAniEntSto = $row["letAniEntSto"];
                         $diaJulEntSto =  $row["diaJulEntSto"];
                         $docEntSto = "PRODUCTO INTERMEDIO";
+
                         $anioActual = explode("-", explode(" ", $fecEntSto)[0])[0]; // año actual
+
+                        // Tenemos que buscar el numero de referencia
                         $sql_numero_entrada =
                             "SELECT 
                             MAX(CAST(refNumIngEntSto AS UNSIGNED)) as refNumIngEntSto
@@ -102,11 +96,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 // si no hay ingresos de productos ese año
                                 $refNumIngEntSto = 1;
                             }
-                            $esMol = 1;
+
+                            // $esMol = 1; // ya no es necesario, esto se obtiene desde area
+
                             // EL CODIGO DE INGRESO ES DE 
                             $refNumIngEntSto = str_pad(strval($refNumIngEntSto), 3, "0", STR_PAD_LEFT);
+
                             // ***** FORMAMOS EL CODIGO DE ENTRADA ******
                             $codEntSto = $codProd . $codProv . $letAniEntSto . $diaJulEntSto . $refNumIngEntSto;
+
+                            // realizamos la creacion de la entrada de stock
                             $sql_insert_entrada_stock =
                                 "INSERT INTO entrada_stock
                                 (idProd,
@@ -122,8 +121,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 canTotDis,
                                 docEntSto,
                                 fecEntSto,
-                                fecVenEntSto, referencia, canVar, codLot, esMol)
+                                fecVenEntSto, 
+                                referencia, 
+                                canVar, 
+                                codLot, 
+                                refReq)
                                 VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?,?)";
+                            // delete esMol
 
                             try {
                                 $stmt_insert_entrada_stock = $pdo->prepare($sql_insert_entrada_stock);
@@ -139,10 +143,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $stmt_insert_entrada_stock->bindParam(10, $docEntSto, PDO::PARAM_STR);
                                 $stmt_insert_entrada_stock->bindParam(11, $fecEntSto);
                                 $stmt_insert_entrada_stock->bindParam(12, $fecVenEntProdFin);
-                                $stmt_insert_entrada_stock->bindParam(13, $idProdc);
+                                $stmt_insert_entrada_stock->bindParam(13, $idProdc, PDO::PARAM_INT);
                                 $stmt_insert_entrada_stock->bindParam(14, $canVar);
                                 $stmt_insert_entrada_stock->bindParam(15, $codLot);
-                                $stmt_insert_entrada_stock->bindParam(16, $esMol);
+                                $stmt_insert_entrada_stock->bindParam(16, $idProdc, PDO::PARAM_INT);
+                                // $stmt_insert_entrada_stock->bindParam(16, $esMol);
 
                                 $stmt_insert_entrada_stock->execute();
                             } catch (PDOException $e) {
@@ -157,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     // finalmente actualizamos stock de almacen principal
                     // primero consultamos si existe el producto registrado
-                    $idAlmacenPrincipal = 1; // alamacen principal
+                    $idAlmacenPrincipal = 1; // almacen principal
                     $sql_consult_stock_almacen_principal =
                         "SELECT * FROM almacen_stock
                     WHERE idAlm = ? AND idProd = ?";

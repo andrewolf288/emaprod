@@ -1,31 +1,29 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getPresentacionFinal } from "../../../helpers/Referenciales/producto/getPresentacionFinal";
+import React, { useEffect, useState } from "react";
+import { getMateriaPrimaByRef } from "../../../helpers/Referenciales/producto/getMateriPrimaByRef";
+import { Autocomplete, TextField } from "@mui/material";
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona una presentacion final",
+  label: "Selecciona una materia prima",
   id: 0,
 };
 
-export const FilterPresentacionFinalDynamic = ({
-  onNewInput,
-  idProdt,
+export const FilterMateriaPrimaSelecionadaByRef = ({
   defaultValue = 0,
+  onNewInput,
+  prodRef,
 }) => {
   const [options, setOptions] = useState([defaultOption]);
   const [value, setValue] = useState(defaultOption);
 
-  const obtenerDataProductos = async () => {
-    var result = await getPresentacionFinal(idProdt);
+  const obtenerDataProducto = async () => {
+    var { result } = await getMateriaPrimaByRef(prodRef);
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
         return {
-          value: element.codProd2 === null ? "000000" : element.codProd2,
-          label: element.nomProd,
+          value: element.codProd2,
+          label: `${element.codProd2} - ${element.nomProd}`,
           id: element.id,
         };
       }),
@@ -40,19 +38,19 @@ export const FilterPresentacionFinalDynamic = ({
     }
   };
 
-  // use effect cuando se carga el componente
+  const handleChange = (event, value) => {
+    onNewInput(value);
+    setValue(value);
+  };
+
+  // la llamada a la base de datos solo se da una vez
   useEffect(() => {
     const controller = new AbortController();
-    obtenerDataProductos();
+    obtenerDataProducto();
     return () => controller.abort();
   }, []);
 
-  // cuando cambia el producto intermedio
-  useEffect(() => {
-    obtenerDataProductos();
-  }, [idProdt]);
-
-  // use effect para cuando hay cambios en el valor por defecto
+  // esto se llama cada vez que se da un cambio en el defaultValue
   useEffect(() => {
     // verficar si defualtvalue coincide
     const defaultValueOption = options.find(
@@ -62,11 +60,6 @@ export const FilterPresentacionFinalDynamic = ({
       setValue(defaultValueOption);
     }
   }, [defaultValue]);
-
-  const handleChange = (event, value) => {
-    onNewInput(value);
-    setValue(value);
-  };
 
   return (
     <Autocomplete

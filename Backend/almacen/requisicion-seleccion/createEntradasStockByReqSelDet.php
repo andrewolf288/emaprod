@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mermaTotalIngresada = 0; // merma total generada
     $fecEntSto = $datEntSto["fecEnt"];
     $fecVenEntSto = $datEntSto["fecVent"];
-    
+
     if ($pdo) {
         $sql = "";
         foreach ($salStoSelDet as $item) {
@@ -78,10 +78,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (empty($message_error)) {
             //$fecEntSto = $datEntSto["fecEntSto"];  
             // $fecVenEntSto = $datEntSto["fecVenEntSto"]; 
-
-
-           
-
             $idProd = $datEntSto["prodtEnt"]; // producto
             $codProd = $datEntSto["codProdEnt"]; // codigo de producto
             $idProv = 1; // proveedor EMARANSAC

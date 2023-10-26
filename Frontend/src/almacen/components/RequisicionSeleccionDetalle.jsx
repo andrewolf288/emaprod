@@ -141,7 +141,13 @@ export const RequisicionSeleccionDetalle = ({
                                     : "",
                               }}
                               to={`/almacen/requisicion-seleccion/entrada-stock?idReqSelDet=${detalle.id}`}
-                              className={"btn btn-primary me-2"}
+                              className={
+                                detalle.idReqSelDetEst === 4 || // seleccionado
+                                detalle.idReqSelDetEst === 5 || // anulado
+                                detalle.idReqSelDetEst === 1 // requerido
+                                  ? "btn btn-secondary me-2"
+                                  : "btn btn-primary me-2"
+                              }
                             >
                               <Tooltip
                                 title={

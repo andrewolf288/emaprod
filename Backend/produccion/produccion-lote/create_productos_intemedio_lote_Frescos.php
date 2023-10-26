@@ -13,7 +13,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = json_decode($json, true);
 
     $detProdFinLotProd = $data["detProdFinLotProd"];
-    //$idProdTip = $data["idProdTip"];
     $datEntSto = $data["datEntSto"];
     $pedidoCompletado = (int)$datEntSto["pedidoCompletado"];
     $variacion = floatval($datEntSto["variacion"]);
@@ -28,16 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($pdo) {
-
         foreach ($detProdFinLotProd as $row) {
             $idProdc = $row["idProdc"]; // lote produccion
             $idProdt = $row["idProdt"]; // producto
             $canProdFin = floatval($row["canProdFin"]); // cantidad total
             $fecVenEntProdFin = $row["fecVenEntProdFin"]; // fecha de vencimiento
-            //$idProdFinal = $row["idProdFinal"];  
-
-
-            //die(json_encode($pedidoCompletado));
 
             try {
                 $sql_update_producto_final =
@@ -60,10 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $description_error = $e->getMessage();
                 }
 
-
                 try {
-
-
                     if ($idProdc) {
                         // OBTENEMOS LOS DATOS DE LA ENTRADA
                         //$fecEntSto = $datEntSto["fecEntSto"]; 
@@ -92,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
                             $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
-                            $stmt_numero_entrada->bindParam(1, $idProd, PDO::PARAM_INT);
+                            $stmt_numero_entrada->bindParam(1, $idProdt, PDO::PARAM_INT);
                             $stmt_numero_entrada->bindParam(2, $anioActual);
                             $stmt_numero_entrada->execute();
 
@@ -129,8 +120,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 canTotDis,
                                 docEntSto,
                                 fecEntSto,
-                                fecVenEntSto, referencia, canVar, codLot, esFre)
+                                fecVenEntSto, 
+                                referencia, 
+                                canVar, 
+                                codLot, 
+                                refReq)
                                 VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?,?)";
+
+                            // deleete esFre
 
                             try {
                                 $stmt_insert_entrada_stock = $pdo->prepare($sql_insert_entrada_stock);
@@ -149,7 +146,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $stmt_insert_entrada_stock->bindParam(13, $idProdc);
                                 $stmt_insert_entrada_stock->bindParam(14, $canVar);
                                 $stmt_insert_entrada_stock->bindParam(15, $codLot);
-                                $stmt_insert_entrada_stock->bindParam(16, $esFre);
+                                $stmt_insert_entrada_stock->bindParam(16, $idProdc);
+
+                                // $stmt_insert_entrada_stock->bindParam(16, $esFre);
 
                                 $stmt_insert_entrada_stock->execute();
                             } catch (PDOException $e) {

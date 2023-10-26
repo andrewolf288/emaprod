@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idAre = 2; // area molienda
 
             $sql_consult_requisicion =
-                "SELECT SUBSTR(codReq,5,8) AS numCodReq FROM requisicion WHERE idAre = $idAre AND codReq IS NOT NULL ORDER BY id DESC LIMIT 1";
+                "SELECT SUBSTR(codReq,5,8) AS numCodReq FROM requisicion WHERE idAre = ? AND codReq IS NOT NULL ORDER BY id DESC LIMIT 1";
             $stmt_consult_requisicion =  $pdo->prepare($sql_consult_requisicion);
             $stmt_consult_requisicion->bindParam(1, $idAre, PDO::PARAM_INT);
             $stmt_consult_requisicion->execute();

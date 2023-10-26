@@ -1,13 +1,13 @@
 import axios from "axios";
 import config from "../../../config";
 
-export const getMateriaPrimaById = async (idMateriaPrima) => {
+export const getMateriaPrimaByRef = async (prodRef) => {
   const domain = config.API_URL;
-  const path = "/referenciales/producto/get_materia_prima_by_id.php";
+  const path = "/referenciales/producto/list_materia_prima_by_ref.php";
   const url = domain + path;
 
   const { data } = await axios.post(url, {
-    id: idMateriaPrima,
+    prodRef: prodRef,
   });
 
   return data;

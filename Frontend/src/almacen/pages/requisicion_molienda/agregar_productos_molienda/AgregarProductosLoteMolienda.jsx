@@ -7,19 +7,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
 // IMPORTACIONES PARA EL FEEDBACK
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-
-import { getProduccionWhitProductosFinales } from "./../../../helpers/producto-produccion/getProduccionWhitProductosFinales";
-import { useLocation, useNavigate } from "react-router-dom";
-import { RowProductosAgregadosProduccion } from "./../../../components/RowProductosAgregadosProduccion";
-import { FilterProductoProduccion } from "../../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
 import { RowProductosDisponiblesProduccion } from "./../../../components/RowProductosDisponiblesProduccion";
 import queryString from "query-string";
-import { FilterAllProductos } from "../../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { TextField } from "@mui/material";
 import { getMateriaPrimaById } from "../../../../helpers/Referenciales/producto/getMateriaPrimaById";
 import { createProductoIntermedioLoteMolienda } from "./../../../helpers/producto-produccion/createProductoIntermedioLoteMolienda";
 import {
@@ -32,7 +24,7 @@ import {
 import { DetalleProductosFinales } from "./DetalleProductosFinales";
 import { viewMoliendaRequisicionId } from "./../../../helpers/requisicion-molienda/viewMoliendaRequisicionId";
 import Checkbox from "@mui/material/Checkbox";
-import { useAuth } from "../../../../hooks/useAuth";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -44,8 +36,6 @@ export const AgregarProductosLoteMolienda = () => {
   const location = useLocation();
   const { idReq = "" } = queryString.parse(location.search);
   const [finalizarOrden, setFinalizarOrden] = useState(false);
-
-  const { user } = useAuth();
 
   // ESTADOS DE LOS PRODUCTOS FINALES DE LA PRODUCCION
   const [proFinProd, setProFinProd] = useState({
@@ -279,7 +269,6 @@ export const AgregarProductosLoteMolienda = () => {
 
     const resultPeticion = await createProductoIntermedioLoteMolienda(
       detalleProductosFinales,
-      idProdTip,
       dataEntrada
     );
     const { message_error, description_error } = resultPeticion;
@@ -518,9 +507,9 @@ export const AgregarProductosLoteMolienda = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {detalleProductosFinales.map((row, i) => (
+                        {detalleProductosFinales.map((row, index) => (
                           <RowProductosDisponiblesProduccion
-                            key={row.idProdt}
+                            key={index}
                             detalle={row}
                             onDeleteDetalle={handleDeleteProductoDevuelto}
                             onChangeDetalle={handleChangeInputProductoFinal}

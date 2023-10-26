@@ -17,6 +17,8 @@ import {
   FormatDateTimeMYSQLNow,
   letraAnio,
 } from "../../../utils/functions/FormatDate";
+import { FilterMateriaPrimaSelecionadaByRef } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaSelecionadaByRef";
+import { Typography } from "@mui/material";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -242,7 +244,9 @@ export const EntradaStock = () => {
       datEntSto: datEntSto,
     };
     console.log(data);
-    //return;
+
+    // setdisableButton(false);
+    // return;
 
     const resultPeticion = await createEntradasStockByReqSelDet(data);
     console.log(resultPeticion);
@@ -265,6 +269,8 @@ export const EntradaStock = () => {
   const onSubmitSalidaStock = (e) => {
     e.preventDefault();
 
+    let handleErrors = "";
+
     if (
       salidasDisponibles.length === 0 ||
       idReqSel === 0 ||
@@ -273,19 +279,23 @@ export const EntradaStock = () => {
       datosEntrada.fecVent.length === 0
     ) {
       if (salidasDisponibles.length === 0) {
-        setfeedbackMessages({
-          style_message: "error",
-          feedback_description_error: "No hay salidas disponibles",
-        });
-        handleClickFeeback();
-      } else {
-        setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error:
-            "Asegurese de llenar los datos requeridos",
-        });
-        handleClickFeeback();
+        handleErrors += "- No se encontraron salidas disponibles\n";
       }
+
+      if (prodtEnt === 0) {
+        handleErrors += "- Debes elegir un producto de entrada\n";
+      }
+
+      if (datosEntrada.fecVent.length === 0) {
+        handleErrors +=
+          "- No ha proporcionado una fecha de vencimiento para la entrada\n";
+      }
+
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: handleErrors,
+      });
+      handleClickFeeback();
     } else {
       // establecemos un mensaje
       let message_error = "";
@@ -455,9 +465,15 @@ export const EntradaStock = () => {
                     <label htmlFor="inputPassword4" className="form-label">
                       Materia Prima Seleccionada
                     </label>
-                    <FilterAllProductos
+                    {/* <FilterAllProductos
                       onNewInput={onAddProductoSeleccionadoEntrada}
-                    />
+                    /> */}
+                    {idMatPri !== 0 && (
+                      <FilterMateriaPrimaSelecionadaByRef
+                        onNewInput={onAddProductoSeleccionadoEntrada}
+                        prodRef={idMatPri}
+                      />
+                    )}
                   </div>
 
                   <div className="col-md-3">
@@ -582,7 +598,9 @@ export const EntradaStock = () => {
           severity={style_message}
           sx={{ width: "100%" }}
         >
-          {feedback_description_error}
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
         </Alert>
       </Snackbar>
     </>
