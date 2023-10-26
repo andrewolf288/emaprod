@@ -7,7 +7,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
 // IMPORTACIONES PARA EL FEEDBACK
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
@@ -18,7 +17,7 @@ import { RowProductosAgregadosProduccion } from "./../../components/RowProductos
 import { RowProductosDisponiblesProduccion } from "./../../components/RowProductosDisponiblesProduccion";
 import queryString from "query-string";
 import { FilterAllProductos } from "../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { TextField } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 import { getMateriaPrimaById } from "../../../helpers/Referenciales/producto/getMateriaPrimaById";
 import { createProductosFinalesLoteProduccion } from "./../../helpers/producto-produccion/createProductosFinalesLoteProduccion";
 import {
@@ -161,11 +160,15 @@ export const AgregarProductosLoteProduccionV2 = () => {
   // AÑADIR PRODUCTOS FINALES AL DETALLE
   const handleAddProductoFinal = async (e) => {
     e.preventDefault();
+
+    // comprobamos si se ingresaron los datos necesarios
     if (idProdFin !== 0 && cantidadIngresada > 0.0) {
+      // primero verificamos si ya se ingreso la presentacion final
       const itemFound = detalleProductosFinales.find(
         (element) => element.idProdt === idProdFin
       );
 
+      // si se encontro la presentacion final, mostramos una alerta
       if (itemFound) {
         setfeedbackMessages({
           style_message: "warning",
@@ -173,6 +176,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
         });
         handleClickFeeback();
       } else {
+        // traemos los datos
         const resultPeticion = await getMateriaPrimaById(idProdFin);
         const { message_error, description_error, result } = resultPeticion;
         if (message_error.length === 0) {
@@ -186,9 +190,15 @@ export const AgregarProductosLoteProduccionV2 = () => {
             simMed,
           } = result[0];
 
+          // buscamos en el detall de presentaciones programadas
+          const productMatch = proFinProdDet.find(
+            (element) => element.idProdt === idProd
+          );
+          const idProdFinal = productMatch?.id; // referencia directa a la celda de producto final de lote de produccion
+
           // generamos nuestro detalle
           const detalle = {
-            idProdFinal: productoFinal.idProdfinal,
+            idProdFinal: idProdFinal, // referencia directa a su producto programado
             idProdc: id, // lote de produccion asociado
             idProdt: idProd, // producto
             codProd: codProd, // codigo de producto sigo
@@ -214,9 +224,19 @@ export const AgregarProductosLoteProduccionV2 = () => {
         }
       }
     } else {
+      let handledErrors = "";
+
+      if (idProdFin === 0) {
+        handledErrors += "No se ha proporcionado una presentación final\n";
+      }
+
+      if (cantidadIngresada <= 0) {
+        handledErrors += "No se ha proporcionado una cantidad\n";
+      }
+
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
+        feedback_description_error: handledErrors,
       });
       handleClickFeeback();
     }
@@ -257,57 +277,12 @@ export const AgregarProductosLoteProduccionV2 = () => {
 
   // ******** OBTENER DATA DE PRODUCTOS FINALES *********
   const obtenerDataProductosFinalesProduccion = async () => {
+    // traer informacion de backend sobre el lote de produccion y sus productos finales
     const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
-
-    // console.log(resultPeticion);
+    console.log(resultPeticion);
     const { message_error, description_error, result } = resultPeticion;
-    var products = result[0].proFinProdDet;
-
-    var copyProducts = products.reduce((accumulator, currentValue) => {
-      if (accumulator.some((obj) => obj.idProdt === currentValue.idProdt)) {
-        accumulator.map((obj) => {
-          if (obj.idProdt === currentValue.idProdt) {
-            obj.canTotProgProdFin =
-              parseFloat(obj.canTotProgProdFin) +
-              parseFloat(currentValue.canTotProgProdFin);
-
-            obj.canTotProgProdFin = _parseInt(obj, "canTotProgProdFin");
-
-            //console.log(obj)
-
-            obj.canTotIngProdFin =
-              parseFloat(obj.canTotIngProdFin) +
-              parseFloat(currentValue.canTotIngProdFin);
-            obj.canTotIngProdFin = parseFloat(obj.canTotIngProdFin).toFixed(2);
-
-            currentValue.total = obj.canTotProgProdFin;
-            currentValue.canTotProgProdFin = _parseInt(
-              currentValue,
-              "canTotProgProdFin"
-            );
-            const clone = structuredClone(currentValue);
-            obj.detail.push(clone);
-          }
-        });
-      } else {
-        const clone = structuredClone(currentValue);
-        clone.canTotProgProdFin = _parseInt(currentValue, "canTotProgProdFin");
-        currentValue.canTotProgProdFin = _parseInt(
-          currentValue,
-          "canTotProgProdFin"
-        );
-
-        clone.total = clone.canTotProgProdFin;
-        currentValue.detail = [clone];
-        accumulator.push(currentValue);
-      }
-      return accumulator;
-    }, []);
-    result[0].proFinProdDet = copyProducts;
-    result[0].productsAutocomplete = products;
-    //console.log(result[0]);
-
     if (message_error.length === 0) {
+      // establecemos el valor con la informacion de la llamada
       setProFinProd(result[0]);
     } else {
       setfeedbackMessages({
@@ -321,8 +296,8 @@ export const AgregarProductosLoteProduccionV2 = () => {
   // ****** SUBMIT PRODUCTOS FINALES ******
   const crearProductosFinalesLoteProduccion = async () => {
     const { idProdTip } = proFinProd;
-    //const fechaIngreso = FormatDateTimeMYSQLNow();
 
+    // data de entrada
     const dataEntrada = {
       letAniEntSto: letraAnio(fecEntSto),
       diaJulEntSto: DiaJuliano(fecEntSto),
@@ -330,12 +305,13 @@ export const AgregarProductosLoteProduccionV2 = () => {
       idProdc: id,
     };
 
-    //console.log(dataEntrada);
     detalleProductosFinales.map((obj) => {
       obj.letAniEntSto = letraAnio(obj.fecEntSto);
       obj.diaJulEntSto = DiaJuliano(obj.fecEntSto);
     });
+
     const cloneProFinProdDet = structuredClone(proFinProdDet);
+
     var productoFin = {};
     detalleProductosFinales.map((obj) => {
       var producto = cloneProFinProdDet.find(
@@ -446,9 +422,6 @@ export const AgregarProductosLoteProduccionV2 = () => {
                         <TableCell align="left" width={20}>
                           <b>Unidad</b>
                         </TableCell>
-                        <TableCell align="left" width={100}>
-                          <b>Clase</b>
-                        </TableCell>
                         <TableCell align="left" width={120}>
                           <b>Cantidad programada</b>
                         </TableCell>
@@ -520,7 +493,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
                 </div>
 
                 {/* BOTON AGREGAR PRODUCTO */}
-                <div className="col-md-3 d-flex justify-content-end align-self-center ms-auto">
+                <div className="col-md-2 align-self-center">
                   <button
                     onClick={handleAddProductoFinal}
                     className="btn btn-primary"
@@ -577,9 +550,9 @@ export const AgregarProductosLoteProduccionV2 = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {detalleProductosFinales.map((row, i) => (
+                        {detalleProductosFinales.map((row, index) => (
                           <RowProductosDisponiblesProduccion
-                            key={row.idProdt}
+                            key={index}
                             detalle={row}
                             onDeleteDetalle={handleDeleteProductoDevuelto}
                             onChangeDetalle={handleChangeInputProductoFinal}
@@ -625,7 +598,9 @@ export const AgregarProductosLoteProduccionV2 = () => {
           severity={style_message}
           sx={{ width: "100%" }}
         >
-          {feedback_description_error}
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
         </Alert>
       </Snackbar>
     </>

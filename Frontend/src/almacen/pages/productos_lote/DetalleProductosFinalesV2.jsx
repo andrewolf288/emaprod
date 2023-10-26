@@ -16,7 +16,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { getEntradasStockByProdcFinal } from "./../../helpers/entradas-stock/getEntradasStockByProdcFinal";
 import CheckIcon from "@mui/icons-material/Check";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -28,9 +27,13 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export function DetalleProductosFinales({ row, idProduccion }) {
+export function DetalleProductosFinalesV2({
+  detalleProductoFinal,
+  idProduccion,
+}) {
+  console.log(detalleProductoFinal);
   const [open, setOpen] = React.useState(false);
-  const [entradas, setEntradas] = React.useState([]);
+  const { entradas_parciales, idProdt } = detalleProductoFinal;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -39,27 +42,13 @@ export function DetalleProductosFinales({ row, idProduccion }) {
     setOpen(false);
   };
 
-  React.useEffect(() => {
-    if (open && idProduccion) {
-      //detail
-      //console.log(row, idProduccion);
-      getEntradas({ idProduccion: idProduccion });
-    }
-  }, [row, idProduccion, open]);
-
-  async function getEntradas(body) {
-    const resultPeticion = await getEntradasStockByProdcFinal(body);
-    const { message_error, description_error, result } = resultPeticion;
-    setEntradas(result);
-  }
-
   return (
     <div>
       <IconButton
         aria-label="delete"
         size="large"
         onClick={handleClickOpen}
-        color="success"
+        color="primary"
       >
         <VisibilityIcon fontSize="inherit" />
       </IconButton>
@@ -75,8 +64,11 @@ export function DetalleProductosFinales({ row, idProduccion }) {
         </DialogTitle>
 
         <DialogContent dividers>
-          <TableEntradas2 row={row} idProdt={row.idProdt} />
-          <TableEntradas rows={entradas} idProdt={row.idProdt} />
+          <TableProductoProduccion
+            productoFinal={detalleProductoFinal}
+            idProdt={idProdt}
+          />
+          <TableEntradas rows={entradas_parciales} idProdt={idProdt} />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose}>
@@ -88,45 +80,58 @@ export function DetalleProductosFinales({ row, idProduccion }) {
   );
 }
 
-function TableEntradas2({ row, idProdt }) {
-  React.useEffect(() => {
-    // console.log(row);
-  }, [row, idProdt]);
-
+// detalle del producto final programado
+function TableProductoProduccion({ productoFinal, idProdt }) {
   return (
     <TableContainer component={Paper}>
       <br />
-      <Typography gutterBottom>Productos programados</Typography>
+      <Typography gutterBottom>
+        {" "}
+        <b>Productos programados</b>{" "}
+      </Typography>
       <br />
       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
-            <TableCell align="right">Cod Aso.</TableCell>
-            <TableCell align="left">Codigo</TableCell>
-            <TableCell align="left">Orden Prodc.</TableCell>
-            <TableCell align="left">Descripción</TableCell>
-            <TableCell align="left">U.M</TableCell>
-            <TableCell align="right">Cantidad</TableCell>
-            <TableCell align="right">Acumulado</TableCell>
+            <TableCell align="right">
+              <b>Cod Aso.</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>Codigo</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>Orden Prodc.</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>Descripción</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>U.M</b>
+            </TableCell>
+            <TableCell align="right">
+              <b>Cantidad</b>
+            </TableCell>
+            <TableCell align="right">
+              <b>Acumulado</b>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {row.detail?.map((row, index) => (
-            <TableRow
-              key={index}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell align="right">{row.id}</TableCell>
-              <TableCell align="left">{row.codProd2}</TableCell>
-              <TableCell align="left">
-                {!row.isAgregation ? <CheckIcon /> : <CloseIcon />}
-              </TableCell>
-              <TableCell align="left">{row.nomProd}</TableCell>
-              <TableCell align="left">{row.simMed}</TableCell>
-              <TableCell align="right">{row.canTotProgProdFin}</TableCell>
-              <TableCell align="right">{row.total}</TableCell>
-            </TableRow>
-          ))}
+          <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+            <TableCell align="right">{productoFinal.id}</TableCell>
+            <TableCell align="left">{productoFinal.codProd2}</TableCell>
+            <TableCell align="left">
+              {!productoFinal.isAgregation ? <CheckIcon /> : <CloseIcon />}
+            </TableCell>
+            <TableCell align="left">{productoFinal.nomProd}</TableCell>
+            <TableCell align="left">{productoFinal.simMed}</TableCell>
+            <TableCell align="right">
+              {parseInt(productoFinal.canTotProgProdFin)}
+            </TableCell>
+            <TableCell align="right">
+              {productoFinal.cantidad_ingresada}
+            </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>
@@ -155,20 +160,38 @@ function TableEntradas({ rows, idProdt }) {
   return (
     <TableContainer component={Paper}>
       <br />
-      <Typography gutterBottom>Productos ingresados</Typography>
+      <Typography gutterBottom>
+        <b>Productos ingresados</b>
+      </Typography>
       <br />
       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
             <TableCell align="right">#</TableCell>
-            <TableCell align="left">Producto</TableCell>
-            <TableCell align="left">Provedor</TableCell>
-            <TableCell align="left">Almacen</TableCell>
-            <TableCell align="left">Codigo</TableCell>
-            <TableCell align="left">Fecha entrada</TableCell>
-            <TableCell align="right">Ingresado</TableCell>
-            <TableCell align="right">Disponible</TableCell>
-            <TableCell align="right">Acumulado</TableCell>
+            <TableCell align="left">
+              <b>Producto</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>Provedor</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>Almacen</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>Codigo</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>Fecha entrada</b>
+            </TableCell>
+            <TableCell align="right">
+              <b>Ingresado</b>
+            </TableCell>
+            <TableCell align="right">
+              <b>Disponible</b>
+            </TableCell>
+            <TableCell align="right">
+              <b>Acumulado</b>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

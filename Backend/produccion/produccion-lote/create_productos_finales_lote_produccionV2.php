@@ -12,33 +12,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $detProdFinLotProd = $data["detProdFinLotProd"];
-    $idProdTip = $data["idProdTip"];
-    $datEntSto = $data["datEntSto"];
-    $regProFin = $datEntSto["regProFin"];
-    $idProdc = $datEntSto["idProdc"];
+    $detProdFinLotProd = $data["detProdFinLotProd"]; // obtenenmos el detalle de los productos finales
+    $idProdTip = $data["idProdTip"]; // evaluamos si es un tipo de produccion de subproducto
+    $datEntSto = $data["datEntSto"]; // informacion de los datos de entrada
+    $regProFin = $datEntSto["regProFin"]; // dato que verifica si se dio fin al proceso de agregao de productos finales
+    $idProdc = $datEntSto["idProdc"]; // id de produccion
 
-    $fecha = date('Y-m-d H:i:s');
+    $fecha = date('Y-m-d H:i:s'); // fecha actual
     //regProFin
     if ($pdo) {
 
+        // $sql_update_producto_final =
+        //     "UPDATE produccion
+        //     SET regProFin = ?
+        //     WHERE id = ?";
 
-
-        $sql_update_producto_final =
-            "UPDATE produccion
-            SET regProFin = ?
-            WHERE id = ?";
-
-        try {
-            $stmt_update_producto_final = $pdo->prepare($sql_update_producto_final);
-            $stmt_update_producto_final->bindParam(1, $regProFin); 
-            $stmt_update_producto_final->bindParam(2, $idProdc, PDO::PARAM_INT);
-            $stmt_update_producto_final->execute();
-        } catch (PDOException $e) {
-            $message_error = "Error en la actualizacion de produccion";
-            $description_error = $e->getMessage();
-        }
-
+        // try {
+        //     $stmt_update_producto_final = $pdo->prepare($sql_update_producto_final);
+        //     $stmt_update_producto_final->bindParam(1, $regProFin); 
+        //     $stmt_update_producto_final->bindParam(2, $idProdc, PDO::PARAM_INT);
+        //     $stmt_update_producto_final->execute();
+        // } catch (PDOException $e) {
+        //     $message_error = "Error en la actualizacion de produccion";
+        //     $description_error = $e->getMessage();
+        // }
         foreach ($detProdFinLotProd as $row) {
             $idProdc = $row["idProdc"]; // lote produccion
             $idProdt = $row["idProdt"]; // producto
@@ -48,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $sql_consult_producto_final =
                 "SELECT * FROM produccion_producto_final
-            #WHERE idProdc = ? AND idProdt = ?
+            WHERE idProdc = ? AND idProdt = ?
             WHERE id = ?";
 
             try {

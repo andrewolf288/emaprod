@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FilterTipoProduccion } from "./../../../components/ReferencialesFilters/TipoProduccion/FilterTipoProduccion";
 // IMPORTACIONES PARA TABLE MUI
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -13,16 +12,13 @@ import Paper from "@mui/material/Paper";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import FechaPicker from "../../../components/Fechas/FechaPicker";
-import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
 import { TextField, Typography } from "@mui/material";
 import FechaPickerYear from "./../../../components/Fechas/FechaPickerYear";
-import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
 import { getFormulaProductoDetalleByProducto } from "../../helpers/formula_producto/getFormulaProductoDetalleByProducto";
 import { RowEditDetalleProductosFinales } from "./../../components/componentes-lote-produccion/RowEditDetalleProductosFinales";
 import { RowEditDetalleRequisicionProduccion } from "../../components/componentes-lote-produccion/RowEditDetalleRequisicionProduccion";
 import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
 import { FilterAreaEncargada } from "./../../components/FilterAreaEncargada";
-import { createProduccionLoteWithRequisiciones } from "./../../helpers/produccion_lote/createProduccionLoteWithRequisiciones";
 import {
   FormatDateTimeMYSQLNow,
   FormatDateTimeMYSQLNowPlusYears,
@@ -31,7 +27,6 @@ import {
 // IMPROTACIONES PARA LINEA DE PROGRESION
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
-import { FilterPresentacionFinal } from "../../../components/ReferencialesFilters/Producto/FilterPresentacionFinal";
 import { getRequisicionProcesoProduccion } from "../../helpers/produccion_lote/getRequisicionProcesoProduccion";
 import { FilterPresentacionFinalDynamic } from "../../../components/ReferencialesFilters/Producto/FilterPresentacionFinalDynamic";
 import { FilterProductoProduccionDynamic } from "../../../components/ReferencialesFilters/Producto/FilterProductoProduccionDynamic";
@@ -261,11 +256,10 @@ export const CrearProduccionLote2 = () => {
 
   const onAddProductoFinalLoteProduccion = async ({ id, value }) => {
     const { result } = await getFormulaProductoDetalleByProducto(id);
-
     if (result.length === 1) {
       const { reqDet } = result[0]; // obtenemos las requisiciones
 
-      let reqProdInt = {};
+      let reqProdInt = null;
       let reqEnvEnc = [];
 
       reqDet.forEach((detalle) => {
@@ -276,25 +270,44 @@ export const CrearProduccionLote2 = () => {
         }
       });
 
-      const formulaPresentacionFinal = {
-        id: result[0].id,
-        idProdFin: result[0].idProdFin,
-        nomProd: result[0].nomProd,
-        simMed: result[0].simMed,
-        canForProInt: reqProdInt.canForProDet,
-        reqDet: reqEnvEnc,
-      };
+      if (reqProdInt !== null) {
+        const formulaPresentacionFinal = {
+          id: result[0].id,
+          idProdFin: result[0].idProdFin,
+          nomProd: result[0].nomProd,
+          simMed: result[0].simMed,
+          canForProInt: reqProdInt.canForProDet,
+          reqDet: reqEnvEnc,
+        };
 
-      setFormulaProductoFinal(formulaPresentacionFinal);
+        setFormulaProductoFinal(formulaPresentacionFinal);
 
-      setproductoLoteProduccion({
-        ...productoLoteProduccion,
-        idProdFin: id,
-      });
+        setproductoLoteProduccion({
+          ...productoLoteProduccion,
+          idProdFin: id,
+        });
+      } else {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error:
+            "Esta formula no tiene información de su producto intermedio",
+        });
+        handleClickFeeback();
+      }
     } else {
-      console.log(
-        "No hay formulas o hay mas de una formula para esta presetacion final"
-      );
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error:
+          "No hay formulas o hay mas de una formula para esta presetacion final",
+      });
+      handleClickFeeback();
+
+      // reseteamos los campos
+      setproductoLoteProduccion({
+        idProdFin: 0,
+        cantidadDeLote: 0.0,
+        cantidadDeProducto: 0,
+      });
     }
   };
 
@@ -318,8 +331,6 @@ export const CrearProduccionLote2 = () => {
           cantidadDeLote: cantidadKlgRequerida,
           cantidadDeProducto: cantidadUniRequerida,
         });
-      } else {
-        console.log("No has seleccionado una presentacion final");
       }
     } catch (e) {
       console.log(e);
@@ -345,8 +356,6 @@ export const CrearProduccionLote2 = () => {
           cantidadDeLote: cantidadKlgRequerida,
           cantidadDeProducto: cantidadUniRequerida,
         });
-      } else {
-        console.log("No has seleccionado una presentacion final");
       }
     } catch (e) {
       console.log(e);

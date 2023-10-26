@@ -58,7 +58,6 @@ export const RowProductosDisponiblesProduccion = ({
       </TableCell>
       <TableCell align="left">
         <TextField
-          //disabled={disabledInput}
           type="number"
           autoComplete="off"
           size="small"
@@ -69,33 +68,6 @@ export const RowProductosDisponiblesProduccion = ({
           }}
         />
       </TableCell>
-      {/* <TableCell align="left" sx={{ display: "flex" }}>
-            <IconButton
-            aria-label="delete"
-            size="large"
-            onClick={() => {
-              setdisabledInput(!disabledInput);
-            }}
-            color="primary"
-          >
-            <EditIcon fontSize="inherit" />
-          </IconButton>
-          
-
-        {showButtonDelete && (
-          <IconButton
-            aria-label="delete"
-            size="large"
-            onClick={() => {
-              onDeleteDetalle(detalle.idProdt);
-            }}
-            color="primary"
-          >
-            <DeleteIcon fontSize="inherit" />
-          </IconButton>
-        )}
-        {DetProdIntermdio && <DetProdIntermdio />}
-      </TableCell> */}
     </TableRow>
   );
 };
