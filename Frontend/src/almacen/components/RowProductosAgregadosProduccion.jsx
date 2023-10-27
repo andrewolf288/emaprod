@@ -2,10 +2,14 @@ import React from "react";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import { DetalleProductosFinalesV2 } from "../pages/productos_lote/DetalleProductosFinalesV2";
-import { IconButton } from "@mui/material";
-import CheckCircle from "@mui/icons-material/CheckCircle";
+import { DialogConfirmarEntradaParcial } from "./componentes-entradasStock/DialogConfirmarEntradaParcial";
+import { DialogTerminarIngresosProductoProgramado } from "./componentes-lote-produccion/DialogTerminarIngresosProductoProgramado";
 
-export const RowProductosAgregadosProduccion = ({ detalle, idProduccion }) => {
+export const RowProductosAgregadosProduccion = ({
+  detalle,
+  idProduccion,
+  onTerminarIngresos,
+}) => {
   return (
     <TableRow
       key={detalle.id}
@@ -20,23 +24,22 @@ export const RowProductosAgregadosProduccion = ({ detalle, idProduccion }) => {
       <TableCell align="left">{detalle.canTotProgProdFin}</TableCell>
       <TableCell align="left">{detalle.canTotIngProdFin}</TableCell>
       <TableCell align="left">
-        {
-          <DetalleProductosFinalesV2
-            detalleProductoFinal={detalle}
-            idProduccion={idProduccion}
-          />
-        }
-
-        <IconButton
-          aria-label="delete"
-          size="large"
-          onClick={() => {
-            console.log("Click");
-          }}
-          color="success"
-        >
-          <CheckCircle fontSize="inherit" />
-        </IconButton>
+        {detalle.esTerIngProFin ? (
+          <span className="badge text-bg-success p-1">Finalizado</span>
+        ) : (
+          <span className="badge text-bg-warning p-1">Pendiente</span>
+        )}
+      </TableCell>
+      <TableCell align="center">
+        <div className="btn-toolbar">
+          {<DetalleProductosFinalesV2 detalleProductoFinal={detalle} />}
+          {!detalle.esTerIngProFin && (
+            <DialogTerminarIngresosProductoProgramado
+              data={detalle}
+              handleAccept={onTerminarIngresos}
+            />
+          )}
+        </div>
       </TableCell>
     </TableRow>
   );

@@ -56,10 +56,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         #ppfe.desProProFinEst,
                         ppf.idProdt,
                         pd.nomProd,
-                        me.simMed,
+                        me.scanToimMed,
                         cl.desCla,
                         ppf.canTotProgProdFin,
-                        ppf.canTotIngProdFin,
+                        ppf.tIngProdFin,
                         pa.idProdFin,
                         pd.codProd2,
                         CASE WHEN pa.idProdFin is null THEN false
@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     JOIN producto as pd on pd.id = ppf.idProdt
                     JOIN medida as me on me.id = pd.idMed
                     JOIN clase as cl on cl.id = pd.idCla
-                    #JOIN produccion_producto_final_estado as ppfe on ppfe.id = ppf.idProdcProdtFinEst
+                    JOIN produccion_producto_final_estado as ppfe on ppfe.id = ppf.idProdcProdtFinEst
                     LEFT JOIN produccion_agregacion as pa on pa.idProdFin = ppf.id
                     WHERE ppf.idProdc = ?";
                 try {
@@ -116,12 +116,12 @@ function getInsumosByProdFinal($pdo, $row)
 
         if ($row["isAgregation"]) {
             $query =
-            "SELECT ppf.id as idProdFin, pa.idProdt, pa.canProdAgr as canReqDet  from produccion_producto_final  ppf 
+                "SELECT ppf.id as idProdFin, pa.idProdt, pa.canProdAgr as canReqDet  from produccion_producto_final  ppf 
             left join produccion_agregacion pa on pa.idProdFin = ppf.id
             WHERE ppf.id = ?";
         } else {
             $query =
-            "SELECT ppf.id as idProdFin,rd.idProdt, rd.canReqDet  from requisicion_detalle  rd 
+                "SELECT ppf.id as idProdFin,rd.idProdt, rd.canReqDet  from requisicion_detalle  rd 
             join produccion_producto_final  ppf ON ppf.id = rd.idProdFin
             WHERE ppf.id = ?";
         }

@@ -16,14 +16,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { RowProductosAgregadosProduccion } from "./../../components/RowProductosAgregadosProduccion";
 import { RowProductosDisponiblesProduccion } from "./../../components/RowProductosDisponiblesProduccion";
 import queryString from "query-string";
-import { FilterAllProductos } from "../../../components/ReferencialesFilters/Producto/FilterAllProductos";
 import { TextField, Typography } from "@mui/material";
 import { getMateriaPrimaById } from "../../../helpers/Referenciales/producto/getMateriaPrimaById";
 import { createProductosFinalesLoteProduccion } from "./../../helpers/producto-produccion/createProductosFinalesLoteProduccion";
 import {
   DiaJuliano,
   FormatDateTimeMYSQLNow,
-  FormatDateTimeMYSQL,
   letraAnio,
   _parseInt,
   FormatDateTimeMYSQLNowPlusYears,
@@ -31,8 +29,9 @@ import {
 import { DetalleProductosFinales } from "./DetalleProductosFinales";
 import FechaPicker from "../../../../src/components/Fechas/FechaPicker";
 import FechaPickerYear from "../../../components/Fechas/FechaPickerYear";
-import Checkbox from "@mui/material/Checkbox";
 import { EncabezadoInformacionProduccion } from "../../components/componentes-utils/EncabezadoInformacionProduccion";
+import { FilterProductosProgramados } from "../../../components/ReferencialesFilters/Producto/FilterProductosProgramados";
+import { updateFinEntregaProductosFinales } from "../../helpers/producto-produccion/updateFinEntregaProductosFinales";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -64,6 +63,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
   const {
     id, // id del proceso de produccion
     proFinProdDet, // productos finales programados
+    codLotProd,
   } = proFinProd;
 
   // PRODUCTOS FINALES DISPONIBLES POR PRODUCCIÓN
@@ -72,7 +72,6 @@ export const AgregarProductosLoteProduccionV2 = () => {
   // STATES PARA AGREGAR PRESENTACIONES FINALES
   const [productoFinal, setproductoFinal] = useState({
     idProdFin: 0,
-    idProdfinal: 0,
     cantidadIngresada: 0.0,
     fecEntSto: FormatDateTimeMYSQLNow(),
     fecVenSto: "",
@@ -92,11 +91,9 @@ export const AgregarProductosLoteProduccionV2 = () => {
 
     // Calculamos automaticamente su fecha de vencimiento
     var fecVenEntProdFin = FormatDateTimeMYSQLNowPlusYears(year);
-
     setproductoFinal({
       ...productoFinal,
       idProdFin: value.id, // id de de la presentacion final
-      idProdfinal: value.idProdFin, // id de produccion prodcuto final del item seleccionado
       fecVenSto: fecVenEntProdFin, // fecha de vencimiento
     });
   };
@@ -172,11 +169,11 @@ export const AgregarProductosLoteProduccionV2 = () => {
       if (itemFound) {
         setfeedbackMessages({
           style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto al detalle",
+          feedback_description_error: "Ya se agrego esta presentación final",
         });
         handleClickFeeback();
       } else {
-        // traemos los datos
+        // traemos los datos de presentacion final
         const resultPeticion = await getMateriaPrimaById(idProdFin);
         const { message_error, description_error, result } = resultPeticion;
         if (message_error.length === 0) {
@@ -194,13 +191,14 @@ export const AgregarProductosLoteProduccionV2 = () => {
           const productMatch = proFinProdDet.find(
             (element) => element.idProdt === idProd
           );
+
           const idProdFinal = productMatch?.id; // referencia directa a la celda de producto final de lote de produccion
 
           // generamos nuestro detalle
           const detalle = {
             idProdFinal: idProdFinal, // referencia directa a su producto programado
             idProdc: id, // lote de produccion asociado
-            idProdt: idProd, // producto
+            idProdt: idProd, // id producto
             codProd: codProd, // codigo de producto sigo
             codProd2: codProd2, // codigo emaprod
             desCla: desCla, // clase del producto
@@ -240,6 +238,14 @@ export const AgregarProductosLoteProduccionV2 = () => {
       });
       handleClickFeeback();
     }
+
+    // reset de los filtros
+    setproductoFinal({
+      idProdFin: 0,
+      cantidadIngresada: 0.0,
+      fecEntSto: FormatDateTimeMYSQLNow(),
+      fecVenSto: "",
+    });
   };
 
   // ACCION PARA EDITAR CAMPOS EN DETALLE DE PRODUCTO DEVUELTO
@@ -259,7 +265,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
   };
 
   // ACCION PARA ELIMINA DEL DETALLE UN PRODUCTO FINAL
-  const handleDeleteProductoDevuelto = async (idItem) => {
+  const handleDeleteDetallePresentacionFinal = async (idItem) => {
     // filtramos el elemento eliminado
     const dataDetalleProductosDevueltos = detalleProductosFinales.filter(
       (element) => {
@@ -279,7 +285,6 @@ export const AgregarProductosLoteProduccionV2 = () => {
   const obtenerDataProductosFinalesProduccion = async () => {
     // traer informacion de backend sobre el lote de produccion y sus productos finales
     const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
-    console.log(resultPeticion);
     const { message_error, description_error, result } = resultPeticion;
     if (message_error.length === 0) {
       // establecemos el valor con la informacion de la llamada
@@ -293,16 +298,54 @@ export const AgregarProductosLoteProduccionV2 = () => {
     }
   };
 
+  /*
+    Funciones que nos permiten dar por finalizar el ingreso de una presentacion final en particular
+  */
+  const finalizarEntregasPresentacionFinal = async (
+    data,
+    esCuadre,
+    esCantidadesIguales = false
+  ) => {
+    const dataActualizacion = {
+      dataPresentacionFinal: {
+        idProdcProdFin: data.id,
+        canTotProgProdFin: data.canTotProgProdFin,
+        canTotIngProdFin: data.canTotIngProdFin,
+        idProdt: data.idProdt,
+        idProdcProdtFinEst: esCantidadesIguales ? 4 : 3, // conforme o menor a lo programado
+      },
+      esCuadre: esCuadre, // no se debe realizar cuadre
+      idProdc: id, // id de produccion
+    };
+    console.log(dataActualizacion);
+    console.log("finalizar entregas de presentaciones finales");
+
+    const { message_error, description_error } =
+      await updateFinEntregaProductosFinales(dataActualizacion);
+    if (message_error.length === 0) {
+      setfeedbackMessages({
+        style_message: "success",
+        feedback_description_error: "Se actualizó con éxito",
+      });
+      handleClickFeeback();
+
+      setTimeout(() => {
+        window.close();
+      }, "1000");
+    } else {
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error,
+      });
+      handleClickFeeback();
+    }
+  };
+
   // ****** SUBMIT PRODUCTOS FINALES ******
   const crearProductosFinalesLoteProduccion = async () => {
-    const { idProdTip } = proFinProd;
-
-    // data de entrada
-    const dataEntrada = {
-      letAniEntSto: letraAnio(fecEntSto),
-      diaJulEntSto: DiaJuliano(fecEntSto),
-      fechaIngreso: fecEntSto,
-      idProdc: id,
+    const datosProduccion = {
+      idProduccion: id,
+      codLotProd,
     };
 
     detalleProductosFinales.map((obj) => {
@@ -310,44 +353,10 @@ export const AgregarProductosLoteProduccionV2 = () => {
       obj.diaJulEntSto = DiaJuliano(obj.fecEntSto);
     });
 
-    const cloneProFinProdDet = structuredClone(proFinProdDet);
-
-    var productoFin = {};
-    detalleProductosFinales.map((obj) => {
-      var producto = cloneProFinProdDet.find(
-        (prodFin) => obj.codProd2 == prodFin.codProd2
-      );
-
-      if (producto) {
-        producto.canTotIngProdFin =
-          parseFloat(producto.canTotIngProdFin) + parseFloat(obj.canProdFin);
-      }
-
-      if (producto?.canTotIngProdFin > producto?.canTotProgProdFin) {
-        productoFin = producto;
-        productoFin.check = true;
-      }
-    });
-
-    if (productoFin.check) {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error:
-          "la suma de la cantidad ingresada para " +
-          productoFin.nomProd +
-          " supera a la cantidad programada",
-      });
-      handleClickFeeback();
-      return;
-    }
-
     const resultPeticion = await createProductosFinalesLoteProduccion(
       detalleProductosFinales,
-      idProdTip,
-      dataEntrada
+      datosProduccion
     );
-
-    //console.log(resultPeticion);
     const { message_error, description_error } = resultPeticion;
     if (message_error.length === 0) {
       onNavigateBack();
@@ -428,17 +437,23 @@ export const AgregarProductosLoteProduccionV2 = () => {
                         <TableCell align="left" width={120}>
                           <b>Cantidad ingresada</b>
                         </TableCell>
+                        <TableCell align="left" width={100}>
+                          <b>Estado entrega</b>
+                        </TableCell>
                         <TableCell align="left" width={10} sx={{ width: 5 }}>
-                          <b>Action</b>
+                          <b>Acciones</b>
                         </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {proFinProdDet.map((row, i) => (
+                      {proFinProdDet.map((row, index) => (
                         <RowProductosAgregadosProduccion
-                          key={row.id}
+                          key={index}
                           detalle={row}
                           DetalleProductosFinales={DetalleProductosFinales}
+                          onTerminarIngresos={
+                            finalizarEntregasPresentacionFinal
+                          }
                           idProduccion={proFinProd.id}
                         />
                       ))}
@@ -461,10 +476,21 @@ export const AgregarProductosLoteProduccionV2 = () => {
                   <label className="form-label">
                     Producto final o sub producto
                   </label>
-                  <FilterAllProductos
-                    onNewInput={onAddProductoFinalSubProducto}
-                    productos={proFinProd.productsAutocomplete}
-                  />
+                  {proFinProdDet.length !== 0 && (
+                    <FilterProductosProgramados
+                      onNewInput={onAddProductoFinalSubProducto}
+                      products={proFinProdDet
+                        .filter((element) => !element.esTerIngProFin)
+                        .map((element) => ({
+                          id: element.idProdt,
+                          nomProd: element.nomProd,
+                          codProd2: element.codProd2,
+                          simMed: element.sinMed,
+                          desCla: element.desCla,
+                        }))}
+                      defaultValue={idProdFin}
+                    />
+                  )}
                 </div>
 
                 <div className="col-md-2">
@@ -488,6 +514,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
                     autoComplete="off"
                     size="small"
                     name="cantidadIngresada"
+                    value={cantidadIngresada}
                     onChange={handledFormCantidadIngresada}
                   />
                 </div>
@@ -544,7 +571,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
                           <TableCell align="left" width={120}>
                             <b>Cantidad</b>
                           </TableCell>
-                          <TableCell align="left" width={100}>
+                          <TableCell align="center" width={100}>
                             <b>Acciones</b>
                           </TableCell>
                         </TableRow>
@@ -554,7 +581,9 @@ export const AgregarProductosLoteProduccionV2 = () => {
                           <RowProductosDisponiblesProduccion
                             key={index}
                             detalle={row}
-                            onDeleteDetalle={handleDeleteProductoDevuelto}
+                            onDeleteDetalle={
+                              handleDeleteDetallePresentacionFinal
+                            }
                             onChangeDetalle={handleChangeInputProductoFinal}
                             showButtonDelete={true}
                           />

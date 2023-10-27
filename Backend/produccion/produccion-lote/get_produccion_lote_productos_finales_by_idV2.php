@@ -61,7 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ppf.canTotProgProdFin,
                         ppf.canTotIngProdFin,
                         pd.codProd2,
-                        ppf.idProdc
+                        ppf.idProdc,
+                        ppf.esTerIngProFin
                     FROM produccion_producto_final ppf
                     JOIN producto as pd on pd.id = ppf.idProdt
                     JOIN medida as me on me.id = pd.idMed
@@ -80,7 +81,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // primero tenemos que buscar si se han registrado entradas
                         $sql_select_entradas_parciales =
-                            "SELECT * FROM entrada_stock WHERE refProdc = ? AND idProd = ?";
+                            "SELECT 
+                            es.id,
+                            es.idProd,
+                            p.nomProd,
+                            al.nomAlm,
+                            es.codEntSto,
+                            es.fecEntSto,
+                            es.canTotEnt,
+                            es.canTotDis
+                            FROM entrada_stock AS es
+                            JOIN producto AS p ON p.id = es.idProd
+                            JOIN almacen AS al ON al.id = es.idAlm
+                            WHERE es.refProdc = ? AND es.idProd = ?";
                         $stmt_select_entradas_parciales = $pdo->prepare($sql_select_entradas_parciales);
                         $stmt_select_entradas_parciales->bindParam(1, $idLotProdc, PDO::PARAM_INT);
                         $stmt_select_entradas_parciales->bindParam(2, $idProdFin, PDO::PARAM_INT);
