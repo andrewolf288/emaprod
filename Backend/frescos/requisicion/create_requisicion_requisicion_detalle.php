@@ -37,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt_consult_codigo_lote->rowCount() == 0) {
             $idReqEst = 1; // estado de requerido
             $idAre = 7; // area frescos
+            $idReqTip = 1; // requisicion de producto intermedio
 
             $sql_consult_requisicion =
                 "SELECT SUBSTR(codReq,5,8) AS numCodReq FROM requisicion WHERE idAre = ? AND codReq IS NOT NULL ORDER BY id DESC LIMIT 1";
@@ -59,19 +60,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql =
                 "INSERT INTO
                     requisicion
-                    (idReqEst, idProdt, codReq, idAre, cantProg, codLotProd, canLotProd)
-                    VALUES (?,?,?,?,?,?,?);
+                    (idReqEst, idProdt, codReq, idAre, cantProg, codLotProd, canLotProd, idReqTip)
+                    VALUES (?,?,?,?,?,?,?,?);
                     ";
             // PREPARAMOS LA CONSULTA
             $stmt = $pdo->prepare($sql);
             //$stmt->bindParam(1, $idProdc, PDO::PARAM_INT);
-            $stmt->bindParam(1, $idReqEst, PDO::PARAM_INT);
-            $stmt->bindParam(2, $idProdt, PDO::PARAM_INT);
-            $stmt->bindParam(3, $codReq, PDO::PARAM_STR);
-            $stmt->bindParam(4, $idAre, PDO::PARAM_STR);
-            $stmt->bindParam(5, $klgLotProd, PDO::PARAM_STR);
-            $stmt->bindParam(6, $codLotProd, PDO::PARAM_STR);
-            $stmt->bindParam(7, $canLotProd, PDO::PARAM_STR);
+            $stmt->bindParam(1, $idReqEst, PDO::PARAM_INT); // estado de la requisicion
+            $stmt->bindParam(2, $idProdt, PDO::PARAM_INT); // producto
+            $stmt->bindParam(3, $codReq, PDO::PARAM_STR); // codigo de requisicion
+            $stmt->bindParam(4, $idAre, PDO::PARAM_STR); // area
+            $stmt->bindParam(5, $klgLotProd, PDO::PARAM_STR); // kilogramos
+            $stmt->bindParam(6, $codLotProd, PDO::PARAM_STR); // codigo de lote
+            $stmt->bindParam(7, $canLotProd, PDO::PARAM_STR); // cantidad de lote
+            $stmt->bindParam(8, $idReqTip, PDO::PARAM_INT); // requisicion de producto intermedio
 
             try {
                 $pdo->beginTransaction();

@@ -1,39 +1,39 @@
-import { Autocomplete, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import { getMotivoAgregaciones } from "./../../../helpers/Referenciales/motivo_agregaciones/getMotivoAgregaciones";
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona un producto",
+  label: "Selecciona un motivo",
   id: 0,
 };
 
-export const FilterProductosProgramados = ({
+export const FilterMotivoAgregacionDynamic = ({
   defaultValue = 0,
-  products = [],
   onNewInput,
 }) => {
   const [options, setOptions] = useState([defaultOption]);
   const [value, setValue] = useState(defaultOption);
 
-  const obtenerDataProducto = () => {
+  const obtenerDataMotivoAgregacion = async () => {
+    const result = await getMotivoAgregaciones();
     const formatSelect = [
       defaultOption,
-      ...products.map((element) => {
+      ...result.map((element) => {
         return {
-          item: element,
-          value: element.codProd2,
-          label: `${element.codProd2} - ${element.nomProd}`,
+          value: element.id,
+          label: element.desProdAgrMot,
           id: element.id,
         };
       }),
     ];
-
     setOptions(formatSelect);
     // verficar si defualtvalue coincide
     const defaultValueOption = formatSelect.find(
       (option) => option.id === defaultValue
     );
-
     if (defaultValueOption) {
       setValue(defaultValueOption);
     }
@@ -44,28 +44,23 @@ export const FilterProductosProgramados = ({
     setValue(value);
   };
 
+  // esto se llama cuando se carga el componente
+  useEffect(() => {
+    const controller = new AbortController();
+    obtenerDataMotivoAgregacion();
+    return () => controller.abort();
+  }, []);
+
+  // esto se llama cada vez que se da un cambio en el defaultValue
   useEffect(() => {
     // verficar si defualtvalue coincide
     const defaultValueOption = options.find(
       (option) => option.id === defaultValue
     );
-
     if (defaultValueOption) {
       setValue(defaultValueOption);
     }
   }, [defaultValue]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    obtenerDataProducto();
-    return () => controller.abort();
-  }, [products]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    obtenerDataProducto();
-    return () => controller.abort();
-  }, []);
 
   return (
     <Autocomplete

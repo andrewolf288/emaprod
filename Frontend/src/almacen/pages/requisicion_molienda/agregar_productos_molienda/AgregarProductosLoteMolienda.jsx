@@ -128,23 +128,6 @@ export const AgregarProductosLoteMolienda = () => {
     setdetalleProductosFinales(editFormDetalle);
   };
 
-  // ACCION PARA ELIMINA DEL DETALLE UN PRODUCTO FINAL
-  const handleDeleteProductoDevuelto = async (idItem) => {
-    // filtramos el elemento eliminado
-    const dataDetalleProductosDevueltos = detalleProductosFinales.filter(
-      (element) => {
-        if (element.idProdt !== idItem) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    );
-
-    // establecemos el detalle
-    setdetalleProductosFinales(dataDetalleProductosDevueltos);
-  };
-
   // ******** OBTENER DATA DE PRODUCTOS FINALES *********
   const obtenerDataProductosFinalesProduccion = async () => {
     //const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
@@ -501,9 +484,6 @@ export const AgregarProductosLoteMolienda = () => {
                           <TableCell align="left" width={120}>
                             <b>Cantidad</b>
                           </TableCell>
-                          {/* <TableCell align="left" width={100}>
-                            <b>Acciones</b>
-                          </TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -511,7 +491,6 @@ export const AgregarProductosLoteMolienda = () => {
                           <RowProductosDisponiblesProduccion
                             key={index}
                             detalle={row}
-                            onDeleteDetalle={handleDeleteProductoDevuelto}
                             onChangeDetalle={handleChangeInputProductoFinal}
                             DetProdIntermdio={DetalleProductosFinales}
                           />

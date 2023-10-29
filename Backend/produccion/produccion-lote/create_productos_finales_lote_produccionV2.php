@@ -16,6 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $datosProduccion = $data["datosProduccion"]; // datos de produccion
     $idProdc = $datosProduccion["idProduccion"]; // id de produccion
     $codLotProd = $datosProduccion["codLotProd"]; // codigo de lote
+    $idEntStoTip = 3; // entrada de produto final
 
     $fecha = date('Y-m-d H:i:s'); // fecha actual
 
@@ -106,9 +107,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     fecVenEntSto, 
                     referencia,
                     refProdc,
-                    codLot
+                    codLot,
+                    idEntStoTip
                     )
-                    VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?)";
+                    VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?,?)";
 
                 try {
                     $stmt_insert_entrada_stock = $pdo->prepare($sql_insert_entrada_stock);
@@ -124,9 +126,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt_insert_entrada_stock->bindParam(10, $docEntSto, PDO::PARAM_STR);
                     $stmt_insert_entrada_stock->bindParam(11, $fecEntSto);
                     $stmt_insert_entrada_stock->bindParam(12, $fecVenEntProdFin);
-                    $stmt_insert_entrada_stock->bindParam(13, $idProdc);
-                    $stmt_insert_entrada_stock->bindParam(14, $idProdc);
+                    $stmt_insert_entrada_stock->bindParam(13, $idProdc, PDO::PARAM_INT);
+                    $stmt_insert_entrada_stock->bindParam(14, $idProdc, PDO::PARAM_INT);
                     $stmt_insert_entrada_stock->bindParam(15, $codLotProd);
+                    $stmt_insert_entrada_stock->bindParam(16, $idEntStoTip, PDO::PARAM_INT); // entrada de tipo producto final
 
                     $stmt_insert_entrada_stock->execute();
                 } catch (PDOException $e) {

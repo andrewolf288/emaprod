@@ -63,7 +63,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
   const {
     id, // id del proceso de produccion
     proFinProdDet, // productos finales programados
-    codLotProd,
+    codLotProd, // codigo de lote de produccion
   } = proFinProd;
 
   // PRODUCTOS FINALES DISPONIBLES POR PRODUCCIÓN
@@ -454,7 +454,6 @@ export const AgregarProductosLoteProduccionV2 = () => {
                           onTerminarIngresos={
                             finalizarEntregasPresentacionFinal
                           }
-                          idProduccion={proFinProd.id}
                         />
                       ))}
                     </TableBody>

@@ -574,7 +574,7 @@ export const AgregarEntradaStockV2 = () => {
                   htlmfor={"cantidad-ingresada"}
                   className="col-sm-2 col-form-label"
                 >
-                  Cantidad de la compra
+                  Cantidad total compra
                 </label>
                 <div className="col-md-2">
                   <input

@@ -138,16 +138,6 @@ export const CrearProduccionLote2 = () => {
     klgDisponibleLoteProduccion,
   } = cantidadLoteProduccion;
 
-  // useeffect change cantidad lote produccion
-  // useEffect(() => {
-  //   setcantidadLoteProduccion({
-  //     ...cantidadLoteProduccion,
-  //     klgLotProd: parseFloat(klgLotProd),
-  //     klgDisponibleLoteProduccion:
-  //       parseFloat(klgLotProd) * parseFloat(canLotProd),
-  //   });
-  // }, [klgLotProd, canLotProd]);
-
   // STATE PARA CONTROLAR LA AGREGACION DE PRODUCTOS FINALES DEL LOTE
   const [productoLoteProduccion, setproductoLoteProduccion] = useState({
     idProdFin: 0,
@@ -283,8 +273,9 @@ export const CrearProduccionLote2 = () => {
         setFormulaProductoFinal(formulaPresentacionFinal);
 
         setproductoLoteProduccion({
-          ...productoLoteProduccion,
           idProdFin: id,
+          cantidadDeLote: 0.0,
+          cantidadDeProducto: 0,
         });
       } else {
         setfeedbackMessages({
@@ -293,6 +284,13 @@ export const CrearProduccionLote2 = () => {
             "Esta formula no tiene información de su producto intermedio",
         });
         handleClickFeeback();
+
+        // reseteamos los campos
+        setproductoLoteProduccion({
+          idProdFin: 0,
+          cantidadDeLote: 0.0,
+          cantidadDeProducto: 0,
+        });
       }
     } else {
       setfeedbackMessages({
@@ -323,7 +321,7 @@ export const CrearProduccionLote2 = () => {
         const canKlgProdIntByUni = formulaProductoFinal.canForProInt;
         // cantidad de unidades obtenidas segun klg requerido ingresado
         const cantidadUniRequerida = parseInt(
-          cantidadKlgRequerida / canKlgProdIntByUni
+          parseFloat(cantidadKlgRequerida) / parseFloat(canKlgProdIntByUni)
         );
 
         setproductoLoteProduccion({
@@ -349,7 +347,8 @@ export const CrearProduccionLote2 = () => {
         // cantidad de klg de producto intermedio por unidad de presentacion final
         const canKlgProdIntByUni = formulaProductoFinal.canForProInt;
         // cantidad de unidades obtenidas segun klg requerido ingresado
-        cantidadKlgRequerida = cantidadUniRequerida * canKlgProdIntByUni;
+        cantidadKlgRequerida =
+          parseInt(cantidadUniRequerida) * parseFloat(canKlgProdIntByUni);
         cantidadKlgRequerida = cantidadKlgRequerida.toFixed(5);
         setproductoLoteProduccion({
           ...productoLoteProduccion,

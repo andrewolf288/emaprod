@@ -21,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecha = date('Y-m-d H:i:s');
     $canVar = 0;
     $variacion = floatval($datEntSto["variacion"]);
+    $idEntStoTip = 2; // entrada de producto intermedio
 
     if (isset($variacion)) {
         $canVar = $variacion;
@@ -124,8 +125,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 referencia, 
                                 canVar, 
                                 codLot, 
-                                refReq)
-                                VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?,?)";
+                                refReq,
+                                idEntStoTip)
+                                VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?,?,?)";
 
                             // deleete esFre
 
@@ -143,11 +145,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $stmt_insert_entrada_stock->bindParam(10, $docEntSto, PDO::PARAM_STR);
                                 $stmt_insert_entrada_stock->bindParam(11, $fecEntSto);
                                 $stmt_insert_entrada_stock->bindParam(12, $fecVenEntProdFin);
-                                $stmt_insert_entrada_stock->bindParam(13, $idProdc);
+                                $stmt_insert_entrada_stock->bindParam(13, $idProdc, PDO::PARAM_INT);
                                 $stmt_insert_entrada_stock->bindParam(14, $canVar);
                                 $stmt_insert_entrada_stock->bindParam(15, $codLot);
-                                $stmt_insert_entrada_stock->bindParam(16, $idProdc);
-
+                                $stmt_insert_entrada_stock->bindParam(16, $idProdc, PDO::PARAM_INT);
+                                $stmt_insert_entrada_stock->bindParam(17, $idEntStoTip, PDO::PARAM_INT);
                                 // $stmt_insert_entrada_stock->bindParam(16, $esFre);
 
                                 $stmt_insert_entrada_stock->execute();

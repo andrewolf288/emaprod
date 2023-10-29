@@ -21,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecha = date('Y-m-d H:i:s');
     $canVar = 0;
     $variacion = floatval($datEntSto["variacion"]); // variacion de la requisicion con lo ingresado
+    $idEntStoTip = 2; // entrada de producto intermedio
 
     if (isset($variacion)) {
         $canVar = $variacion;
@@ -125,8 +126,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 referencia, 
                                 canVar, 
                                 codLot, 
-                                refReq)
-                                VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?,?)";
+                                refReq,
+                                idEntStoTip)
+                                VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?,?,?)";
                             // delete esMol
 
                             try {
@@ -147,6 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $stmt_insert_entrada_stock->bindParam(14, $canVar);
                                 $stmt_insert_entrada_stock->bindParam(15, $codLot);
                                 $stmt_insert_entrada_stock->bindParam(16, $idProdc, PDO::PARAM_INT);
+                                $stmt_insert_entrada_stock->bindParam(17, $idEntStoTip, PDO::PARAM_INT);
                                 // $stmt_insert_entrada_stock->bindParam(16, $esMol);
 
                                 $stmt_insert_entrada_stock->execute();

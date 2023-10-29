@@ -25,9 +25,11 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export function DetalleProductosFinalesV2({ detalleProductoFinal }) {
+export const DetalleAgregacionProduccion = ({
+  detalleAgregacionProduccion,
+}) => {
   const [open, setOpen] = React.useState(false);
-  const { entradas_parciales, idProdt } = detalleProductoFinal;
+  const { detReqAgr } = detalleAgregacionProduccion;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -54,12 +56,13 @@ export function DetalleProductosFinalesV2({ detalleProductoFinal }) {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Detalle productos finales
+          Detalle requisicion agregación
         </DialogTitle>
-
         <DialogContent dividers>
-          <TableProductoProduccion productoFinal={detalleProductoFinal} />
-          <TableEntradas entradas={entradas_parciales} />
+          <TableAgregacionProduccion
+            agregacionProduccion={detalleAgregacionProduccion}
+          />
+          <TableAgregacionDetalleProduccion detalle={detReqAgr} />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose}>
@@ -69,52 +72,75 @@ export function DetalleProductosFinalesV2({ detalleProductoFinal }) {
       </BootstrapDialog>
     </div>
   );
-}
+};
 
-// detalle del producto final programado
-function TableProductoProduccion({ productoFinal }) {
+function TableAgregacionProduccion({ agregacionProduccion }) {
   return (
     <TableContainer component={Paper}>
       <br />
       <Typography gutterBottom>
-        <b>Producto programado</b>
+        <b>Información agregación</b>
       </Typography>
       <br />
       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
             <TableCell align="center">
-              <b>Cod Aso.</b>
+              <b>Ref.</b>
             </TableCell>
             <TableCell align="left">
-              <b>Codigo</b>
+              <b>Motivo</b>
             </TableCell>
             <TableCell align="left">
-              <b>Descripción</b>
+              <b>Presentación</b>
             </TableCell>
             <TableCell align="left">
-              <b>U.M</b>
+              <b>Estado</b>
             </TableCell>
-            <TableCell align="right">
-              <b>Cantidad</b>
-            </TableCell>
-            <TableCell align="right">
-              <b>Acumulado</b>
-            </TableCell>
+            {agregacionProduccion.idProdcMot === 2 && (
+              <>
+                <TableCell align="right">
+                  <b>Cantidad unidades</b>
+                </TableCell>
+                <TableCell align="right">
+                  <b>Cantidad kilogramos</b>
+                </TableCell>
+              </>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
           <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-            <TableCell align="center">{productoFinal.id}</TableCell>
-            <TableCell align="left">{productoFinal.codProd2}</TableCell>
-            <TableCell align="left">{productoFinal.nomProd}</TableCell>
-            <TableCell align="left">{productoFinal.simMed}</TableCell>
-            <TableCell align="right">
-              {parseInt(productoFinal.canTotProgProdFin)}
+            <TableCell align="center">
+              {agregacionProduccion.idProdFin}
             </TableCell>
-            <TableCell align="right">
-              {productoFinal.cantidad_ingresada}
+            <TableCell align="left">
+              {agregacionProduccion.desProdAgrMot}
             </TableCell>
+            <TableCell align="left">{agregacionProduccion.nomProd}</TableCell>
+            <TableCell align="left">
+              <span
+                className={
+                  agregacionProduccion.idReqEst === 1
+                    ? "badge text-bg-danger"
+                    : agregacionProduccion.idReqEst === 2
+                    ? "badge text-bg-warning"
+                    : "badge text-bg-success"
+                }
+              >
+                {agregacionProduccion.desReqEst}
+              </span>
+            </TableCell>
+            {agregacionProduccion.idProdcMot === 2 && (
+              <>
+                <TableCell align="right">
+                  {parseInt(agregacionProduccion.canTotUndReqAgr)}
+                </TableCell>
+                <TableCell align="right">
+                  {agregacionProduccion.canTotKlgReqAgr}
+                </TableCell>
+              </>
+            )}
           </TableRow>
         </TableBody>
       </Table>
@@ -122,54 +148,50 @@ function TableProductoProduccion({ productoFinal }) {
   );
 }
 
-// detalle de tabla de entradas
-function TableEntradas({ entradas }) {
+function TableAgregacionDetalleProduccion({ detalle }) {
   return (
     <TableContainer component={Paper}>
       <br />
       <Typography gutterBottom>
-        <b>Entradas</b>
+        <b>Información agregación</b>
       </Typography>
       <br />
       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
-            <TableCell align="right">#</TableCell>
+            <TableCell align="center">
+              <b>#</b>
+            </TableCell>
             <TableCell align="left">
               <b>Producto</b>
             </TableCell>
             <TableCell align="left">
-              <b>Almacen</b>
-            </TableCell>
-            <TableCell align="left">
-              <b>Codigo</b>
-            </TableCell>
-            <TableCell align="left">
-              <b>Fecha entrada</b>
+              <b>Estado</b>
             </TableCell>
             <TableCell align="right">
-              <b>Ingresado</b>
-            </TableCell>
-            <TableCell align="right">
-              <b>Disponible</b>
+              <b>Cantidad</b>
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {entradas.map((entrada, index) => (
+          {detalle.map((element, index) => (
             <TableRow
-              key={index}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
-                {index + 1}
+              <TableCell align="center">{index + 1}</TableCell>
+              <TableCell align="left">{element.nomProd}</TableCell>
+              <TableCell align="left">
+                <span
+                  className={
+                    element.esComReqAgrDet == 0
+                      ? "badge text-bg-danger"
+                      : "badge text-bg-success"
+                  }
+                >
+                  {element.esComReqAgrDet === 0 ? "Requerido" : "Completo"}
+                </span>
               </TableCell>
-              <TableCell align="left">{entrada.nomProd}</TableCell>
-              <TableCell align="left">{entrada.nomAlm}</TableCell>
-              <TableCell align="left">{entrada.codEntSto}</TableCell>
-              <TableCell align="left">{entrada.fecEntSto}</TableCell>
-              <TableCell align="right">{parseInt(entrada.canTotEnt)}</TableCell>
-              <TableCell align="right">{parseInt(entrada.canTotDis)}</TableCell>
+              <TableCell align="center">{element.canReqAgrDet}</TableCell>
             </TableRow>
           ))}
         </TableBody>

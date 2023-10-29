@@ -87,7 +87,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $esSel = 1; // es seleccion
             $letAniEntSto = $datEntSto["letAniEntSto"]; // letra del año
             $diaJulEntSto =  $datEntSto["diaJulEntSto"]; // dia juliano
-            $docEntSto = "Entrada seleccion"; // documento de entrada
+            $docEntSto = "ENTRADA SELECCION"; // documento de entrada
+            $idEntStoTip = 4; // tipo de entrada de seleccion
 
             $anioActual = explode("-", explode(" ", $fecEntSto)[0])[0]; // año actual
             $sql_numero_entrada =
@@ -139,8 +140,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 merTot,
                 docEntSto,
                 fecEntSto,
-                fecVenEntSto)
-                VALUES (?,?,?,?,?,?,?,?,?, $cantidadTotalEntrada, $cantidadTotalEntrada, $mermaTotalIngresada, $mermaTotalIngresada,?,?,?)";
+                fecVenEntSto,
+                idEntStoTip)
+                VALUES (?,?,?,?,?,?,?,?,?, $cantidadTotalEntrada, $cantidadTotalEntrada, $mermaTotalIngresada, $mermaTotalIngresada,?,?,?,?)";
 
                 try {
                     $stmt_insert_entrada_seleccion = $pdo->prepare($sql_insert_entrada_seleccion);
@@ -156,6 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt_insert_entrada_seleccion->bindParam(10, $docEntSto, PDO::PARAM_STR);
                     $stmt_insert_entrada_seleccion->bindParam(11, $fecEntSto);
                     $stmt_insert_entrada_seleccion->bindParam(12, $fecVenEntSto);
+                    $stmt_insert_entrada_seleccion->bindParam(13, $idEntStoTip); // tipo de entrada de seleccion
 
                     $stmt_insert_entrada_seleccion->execute();
                     // ACTUALIZAMOS EL STOCK TOTAL DEL ALMACEN Y LA MATERIA PRIMA

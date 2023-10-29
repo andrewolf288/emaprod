@@ -13,18 +13,31 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { getProduccionLoteWithAgregacionesById } from "./../../../produccion/helpers/produccion_lote/getProduccionLoteWithAgregacionesById";
-import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { TextField } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
 import { RowDetalleAgregacionLoteProduccion } from "./../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccion";
-import { RowDetalleAgregacionLoteProduccionEdit } from "./../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccionEdit";
-import { FilterAreaEncargada } from "./../../../produccion/components/FilterAreaEncargada";
 import { createAgregacionesLoteProduccion } from "./../../helpers/agregaciones-lote-produccion/createAgregacionesLoteProduccion";
+import { getFormulaProductoDetalleByProducto } from "../../../produccion/helpers/formula_producto/getFormulaProductoDetalleByProducto";
+import { FilterMotivoAgregacionDynamic } from "../../../components/ReferencialesFilters/MotivoAgregacion/FilterMotivoAgregacionDinamyc";
+import { getPresentacionFinal } from "../../../helpers/Referenciales/producto/getPresentacionFinal";
+import { FilterProductosProgramados } from "../../../components/ReferencialesFilters/Producto/FilterProductosProgramados";
+import { RowDetalleAgregacionLoteProduccionEditV2 } from "../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccionEditV2";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
+function parseIntCantidad(str, property) {
+  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(5);
+  let index = str.canReqProdLot.toString().indexOf(".");
+  let result = str.canReqProdLot.toString().substring(index + 1);
+  let val =
+    parseInt(result) >= 1 && str.simMed !== "KGM"
+      ? Math.trunc(str.canReqProdLot) + 1
+      : str.canReqProdLot;
+  return val;
+}
 
 export const AgregarAgregacionV2 = () => {
   const location = useLocation();
@@ -43,11 +56,13 @@ export const AgregarAgregacionV2 = () => {
     idProdt: 0,
     klgLotProd: "",
     nomProd: "",
-    detAgr: [],
+    prodDetProdc: [],
+    prodDetAgr: [],
   });
 
   const {
     id,
+    idProdt,
     canLotProd,
     codLotProd,
     desEstPro,
@@ -55,14 +70,27 @@ export const AgregarAgregacionV2 = () => {
     fecVenLotProd,
     klgLotProd,
     nomProd,
-    detAgr,
+    prodDetProdc,
+    prodDetAgr,
   } = agregacionesProduccionLote;
 
-  const [detalleProductosAgregados, setdetalleProductosAgregados] = useState(
+  // productos disponibles
+  const [productosDisponibles, setProductosDisponibles] = useState([]);
+  const [filterProductosDisponibles, setFilterProductosDisponibles] = useState(
     []
   );
 
-  // STATES PARA AGREGAR PRODUCTOS
+  // detalle de requisicion agregacion
+  const [detalleRequisicionAgregacion, setDetalleRequisicionAgregacion] =
+    useState({
+      requisicionAgregacion: null,
+      detalleProductosAgregados: [],
+    });
+
+  const { requisicionAgregacion, detalleProductosAgregados } =
+    detalleRequisicionAgregacion;
+
+  // STATES PARA AGREGAR materiales de envase y encaje adicionales
   const [productoAgregado, setproductoAgregado] = useState({
     idProdAgr: 0,
     cantidadAgregada: 0.0,
@@ -100,6 +128,321 @@ export const AgregarAgregacionV2 = () => {
   // ESTADO PARA BOTON CREAR
   const [disableButton, setdisableButton] = useState(false);
 
+  // ******* MANEJADORES PARA EL AGREGADO DE PRODUCCION *******
+  // producto final informacion
+  const [formulaProductoFinal, setFormulaProductoFinal] = useState(null);
+
+  // STATE PARA CONTROLAR LA AGREGACION DE PRODUCTOS FINALES DEL LOTE
+  const [productoLoteProduccion, setproductoLoteProduccion] = useState({
+    idProdFin: 0,
+    idProdcMot: 0, // motivo de agregacion
+    cantidadDeLote: 0.0,
+    cantidadDeProducto: 0,
+  });
+
+  const { idProdFin, idProdcMot, cantidadDeLote, cantidadDeProducto } =
+    productoLoteProduccion;
+
+  // funcion para manejar el motivo de la agregacion
+  const onAddMotivoAgregacionProduccionAgregacion = (value) => {
+    /* 
+    1. faltante de materiales
+    2. nueva presentacion
+    3. encuadre
+    */
+    if (value.id === 0) {
+      // reseteamos todo
+      setproductoLoteProduccion({
+        idProdcMot: 0,
+        idProdFin: 0,
+        cantidadDeLote: 0.0,
+        cantidadDeProducto: 0,
+      });
+      setFilterProductosDisponibles([]);
+      setFormulaProductoFinal(null);
+      setDetalleRequisicionAgregacion({
+        requisicionAgregacion: {},
+        detalleProductosAgregados: [],
+      });
+    } else {
+      if (value.id === 1) {
+        // solo filtramos las presentaciones finales programadas
+        const productosFilter = productosDisponibles.filter((producto) => {
+          return prodDetProdc.some(
+            (productoProduccion) => productoProduccion.idProdt === producto.id
+          );
+        });
+        setFilterProductosDisponibles(productosFilter);
+        // ahora actualizamos las cantidades
+        setproductoLoteProduccion({
+          idProdcMot: value.id,
+          idProdFin: 0,
+          cantidadDeLote: 0.0,
+          cantidadDeProducto: 1,
+        });
+        setFormulaProductoFinal(null);
+        setDetalleRequisicionAgregacion({
+          requisicionAgregacion: {},
+          detalleProductosAgregados: [],
+        });
+      } else if (value.id === 2) {
+        // Filtramos los productos no programados
+        const productosFilter = productosDisponibles.filter((producto) => {
+          return !prodDetProdc.some(
+            (productoProduccion) => productoProduccion.idProdt === producto.id
+          );
+        });
+        setFilterProductosDisponibles(productosFilter);
+        // primero actualizamos el setting
+        setproductoLoteProduccion({
+          idProdFin: 0,
+          idProdcMot: value.id,
+          cantidadDeLote: 0.0,
+          cantidadDeProducto: 0,
+        });
+        setFormulaProductoFinal(null);
+        setDetalleRequisicionAgregacion({
+          requisicionAgregacion: {},
+          detalleProductosAgregados: [],
+        });
+      } else {
+        // Filtramos los productos no programados
+        const productosFilter = productosDisponibles.filter((producto) => {
+          return prodDetProdc.some(
+            (productoProduccion) => productoProduccion.idProdt === producto.id
+          );
+        });
+        setFilterProductosDisponibles(productosFilter);
+        // primero actualizamos el setting
+        setproductoLoteProduccion({
+          idProdFin: 0,
+          idProdcMot: value.id,
+          cantidadDeLote: 0.0,
+          cantidadDeProducto: 0,
+        });
+        setFormulaProductoFinal(null);
+        setDetalleRequisicionAgregacion({
+          requisicionAgregacion: {},
+          detalleProductosAgregados: [],
+        });
+      }
+    }
+  };
+
+  // funcion para agregar presentacion final para la agregacion
+  const onAddProductoFinalLoteProduccionAgregacion = async ({ id, value }) => {
+    const { result } = await getFormulaProductoDetalleByProducto(id);
+    if (result.length === 1) {
+      const { reqDet } = result[0]; // obtenemos las requisiciones
+
+      let reqProdInt = null;
+      let reqEnvEnc = [];
+
+      reqDet.forEach((detalle) => {
+        if (detalle.idAre === 2 || detalle.idAre === 7) {
+          reqProdInt = detalle;
+        } else {
+          reqEnvEnc.push(detalle);
+        }
+      });
+
+      if (reqProdInt !== null) {
+        const formulaPresentacionFinal = {
+          id: result[0].id,
+          idProdFin: result[0].idProdFin,
+          nomProd: result[0].nomProd,
+          simMed: result[0].simMed,
+          canForProInt: reqProdInt.canForProDet,
+          reqDet: reqEnvEnc,
+        };
+
+        setFormulaProductoFinal(formulaPresentacionFinal);
+
+        // seteamos
+        setproductoLoteProduccion({
+          ...productoLoteProduccion,
+          idProdFin: id,
+        });
+      } else {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error:
+            "Esta formula no tiene información de su producto intermedio",
+        });
+        handleClickFeeback();
+
+        // reseteamos los campos
+        setproductoLoteProduccion({
+          ...productoLoteProduccion,
+          idProdFin: 0,
+          cantidadDeLote: 0.0,
+          cantidadDeProducto: 0,
+        });
+      }
+    } else {
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error:
+          "No hay formulas o hay mas de una formula para esta presetacion final",
+      });
+      handleClickFeeback();
+
+      // reseteamos los campos
+      setproductoLoteProduccion({
+        ...productoLoteProduccion,
+        idProdFin: 0,
+        cantidadDeLote: 0.0,
+        cantidadDeProducto: 0,
+      });
+    }
+  };
+
+  // funcion para manejar la cantidad de klg requerida
+  const handleInputsProductoFinalLoteAgregacion = async ({ target }) => {
+    var { value } = target;
+    // cantidad requerida de klg de lote para presentacion final
+    try {
+      const cantidadKlgRequerida = value;
+
+      if (formulaProductoFinal !== null) {
+        // cantidad de klg de producto intermedio por unidad de presentacion final
+        const canKlgProdIntByUni = formulaProductoFinal.canForProInt;
+        // cantidad de unidades obtenidas segun klg requerido ingresado
+        const cantidadUniRequerida = parseInt(
+          parseFloat(cantidadKlgRequerida) / parseFloat(canKlgProdIntByUni)
+        );
+
+        setproductoLoteProduccion({
+          ...productoLoteProduccion,
+          cantidadDeLote: cantidadKlgRequerida,
+          cantidadDeProducto: cantidadUniRequerida,
+        });
+      }
+    } catch (e) {}
+  };
+
+  // funcion para manejar la cantidad de unidades requeridas
+  const handleInputsProductoFinalCantidadAgregacion = async ({ target }) => {
+    var { value } = target;
+    // cantidad requerida de klg de lote para presentacion final
+    try {
+      const cantidadUniRequerida = value;
+      let cantidadKlgRequerida = 0;
+
+      if (formulaProductoFinal !== null) {
+        // cantidad de klg de producto intermedio por unidad de presentacion final
+        const canKlgProdIntByUni = formulaProductoFinal.canForProInt;
+        // cantidad de unidades obtenidas segun klg requerido ingresado
+        cantidadKlgRequerida =
+          parseInt(cantidadUniRequerida) * parseFloat(canKlgProdIntByUni);
+        cantidadKlgRequerida = cantidadKlgRequerida.toFixed(5);
+        setproductoLoteProduccion({
+          ...productoLoteProduccion,
+          cantidadDeLote: cantidadKlgRequerida,
+          cantidadDeProducto: cantidadUniRequerida,
+        });
+      }
+    } catch (e) {}
+  };
+
+  // funcion para añadir al detalle
+  const handleAddProductoProduccionLoteAgregacion = async (e) => {
+    e.preventDefault();
+    // equivalente en klg
+    const cantidadDeLote = productoLoteProduccion.cantidadDeLote;
+    // equivalente en unidades
+    const cantidadDeProducto = productoLoteProduccion.cantidadDeProducto;
+
+    // primero verificamos si se ha ingresado la data necesaria
+    if (
+      productoLoteProduccion.idProdcMot !== 0 &&
+      productoLoteProduccion.idProdFin !== 0 &&
+      (cantidadDeLote > 0.0 || cantidadDeProducto > 0)
+    ) {
+      const itemFound = prodDetProdc.find(
+        (element) => element.idProdFin === productoLoteProduccion.idProdFin
+      );
+
+      // verificamos si este producto final ha sido agregado previamente
+      if (itemFound) {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error: "Ya se agrego este producto a la orden",
+        });
+        handleClickFeeback();
+      } else {
+        if (formulaProductoFinal !== null) {
+          const { nomProd, simMed, reqDet, canForProInt } =
+            formulaProductoFinal;
+
+          let detalleRequisicionesFormula = [];
+
+          reqDet.forEach((detalle) => {
+            detalleRequisicionesFormula.push({
+              ...detalle,
+              // indexProdFin: nextIndex,
+              idProdFin: productoLoteProduccion.idProdFin,
+              canReqProdLot: parseFloat(
+                cantidadDeProducto * detalle.canForProDet
+              ).toFixed(5),
+            });
+          });
+
+          detalleRequisicionesFormula.map((obj) => {
+            obj.canReqProdLot = parseIntCantidad(obj);
+          });
+
+          // actualizamos el detalle de la requisicion de agregacion
+          setDetalleRequisicionAgregacion({
+            requisicionAgregacion: productoLoteProduccion,
+            detalleProductosAgregados: detalleRequisicionesFormula,
+          });
+
+          // reseteamos los campos
+          // setproductoLoteProduccion({
+          //   idProdFin: 0,
+          //   idProdcMot: 0,
+          //   cantidadDeLote: 0.0,
+          //   cantidadDeProducto: 0,
+          // });
+
+          // setFormulaProductoFinal(null);
+        } else {
+          setfeedbackMessages({
+            style_message: "warning",
+            feedback_description_error:
+              "No se ha seleccionado ninguna presentacion final",
+          });
+          handleClickFeeback();
+        }
+      }
+    } else {
+      let advertenciaPresentacionFinal = "";
+      if (productoLoteProduccion.idProdcMot === 0) {
+        advertenciaPresentacionFinal +=
+          "Se debe proporcionar un motivo de agregación\n";
+      }
+      if (productoLoteProduccion.idProdFin === 0) {
+        advertenciaPresentacionFinal +=
+          "Se debe proporcionar una presentacion final para agregar a la orden\n";
+      }
+      if (
+        productoLoteProduccion.cantidadDeLote <= 0.0 ||
+        productoLoteProduccion.cantidadDeProducto <= 0
+      ) {
+        advertenciaPresentacionFinal +=
+          "Se debe proporcionar una cantidad mayor a 0 para agregar a la orden\n";
+      }
+
+      // mostramos el mensaje de error
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: advertenciaPresentacionFinal,
+      });
+      handleClickFeeback();
+    }
+  };
+
   // ******** MANEJADORES PARA EL ARREGLO DE DEVOLUCIONES ******
   // MANEJADOR DE PRODUCTO
   const onAddProductoAgregado = (value) => {
@@ -120,15 +463,6 @@ export const AgregarAgregacionV2 = () => {
   // MANEJADOR DE CANTIDAD
   const handledFormcantidadAgregada = ({ target }) => {
     const { name, value } = target;
-    setproductoAgregado({
-      ...productoAgregado,
-      [name]: value,
-    });
-  };
-
-  const handleInputsProductosFinales = ({ target }) => {
-    const { value, name } = target;
-
     setproductoAgregado({
       ...productoAgregado,
       [name]: value,
@@ -176,11 +510,15 @@ export const AgregarAgregacionV2 = () => {
               canProdAgr: cantidadAgregada, // cantidad devuelta
               idFinalProduct: productoAgregado.finalProduct,
             };
-            console.log(productoAgregado);
 
             // seteamos el detalle
             const dataDetalle = [...detalleProductosAgregados, detalle];
-            setdetalleProductosAgregados(dataDetalle);
+
+            // actualizamos el detalle de la requisicion de agregacion
+            setDetalleRequisicionAgregacion({
+              ...detalleRequisicionAgregacion,
+              detalleProductosAgregados: dataDetalle,
+            });
           } else {
             setfeedbackMessages({
               style_message: "error",
@@ -210,44 +548,29 @@ export const AgregarAgregacionV2 = () => {
   const handleChangeInputProductoAgregado = async ({ target }, idItem) => {
     const { value } = target;
     const editFormDetalle = detalleProductosAgregados.map((element) => {
-      if (element.idProdt === idItem) {
+      if (element.idProd === idItem) {
         return {
           ...element,
-          canProdAgr: value,
-        };
-      } else {
-        return element;
-      }
-    });
-    setdetalleProductosAgregados(editFormDetalle);
-  };
-
-  // ACCION PARA CAMBIAR EL MOTIVO DEL DETALLE DE UN PRODUCTO DEVUELTO
-  const handleChangeMotivoAgregacionProductoAgregado = async (
-    idProdAgrMot,
-    idItem
-  ) => {
-    const editFormDetalle = detalleProductosAgregados.map((element) => {
-      if (element.idProdt === idItem) {
-        return {
-          ...element,
-          idProdAgrMot: idProdAgrMot,
+          canReqProdLot: value,
         };
       } else {
         return element;
       }
     });
 
-    setdetalleProductosAgregados(editFormDetalle);
+    // actualizamos el detalle de la requisicion de agregacion
+    setDetalleRequisicionAgregacion({
+      ...detalleRequisicionAgregacion,
+      detalleProductosAgregados: editFormDetalle,
+    });
   };
 
   // ACCION PARA ELIMINA DEL DETALLE UN PRODUCTO DEVUELTO
   const handleDeleteProductoAgregado = async (idItem) => {
-    console.log(idItem);
     // filtramos el elemento eliminado
     const datadetalleProductosAgregados = detalleProductosAgregados.filter(
       (element) => {
-        if (element.idProdt !== idItem) {
+        if (element.idProd !== idItem) {
           return true;
         } else {
           return false;
@@ -255,8 +578,11 @@ export const AgregarAgregacionV2 = () => {
       }
     );
 
-    // establecemos el detalle
-    setdetalleProductosAgregados(datadetalleProductosAgregados);
+    // actualizamos el detalle de la requisicion de agregacion
+    setDetalleRequisicionAgregacion({
+      ...detalleRequisicionAgregacion,
+      detalleProductosAgregados: datadetalleProductosAgregados,
+    });
   };
 
   // FUNCION PARA TRAES DATOS DE PRODUCCION LOTE
@@ -266,9 +592,15 @@ export const AgregarAgregacionV2 = () => {
         idLotProdc
       );
       const { message_error, description_error, result } = resultPeticion;
-      console.log(resultPeticion);
 
       if (message_error.length === 0) {
+        const { idProdt } = result[0];
+
+        // ahora debemos obtener los productos que se podran agregar
+        const productosDisponibles = await getPresentacionFinal(idProdt);
+        // seteamos la informacion de productos disponibles
+        setProductosDisponibles(productosDisponibles);
+        // seteamos la informacion de produccion de lote
         setagregacionesProduccionLote(result[0]);
       } else {
         setfeedbackMessages({
@@ -282,10 +614,46 @@ export const AgregarAgregacionV2 = () => {
 
   // ********** SUBMIT DE DEVOLUCIONES ***********
   const crearAgregacionesLoteProduccion = async () => {
-    console.log(detalleProductosAgregados);
-    return;
+    // obtenemos informacion de la requisicion agregacion
+    const informacionRequisicionAgregacion =
+      detalleRequisicionAgregacion["requisicionAgregacion"];
+    const informacionDetalleProductosAgregados =
+      detalleRequisicionAgregacion["detalleProductosAgregados"];
+    const { idProdcMot, idProdFin } = informacionRequisicionAgregacion;
+
+    let formatDataRequisicion = null;
+    // si no es una nueva presentacion
+    if (idProdcMot !== 2) {
+      // buscamos su referencia de producto final
+      const referenciaProductoFinal = prodDetProdc.find(
+        (element) => idProdFin === element.idProdt
+      );
+
+      formatDataRequisicion = {
+        detalleProductosAgregados: informacionDetalleProductosAgregados,
+        requisicionAgregacion: {
+          ...informacionRequisicionAgregacion,
+          idProdc: idLotProdc, // lote de produccion
+          idProdcMot: informacionRequisicionAgregacion["idProdcMot"], // motivo de agregacion
+          idProdFin: referenciaProductoFinal.id, // referencia directa a su producto programado
+          idProdt: informacionRequisicionAgregacion["idProdFin"], // producto final agregado
+        },
+      };
+    } else {
+      formatDataRequisicion = {
+        detalleProductosAgregados: informacionDetalleProductosAgregados,
+        requisicionAgregacion: {
+          ...informacionRequisicionAgregacion,
+          idProdc: idLotProdc, // lote de produccion
+          idProdcMot: informacionRequisicionAgregacion["idProdcMot"], // motivo de agregacion
+          idProdFin: 0, // referencia directa a su producto programado
+          idProdt: informacionRequisicionAgregacion["idProdFin"], // producto final agregado
+        },
+      };
+    }
+    console.log(formatDataRequisicion);
     const resultPeticion = await createAgregacionesLoteProduccion(
-      detalleProductosAgregados
+      formatDataRequisicion
     );
     console.log(resultPeticion);
     const { message_error, description_error } = resultPeticion;
@@ -293,6 +661,14 @@ export const AgregarAgregacionV2 = () => {
     if (message_error.length === 0) {
       // regresamos a la anterior vista
       onNavigateBack();
+      setfeedbackMessages({
+        style_message: "success",
+        feedback_description_error: "Creado con exito",
+      });
+      handleClickFeeback();
+      setTimeout(() => {
+        window.close();
+      }, "1000");
     } else {
       setfeedbackMessages({
         style_message: "error",
@@ -305,32 +681,27 @@ export const AgregarAgregacionV2 = () => {
 
   const handleSubmitAgregacionesLoteProduccion = (e) => {
     e.preventDefault();
-    if (detalleProductosAgregados.length === 0) {
+    if (
+      detalleProductosAgregados.length === 0 ||
+      requisicionAgregacion === null
+    ) {
+      let handleErrors = "";
+      if (detalleProductosAgregados.length === 0) {
+        handleErrors += "- No se ha agregado ningun detalle de agregacion\n";
+      }
+      if (requisicionAgregacion === null) {
+        handleErrors += "- No se ha agregado ningun detalle de requisicion\n";
+      }
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "No has agregado items al detalle",
+        feedback_description_error: handleErrors,
       });
       handleClickFeeback();
     } else {
-      // hacemos una verificacio de los motivos
-      const validMotivoDevolucion = detalleProductosAgregados.find(
-        (element) => element.idProdAgrMot === 0
-      );
-
-      if (validMotivoDevolucion) {
-        // MANEJAMOS FORMULARIOS INCOMPLETOS
-        setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error:
-            "Asegurese de asignar el motivo de la agregacion para cada item",
-        });
-        handleClickFeeback();
-      } else {
-        setdisableButton(true);
-        // crear devolucion
-        crearAgregacionesLoteProduccion();
-      }
+      setdisableButton(true);
+      // crear devolucion
+      crearAgregacionesLoteProduccion();
     }
   };
 
@@ -444,46 +815,46 @@ export const AgregarAgregacionV2 = () => {
             <h6 className="card-header">Agregaciones registradas</h6>
             <div className="card-body">
               <div className="mb-3 row">
-                <Paper>
-                  <TableContainer>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow
-                          sx={{
-                            "& th": {
-                              color: "rgba(96, 96, 96)",
-                              backgroundColor: "#f5f5f5",
-                            },
-                          }}
-                        >
-                          <TableCell align="left" width={200}>
-                            <b>Nombre</b>
-                          </TableCell>
-                          <TableCell align="left" width={20}>
-                            <b>U.M</b>
-                          </TableCell>
-                          <TableCell align="left" width={150}>
-                            <b>Almacen destino</b>
-                          </TableCell>
-                          <TableCell align="left" width={150}>
-                            <b>Motivo devolucion</b>
-                          </TableCell>
-                          <TableCell align="left" width={150}>
-                            <b>Cantidad</b>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {detAgr.map((row, i) => (
-                          <RowDetalleAgregacionLoteProduccion
-                            key={row.id}
-                            detalle={row}
-                          />
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Paper>
+                {/* <Paper> */}
+                <TableContainer>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow
+                        sx={{
+                          "& th": {
+                            color: "rgba(96, 96, 96)",
+                            backgroundColor: "#f5f5f5",
+                          },
+                        }}
+                      >
+                        <TableCell align="left" width={30}>
+                          <b>Ref.</b>
+                        </TableCell>
+                        <TableCell align="left" width={100}>
+                          <b>Motivo</b>
+                        </TableCell>
+                        <TableCell align="left" width={200}>
+                          <b>Presentacion</b>
+                        </TableCell>
+                        <TableCell align="left" width={100}>
+                          <b>Estado</b>
+                        </TableCell>
+                        <TableCell align="left" width={80}>
+                          <b>Acciones</b>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {prodDetAgr.map((row, i) => (
+                        <RowDetalleAgregacionLoteProduccion
+                          key={row.id}
+                          detalle={row}
+                        />
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                {/* </Paper> */}
               </div>
             </div>
           </div>
@@ -493,65 +864,78 @@ export const AgregarAgregacionV2 = () => {
             <h6 className="card-header">Detalle de agregaciones</h6>
 
             <div className="card-body">
-              {/* AGREGAR PRODUCTO */}
-              {/**
-                   <div className="col-md-5" style={{ display:"flex", flexDirection:"column"}}>
-                    <label className="form-label">Producto final</label>
-                      <Select
-                        size="small"
-                        //value={"age"}
-                        name="finalProduct"
-                        onChange={handleInputsProductosFinales}
-                        >
-                          {agregacionesProduccionLote.finalProducts?.map((obj)=>{
-                            return(
-                              <MenuItem key={obj.id} value={obj.id}>{obj.nomProd}</MenuItem>
-                            )
-                          })}
-                      </Select>
-                  </div>
-                  */}
-
-              {/* KILOGRAMOS DE LOTE ASIGNADOS */}
-              {/**
-                 <div className="col-md-2">
+              <form className="row mb-4 d-flex flex-row justify-content-start align-items-end">
+                {/* AGREGAR MOTIVO DE AGREGACION */}
+                <div className="col-md-3">
+                  <label className="form-label">Motivo</label>
+                  {/* Filter de devolucion */}
+                  <FilterMotivoAgregacionDynamic
+                    defaultValue={productoLoteProduccion.idProdcMot}
+                    onNewInput={onAddMotivoAgregacionProduccionAgregacion}
+                  />
+                </div>
+                {/* AGREGAR PRODUCTO */}
+                <div className="col-md-4">
+                  <label className="form-label">Presentación Final</label>
+                  {/* <FilterAllProductos onNewInput={onProductoId} /> */}
+                  <FilterProductosProgramados
+                    defaultValue={productoLoteProduccion.idProdFin}
+                    onNewInput={onAddProductoFinalLoteProduccionAgregacion}
+                    products={filterProductosDisponibles}
+                  />
+                </div>
+                {/* KILOGRAMOS DE LOTE ASIGNADOS */}
+                <div className="col-md-2">
                   <label className="form-label">Cantidad Lote (KG)</label>
                   <TextField
-                    type="number"
+                    //type="number"
                     autoComplete="off"
                     size="small"
+                    type="number"
                     name="cantidadDeLote"
-                    onChange={handledFormcantidadAgregada}
+                    disabled={
+                      idProdcMot === 0
+                        ? true
+                        : idProdcMot === 1
+                        ? true
+                        : idProdcMot === 2
+                        ? false
+                        : true
+                    }
+                    value={cantidadDeLote}
+                    onChange={handleInputsProductoFinalLoteAgregacion}
                   />
                 </div>
+
+                {/* CANTIDAD DE PRRODUCTOS FINALES ESPERADOS
                  */}
 
-              <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
-                {/* AGREGAR PRODUCTO */}
-                <div className="col-md-5">
-                  <label className="form-label">Producto agregado</label>
-                  <FilterAllProductos onNewInput={onAddProductoAgregado} />
-                </div>
-                {/* AREA ENCARGADA */}
                 <div className="col-md-2">
-                  <label className="form-label">Area</label>
-                  <FilterAreaEncargada onNewInput={onAddAreaEncargada} />
-                </div>
-                {/* CANTIDAD DE PRRODUCTOS FINALES ESPERADOS */}
-                <div className="col-md-2">
-                  <label className="form-label">Cantidad producto</label>
+                  <label className="form-label">Cantidad Producto</label>
                   <TextField
-                    type="number"
+                    //type="number"
                     autoComplete="off"
                     size="small"
-                    name="cantidadAgregada"
-                    onChange={handledFormcantidadAgregada}
+                    type="number"
+                    name="cantidadDeProducto"
+                    value={cantidadDeProducto}
+                    disabled={
+                      idProdcMot === 0
+                        ? true
+                        : idProdcMot === 1
+                        ? false
+                        : idProdcMot === 2
+                        ? true
+                        : false
+                    }
+                    onChange={handleInputsProductoFinalCantidadAgregacion}
                   />
                 </div>
+
                 {/* BOTON AGREGAR PRODUCTO */}
-                <div className="col-md-3 d-flex justify-content-end align-self-center ms-auto">
+                <div className="col-md-1 d-flex justify-content-end align-self-center ms-auto">
                   <button
-                    onClick={handleAddproductoAgregado}
+                    onClick={handleAddProductoProduccionLoteAgregacion}
                     className="btn btn-primary"
                   >
                     <svg
@@ -568,6 +952,42 @@ export const AgregarAgregacionV2 = () => {
                   </button>
                 </div>
               </form>
+
+              {/* <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
+              <div className="col-md-5">
+                <label className="form-label">Producto agregado</label>
+                <FilterAllProductos onNewInput={onAddProductoAgregado} />
+              </div>
+              <div className="col-md-2">
+                <label className="form-label">Cantidad producto</label>
+                <TextField
+                  type="number"
+                  autoComplete="off"
+                  size="small"
+                  name="cantidadAgregada"
+                  onChange={handledFormcantidadAgregada}
+                />
+              </div>
+              <div className="col-md-3 d-flex justify-content-end align-self-center ms-auto">
+                <button
+                  onClick={handleAddproductoAgregado}
+                  className="btn btn-primary"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-plus-circle-fill me-2"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                  </svg>
+                  Agregar
+                </button>
+              </div>
+              </form> */}
+
               <div>
                 {/* DETALLE ENVASADO */}
                 <div className="card text-bg-success d-flex">
@@ -585,25 +1005,19 @@ export const AgregarAgregacionV2 = () => {
                                 },
                               }}
                             >
-                              <TableCell align="left" width={200}>
+                              <TableCell align="left" width={230}>
                                 <b>Nombre</b>
-                              </TableCell>
-                              <TableCell align="left" width={100}>
-                                <b>Clase</b>
                               </TableCell>
                               <TableCell align="left" width={20}>
                                 <b>U.M</b>
                               </TableCell>
-                              <TableCell align="center" width={170}>
-                                <b>Producto final</b>
-                              </TableCell>
-                              <TableCell align="left" width={170}>
-                                <b>Motivo agregacion</b>
+                              <TableCell align="left" width={20}>
+                                <b>Unidad</b>
                               </TableCell>
                               <TableCell align="left" width={120}>
-                                <b>Cantidad</b>
+                                <b>Total</b>
                               </TableCell>
-                              <TableCell align="left" width={120}>
+                              <TableCell align="left" width={150}>
                                 <b>Acciones</b>
                               </TableCell>
                             </TableRow>
@@ -612,20 +1026,14 @@ export const AgregarAgregacionV2 = () => {
                             {detalleProductosAgregados.map((row, i) => {
                               if (row.idAre === 5) {
                                 return (
-                                  <RowDetalleAgregacionLoteProduccionEdit
-                                    key={row.idProdt}
+                                  <RowDetalleAgregacionLoteProduccionEditV2
+                                    key={row.idProd}
                                     detalle={row}
-                                    onChangeInputDetalle={
+                                    onChangeItemDetalle={
                                       handleChangeInputProductoAgregado
                                     }
-                                    onChangeMotivoAgregacion={
-                                      handleChangeMotivoAgregacionProductoAgregado
-                                    }
-                                    onDeleteItemDetalle={
+                                    onDeleteItemRequisicion={
                                       handleDeleteProductoAgregado
-                                    }
-                                    agregacionesProduccionLote={
-                                      agregacionesProduccionLote
                                     }
                                   />
                                 );
@@ -654,25 +1062,19 @@ export const AgregarAgregacionV2 = () => {
                                 },
                               }}
                             >
-                              <TableCell align="left" width={200}>
+                              <TableCell align="left" width={230}>
                                 <b>Nombre</b>
-                              </TableCell>
-                              <TableCell align="left" width={100}>
-                                <b>Clase</b>
                               </TableCell>
                               <TableCell align="left" width={20}>
                                 <b>U.M</b>
                               </TableCell>
-                              <TableCell align="center" width={170}>
-                                <b>Producto final</b>
-                              </TableCell>
-                              <TableCell align="left" width={170}>
-                                <b>Motivo agregacion</b>
+                              <TableCell align="left" width={20}>
+                                <b>Unidad</b>
                               </TableCell>
                               <TableCell align="left" width={120}>
-                                <b>Cantidad</b>
+                                <b>Total</b>
                               </TableCell>
-                              <TableCell align="left" width={120}>
+                              <TableCell align="left" width={150}>
                                 <b>Acciones</b>
                               </TableCell>
                             </TableRow>
@@ -681,20 +1083,14 @@ export const AgregarAgregacionV2 = () => {
                             {detalleProductosAgregados.map((row, i) => {
                               if (row.idAre === 6) {
                                 return (
-                                  <RowDetalleAgregacionLoteProduccionEdit
-                                    key={row.idProdt}
+                                  <RowDetalleAgregacionLoteProduccionEditV2
+                                    key={row.idProd}
                                     detalle={row}
-                                    onChangeInputDetalle={
+                                    onChangeItemDetalle={
                                       handleChangeInputProductoAgregado
                                     }
-                                    onChangeMotivoAgregacion={
-                                      handleChangeMotivoAgregacionProductoAgregado
-                                    }
-                                    onDeleteItemDetalle={
+                                    onDeleteItemRequisicion={
                                       handleDeleteProductoAgregado
-                                    }
-                                    agregacionesProduccionLote={
-                                      agregacionesProduccionLote
                                     }
                                   />
                                 );
@@ -741,7 +1137,9 @@ export const AgregarAgregacionV2 = () => {
           severity={style_message}
           sx={{ width: "100%" }}
         >
-          {feedback_description_error}
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
         </Alert>
       </Snackbar>
     </>

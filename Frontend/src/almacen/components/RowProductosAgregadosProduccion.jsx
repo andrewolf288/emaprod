@@ -2,12 +2,10 @@ import React from "react";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import { DetalleProductosFinalesV2 } from "../pages/productos_lote/DetalleProductosFinalesV2";
-import { DialogConfirmarEntradaParcial } from "./componentes-entradasStock/DialogConfirmarEntradaParcial";
 import { DialogTerminarIngresosProductoProgramado } from "./componentes-lote-produccion/DialogTerminarIngresosProductoProgramado";
 
 export const RowProductosAgregadosProduccion = ({
   detalle,
-  idProduccion,
   onTerminarIngresos,
 }) => {
   return (

@@ -194,6 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // AHORA CREAMOS LAS REQUISICIONES CORRESPONDIENTES
                 $idReqEst = 1; // requerido
                 $idReqDetEst = 1; // requerido
+                $idReqTip = 2; // requisicion de envase y encaje
 
                 // requisicion envasado
                 if (!empty($reqDetEnv)) {
@@ -204,14 +205,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $sql_insert_requisicion_envasado =
                         "INSERT INTO
                                 requisicion
-                                (idProdc, idReqEst, idAre)
-                                VALUES (?, ?, ?)";
+                                (idProdc, idReqEst, idAre, idReqTip)
+                                VALUES (?, ?, ?, ?)";
                     try {
                         $pdo->beginTransaction(); // iniciamos una transaccion
                         $stmt_insert_requisicion_envasado = $pdo->prepare($sql_insert_requisicion_envasado);
                         $stmt_insert_requisicion_envasado->bindParam(1, $idLastInsert, PDO::PARAM_INT);
                         $stmt_insert_requisicion_envasado->bindParam(2, $idReqEst, PDO::PARAM_INT);
                         $stmt_insert_requisicion_envasado->bindParam(3, $idAreReqEnv, PDO::PARAM_INT);
+                        $stmt_insert_requisicion_envasado->bindParam(4, $idReqTip, PDO::PARAM_INT);
                         $stmt_insert_requisicion_envasado->execute();
 
                         if ($stmt_insert_requisicion_envasado->rowCount() == 1) {
@@ -271,14 +273,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $sql_insert_requisicion_encajonado =
                         "INSERT INTO
                                 requisicion
-                                (idProdc, idReqEst, idAre)
-                                VALUES (?, ?, ?)";
+                                (idProdc, idReqEst, idAre, idReqTip)
+                                VALUES (?, ?, ?, ?)";
                     try {
                         $pdo->beginTransaction(); // iniciamos una transaccion
                         $stmt_insert_requisicion_encajonado = $pdo->prepare($sql_insert_requisicion_encajonado);
                         $stmt_insert_requisicion_encajonado->bindParam(1, $idLastInsert, PDO::PARAM_INT);
                         $stmt_insert_requisicion_encajonado->bindParam(2, $idReqEst, PDO::PARAM_INT);
                         $stmt_insert_requisicion_encajonado->bindParam(3, $idAreReqEnc, PDO::PARAM_INT);
+                        $stmt_insert_requisicion_encajonado->bindParam(4, $idReqTip, PDO::PARAM_INT);
                         $stmt_insert_requisicion_encajonado->execute();
 
                         if ($stmt_insert_requisicion_encajonado->rowCount() == 1) {

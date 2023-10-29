@@ -120,6 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $siEsEntPar = true; // es entrada total
         $fecha_actual = date('Y-m-d'); // fecha actual
         $fecha_un_mes_atras = date('Y-m-d', strtotime('-1 month', strtotime($fecha_actual))); //fecha hace un mes
+        $idEntStoTip = 1; // entrada de compra
 
         $sql_select_entradas_parciales_pendientes =
             "SELECT * FROM entrada_stock
@@ -167,8 +168,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     fecVenEntSto,
                     fecEntSto,
                     ordCom,
-                    guiRem)
-                    VALUES (?,?,?,?,?,?,?,?,?,$canSel, $canPorSel, $merTot, $canTotCom, $canTotEnt, $canTotDis, $canVar, ?, ?, ?, ?, ?, ?)
+                    guiRem,
+                    idEntStoTip)
+                    VALUES (?,?,?,?,?,?,?,?,?,$canSel, $canPorSel, $merTot, $canTotCom, $canTotEnt, $canTotDis, $canVar, ?, ?, ?, ?, ?, ?, ?)
                     ";
 
             try {
@@ -189,6 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bindParam(13, $fecEntSto, PDO::PARAM_STR); // fecha de entrada
                 $stmt->bindParam(14, $ordCom, PDO::PARAM_STR); // fecha de vencimiento
                 $stmt->bindParam(15, $guiRem, PDO::PARAM_STR); // fecha de entrada
+                $stmt->bindParam(16, $idEntStoTip, PDO::PARAM_INT); // tipo de entrada (compra)
 
                 $stmt->execute(); // ejecutamos
 

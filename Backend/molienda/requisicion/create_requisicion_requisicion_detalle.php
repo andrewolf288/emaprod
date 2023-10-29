@@ -37,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $idReqEst = 1; // estado de requerido
             $idAre = 2; // area molienda
+            $idReqTip = 1; // requisicion de producto intermedio
 
             $sql_consult_requisicion =
                 "SELECT SUBSTR(codReq,5,8) AS numCodReq FROM requisicion WHERE idAre = ? AND codReq IS NOT NULL ORDER BY id DESC LIMIT 1";
@@ -60,8 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql =
                 "INSERT INTO
                     requisicion
-                    (idReqEst, idProdt, codReq, idAre, cantProg, codLotProd, canLotProd)
-                    VALUES (?,?,?,?,?,?,?)";
+                    (idReqEst, idProdt, codReq, idAre, cantProg, codLotProd, canLotProd, idReqTip)
+                    VALUES (?,?,?,?,?,?,?,?)";
             // PREPARAMOS LA CONSULTA
             $stmt = $pdo->prepare($sql);
             //$stmt->bindParam(1, $idProdc, PDO::PARAM_INT);
@@ -72,6 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(5, $klgLotProd, PDO::PARAM_STR); // peso de requisicion
             $stmt->bindParam(6, $codLotProd, PDO::PARAM_STR); // codigo de lote de produccion
             $stmt->bindParam(7, $canLotProd, PDO::PARAM_STR); // cantidad de lote de produccion
+            $stmt->bindParam(8, $idReqTip, PDO::PARAM_INT); // requisicion de producto intermedio
 
             try {
                 $pdo->beginTransaction();
