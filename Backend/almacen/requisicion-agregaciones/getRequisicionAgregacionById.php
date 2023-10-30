@@ -83,10 +83,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             p.nomProd,
                             rad.esComReqAgrDet,
                             rad.canReqAgrDet,
+                            p.idMed,
+                            me.simMed,
                             rad.fecCreReqAgrDet,
                             rad.fecActReqAgrDet
                         FROM requisicion_agregacion_detalle AS rad
                         JOIN producto AS p ON p.id = rad.idProdt
+                        JOIN medida AS me ON me.id = p.idMed
                         WHERE rad.idReqAgr = ?";
                     $stmt_requisicion_agregacion_detalle = $pdo->prepare($sql_requisicion_agregacion_detalle);
                     $stmt_requisicion_agregacion_detalle->bindParam(1, $idReqAgr, PDO::PARAM_INT);

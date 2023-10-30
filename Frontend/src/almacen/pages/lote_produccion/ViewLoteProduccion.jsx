@@ -226,7 +226,7 @@ export const ViewLoteProduccion = () => {
           <div className="card d-flex mb-4">
             <h6 className="card-header">Acciones</h6>
             <div className="card-body align-self-center">
-              <div
+              {/* <div
                 onClick={() => {
                   //console.log(prodLotReq);
                   let result = prodLotReq.every(
@@ -239,26 +239,27 @@ export const ViewLoteProduccion = () => {
                 className="btn btn-primary"
               >
                 Registrar Productos Finales
-              </div>
+              </div> */}
               <div
                 onClick={() => {
-                  navigate(
-                    `/almacen/produccion-devoluciones/crear?idLotProdc=${id}`
-                  );
+                  // navigate(
+                  //   `/almacen/produccion-devoluciones/crear?idLotProdc=${id}`
+                  // );
+                  console.log("Requisicion de devolucion");
                 }}
                 className="btn btn-warning ms-3"
               >
-                Registrar devoluciones
+                Requisiciones de devolucion
               </div>
               <div
                 onClick={() => {
                   navigate(
-                    `/almacen/produccion-agregaciones/crear?idLotProdc=${id}`
+                    `/almacen/produccion-agregaciones/atender-requisiciones?idLotProdc=${id}`
                   );
                 }}
                 className="btn btn-danger ms-3"
               >
-                Registrar Agregaciones
+                Requisiciones de Agregacion
               </div>
             </div>
           </div>
