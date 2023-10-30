@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import queryString from "query-string";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import FechaPicker from "../../../components/Fechas/FechaPicker";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,18 +11,11 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { getProduccionLoteWithDevolucionesById } from "./../../../produccion/helpers/produccion_lote/getProduccionLoteWithDevolucionesById";
-import { RowDetalleDevolucionLoteProduccion } from "./../../components/componentes-devoluciones/RowDetalleDevolucionLoteProduccion";
-import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { TextField } from "@mui/material";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
 import { RowDetalleDevolucionLoteProduccionEdit } from "../../components/componentes-devoluciones/RowDetalleDevolucionLoteProduccionEdit";
 import { createDevolucionesLoteProduccion } from "./../../helpers/devoluciones-lote-produccion/createDevolucionesLoteProduccion";
-import { getProduccionWhitProductosFinales } from "./../../helpers/producto-produccion/getProduccionWhitProductosFinales";
 import { getFormulaProductoDetalleByProducto } from "../../../../src/produccion/helpers/formula_producto/getFormulaProductoDetalleByProducto";
 import { _parseInt } from "../../../utils/functions/FormatDate";
-import PdfDevoluciones from "./PdfDevoluciones";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import ReactDOM from "react-dom";
+import { FilterProductosProgramados } from "../../../components/ReferencialesFilters/Producto/FilterProductosProgramados";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -46,11 +38,13 @@ export const AgregarDevolucionV2 = () => {
     idProdt: 0,
     klgLotProd: "",
     nomProd: "",
-    detDev: [],
+    prodDetProdc: [],
+    prodDetDev: [],
   });
 
   const {
     id,
+    idProdt,
     canLotProd,
     codLotProd,
     desEstPro,
@@ -58,13 +52,22 @@ export const AgregarDevolucionV2 = () => {
     fecVenLotProd,
     klgLotProd,
     nomProd,
-    detDev,
-    numop,
+    prodDetProdc,
+    prodDetDev,
   } = devolucionesProduccionLote;
 
-  const [detalleProductosDevueltos, setdetalleProductosDevueltos] = useState(
-    []
-  );
+  // productos disponibles
+  const [productosDisponibles, setProductosDisponibles] = useState([]);
+
+  // detalle de requisicion agregacion
+  const [detalleRequisicionDevolucion, setDetalleRequisicionDevolucion] =
+    useState({
+      requisicionDevolucion: null,
+      detalleProductosDevueltos: [],
+    });
+
+  const { requisicionDevolucion, detalleProductosDevueltos } =
+    detalleRequisicionDevolucion;
 
   // STATES PARA AGREGAR PRODUCTOS
   const [productoDevuelto, setproductoDevuelto] = useState({
@@ -103,424 +106,107 @@ export const AgregarDevolucionV2 = () => {
 
   const [disableButton, setdisableButton] = useState(false);
 
-  const onAddProductoDevuelto = (value) => {
-    setproductoDevuelto({
-      ...productoDevuelto,
-      idProdDev: value.id,
-    });
-  };
+  // ******* MANEJADORES PARA EL AGREGADO DE PRODUCCION *******
+  // producto final informacion
+  const [formulaProductoFinal, setFormulaProductoFinal] = useState(null);
 
-  // MANEJADOR DE MOTIVO DE DEVOLUCION
-  const onAddMotivoDevolucion = (value) => {
-    setproductoDevuelto({
-      ...productoDevuelto,
-      idProdDevMot: value.id,
-    });
-  };
+  // STATE PARA CONTROLAR LA AGREGACION DE PRODUCTOS FINALES DEL LOTE
+  const [productoLoteProduccion, setproductoLoteProduccion] = useState({
+    idProdFin: 0,
+    cantidadDeProducto: 0,
+  });
 
-  // MANEJADOR DE CANTIDAD
-  const handledFormCantidadDevuelta = ({ target }) => {
-    const { name, value } = target;
-    setproductoDevuelto({
-      ...productoDevuelto,
-      [name]: value,
-    });
-  };
+  const { idProdFin, cantidadDeProducto } = productoLoteProduccion;
 
-  const handleAddProductoDevuelto = async (e) => {
-    e.preventDefault();
-    if (idProdDev !== 0 && cantidadDevuelta > 0.0) {
-      const itemFound = detalleProductosDevueltos.find(
-        (element) => element.idProdt === idProdDev
-      );
+  // funcion para agregar presentacion final para la agregacion
+  const onAddProductoFinalLoteProduccionDevolucion = async ({ id, value }) => {
+    const { result } = await getFormulaProductoDetalleByProducto(id);
+    if (result.length === 1) {
+      const { reqDet } = result[0]; // obtenemos las requisiciones
 
-      //return
+      let reqProdInt = null;
+      let reqEnvEnc = [];
 
-      if (itemFound) {
+      reqDet.forEach((detalle) => {
+        if (detalle.idAre === 2 || detalle.idAre === 7) {
+          reqProdInt = detalle;
+        } else {
+          reqEnvEnc.push(detalle);
+        }
+      });
+
+      if (reqProdInt !== null) {
+        const formulaPresentacionFinal = {
+          id: result[0].id,
+          idProdFin: result[0].idProdFin,
+          nomProd: result[0].nomProd,
+          simMed: result[0].simMed,
+          canForProInt: reqProdInt.canForProDet,
+          reqDet: reqEnvEnc,
+        };
+
+        setFormulaProductoFinal(formulaPresentacionFinal);
+
+        // seteamos
+        setproductoLoteProduccion({
+          ...productoLoteProduccion,
+          idProdFin: id,
+        });
+      } else {
         setfeedbackMessages({
           style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto al detalle",
+          feedback_description_error:
+            "Esta formula no tiene información de su producto intermedio",
         });
         handleClickFeeback();
-      } else {
-        const resultPeticion = await getMateriaPrimaById(idProdDev);
-        //console.log(resultPeticion)
 
-        const { message_error, description_error, result } = resultPeticion;
-        if (message_error.length === 0) {
-          const {
-            id: idProd,
-            codProd,
-            desCla,
-            desSubCla,
-            nomProd,
-            simMed,
-            idMed,
-          } = result[0];
-          // generamos nuestro detalle
-          const detalle = {
-            idProdc: id, // lote de produccion asociado
-            idProdt: idProd, // producto
-            idProdDevMot: 1, // motivo de devolucion
-            codProd: codProd, // codigo de producto
-            desCla: desCla, // clase del producto
-            desSubCla: desSubCla, // subclase del producto
-            nomProd: nomProd, // nombre del producto
-            idMed: idMed,
-            simMed: simMed, // medida del producto
-            canProdDev: cantidadDevuelta, // cantidad devuelta
-          };
-          //console.log(detalle);
-
-          // seteamos el detalle
-          const dataDetalle = [...detalleProductosDevueltos, detalle];
-          setdetalleProductosDevueltos(dataDetalle);
-        } else {
-          setfeedbackMessages({
-            style_message: "error",
-            feedback_description_error: description_error,
-          });
-          handleClickFeeback();
-        }
+        // reseteamos los campos
+        setproductoLoteProduccion({
+          ...productoLoteProduccion,
+          idProdFin: 0,
+          cantidadDeProducto: 0,
+        });
       }
     } else {
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
+        feedback_description_error:
+          "No hay formulas o hay mas de una formula para esta presetacion final",
       });
       handleClickFeeback();
+
+      // reseteamos los campos
+      setproductoLoteProduccion({
+        ...productoLoteProduccion,
+        idProdFin: 0,
+        cantidadDeProducto: 0,
+      });
     }
   };
 
-  // ACCION PARA EDITAR CAMPOS EN DETALLE DE PRODUCTO DEVUELTO
-  const handleChangeInputProductoDevuelto = async ({ target }, idItem) => {
-    const { value } = target;
-    const editFormDetalle = detalleProductosDevueltos.map((element) => {
-      if (element.idProdt === idItem) {
-        return {
-          ...element,
-          canProdDev: value,
-        };
-      } else {
-        return element;
-      }
-    });
-    setdetalleProductosDevueltos(editFormDetalle);
-  };
-
-  // ACCION PARA CAMBIAR EL MOTIVO DEL DETALLE DE UN PRODUCTO DEVUELTO
-  const handleChangeMotivoDevolucionProductoDevuelto = async (
-    idProdDevMot,
-    idItem
-  ) => {
-    const editFormDetalle = detalleProductosDevueltos.map((element) => {
-      if (element.idProdt === idItem) {
-        return {
-          ...element,
-          idProdDevMot: idProdDevMot,
-        };
-      } else {
-        return element;
-      }
-    });
-
-    setdetalleProductosDevueltos(editFormDetalle);
-  };
-
-  // ACCION PARA ELIMINA DEL DETALLE UN PRODUCTO DEVUELTO
-  const handleDeleteProductoDevuelto = async (idItem) => {
-    console.log(idItem);
-    // filtramos el elemento eliminado
-    const dataDetalleProductosDevueltos = detalleProductosDevueltos.filter(
-      (element) => {
-        if (element.idProdt !== idItem) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    );
-
-    // establecemos el detalle
-    setdetalleProductosDevueltos(dataDetalleProductosDevueltos);
-  };
-
-  async function handleAddProductoProduccionLote(
-    detalleRequisiciones,
-    idProdFin,
-    cantDevProd
-  ) {
-    // var productoLoteProduccion = { idProdFin : 1}
-    if (idProdFin !== 0) {
-      const resultPeticion = await getFormulaProductoDetalleByProducto(
-        idProdFin
-      );
-      const { message_error, description_error, result } = resultPeticion;
-
-      if (message_error.length === 0) {
-        const { idProdFin, nomProd, simMed, reqDet } = result[0];
-        let equivalenteKilogramos = 0;
-
-        reqDet.forEach((element) => {
-          if (element.idAre === 2 || element.idAre === 7) {
-            equivalenteKilogramos = parseFloat(element.canForProDet);
-          }
-        });
-
-        let cantidadUnidades = 0;
-        let cantidadklgLote = 0;
-        cantidadUnidades = Math.round(parseFloat(cantDevProd));
-        cantidadklgLote = parseFloat(
-          (equivalenteKilogramos * parseFloat(cantDevProd)).toFixed(2)
-        );
-
-        reqDet.forEach((element) => {
-          if (element.idAre === 5 || element.idAre === 6) {
-            detalleRequisiciones.push({
-              ...element,
-              //indexProdFin: nextIndex,
-              idProdFin: idProdFin,
-              idProdAgrMot: 1,
-              cantidadUnidades,
-              cantidadklgLote,
-              canReqProdLot: parseFloat(
-                (parseFloat(element.canForProDet) * cantidadUnidades).toFixed(2)
-              ),
-            });
-          } else {
-            return;
-          }
-        });
-
-        //console.log(detalleRequisicionesFormula)
-        detalleRequisiciones.map((obj) => {
-          obj.canReqProdLot = _parseInt(obj);
-        });
-      }
-    }
-
-    return detalleRequisiciones;
-  }
-
-  function getAcuIns(products) {
-    var copyProducts = products.reduce((accumulator, currentValue) => {
-      if (accumulator.some((obj) => obj.idProdt === currentValue.idProdt)) {
-        accumulator.map((obj) => {
-          if (obj.idProdt === currentValue.idProdt) {
-            obj.canReqDet =
-              parseFloat(obj.canReqDet) + parseFloat(currentValue.canReqDet);
-          }
-        });
-      } else {
-        accumulator.push(currentValue);
-      }
-      return accumulator;
-    }, []);
-
-    return copyProducts;
-  }
-  async function getProductToDev(idLotProdc) {
-    const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
-    const { result } = resultPeticion;
-    var products = result[0].proFinProdDet;
-
-    //console.log(resultPeticion);
-    //return;
-    var copyProducts = products.reduce((accumulator, currentValue) => {
-      if (accumulator.some((obj) => obj.idProdt === currentValue.idProdt)) {
-        accumulator.map((obj) => {
-          if (obj.idProdt === currentValue.idProdt) {
-            // acumulado de la cantidad de producto programada
-            obj.canTotProgProdFin =
-              parseFloat(obj.canTotProgProdFin) +
-              parseFloat(currentValue.canTotProgProdFin);
-            obj.canTotProgProdFin = parseFloat(obj.canTotProgProdFin).toFixed(
-              2
-            );
-
-            // acumulado de la cantidad de producto ingresado
-            // canTotIngProdFin => la cantidad de producto terminado registrada
-            obj.canTotIngProdFin =
-              parseFloat(obj.canTotIngProdFin) +
-              parseFloat(currentValue.canTotIngProdFin);
-            obj.canTotIngProdFin = parseFloat(obj.canTotIngProdFin).toFixed(2);
-
-            currentValue.total = obj.canTotProgProdFin;
-
-            // de la orden de producción y agregación, obtenemos las requisiciones por producto terminado.
-            obj.insumos = [...obj.insumos, ...currentValue.insumos];
-
-            obj.insumos = getAcuIns(obj.insumos);
-
-            //obtenemos la diferencia entre productos programados y productos ingresados
-            //var flag =
-            //  parseFloat(obj.canTotProgProdFin) -
-            //  parseFloat(obj.canTotIngProdFin);
-
-            //if (flag > 0) {
-            //  obj.cantDev =
-            //    parseFloat(obj.canTotProgProdFin) -
-            //    parseFloat(obj.canTotIngProdFin);
-            //  obj.cantDev = obj.cantDev.toFixed(2);
-            //} else {
-            //  obj.cantDev = 0;
-            //}
-          }
-        });
-      } else {
-        currentValue.cantDev =
-          parseFloat(currentValue.canTotProgProdFin) -
-          parseFloat(currentValue.canTotIngProdFin);
-        accumulator.push(currentValue);
-      }
-      return accumulator;
-    }, []);
-
-    return copyProducts;
-  }
-
+  // traer informacion de devolucion de produccion
   const traerDatosProduccionLoteWithDevoluciones = async () => {
     if (idLotProdc.length !== 0) {
       const resultPeticion = await getProduccionLoteWithDevolucionesById(
         idLotProdc
       );
-      var productos = await getProductToDev(idLotProdc);
-      //console.log(productos);
-      // return;
-
-      var devoluciones = [];
-      await Promise.all(
-        productos.map(async (prodt) => {
-          var nomProdFin = prodt.nomProd;
-          var detalleRequisiciones = [];
-
-          /**
-           *  Enviamos la cantidad ingresada de producto final a la función de obtencion de insumos => handleAddProductoProduccionLote() de la orden de producción,
-           *  para luego obtener la cantidad real de insumos utilizados.
-           *
-           * a los insumos programados se le restara los insumos utilizados, entonces con eso ya se tiene la cantidad a devolver.
-           */
-
-          detalleRequisiciones = await handleAddProductoProduccionLote(
-            detalleRequisiciones,
-            prodt.idProdt,
-            prodt.canTotIngProdFin
-          );
-
-          detalleRequisiciones.map((obj) => {
-            var producto = prodt.insumos.find(
-              (item) => item.idProdt == obj.idProd
-            );
-            //console.log(detalleRequisiciones, prodt.insumos);
-
-            var flag =
-              parseFloat(producto?.canReqDet) - parseFloat(obj.canReqProdLot);
-            if (producto && flag > 0) {
-              devoluciones.push({
-                nomProdFin: nomProdFin,
-                canProdDev: flag.toFixed(2),
-                codProd: "",
-                desCla: obj.desAre,
-                desSubCla: "",
-                idMed: 7,
-                idProdDevMot: 1,
-                idProdc: idLotProdc,
-                idProdt: obj.idProd,
-                nomProd: obj.nomProd,
-                simMed: obj.simMed,
-                codProd2: obj.codProd2,
-              });
-            }
-          });
-        })
-      );
-
-      /**
-       var devoluciones = devoluciones.reduce((accumulator, currentValue) => {
-        if (accumulator.some((obj) => obj.idProdt == currentValue.idProdt)) {
-          accumulator.map((obj) => {
-            if (obj.idProdt == currentValue.idProdt) {
-              obj.canProdDev =
-                parseFloat(obj.canProdDev) +
-                parseFloat(currentValue.canProdDev);
-              obj.canProdDev = parseFloat(obj.canProdDev).toFixed(2);
-            }
-          });
-        } else {
-          currentValue.canProdDev = parseFloat(currentValue.canProdDev).toFixed(
-            2
-          );
-          accumulator.push(currentValue);
-        }
-        return accumulator;
-      }, []);
-       */
-
       const { message_error, description_error, result } = resultPeticion;
 
-      /**
-       *  de las insumos duplicadas, lo convertimos a un registro,
-       *  también actualizamos el campo "canProdDev" a un acumulativo
-       */
-      result[0].detDev = result[0].detDev.reduce(
-        (accumulator, currentValue) => {
-          if (accumulator.some((obj) => obj.idProdt == currentValue.idProdt)) {
-            accumulator.map((obj) => {
-              if (obj.idProdt == currentValue.idProdt) {
-                obj.canProdDev =
-                  parseFloat(obj.canProdDev) +
-                  parseFloat(currentValue.canProdDev);
-                obj.canProdDev = parseFloat(obj.canProdDev).toFixed(2);
-              }
-            });
-          } else {
-            currentValue.canProdDev = parseFloat(
-              currentValue.canProdDev
-            ).toFixed(2);
-            accumulator.push(currentValue);
-          }
-          return accumulator;
-        },
-        []
-      );
-
-      /**
-       * obtenemos la cantidad estimada a devolver por cada insumo
-       */
-      var total = 0;
-      result[0].detDev.map((obj) => {
-        total = parseFloat(total) + parseFloat(obj.canProdDev);
-        obj.acumulado = total;
-        function getVal() {
-          var cantDev = 0;
-          devoluciones.map((prod) => {
-            if (prod.idProdt == obj.idProdt) {
-              obj.cantDev = prod.canProdDev;
-            }
-          });
-          return cantDev;
-        }
-        getVal();
-      });
-
-      /**
-       * Actualizamos la cantidad a devolver de cada insumo, lo restamos por la cantidad que ya ha sido devuelto
-       */
-      devoluciones.map((obj) => {
-        result[0].detDev.map((prod) => {
-          if (prod.idProdt == obj.idProdt) {
-            obj.canProdDev = (
-              parseFloat(obj.canProdDev) - parseFloat(prod.canProdDev)
-            ).toFixed(2);
-          }
-        });
-      });
-
-      const dataDetalle = [...detalleProductosDevueltos, ...devoluciones];
-      setdetalleProductosDevueltos(dataDetalle);
-
-      console.log(result[0]);
       if (message_error.length === 0) {
+        const { idProdt, prodDetProdc } = result[0];
+
+        // ahora debemos obtener los productos que se podran agregar
+        const productosDisponibles = prodDetProdc.map((element) => {
+          return {
+            id: element.idProdt,
+            nomProd: element.nomProd,
+            simMed: element.simMed,
+            codProd2: element.codProd2,
+          };
+        });
+        // seteamos la informacion de productos disponibles
+        setProductosDisponibles(productosDisponibles);
+        // seteamos la informacion de produccion de lote
         setdevolucionesProduccionLote(result[0]);
       } else {
         setfeedbackMessages({
@@ -536,13 +222,7 @@ export const AgregarDevolucionV2 = () => {
     var productos = detalleProductosDevueltos?.filter(
       (obj) => parseFloat(obj.canProdDev) > 0
     );
-    //console.log(productos)
-    //return
     const resultPeticion = await createDevolucionesLoteProduccion(productos);
-
-    //console.log(resultPeticion);
-    //return
-
     const { message_error, description_error } = resultPeticion;
 
     if (message_error.length === 0) {
@@ -622,7 +302,7 @@ export const AgregarDevolucionV2 = () => {
                   />
                 </div>
 
-                <div className="col-md-2">
+                {/* <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
                     <b>Numero OP</b>
                   </label>
@@ -632,7 +312,7 @@ export const AgregarDevolucionV2 = () => {
                     value={numop}
                     className="form-control"
                   />
-                </div>
+                </div> */}
 
                 {/* PRODUCTO */}
                 <div className="col-md-4 me-4">
@@ -714,7 +394,7 @@ export const AgregarDevolucionV2 = () => {
           <div className="card d-flex mt-4">
             <h6 className="card-header"></h6>
 
-            <div className="card-body">
+            {/* <div className="card-body">
               <div className="mb-3 row">
                 <div className="btn-toolbar">
                   <button
@@ -747,13 +427,13 @@ export const AgregarDevolucionV2 = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          {/* DEVOLUCIONES ASOCIADAS AL LOTE DE PRODUCCION */}
-          <div className="card d-flex mt-4">
-            <h6 className="card-header">Devoluciones registradas</h6>
+            {/* DEVOLUCIONES ASOCIADAS AL LOTE DE PRODUCCION */}
+            <div className="card d-flex mt-4">
+              <h6 className="card-header">Devoluciones registradas</h6>
 
-            <div className="card-body">
+              {/* <div className="card-body">
               <div className="mb-3 row">
                 <Paper>
                   <TableContainer>
@@ -782,13 +462,6 @@ export const AgregarDevolucionV2 = () => {
                           <TableCell align="left" width={20}>
                             <b>Cantidad devuelta</b>
                           </TableCell>
-
-                          {/**
-                           <TableCell align="left" width={20}>
-                            <b>Acumulado</b>
-                          </TableCell>
-                          */}
-
                           <TableCell align="left" width={20}>
                             <b>Cantidad estimada a devolver</b>
                           </TableCell>
@@ -805,7 +478,7 @@ export const AgregarDevolucionV2 = () => {
                     </Table>
                   </TableContainer>
                 </Paper>
-              </div>
+                        </div> */}
             </div>
           </div>
 
@@ -816,15 +489,16 @@ export const AgregarDevolucionV2 = () => {
               <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
                 {/* AGREGAR PRODUCTO */}
                 <div className="col-md-5">
-                  <label className="form-label">Producto devuelto</label>
-                  <FilterAllProductos
-                    onNewInput={onAddProductoDevuelto}
-                    productos={devolucionesProduccionLote.requisiciones}
+                  <label className="form-label">Presentación final</label>
+                  <FilterProductosProgramados
+                    defaultValue={productoLoteProduccion.idProdFin}
+                    onNewInput={onAddProductoFinalLoteProduccionDevolucion}
+                    products={productosDisponibles}
                   />
                 </div>
 
                 {/* CANTIDAD DE PRRODUCTOS FINALES ESPERADOS */}
-                <div className="col-md-2">
+                {/* <div className="col-md-2">
                   <label className="form-label">Cantidad producto</label>
                   <TextField
                     type="number"
@@ -833,11 +507,11 @@ export const AgregarDevolucionV2 = () => {
                     name="cantidadDevuelta"
                     onChange={handledFormCantidadDevuelta}
                   />
-                </div>
+                </div> */}
                 {/* BOTON AGREGAR PRODUCTO */}
                 <div className="col-md-3 d-flex justify-content-end align-self-center ms-auto">
                   <button
-                    onClick={handleAddProductoDevuelto}
+                    // onClick={handleAddProductoDevuelto}
                     className="btn btn-primary"
                   >
                     <svg
@@ -867,11 +541,6 @@ export const AgregarDevolucionV2 = () => {
                             },
                           }}
                         >
-                          {/**
-                            <TableCell align="left" width={20}>
-                            <b>Prod Fin</b>
-                          </TableCell>
-                          */}
                           <TableCell align="left" width={200}>
                             <b>Nombre</b>
                           </TableCell>
@@ -880,9 +549,6 @@ export const AgregarDevolucionV2 = () => {
                           </TableCell>
                           <TableCell align="left" width={20}>
                             <b>U.M</b>
-                          </TableCell>
-                          <TableCell align="left" width={170}>
-                            <b>Motivo devolucion</b>
                           </TableCell>
                           <TableCell align="left" width={120}>
                             <b>Cantidad</b>
@@ -898,13 +564,10 @@ export const AgregarDevolucionV2 = () => {
                             <RowDetalleDevolucionLoteProduccionEdit
                               key={row.idProdt}
                               detalle={row}
-                              onChangeInputDetalle={
-                                handleChangeInputProductoDevuelto
-                              }
-                              onChangeMotivoDevolucion={
-                                handleChangeMotivoDevolucionProductoDevuelto
-                              }
-                              onDeleteItemDetalle={handleDeleteProductoDevuelto}
+                              // onChangeInputDetalle={
+                              //   handleChangeInputProductoDevuelto
+                              // }
+                              // onDeleteItemDetalle={handleDeleteProductoDevuelto}
                             />
                           );
                         })}
