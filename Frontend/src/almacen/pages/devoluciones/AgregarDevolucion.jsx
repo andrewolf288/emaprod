@@ -873,11 +873,6 @@ export const AgregarDevolucion = () => {
                             },
                           }}
                         >
-                          {/**
-                            <TableCell align="left" width={20}>
-                            <b>Prod Fin</b>
-                          </TableCell>
-                          */}
                           <TableCell align="left" width={200}>
                             <b>Nombre</b>
                           </TableCell>
@@ -887,11 +882,6 @@ export const AgregarDevolucion = () => {
                           <TableCell align="left" width={20}>
                             <b>U.M</b>
                           </TableCell>
-                          {/**
-                              <TableCell align="left" width={170}>
-                            <b>Motivo devolucion</b>
-                          </TableCell>
-                            */}
                           <TableCell align="left" width={120}>
                             <b>Cantidad</b>
                           </TableCell>
@@ -910,9 +900,6 @@ export const AgregarDevolucion = () => {
                               onChangeInputDetalle={
                                 handleChangeInputProductoDevuelto
                               }
-                              // onChangeMotivoDevolucion={
-                              //   handleChangeMotivoDevolucionProductoDevuelto
-                              // }
                               onDeleteItemDetalle={handleDeleteProductoDevuelto}
                             />
                           );

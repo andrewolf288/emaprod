@@ -11,15 +11,28 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { getProduccionLoteWithDevolucionesById } from "./../../../produccion/helpers/produccion_lote/getProduccionLoteWithDevolucionesById";
-import { RowDetalleDevolucionLoteProduccionEdit } from "../../components/componentes-devoluciones/RowDetalleDevolucionLoteProduccionEdit";
 import { createDevolucionesLoteProduccion } from "./../../helpers/devoluciones-lote-produccion/createDevolucionesLoteProduccion";
 import { getFormulaProductoDetalleByProducto } from "../../../../src/produccion/helpers/formula_producto/getFormulaProductoDetalleByProducto";
 import { _parseInt } from "../../../utils/functions/FormatDate";
 import { FilterProductosProgramados } from "../../../components/ReferencialesFilters/Producto/FilterProductosProgramados";
+import { RowDetalleDevolucionLoteProduccionEdit } from "./RowDetalleDevolucionLoteProduccionEdit";
+import { TextField } from "@mui/material";
 
+// CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
+function parseIntCantidad(str, property) {
+  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(5);
+  let index = str.canReqProdLot.toString().indexOf(".");
+  let result = str.canReqProdLot.toString().substring(index + 1);
+  let val =
+    parseInt(result) >= 1 && str.simMed !== "KGM"
+      ? Math.trunc(str.canReqProdLot) + 1
+      : str.canReqProdLot;
+  return val;
+}
 
 export const AgregarDevolucionV2 = () => {
   const location = useLocation();
@@ -184,6 +197,69 @@ export const AgregarDevolucionV2 = () => {
     }
   };
 
+  const handleAddProductoDevuelto = async (e) => {
+    e.preventDefault();
+    console.log(formulaProductoFinal);
+    const { idProdFin, nomProd, simMed, reqDet } = formulaProductoFinal;
+    const productoFinalProduccion = prodDetProdc.find(
+      (element) => element.idProdt === idProdFin
+    );
+    const { canTotProgProdFin, canTotIngProdFin } = productoFinalProduccion;
+    const cantidadSobrante = canTotProgProdFin - canTotIngProdFin;
+    if (cantidadSobrante > 0) {
+      console.log(cantidadSobrante);
+      let detalleRequisicion = [];
+      reqDet.forEach((detalle) => {
+        const cantidadRequisicionDevuelta = parseFloat(
+          cantidadSobrante * detalle.canForProDet
+        ).toFixed(5);
+        detalleRequisicion.push({
+          ...detalle,
+          idProdFin: productoLoteProduccion.idProdFin,
+          canReqProdLot: cantidadRequisicionDevuelta,
+          motivos: [
+            {
+              idProdDevMot: 1,
+              nomDevMot: "Sobrantes de requisicion",
+              canProdDev: cantidadRequisicionDevuelta,
+            },
+            {
+              idProdDevMot: 2,
+              nomDevMot: "Desmedros de produccion",
+              canProdDev: 0,
+            },
+            {
+              idProdDevMot: 3,
+              nomDevMot: "Otros",
+              canProdDev: 0,
+            },
+          ],
+        });
+
+        detalleRequisicion.map((obj) => {
+          obj.canReqProdLot = parseIntCantidad(obj);
+        });
+      });
+      console.log(detalleRequisicion);
+
+      // actualizamos el detalle de requisicion de devolucion
+      setDetalleRequisicionDevolucion({
+        requisicionDevolucion: {
+          ...productoLoteProduccion,
+          cantidadDeProducto: cantidadSobrante,
+        },
+        detalleProductosDevueltos: detalleRequisicion,
+      });
+    } else {
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error:
+          "No sobra cantidad para devolver de esta presentación",
+      });
+      handleClickFeeback();
+    }
+  };
+
   // traer informacion de devolucion de produccion
   const traerDatosProduccionLoteWithDevoluciones = async () => {
     if (idLotProdc.length !== 0) {
@@ -198,10 +274,11 @@ export const AgregarDevolucionV2 = () => {
         // ahora debemos obtener los productos que se podran agregar
         const productosDisponibles = prodDetProdc.map((element) => {
           return {
-            id: element.idProdt,
-            nomProd: element.nomProd,
-            simMed: element.simMed,
-            codProd2: element.codProd2,
+            id: element.idProdt, // producto
+            idProdFin: element.id, // referencia a producto final lote
+            nomProd: element.nomProd, // nombre de producto
+            simMed: element.simMed, // simbolo de la medida
+            codProd2: element.codProd2, // codigo
           };
         });
         // seteamos la informacion de productos disponibles
@@ -301,18 +378,6 @@ export const AgregarDevolucionV2 = () => {
                     className="form-control"
                   />
                 </div>
-
-                {/* <div className="col-md-2">
-                  <label htmlFor="nombre" className="form-label">
-                    <b>Numero OP</b>
-                  </label>
-                  <input
-                    type="text"
-                    disabled={true}
-                    value={numop}
-                    className="form-control"
-                  />
-                </div> */}
 
                 {/* PRODUCTO */}
                 <div className="col-md-4 me-4">
@@ -433,52 +498,9 @@ export const AgregarDevolucionV2 = () => {
             <div className="card d-flex mt-4">
               <h6 className="card-header">Devoluciones registradas</h6>
 
-              {/* <div className="card-body">
-              <div className="mb-3 row">
-                <Paper>
-                  <TableContainer>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow
-                          sx={{
-                            "& th": {
-                              color: "rgba(96, 96, 96)",
-                              backgroundColor: "#f5f5f5",
-                            },
-                          }}
-                        >
-                          <TableCell align="left" width={200}>
-                            <b>Nombre</b>
-                          </TableCell>
-                          <TableCell align="left" width={20}>
-                            <b>U.M</b>
-                          </TableCell>
-                          <TableCell align="left" width={150}>
-                            <b>Almacen destino</b>
-                          </TableCell>
-                          <TableCell align="left" width={150}>
-                            <b>Motivo devolucion</b>
-                          </TableCell>
-                          <TableCell align="left" width={20}>
-                            <b>Cantidad devuelta</b>
-                          </TableCell>
-                          <TableCell align="left" width={20}>
-                            <b>Cantidad estimada a devolver</b>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {detDev.map((row, i) => (
-                          <RowDetalleDevolucionLoteProduccion
-                            key={row.id}
-                            detalle={row}
-                          />
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Paper>
-                        </div> */}
+              <div className="card-body">
+                <div></div>
+              </div>
             </div>
           </div>
 
@@ -498,20 +520,25 @@ export const AgregarDevolucionV2 = () => {
                 </div>
 
                 {/* CANTIDAD DE PRRODUCTOS FINALES ESPERADOS */}
-                {/* <div className="col-md-2">
-                  <label className="form-label">Cantidad producto</label>
+                <div className="col-md-3">
+                  <label className="form-label">Cantidad devuelta</label>
                   <TextField
                     type="number"
                     autoComplete="off"
                     size="small"
                     name="cantidadDevuelta"
-                    onChange={handledFormCantidadDevuelta}
+                    disabled={true}
+                    value={
+                      requisicionDevolucion
+                        ? requisicionDevolucion.cantidadDeProducto
+                        : 0
+                    }
                   />
-                </div> */}
+                </div>
                 {/* BOTON AGREGAR PRODUCTO */}
                 <div className="col-md-3 d-flex justify-content-end align-self-center ms-auto">
                   <button
-                    // onClick={handleAddProductoDevuelto}
+                    onClick={handleAddProductoDevuelto}
                     className="btn btn-primary"
                   >
                     <svg
@@ -542,13 +569,10 @@ export const AgregarDevolucionV2 = () => {
                           }}
                         >
                           <TableCell align="left" width={200}>
-                            <b>Nombre</b>
+                            <b>Presentación final</b>
                           </TableCell>
-                          <TableCell align="left" width={100}>
-                            <b>Clase</b>
-                          </TableCell>
-                          <TableCell align="left" width={20}>
-                            <b>U.M</b>
+                          <TableCell align="left" width={50}>
+                            <b>Medida</b>
                           </TableCell>
                           <TableCell align="left" width={120}>
                             <b>Cantidad</b>
@@ -559,18 +583,18 @@ export const AgregarDevolucionV2 = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {detalleProductosDevueltos.map((row, i) => {
-                          return (
+                        {requisicionDevolucion !== null &&
+                          detalleProductosDevueltos.length !== 0 &&
+                          detalleProductosDevueltos.map((detalle, index) => (
                             <RowDetalleDevolucionLoteProduccionEdit
-                              key={row.idProdt}
-                              detalle={row}
+                              key={index}
+                              detalle={detalle}
                               // onChangeInputDetalle={
                               //   handleChangeInputProductoDevuelto
                               // }
                               // onDeleteItemDetalle={handleDeleteProductoDevuelto}
                             />
-                          );
-                        })}
+                          ))}
                       </TableBody>
                     </Table>
                   </TableContainer>

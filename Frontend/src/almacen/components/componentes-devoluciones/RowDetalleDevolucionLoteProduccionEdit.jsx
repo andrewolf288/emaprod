@@ -17,7 +17,7 @@ export const RowDetalleDevolucionLoteProduccionEdit = ({
   };
   return (
     <TableRow>
-     {/**
+      {/**
        <TableCell>{detalle.nomProdFin}</TableCell>
       */}
       <TableCell>{detalle.nomProd}</TableCell>

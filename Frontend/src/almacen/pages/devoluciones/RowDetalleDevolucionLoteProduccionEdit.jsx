@@ -29,19 +29,8 @@ export const RowDetalleDevolucionLoteProduccionEdit = ({
   return (
     <React.Fragment>
       <TableRow>
-        {/**
-       <TableCell>{detalle.nomProdFin}</TableCell>
-      */}
         <TableCell>{detalle.nomProd}</TableCell>
-        <TableCell>{detalle.desCla}</TableCell>
         <TableCell>{detalle.simMed}</TableCell>
-        {/**
-          <TableCell>
-          <FilterMotivoDevolucion
-            onNewInput={handleDetalleChangeMotivoDevolucion}
-          />
-        </TableCell>
-         */}
         <TableCell>
           <TextField
             disabled={disabledInput}
@@ -51,7 +40,7 @@ export const RowDetalleDevolucionLoteProduccionEdit = ({
             type="number"
             autoComplete="off"
             size="small"
-            value={detalle.canProdDev}
+            value={detalle.canReqProdLot}
           />
         </TableCell>
         <TableCell>
