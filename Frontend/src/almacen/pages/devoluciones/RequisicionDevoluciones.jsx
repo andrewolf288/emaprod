@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import queryString from "query-string";
-import { getRequisicionesAgregacionByProduccion } from "../../helpers/agregaciones-lote-produccion/getRequisicionesAgregacionByProduccion";
-import { CardRequisicionAgregacion } from "../../components/componentes-agregaciones/CardRequisicionAgregacion";
-import { deleteRequisicionAgregacionDetalleById } from "../../helpers/agregaciones-lote-produccion/deleteRequisicionAgregacionDetalleById";
-import { updateRequisicionAgregacionDetalleById } from "../../helpers/agregaciones-lote-produccion/updateRequisicionAgregacionDetalleById";
-import { createSalidasStockRequisicionAgregacionDetalleById } from "../../helpers/agregaciones-lote-produccion/createSalidasStockRequisicionAgregacionDetalleById";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   CircularProgress,
   Dialog,
@@ -13,23 +8,26 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { Typography } from "@mui/material";
+import { getRequisicionesDevolucionByProduccion } from "../../helpers/devoluciones-lote-produccion/getRequisicionesDevolucionByProduccion";
+import { CardRequisicionDevolucion } from "../../components/componentes-devoluciones/CardRequisicionDevolucion";
+import { deleteRequisicionDevolucionDetalleById } from "../../helpers/devoluciones-lote-produccion/deleteRequisicionDevolucionDetalleById";
+import { updateRequisicionDevolucionDetalleById } from "../../helpers/devoluciones-lote-produccion/updateRequisicionDevolucionDetalleById";
+import { createEntradasStockRequisicionDevolucionDetalle } from "../../helpers/devoluciones-lote-produccion/createEntradasStockRequisicionDevolucionDetalle";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-// esta interfaz esta hecha para atender las requisiciones de agregaciones de un proceso de produccion
-export const RequisicionAgregaciones = () => {
+export const RequisicionDevoluciones = () => {
   const location = useLocation();
   const { idLotProdc = "" } = queryString.parse(location.search);
 
   // ESTADOS PARA LA DATA DE DEVOLUCIONES
-  const [agregacionesProduccionLote, setagregacionesProduccionLote] = useState({
+  const [devolucionesProduccionLote, setdevolucionesProduccionLote] = useState({
     id: 0,
     canLotProd: 0,
     codLotProd: "",
@@ -41,7 +39,7 @@ export const RequisicionAgregaciones = () => {
     idProdt: 0,
     klgLotProd: "",
     nomProd: "",
-    prodDetAgr: [],
+    prodDetDev: [],
   });
 
   const {
@@ -54,8 +52,8 @@ export const RequisicionAgregaciones = () => {
     fecVenLotProd,
     klgLotProd,
     nomProd,
-    prodDetAgr,
-  } = agregacionesProduccionLote;
+    prodDetDev,
+  } = devolucionesProduccionLote;
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
   const [loading, setLoading] = useState(false);
@@ -98,15 +96,15 @@ export const RequisicionAgregaciones = () => {
   };
 
   // funcion para editar la requisicion de agregacion
-  const onDeleteDetalleRequisicionAgregacion = async (detalle) => {
+  const onDeleteDetalleRequisicionDevolucion = async (detalle) => {
     console.log(detalle);
     // abrimos el loader
     openLoader();
     const { message_error, description_error, result } =
-      await deleteRequisicionAgregacionDetalleById(detalle);
+      await deleteRequisicionDevolucionDetalleById(detalle);
     if (message_error.length === 0) {
       // llamamos a la data
-      traerDatosProduccionLoteWithAgregaciones();
+      traerDatosProduccionLoteWithDevoluciones();
     } else {
       setfeedbackMessages({
         style_message: "error",
@@ -119,16 +117,16 @@ export const RequisicionAgregaciones = () => {
   };
 
   // funcion para eliminar la requisicion de agregacion
-  const onUpdateDetalleRequisicionAgregacion = async (detalle, inputValue) => {
+  const onUpdateDetalleRequisicionDevolucion = async (detalle, inputValue) => {
     console.log(detalle, inputValue);
     // abrimos el loader
     openLoader();
     // canReqAgrDetNew
     const { message_error, description_error, result } =
-      await updateRequisicionAgregacionDetalleById(detalle, inputValue);
+      await updateRequisicionDevolucionDetalleById(detalle, inputValue);
     if (message_error.length === 0) {
       // llamamos a la data
-      traerDatosProduccionLoteWithAgregaciones();
+      traerDatosProduccionLoteWithDevoluciones();
     } else {
       setfeedbackMessages({
         style_message: "error",
@@ -141,15 +139,18 @@ export const RequisicionAgregaciones = () => {
   };
 
   // funcion para cumplir la requisicion de agregacion
-  const onCheckDetalleRequisicionAgregacion = async (detalle) => {
+  const onCheckDetalleRequisicionDevolucion = async (detalle) => {
     console.log(detalle);
     // abrimos el loader
     openLoader();
     const { message_error, description_error, result } =
-      await createSalidasStockRequisicionAgregacionDetalleById(detalle);
+      await createEntradasStockRequisicionDevolucionDetalle(
+        detalle,
+        idLotProdc
+      );
     if (message_error.length === 0) {
       // llamamos a la data
-      traerDatosProduccionLoteWithAgregaciones();
+      traerDatosProduccionLoteWithDevoluciones();
     } else {
       setfeedbackMessages({
         style_message: "error",
@@ -162,9 +163,9 @@ export const RequisicionAgregaciones = () => {
   };
 
   // FUNCION PARA TRAES DATOS DE PRODUCCION LOTE
-  const traerDatosProduccionLoteWithAgregaciones = async () => {
+  const traerDatosProduccionLoteWithDevoluciones = async () => {
     if (idLotProdc.length !== 0) {
-      const resultPeticion = await getRequisicionesAgregacionByProduccion(
+      const resultPeticion = await getRequisicionesDevolucionByProduccion(
         idLotProdc
       );
       const { message_error, description_error, result } = resultPeticion;
@@ -172,7 +173,7 @@ export const RequisicionAgregaciones = () => {
 
       if (message_error.length === 0) {
         // seteamos la informacion de produccion de lote
-        setagregacionesProduccionLote(result[0]);
+        setdevolucionesProduccionLote(result[0]);
       } else {
         setfeedbackMessages({
           style_message: "error",
@@ -185,13 +186,13 @@ export const RequisicionAgregaciones = () => {
 
   useEffect(() => {
     // TRAEMOS LA DATA DE REQUSICION DETALLE
-    traerDatosProduccionLoteWithAgregaciones();
+    traerDatosProduccionLoteWithDevoluciones();
   }, []);
 
   return (
     <>
       <div className="container-fluid px-4">
-        <h1 className="mt-4 text-center">Atender requisiciones agregacion</h1>
+        <h1 className="mt-4 text-center">Atender requisiciones devolución</h1>
         <div className="row mt-4 mx-4">
           {/* Datos de produccion */}
           <div className="card d-flex">
@@ -290,18 +291,18 @@ export const RequisicionAgregaciones = () => {
           {/* REQUISICIONES DE AGREGACION REGISTRADAS */}
           <div className="card d-flex mt-4">
             <h6 className="card-header">Requisiciones</h6>
-            {prodDetAgr.map((requisicion) => (
-              <CardRequisicionAgregacion
+            {prodDetDev.map((requisicion) => (
+              <CardRequisicionDevolucion
                 key={requisicion.id}
                 requisicion={requisicion}
-                onDeleteRequisicionAgregacionDetalle={
-                  onDeleteDetalleRequisicionAgregacion
+                onDeleteRequisicionDevolucionDetalle={
+                  onDeleteDetalleRequisicionDevolucion
                 }
-                onUpdateRequisicionAgregacionDetalle={
-                  onUpdateDetalleRequisicionAgregacion
+                onUpdateRequisicionDevolucionDetalle={
+                  onUpdateDetalleRequisicionDevolucion
                 }
-                onCheckRequisicionAgrgeacionDetalle={
-                  onCheckDetalleRequisicionAgregacion
+                onCheckRequisicionDevolucionDetalle={
+                  onCheckDetalleRequisicionDevolucion
                 }
               />
             ))}

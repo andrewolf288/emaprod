@@ -15,8 +15,9 @@ import { createDevolucionesLoteProduccion } from "./../../helpers/devoluciones-l
 import { getFormulaProductoDetalleByProducto } from "../../../../src/produccion/helpers/formula_producto/getFormulaProductoDetalleByProducto";
 import { _parseInt } from "../../../utils/functions/FormatDate";
 import { FilterProductosProgramados } from "../../../components/ReferencialesFilters/Producto/FilterProductosProgramados";
-import { RowDetalleDevolucionLoteProduccionEdit } from "./RowDetalleDevolucionLoteProduccionEdit";
 import { TextField } from "@mui/material";
+import { RowDevolucionLoteProduccionEdit } from "./RowDevolucionLoteProduccionEdit";
+import { RowDetalleDevolucionLoteProduccion } from "../../components/componentes-devoluciones/RowDetalleDevolucionLoteProduccion";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -217,11 +218,24 @@ export const AgregarDevolucionV2 = () => {
           ...detalle,
           idProdFin: productoLoteProduccion.idProdFin,
           canReqProdLot: cantidadRequisicionDevuelta,
+        });
+      });
+
+      // detalleRequisicion.map((obj) => {
+      //   obj.canReqProdLot = parseIntCantidad(obj);
+      // });
+
+      const detalleRequisicionMotivos = detalleRequisicion.map((obj) => {
+        const cantidadParser = parseIntCantidad(obj);
+        console.log(cantidadParser);
+        return {
+          ...obj,
+          canReqProdLot: cantidadParser,
           motivos: [
             {
               idProdDevMot: 1,
               nomDevMot: "Sobrantes de requisicion",
-              canProdDev: cantidadRequisicionDevuelta,
+              canProdDev: cantidadParser,
             },
             {
               idProdDevMot: 2,
@@ -234,13 +248,10 @@ export const AgregarDevolucionV2 = () => {
               canProdDev: 0,
             },
           ],
-        });
-
-        detalleRequisicion.map((obj) => {
-          obj.canReqProdLot = parseIntCantidad(obj);
-        });
+        };
       });
-      console.log(detalleRequisicion);
+
+      console.log(detalleRequisicionMotivos);
 
       // actualizamos el detalle de requisicion de devolucion
       setDetalleRequisicionDevolucion({
@@ -248,7 +259,7 @@ export const AgregarDevolucionV2 = () => {
           ...productoLoteProduccion,
           cantidadDeProducto: cantidadSobrante,
         },
-        detalleProductosDevueltos: detalleRequisicion,
+        detalleProductosDevueltos: detalleRequisicionMotivos,
       });
     } else {
       setfeedbackMessages({
@@ -258,6 +269,65 @@ export const AgregarDevolucionV2 = () => {
       });
       handleClickFeeback();
     }
+  };
+
+  // ACCION PARA EDITAR CAMPOS EN DETALLE DE PRODUCTO DEVUELTO
+  const handleChangeInputProductoDevuelto = async (
+    { target },
+    detalle,
+    indexProd
+  ) => {
+    const { value } = target;
+    // Crear una copia del arreglo de detalles
+    const editFormDetalle = detalleProductosDevueltos.map((element) => {
+      // Si el idProdt coincide con el detalle proporcionado, actualiza los motivos
+      if (detalle.idProd === element.idProd) {
+        // Crear una copia del arreglo de motivos
+        const nuevosMotivos = [...element.motivos];
+
+        // Si el índice coincide con el índice proporcionado, actualiza canProdDev
+        if (nuevosMotivos[indexProd]) {
+          nuevosMotivos[indexProd].canProdDev = value;
+        }
+
+        // Actualiza los motivos en el detalle
+        element.motivos = nuevosMotivos;
+
+        // Calcula la suma de canProdDev en motivos
+        const sumaMotivos = nuevosMotivos.reduce(
+          (suma, motivo) => suma + Number(motivo.canProdDev || 0),
+          0
+        );
+
+        // Actualiza canProdDev en el detalle del producto con la suma de motivos
+        element.canProdDev = sumaMotivos;
+      }
+
+      return element;
+    });
+
+    setDetalleRequisicionDevolucion({
+      ...detalleRequisicionDevolucion,
+      detalleProductosDevueltos: editFormDetalle,
+    });
+  };
+
+  // Manejador de eliminacion de un detalle de devolucion
+  const handleDeleteProductoDevuelto = async (idItem) => {
+    const dataDetalleProductosDevueltos = detalleProductosDevueltos.filter(
+      (element) => {
+        if (element.idProd !== idItem) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    );
+
+    setDetalleRequisicionDevolucion({
+      ...detalleRequisicionDevolucion,
+      detalleProductosDevueltos: dataDetalleProductosDevueltos,
+    });
   };
 
   // traer informacion de devolucion de produccion
@@ -285,6 +355,7 @@ export const AgregarDevolucionV2 = () => {
         setProductosDisponibles(productosDisponibles);
         // seteamos la informacion de produccion de lote
         setdevolucionesProduccionLote(result[0]);
+        console.log(result[0]);
       } else {
         setfeedbackMessages({
           style_message: "error",
@@ -296,26 +367,73 @@ export const AgregarDevolucionV2 = () => {
   };
 
   const crearDevolucionesLoteProduccion = async () => {
-    var productos = detalleProductosDevueltos?.filter(
-      (obj) => parseFloat(obj.canProdDev) > 0
-    );
-    const resultPeticion = await createDevolucionesLoteProduccion(productos);
-    const { message_error, description_error } = resultPeticion;
+    const detalleDevoluciones = [];
+    const informacionRequisicionDevolucion =
+      detalleRequisicionDevolucion["requisicionDevolucion"];
+    const { idProdFin } = informacionRequisicionDevolucion;
 
-    if (message_error.length === 0) {
-      //onNavigateBack();
-      setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Guardado con exito",
+    let formatDataRequisicion = null;
+
+    const referenciaProductoFinal = prodDetProdc.find(
+      (element) => idProdFin === element.idProdt
+    );
+
+    detalleProductosDevueltos.forEach((element) => {
+      element.motivos.forEach((motivo) => {
+        const canProdDevMot = parseFloat(motivo.canProdDev);
+        const idMotivo = motivo.idProdDevMot;
+        if (!isNaN(canProdDevMot) && canProdDevMot !== 0) {
+          const nuevoObjeto = {
+            ...element,
+            canProdDev: canProdDevMot,
+            idProdDevMot: idMotivo,
+          };
+          delete nuevoObjeto.motivos;
+          detalleDevoluciones.push(nuevoObjeto);
+        }
       });
-      handleClickFeeback();
-      setTimeout(() => {
-        window.close();
-      }, "1000");
+    });
+
+    if (detalleDevoluciones.length !== 0) {
+      formatDataRequisicion = {
+        detalleProductosDevueltos: detalleDevoluciones,
+        requisicionDevolucion: {
+          ...informacionRequisicionDevolucion,
+          idProdc: idLotProdc,
+          idProdFin: referenciaProductoFinal.id,
+          idProdt: informacionRequisicionDevolucion["idProdFin"],
+        },
+      };
+
+      console.log(formatDataRequisicion);
+
+      const resultPeticion = await createDevolucionesLoteProduccion(
+        formatDataRequisicion
+      );
+      const { message_error, description_error } = resultPeticion;
+
+      if (message_error.length === 0) {
+        //onNavigateBack();
+        setfeedbackMessages({
+          style_message: "success",
+          feedback_description_error: "Guardado con exito",
+        });
+        handleClickFeeback();
+        setTimeout(() => {
+          window.close();
+        }, "1000");
+      } else {
+        setfeedbackMessages({
+          style_message: "error",
+          feedback_description_error: description_error,
+        });
+        handleClickFeeback();
+      }
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
+        style_message: "warning",
+        feedback_description_error:
+          "No hay productos por devolver, revisa las cantidades",
       });
       handleClickFeeback();
     }
@@ -332,22 +450,9 @@ export const AgregarDevolucionV2 = () => {
       });
       handleClickFeeback();
     } else {
-      const validMotivoDevolucion = detalleProductosDevueltos.find(
-        (element) => element.idProdDevMot === 0
-      );
-
-      if (validMotivoDevolucion) {
-        setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error:
-            "Asegurese de asignar el motivo de la devolucion para cada item",
-        });
-        handleClickFeeback();
-      } else {
-        setdisableButton(true);
-        // crear devolucion
-        crearDevolucionesLoteProduccion();
-      }
+      setdisableButton(true);
+      // crear devolucion
+      crearDevolucionesLoteProduccion();
     }
   };
 
@@ -459,47 +564,53 @@ export const AgregarDevolucionV2 = () => {
           <div className="card d-flex mt-4">
             <h6 className="card-header"></h6>
 
-            {/* <div className="card-body">
-              <div className="mb-3 row">
-                <div className="btn-toolbar">
-                  <button
-                    onClick={() => {
-                      //handleButtonClick(idLotProdc, "agregaciones", row.flag);
-
-                      const newWindow = window.open(
-                        "",
-                        "windowName",
-                        "fullscreen=yes"
-                      );
-                      ReactDOM.render(
-                        <PdfDevoluciones
-                          data={"data"}
-                          codLotProd={codLotProd}
-                          canLotProd={canLotProd}
-                          numop={numop}
-                          nomProd={nomProd}
-                          desProdTip={desProdTip}
-                          detDev={detDev}
-                          prodToDev={detalleProductosDevueltos}
-                        />,
-                        newWindow.document.body
-                      );
-                    }}
-                    className="btn btn-primary me-2 btn"
-                  >
-                    <PictureAsPdfIcon />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div> */}
-
             {/* DEVOLUCIONES ASOCIADAS AL LOTE DE PRODUCCION */}
             <div className="card d-flex mt-4">
               <h6 className="card-header">Devoluciones registradas</h6>
 
               <div className="card-body">
-                <div></div>
+                <div className="mb-3 row">
+                  {/* <Paper> */}
+                  <TableContainer>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow
+                          sx={{
+                            "& th": {
+                              color: "rgba(96, 96, 96)",
+                              backgroundColor: "#f5f5f5",
+                            },
+                          }}
+                        >
+                          <TableCell align="left" width={30}>
+                            <b>Ref.</b>
+                          </TableCell>
+                          <TableCell align="left" width={200}>
+                            <b>Presentacion</b>
+                          </TableCell>
+                          <TableCell align="left" width={100}>
+                            <b>Cantidad devuelta</b>
+                          </TableCell>
+                          <TableCell align="left" width={100}>
+                            <b>Estado</b>
+                          </TableCell>
+                          <TableCell align="left" width={80}>
+                            <b>Acciones</b>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {prodDetDev.map((row, i) => (
+                          <RowDetalleDevolucionLoteProduccion
+                            key={row.id}
+                            detalle={row}
+                          />
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  {/* </Paper> */}
+                </div>
               </div>
             </div>
           </div>
@@ -586,13 +697,13 @@ export const AgregarDevolucionV2 = () => {
                         {requisicionDevolucion !== null &&
                           detalleProductosDevueltos.length !== 0 &&
                           detalleProductosDevueltos.map((detalle, index) => (
-                            <RowDetalleDevolucionLoteProduccionEdit
+                            <RowDevolucionLoteProduccionEdit
                               key={index}
                               detalle={detalle}
-                              // onChangeInputDetalle={
-                              //   handleChangeInputProductoDevuelto
-                              // }
-                              // onDeleteItemDetalle={handleDeleteProductoDevuelto}
+                              onChangeInputDetalle={
+                                handleChangeInputProductoDevuelto
+                              }
+                              onDeleteItemDetalle={handleDeleteProductoDevuelto}
                             />
                           ))}
                       </TableBody>

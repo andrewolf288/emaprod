@@ -242,10 +242,9 @@ export const ViewLoteProduccion = () => {
               </div> */}
               <div
                 onClick={() => {
-                  // navigate(
-                  //   `/almacen/produccion-devoluciones/crear?idLotProdc=${id}`
-                  // );
-                  console.log("Requisicion de devolucion");
+                  navigate(
+                    `/almacen/produccion-devoluciones/atender-requisiciones?idLotProdc=${id}`
+                  );
                 }}
                 className="btn btn-warning ms-3"
               >

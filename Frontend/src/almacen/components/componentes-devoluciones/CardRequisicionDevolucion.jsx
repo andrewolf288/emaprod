@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { RowDetalleRequisicionAgregacion } from "./RowDetalleRequisicionAgregacion";
 import {
   Table,
   TableBody,
@@ -9,17 +8,19 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import { RowDetalleRequisicionDevolucion } from "./RowDetalleRequisicionDevolucion";
 
-export const CardRequisicionAgregacion = ({
+export const CardRequisicionDevolucion = ({
   requisicion,
-  onDeleteRequisicionAgregacionDetalle,
-  onUpdateRequisicionAgregacionDetalle,
-  onCheckRequisicionAgrgeacionDetalle,
+  onDeleteRequisicionDevolucionDetalle,
+  onUpdateRequisicionDevolucionDetalle,
+  onCheckRequisicionDevolucionDetalle,
 }) => {
   const [mostrarDetalle, setMostrarDetalle] = useState(false);
   const toggleDetalle = () => {
     setMostrarDetalle(!mostrarDetalle);
   };
+
   return (
     <div className="card mt-4">
       <div className="card-header d-flex justify-content-between align-items-center">
@@ -62,10 +63,10 @@ export const CardRequisicionAgregacion = ({
                   <b>Ref.</b>
                 </TableCell>
                 <TableCell>
-                  <b>Motivo</b>
+                  <b>Presentacion</b>
                 </TableCell>
                 <TableCell>
-                  <b>Presentacion</b>
+                  <b>Cantidad unidades</b>
                 </TableCell>
                 <TableCell>
                   <b>Fecha requerido</b>
@@ -78,9 +79,9 @@ export const CardRequisicionAgregacion = ({
             <TableBody>
               <TableRow>
                 <TableCell>{requisicion.idProdFin}</TableCell>
-                <TableCell>{requisicion.desProdAgrMot}</TableCell>
                 <TableCell>{requisicion.nomProd}</TableCell>
-                <TableCell>{requisicion.fecCreReqAgr}</TableCell>
+                <TableCell>{requisicion.canTotUndReqDev}</TableCell>
+                <TableCell>{requisicion.fecCreReqDev}</TableCell>
                 <TableCell>
                   <span
                     className={
@@ -99,11 +100,11 @@ export const CardRequisicionAgregacion = ({
           </Table>
         </TableContainer>
         {mostrarDetalle && (
-          <RowDetalleRequisicionAgregacion
-            detalles={requisicion.detReqAgr}
-            onUpdateDetalle={onUpdateRequisicionAgregacionDetalle}
-            onDeleteDetalle={onDeleteRequisicionAgregacionDetalle}
-            onCheckDetalle={onCheckRequisicionAgrgeacionDetalle}
+          <RowDetalleRequisicionDevolucion
+            detalles={requisicion.detReqDev}
+            onUpdateDetalle={onUpdateRequisicionDevolucionDetalle}
+            onDeleteDetalle={onDeleteRequisicionDevolucionDetalle}
+            onCheckDetalle={onCheckRequisicionDevolucionDetalle}
           />
         )}
       </div>

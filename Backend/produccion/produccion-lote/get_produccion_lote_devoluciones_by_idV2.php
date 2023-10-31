@@ -124,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         rdd.estReg
                         FROM requisicion_devolucion_detalle AS rdd
                         JOIN producto AS p ON p.id = rdd.idProdt
-                        JOIN produccion_devolucion_motivo AS pdm.id = rdd.idMotDev
+                        JOIN produccion_devolucion_motivo AS pdm ON pdm.id = rdd.idMotDev
                         WHERE rdd.idReqDev = ?";
                     $stmt_requisicion_devolucion_detalle = $pdo->prepare($sql_requisicion_devolucion_detalle);
                     $stmt_requisicion_devolucion_detalle->bindParam(1, $idReqDev, PDO::PARAM_INT);

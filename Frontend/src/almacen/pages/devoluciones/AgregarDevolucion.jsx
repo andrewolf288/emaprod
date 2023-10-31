@@ -578,22 +578,9 @@ export const AgregarDevolucion = () => {
       });
       handleClickFeeback();
     } else {
-      const validMotivoDevolucion = detalleProductosDevueltos.find(
-        (element) => element.idProdDevMot === 0
-      );
-
-      if (validMotivoDevolucion) {
-        setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error:
-            "Asegurese de asignar el motivo de la devolucion para cada item",
-        });
-        handleClickFeeback();
-      } else {
-        setdisableButton(true);
-        // crear devolucion
-        crearDevolucionesLoteProduccion();
-      }
+      setdisableButton(true);
+      // crear devolucion
+      crearDevolucionesLoteProduccion();
     }
   };
 
