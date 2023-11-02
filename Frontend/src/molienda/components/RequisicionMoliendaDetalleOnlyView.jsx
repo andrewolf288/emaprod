@@ -49,6 +49,9 @@ export const RequisicionMoliendaDetalleOnlyView = ({ detalle, onClose }) => {
                       <TableCell align="left" width={150}>
                         <b>Materia Prima</b>
                       </TableCell>
+                      <TableCell align="left" width={30}>
+                        <b>Medida</b>
+                      </TableCell>
                       <TableCell align="left" width={70}>
                         <b>Cantidad</b>
                       </TableCell>
@@ -68,10 +71,7 @@ export const RequisicionMoliendaDetalleOnlyView = ({ detalle, onClose }) => {
                         <TableCell component="th" scope="row">
                           {row.nomProd}
                         </TableCell>
-                        {/**
-                         <TableCell align="left">{row.canReqMolDet}</TableCell>
-                        */}
-
+                        <TableCell align="left">{row.simMed}</TableCell>
                         <TableCell align="left">{row.canReqDet}</TableCell>
                         <TableCell align="left">
                           <span

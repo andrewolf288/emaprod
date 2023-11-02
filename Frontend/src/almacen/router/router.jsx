@@ -14,6 +14,7 @@ import { RouterAlmacenLoteProduccion } from "../pages/lote_produccion/RouterAlma
 import { RouterAlmacenDevoluciones } from "./../pages/devoluciones/RouterAlmacenDevoluciones";
 import { RouterAlmacenAgregaciones } from "./../pages/agregaciones/RouterAlmacenAgregaciones";
 import { RouterAlmacenStock } from "./../pages/almacen/RouterAlmacenStock";
+import { RouterRequisicionMateriales } from "../pages/requisicion_materiales/RouterRequisicionMateriales";
 
 export const RouterAlmacen = [
   {
@@ -84,5 +85,10 @@ export const RouterAlmacen = [
     path: "stock-almacen",
     element: <LayoutModulo />,
     children: RouterAlmacenStock,
+  },
+  {
+    path: "requisicion-materiales",
+    element: <LayoutModulo />,
+    children: RouterRequisicionMateriales,
   },
 ];

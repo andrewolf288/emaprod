@@ -23,11 +23,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             p.codProd2,
             p.idCla,
             c.desCla,
+            p.idSubCla,
+            sc.desSubCla,
             p.idMed,
             me.simMed,
             p.nomProd
             FROM producto p
             JOIN clase c ON p.idCla = c.id
+            JOIN sub_clase sc ON p.idSubCla = sc.id
             JOIN medida me ON p.idMed = me.id
             WHERE p.id = ?
             ";

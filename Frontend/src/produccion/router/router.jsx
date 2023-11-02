@@ -3,7 +3,8 @@ import LayoutModulo from "./../../layout/LayoutModulo";
 import { HomeProduccion } from "./../pages/HomeProduccion";
 import { RouterProduccionLote } from "./../pages/produccion_lote/RouterProduccionLote";
 import { RouterFormulaPorProducto } from "./../pages/formulas_por_productos/RouterFormulaPorProducto";
-//import { RouterAlmacenLoteProduccion } from "../pages/lote_produccion/RouterAlmacenLoteProduccion";
+import { RouterRequisicionMateriales } from "../pages/requisicion-materiales/RouterRequisicionMateriales";
+
 export const RouterProduccion = [
   {
     path: "",
@@ -24,5 +25,9 @@ export const RouterProduccion = [
     element: <LayoutModulo />,
     children: RouterFormulaPorProducto,
   },
-   
+  {
+    path: "requisicion-materiales",
+    element: <LayoutModulo />,
+    children: RouterRequisicionMateriales,
+  },
 ];

@@ -489,9 +489,6 @@ export const ListRequisicionesMolienda = () => {
                               //  showRequisicionMoliendaDetalle(i);
                               //}}
                               onClick={() => {
-                                //to={`/almacen/lote-produccion/view/${row.id}`}
-
-                                console.log(row);
                                 window.open(
                                   `/almacen/requisicion-molienda/view/${row.idProdc}/${row.id}`,
                                   "_blank"

@@ -8,11 +8,6 @@ export const RowRequisicionDetalleLoteProduccion = ({
   onUpdateDetalleRequisicion,
   show,
 }) => {
-  if (detalle.idAre === 6 || detalle.idAre === 5) {
-    //const canReqDetFloat = parseFloat(detalle.canReqDet);
-    //const canReqDetRedondeado = Math.ceil(canReqDetFloat);
-    //detalle.canReqDet = canReqDetRedondeado.toString();
-  }
   return (
     <TableRow>
       <TableCell>{detalle.nomProd}</TableCell>

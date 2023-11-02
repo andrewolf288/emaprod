@@ -17,7 +17,7 @@ export const RowDetalleFormula = ({
       }}
     >
       <TableCell component="th" scope="row">
-        {detalle.codProd}
+        {detalle.codProd2}
       </TableCell>
       <TableCell component="th" scope="row">
         {detalle.desCla}
