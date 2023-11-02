@@ -112,12 +112,12 @@ export const ListRequisicionMaterialesAlmacen = () => {
                         <TableCell align="center">
                           <span
                             className={
-                              row.idReqMolEst === 1
+                              row.idReqEst === 1
                                 ? "badge text-bg-danger"
-                                : row.idReqMolEst === 2
+                                : row.idReqEst === 2
                                 ? "badge text-bg-warning"
-                                : row.idReqMolEst === 3
-                                ? "badge text-bg-primary"
+                                : row.idReqEst === 3
+                                ? "badge text-bg-success"
                                 : "badge text-bg-success"
                             }
                           >

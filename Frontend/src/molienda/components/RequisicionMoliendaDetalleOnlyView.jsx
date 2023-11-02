@@ -76,14 +76,11 @@ export const RequisicionMoliendaDetalleOnlyView = ({ detalle, onClose }) => {
                         <TableCell align="left">
                           <span
                             className={
-                              row.idReqMolDetEst === 1
+                              row.idReqDetEst === 1
                                 ? "badge text-bg-danger"
                                 : "badge text-bg-success"
                             }
                           >
-                            {/**
-                            {row.desReqMolDetEst}
-                            */}
                             {row.desReqDetEst}
                           </span>
                         </TableCell>
