@@ -1,5 +1,4 @@
 export function _parseInt(str, property) {
-  console.log(str);
   if (str.canProdAgr) {
     str.canReqDet = str.canProdAgr;
   }

@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import { DetalleAgregacionProduccion } from "./DetalleAgregacionProduccion";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { IconButton } from "@mui/material";
 
-export const RowDetalleAgregacionLoteProduccion = ({ detalle }) => {
+export const RowDetalleAgregacionLoteProduccion = ({
+  detalle,
+  onRenderPDF,
+}) => {
   return (
     <TableRow
       key={detalle.id}
@@ -16,7 +21,19 @@ export const RowDetalleAgregacionLoteProduccion = ({ detalle }) => {
       </TableCell>
       <TableCell align="left">{detalle.desProdAgrMot}</TableCell>
       <TableCell align="left">{detalle.nomProd}</TableCell>
-      <TableCell align="left">{detalle.desReqEst}</TableCell>
+      <TableCell align="left">
+        <span
+          className={
+            detalle.idReqEst === 1
+              ? "badge text-bg-danger"
+              : detalle.idReqEst === 2
+              ? "badge text-bg-warning"
+              : "badge text-bg-success"
+          }
+        >
+          {detalle.desReqEst}
+        </span>
+      </TableCell>
       <TableCell align="center">
         <div className="btn-toolbar">
           {
@@ -24,6 +41,17 @@ export const RowDetalleAgregacionLoteProduccion = ({ detalle }) => {
               detalleAgregacionProduccion={detalle}
             />
           }
+
+          <IconButton
+            aria-label="delete"
+            size="large"
+            onClick={() => {
+              onRenderPDF(detalle);
+            }}
+            color="error"
+          >
+            <PictureAsPdfIcon fontSize="inherit" />
+          </IconButton>
         </div>
       </TableCell>
     </TableRow>

@@ -28,11 +28,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         pd.idProdTip,
         pt.desProdTip,
         pd.codLotProd,
-        pd.klgLotProd,
-        pd.canLotProd,
+        pd.klgTotalLoteProduccion,
+        pd.totalUnidadesLoteProduccion,
         pd.fecVenLotProd,
+        pd.fecProdIniProg,
+        pd.fecProdFinProg,
+        pd.fecCreProd,
         p.idSubCla,
-        pd.numop 
+        pd.numop,
+        pd.obsProd
     FROM produccion pd
     JOIN producto as p ON p.id = pd.idProdt
     JOIN produccion_estado as pe ON pe.id = pd.idProdEst
@@ -92,14 +96,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ra.canTotKlgReqAgr,
                     ra.idProdt,
                     p.nomProd,
+                    p.codProd,
+                    p.codProd2,
+                    me.simMed,
                     ra.idProdcMot,
                     pam.desProdAgrMot,
                     ra.idReqEst,
                     re.desReqEst,
                     ra.fecCreReqAgr,
-                    ra.fecActReqAgr
+                    ra.fecActReqAgr,
+                    ra.fecEntReqAgr
                 FROM requisicion_agregacion AS ra
                 JOIN producto AS p ON p.id = ra.idProdt
+                JOIN medida AS me ON me.id = p.idMed
                 JOIN produccion_agregacion_motivo AS pam ON pam.id = ra.idProdcMot
                 JOIN requisicion_estado AS re ON re.id = ra.idReqEst
                 WHERE ra.idProdc = ?";
@@ -116,12 +125,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         rad.idReqAgr,
                         rad.idProdt,
                         p.nomProd,
+                        p.codProd,
+                        p.codProd2,
+                        me.simMed,
                         rad.esComReqAgrDet,
                         rad.canReqAgrDet,
                         rad.fecCreReqAgrDet,
                         rad.fecActReqAgrDet
                     FROM requisicion_agregacion_detalle AS rad
                     JOIN producto AS p ON p.id = rad.idProdt
+                    JOIN medida AS me ON me.id = p.idMed
                     WHERE rad.idReqAgr = ?";
                     $stmt_requisicion_agregacion_detalle = $pdo->prepare($sql_requisicion_agregacion_detalle);
                     $stmt_requisicion_agregacion_detalle->bindParam(1, $idReqAgr, PDO::PARAM_INT);

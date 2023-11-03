@@ -22,6 +22,8 @@ import { FilterMotivoAgregacionDynamic } from "../../../components/Referenciales
 import { getPresentacionFinal } from "../../../helpers/Referenciales/producto/getPresentacionFinal";
 import { FilterProductosProgramados } from "../../../components/ReferencialesFilters/Producto/FilterProductosProgramados";
 import { RowDetalleAgregacionLoteProduccionEditV2 } from "../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccionEditV2";
+import { createRoot } from "react-dom/client";
+import { PDFAgregaciones } from "../../components/componentes-agregaciones/PDFAgregaciones";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -46,29 +48,31 @@ export const AgregarAgregacionV2 = () => {
   // ESTADOS PARA LA DATA DE DEVOLUCIONES
   const [agregacionesProduccionLote, setagregacionesProduccionLote] = useState({
     id: 0,
-    canLotProd: 0,
-    codLotProd: "",
-    desEstPro: "",
-    desProdTip: "",
-    fecVenLotProd: "",
-    idProdEst: 0,
-    idProdTip: 0,
     idProdt: 0,
-    klgLotProd: "",
     nomProd: "",
+    idProdEst: 0,
+    desEstPro: "",
+    idProdTip: 0,
+    desProdTip: "",
+    codLotProd: "",
+    klgTotalLoteProduccion: "",
+    totalUnidadesLoteProduccion: 0,
+    fecVenLotProd: "",
+    fecProdIniProg: "",
+    fecProdFinProg: "",
+    numop: "",
     prodDetProdc: [],
     prodDetAgr: [],
   });
 
   const {
     id,
-    idProdt,
-    canLotProd,
+    totalUnidadesLoteProduccion,
     codLotProd,
     desEstPro,
     desProdTip,
     fecVenLotProd,
-    klgLotProd,
+    klgTotalLoteProduccion,
     nomProd,
     prodDetProdc,
     prodDetAgr,
@@ -443,6 +447,20 @@ export const AgregarAgregacionV2 = () => {
     }
   };
 
+  // funcion para mostrar pdf
+  const generatePDF = (data) => {
+    const formatData = {
+      produccion: agregacionesProduccionLote,
+      requisicion: data,
+    };
+    const newWindow = window.open("", "Agregaciones", "fullscreen=yes");
+    // Crear un contenedor específico para tu aplicación
+    const appContainer = newWindow.document.createElement("div");
+    newWindow.document.body.appendChild(appContainer);
+    const root = createRoot(appContainer);
+    root.render(<PDFAgregaciones data={formatData} />);
+  };
+
   // ******** MANEJADORES PARA EL ARREGLO DE DEVOLUCIONES ******
   // MANEJADOR DE PRODUCTO
   const onAddProductoAgregado = (value) => {
@@ -752,19 +770,19 @@ export const AgregarAgregacionV2 = () => {
                   <input
                     type="number"
                     disabled={true}
-                    value={klgLotProd}
+                    value={klgTotalLoteProduccion}
                     className="form-control"
                   />
                 </div>
                 {/* CANTIDAD DE LOTE */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Cantidad</b>
+                    <b>Cantidad Unidades</b>
                   </label>
                   <input
                     type="number"
                     disabled={true}
-                    value={canLotProd}
+                    value={totalUnidadesLoteProduccion}
                     className="form-control"
                   />
                 </div>
@@ -849,6 +867,7 @@ export const AgregarAgregacionV2 = () => {
                         <RowDetalleAgregacionLoteProduccion
                           key={row.id}
                           detalle={row}
+                          onRenderPDF={generatePDF}
                         />
                       ))}
                     </TableBody>
