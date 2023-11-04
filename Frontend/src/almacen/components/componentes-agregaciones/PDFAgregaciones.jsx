@@ -143,12 +143,15 @@ export const PDFAgregaciones = ({ data, show }) => {
                       borderRadius: 5,
                       fontSize: 16,
                       marginBottom: 1,
-                      backgroundColor: "#d8dbe3",
+                      backgroundColor: "#d8e86f",
                       padding: 5,
-                      marginRight: 20,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingLeft: 70,
                     }}
                   >
-                    ORDEN DE PROCESO
+                    AGREGACIÓN
                   </Text>
                   <View
                     style={{

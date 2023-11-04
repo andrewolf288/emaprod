@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { getReporteEntradas } from "./../../../helpers/reportes/getReporteEntradas";
-import { exportJSONtoExcel } from "../../../utils/exportJSONtoExcel";
-import { FilterEstadoEntrada } from "./../../../../components/ReferencialesFilters/EstadoEntradaStock/FilterEstadoEntrada";
-import { FilterProveedor } from "./../../../../components/ReferencialesFilters/Proveedor/FilterProveedor";
-import { FilterMateriaPrima } from "./../../../../components/ReferencialesFilters/Producto/FilterMateriaPrima";
-import FechaPicker2 from "./../../../../components/Fechas/FechaPicker2";
+import { getReporteEntradas } from "../../helpers/reportes/getReporteEntradas";
+import { exportJSONtoExcel } from "../../utils/exportJSONtoExcel";
+import { FilterEstadoEntrada } from "../../../components/ReferencialesFilters/EstadoEntradaStock/FilterEstadoEntrada";
+import { FilterProveedor } from "../../../components/ReferencialesFilters/Proveedor/FilterProveedor";
+import { FilterMateriaPrima } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrima";
+import FechaPicker2 from "../../../components/Fechas/FechaPicker2";
 
 export const ReporteEntradas = () => {
   // ESTADO DE LOS FILTROS SUBMIT

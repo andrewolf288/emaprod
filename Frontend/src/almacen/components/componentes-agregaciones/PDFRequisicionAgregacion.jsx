@@ -6,7 +6,6 @@ import { _parseInt } from "../../../utils/functions/ParseInt";
 export const PDFRequisicionAgregacion = ({ requisicion }) => {
   const styles = stylesPDF;
   const { detReqAgr } = requisicion;
-  console.log(detReqAgr);
   return (
     <View>
       <Text
@@ -24,8 +23,8 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
         <View style={styles.gridContainer}>
           <View style={[styles.gridHeader, styles.greenBackground]}>
             <Text style={{ ...styles.gridTitle, flex: 0.7 }}> N°</Text>
-            <Text style={{ ...styles.gridTitle, flex: 0.7 }}>Cód Ref</Text>
-            <Text style={{ ...styles.gridTitle, flex: 1 }}>Código</Text>
+            <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text>
+            <Text style={{ ...styles.gridTitle, flex: 1 }}>EMAPROD</Text>
             <Text
               style={{
                 ...styles.gridTitle,
@@ -95,7 +94,7 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
         <View style={styles.gridContainer}>
           <View style={[styles.gridHeader, styles.green_]}>
             <Text style={{ ...styles.gridTitle, flex: 0.7 }}> Cód Aso</Text>
-            <Text style={{ ...styles.gridTitle, flex: 0.7 }}>Cód Ref</Text>
+            <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text>
             <Text
               style={{
                 flex: 1,
@@ -106,7 +105,7 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
                 maxWidth: "40px",
               }}
             >
-              Código
+              EMAPROD
             </Text>
             <Text
               style={{

@@ -57,7 +57,7 @@ export const RouterAlmacen = [
     children: RouterRequisicionFrescos,
   },
   {
-    path: "reportes",
+    path: "reportes-almacen",
     element: <LayoutModulo />,
     children: RouterReportesAlmacen,
   },
