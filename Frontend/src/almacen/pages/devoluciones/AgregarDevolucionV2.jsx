@@ -204,7 +204,6 @@ export const AgregarDevolucionV2 = () => {
 
   const handleAddProductoDevuelto = async (e) => {
     e.preventDefault();
-    console.log(formulaProductoFinal);
     const { idProdFin, nomProd, simMed, reqDet } = formulaProductoFinal;
     const productoFinalProduccion = prodDetProdc.find(
       (element) => element.idProdt === idProdFin
@@ -212,7 +211,6 @@ export const AgregarDevolucionV2 = () => {
     const { canTotProgProdFin, canTotIngProdFin } = productoFinalProduccion;
     const cantidadSobrante = canTotProgProdFin - canTotIngProdFin;
     if (cantidadSobrante > 0) {
-      console.log(cantidadSobrante);
       let detalleRequisicion = [];
       reqDet.forEach((detalle) => {
         const cantidadRequisicionDevuelta = parseFloat(
@@ -231,7 +229,6 @@ export const AgregarDevolucionV2 = () => {
 
       const detalleRequisicionMotivos = detalleRequisicion.map((obj) => {
         const cantidadParser = parseIntCantidad(obj);
-        console.log(cantidadParser);
         return {
           ...obj,
           canReqProdLot: cantidadParser,
@@ -254,8 +251,6 @@ export const AgregarDevolucionV2 = () => {
           ],
         };
       });
-
-      console.log(detalleRequisicionMotivos);
 
       // actualizamos el detalle de requisicion de devolucion
       setDetalleRequisicionDevolucion({
@@ -410,7 +405,6 @@ export const AgregarDevolucionV2 = () => {
         setProductosDisponibles(productosDisponibles);
         // seteamos la informacion de produccion de lote
         setdevolucionesProduccionLote(result[0]);
-        console.log(result[0]);
       } else {
         setfeedbackMessages({
           style_message: "error",
@@ -459,8 +453,6 @@ export const AgregarDevolucionV2 = () => {
           idProdt: informacionRequisicionDevolucion["idProdFin"],
         },
       };
-
-      console.log(formatDataRequisicion);
 
       const resultPeticion = await createDevolucionesLoteProduccion(
         formatDataRequisicion
@@ -686,7 +678,7 @@ export const AgregarDevolucionV2 = () => {
                 </div>
 
                 {/* CANTIDAD DE PRRODUCTOS FINALES ESPERADOS */}
-                <div className="col-md-3">
+                <div className="col-md-2 d-flex flex-column">
                   <label className="form-label">Cantidad devuelta</label>
                   <TextField
                     type="number"

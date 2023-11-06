@@ -916,7 +916,7 @@ export const AgregarAgregacionV2 = () => {
                       idProdcMot === 0
                         ? true
                         : idProdcMot === 1
-                        ? true
+                        ? false
                         : idProdcMot === 2
                         ? false
                         : true
@@ -944,7 +944,7 @@ export const AgregarAgregacionV2 = () => {
                         : idProdcMot === 1
                         ? false
                         : idProdcMot === 2
-                        ? true
+                        ? false
                         : false
                     }
                     onChange={handleInputsProductoFinalCantidadAgregacion}

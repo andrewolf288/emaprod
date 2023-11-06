@@ -205,8 +205,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $sql_insert_requisicion_envasado =
                         "INSERT INTO
                                 requisicion
-                                (idProdc, idReqEst, idAre, idReqTip)
-                                VALUES (?, ?, ?, ?)";
+                                (idProdc, idReqEst, idAre, idReqTip, codLotProd)
+                                VALUES (?, ?, ?, ?, ?)";
                     try {
                         $pdo->beginTransaction(); // iniciamos una transaccion
                         $stmt_insert_requisicion_envasado = $pdo->prepare($sql_insert_requisicion_envasado);
@@ -214,6 +214,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt_insert_requisicion_envasado->bindParam(2, $idReqEst, PDO::PARAM_INT);
                         $stmt_insert_requisicion_envasado->bindParam(3, $idAreReqEnv, PDO::PARAM_INT);
                         $stmt_insert_requisicion_envasado->bindParam(4, $idReqTip, PDO::PARAM_INT);
+                        $stmt_insert_requisicion_envasado->bindParam(5, $codLotProd, PDO::PARAM_STR);
                         $stmt_insert_requisicion_envasado->execute();
 
                         if ($stmt_insert_requisicion_envasado->rowCount() == 1) {
@@ -273,8 +274,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $sql_insert_requisicion_encajonado =
                         "INSERT INTO
                                 requisicion
-                                (idProdc, idReqEst, idAre, idReqTip)
-                                VALUES (?, ?, ?, ?)";
+                                (idProdc, idReqEst, idAre, idReqTip, codLotProd)
+                                VALUES (?, ?, ?, ?, ?)";
                     try {
                         $pdo->beginTransaction(); // iniciamos una transaccion
                         $stmt_insert_requisicion_encajonado = $pdo->prepare($sql_insert_requisicion_encajonado);
@@ -282,13 +283,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt_insert_requisicion_encajonado->bindParam(2, $idReqEst, PDO::PARAM_INT);
                         $stmt_insert_requisicion_encajonado->bindParam(3, $idAreReqEnc, PDO::PARAM_INT);
                         $stmt_insert_requisicion_encajonado->bindParam(4, $idReqTip, PDO::PARAM_INT);
+                        $stmt_insert_requisicion_encajonado->bindParam(5, $codLotProd, PDO::PARAM_STR);
                         $stmt_insert_requisicion_encajonado->execute();
 
                         if ($stmt_insert_requisicion_encajonado->rowCount() == 1) {
                             $idLastInsertReqEnc = $pdo->lastInsertId();
                         }
-
-
 
                         if ($idLastInsertReqEnc != 0) {
 
@@ -332,6 +332,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                 }
 
+                // LA SECCION COMENTADA CORRESPONDE A SALIDAS DE PRODUCTO INTERMEDIO.
+                // SIN EMBARGO, LA EMPRESA ACTUALMENTE NO LO MANEJA DE TAL FORMA
+
                 /* 
                     Debemos generar la salida del producto intermedio.
                     Recordemos que al momento de hacer los ingresos desde molienda se 
@@ -339,59 +342,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     codLot, estado disponible, cantDis <> 0, 
                 */
 
-                $idEntStoEst = 1; // ESTADO DE DISPONIBLE
+                // $idEntStoEst = 1; // ESTADO DE DISPONIBLE
 
-                $sql_select_entradas_producto_intermedio =
-                    "SELECT * FROM entrada_stock 
-                WHERE idProd = ? AND codLot = ? AND idEntStoEst = ? AND canTotDis <> 0";
+                // $sql_select_entradas_producto_intermedio =
+                //     "SELECT * FROM entrada_stock 
+                // WHERE idProd = ? AND codLot = ? AND idEntStoEst = ? AND canTotDis <> 0";
 
-                $stmt_select_entradas_producto_intermedio = $pdo->prepare($sql_select_entradas_producto_intermedio);
-                $stmt_select_entradas_producto_intermedio->bindParam(1, $idProdt, PDO::PARAM_INT);
-                $stmt_select_entradas_producto_intermedio->bindParam(2, $codLotProd, pdo::PARAM_STR);
-                $stmt_select_entradas_producto_intermedio->bindParam(3, $idEntStoEst, PDO::PARAM_INT);
-                $stmt_select_entradas_producto_intermedio->execute();
+                // $stmt_select_entradas_producto_intermedio = $pdo->prepare($sql_select_entradas_producto_intermedio);
+                // $stmt_select_entradas_producto_intermedio->bindParam(1, $idProdt, PDO::PARAM_INT);
+                // $stmt_select_entradas_producto_intermedio->bindParam(2, $codLotProd, pdo::PARAM_STR);
+                // $stmt_select_entradas_producto_intermedio->bindParam(3, $idEntStoEst, PDO::PARAM_INT);
+                // $stmt_select_entradas_producto_intermedio->execute();
 
-                while ($row_entrada_producto_intermedio = $stmt_select_entradas_producto_intermedio->fetch(PDO::FETCH_ASSOC)) {
-                    try {
-                        $pdo->beginTransaction(); // iniciamos una transaccion
-                        $idEntSto = $row_entrada_producto_intermedio["id"]; // entrada
-                        $idProdt = $row_entrada_producto_intermedio["idProd"]; // producto
-                        $idAlmDes = 3; // almacen de envasado
-                        $idEstSalSto = 1; // completado
-                        $canSalStoReq = $row_entrada_producto_intermedio["canTotDis"]; // cantidad total disponible
-                        $merSalStoReq = 0.0;
+                // while ($row_entrada_producto_intermedio = $stmt_select_entradas_producto_intermedio->fetch(PDO::FETCH_ASSOC)) {
+                //     try {
+                //         $pdo->beginTransaction(); // iniciamos una transaccion
+                //         $idEntSto = $row_entrada_producto_intermedio["id"]; // entrada
+                //         $idProdt = $row_entrada_producto_intermedio["idProd"]; // producto
+                //         $idAlmDes = 3; // almacen de envasado
+                //         $idEstSalSto = 1; // completado
+                //         $canSalStoReq = $row_entrada_producto_intermedio["canTotDis"]; // cantidad total disponible
+                //         $merSalStoReq = 0.0;
 
-                        // primero realizamos la salida correspondiente
-                        $sql_create_salida_producto_intermedio =
-                            "INSERT INTO salida_stock (idEntSto, idReq, idProdt, idAlm, idEstSalSto, canSalStoReq, merSalStoReq, numop)
-                        VALUES(?, ?, ?, ?, ?, $canSalStoReq, $merSalStoReq, ?)";
-                        $stmt_create_salida_producto_intermedio = $pdo->prepare($sql_create_salida_producto_intermedio);
-                        $stmt_create_salida_producto_intermedio->bindParam(1, $idEntSto, PDO::PARAM_INT);
-                        $stmt_create_salida_producto_intermedio->bindParam(2, $idReq, PDO::PARAM_INT);
-                        $stmt_create_salida_producto_intermedio->bindParam(3, $idProdt, PDO::PARAM_INT);
-                        $stmt_create_salida_producto_intermedio->bindParam(4, $idAlmDes, PDO::PARAM_INT);
-                        $stmt_create_salida_producto_intermedio->bindParam(5, $idEstSalSto, PDO::PARAM_INT);
-                        $stmt_create_salida_producto_intermedio->bindParam(6, $numop, PDO::PARAM_STR);
-                        $stmt_create_salida_producto_intermedio->execute();
+                //         // primero realizamos la salida correspondiente
+                //         $sql_create_salida_producto_intermedio =
+                //             "INSERT INTO salida_stock (idEntSto, idReq, idProdt, idAlm, idEstSalSto, canSalStoReq, merSalStoReq, numop)
+                //         VALUES(?, ?, ?, ?, ?, $canSalStoReq, $merSalStoReq, ?)";
+                //         $stmt_create_salida_producto_intermedio = $pdo->prepare($sql_create_salida_producto_intermedio);
+                //         $stmt_create_salida_producto_intermedio->bindParam(1, $idEntSto, PDO::PARAM_INT);
+                //         $stmt_create_salida_producto_intermedio->bindParam(2, $idReq, PDO::PARAM_INT);
+                //         $stmt_create_salida_producto_intermedio->bindParam(3, $idProdt, PDO::PARAM_INT);
+                //         $stmt_create_salida_producto_intermedio->bindParam(4, $idAlmDes, PDO::PARAM_INT);
+                //         $stmt_create_salida_producto_intermedio->bindParam(5, $idEstSalSto, PDO::PARAM_INT);
+                //         $stmt_create_salida_producto_intermedio->bindParam(6, $numop, PDO::PARAM_STR);
+                //         $stmt_create_salida_producto_intermedio->execute();
 
-                        // luego actualizamos la entrada correspondiente
-                        $idEntStoEstTer = 2; // estado de entrada terminado
-                        $canTotDisEmpty = 0.0;
-                        $sql_update_entrada_producto_intermedio =
-                            "UPDATE entrada_stock SET canTotDis = $canTotDisEmpty, idEntStoEst = ? WHERE id = ?";
-                        $stmt_update_entrada_producto_intermedio = $pdo->prepare($sql_update_entrada_producto_intermedio);
-                        $stmt_update_entrada_producto_intermedio->bindParam(1, $idEntStoEstTer, PDO::PARAM_INT);
-                        $stmt_update_entrada_producto_intermedio->bindParam(2, $idEntSto, PDO::PARAM_INT);
-                        $stmt_update_entrada_producto_intermedio->execute();
+                //         // luego actualizamos la entrada correspondiente
+                //         $idEntStoEstTer = 2; // estado de entrada terminado
+                //         $canTotDisEmpty = 0.0;
+                //         $sql_update_entrada_producto_intermedio =
+                //             "UPDATE entrada_stock SET canTotDis = $canTotDisEmpty, idEntStoEst = ? WHERE id = ?";
+                //         $stmt_update_entrada_producto_intermedio = $pdo->prepare($sql_update_entrada_producto_intermedio);
+                //         $stmt_update_entrada_producto_intermedio->bindParam(1, $idEntStoEstTer, PDO::PARAM_INT);
+                //         $stmt_update_entrada_producto_intermedio->bindParam(2, $idEntSto, PDO::PARAM_INT);
+                //         $stmt_update_entrada_producto_intermedio->execute();
 
-                        $pdo->commit(); // commit de las operaciones
+                //         $pdo->commit(); // commit de las operaciones
 
-                    } catch (PDOException $e) {
-                        $pdo->rollBack(); // rollback
-                        $message_error = "ERROR INTERNO SERVER: fallo en creacion de salida y actualizacion de entrada";
-                        $description_error = $e->getMessage();
-                    }
-                }
+                //     } catch (PDOException $e) {
+                //         $pdo->rollBack(); // rollback
+                //         $message_error = "ERROR INTERNO SERVER: fallo en creacion de salida y actualizacion de entrada";
+                //         $description_error = $e->getMessage();
+                //     }
+                // }
 
                 /* Ahora colocamos un flag en la requisicion de producto intermedio 
                    que nos permita identificar que esta fue utilizada para una orden

@@ -204,8 +204,16 @@ export const CrearProduccionLote2 = () => {
             "Por defecto tomaremos la más reciente, pero asegurate de verificar si es correcto",
         });
         handleClickFeeback();
+      } else {
+        // Mostramos una alerta
+        setfeedbackMessages({
+          style_message: "success",
+          feedback_description_error:
+            "Se jalo correctamente de la requisición\n",
+        });
+        handleClickFeeback();
       }
-      const canLotProd = parseFloat(result[0].canIng);
+      const canLotProd = parseFloat(result[0].cantProg); // jalamos de la cantidad programada
       setproduccionLote({
         ...produccionLote,
         idProdt: id,

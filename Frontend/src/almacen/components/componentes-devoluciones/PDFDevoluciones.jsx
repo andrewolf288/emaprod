@@ -14,7 +14,6 @@ import { PDFRequisicionDevolucion } from "./PDFRequisicionDevolucion";
 const styles = stylesPDF;
 
 export const PDFDevoluciones = ({ data }) => {
-  console.log(data);
   const { produccion, requisicion, acumulado } = data;
 
   return (

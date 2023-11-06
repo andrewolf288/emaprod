@@ -467,10 +467,10 @@ export const ListRequisicionesMolienda = () => {
                               row.idReqEst === 1
                                 ? "badge text-bg-danger"
                                 : row.idReqEst === 2
-                                ? "badge text-bg-primary"
+                                ? "badge text-bg-warning"
                                 : row.idReqEst === 3
                                 ? "badge text-bg-success"
-                                : "badge text-bg-primary"
+                                : "badge text-bg-success"
                             }
                           >
                             {row.desReqEst}

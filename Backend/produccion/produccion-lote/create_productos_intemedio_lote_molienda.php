@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $codProd = $row["codProd2"]; // codigo de producto
                         $idProv = 1; // proveedor EMARANSAC
                         $idAlm = 1; // almacen principal
-                        $idEntStoEst = 1; // disponible
+                        $idEntStoEst = 2; // terminado
                         $codProv = "00"; // proveedor EMARANSAC
                         $esSel = 0; // es seleccion
                         $letAniEntSto = $row["letAniEntSto"];
@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             // ***** FORMAMOS EL CODIGO DE ENTRADA ******
                             $codEntSto = $codProd . $codProv . $letAniEntSto . $diaJulEntSto . $refNumIngEntSto;
-
+                            $canTotDis = 0;
                             // realizamos la creacion de la entrada de stock
                             $sql_insert_entrada_stock =
                                 "INSERT INTO entrada_stock
@@ -124,11 +124,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 fecEntSto,
                                 fecVenEntSto, 
                                 referencia, 
-                                canVar, 
+                                canVar,
                                 codLot, 
                                 refReq,
                                 idEntStoTip)
-                                VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canProdFin,?,?,?,?,?,?,?,?)";
+                                VALUES (?,?,?,?,?,?,?,?,?, $canProdFin, $canTotDis,?,?,?,?,?,?,?,?)";
                             // delete esMol
 
                             try {
@@ -165,54 +165,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     // finalmente actualizamos stock de almacen principal
                     // primero consultamos si existe el producto registrado
-                    $idAlmacenPrincipal = 1; // almacen principal
-                    $sql_consult_stock_almacen_principal =
-                        "SELECT * FROM almacen_stock
-                    WHERE idAlm = ? AND idProd = ?";
+                    // $idAlmacenPrincipal = 1; // almacen principal
+                    // $sql_consult_stock_almacen_principal =
+                    //     "SELECT * FROM almacen_stock
+                    // WHERE idAlm = ? AND idProd = ?";
 
-                    try {
-                        $stmt_consult_stock_almacen_principal = $pdo->prepare($sql_consult_stock_almacen_principal);
-                        $stmt_consult_stock_almacen_principal->bindParam(1, $idAlmacenPrincipal, PDO::PARAM_INT);
-                        $stmt_consult_stock_almacen_principal->bindParam(2, $idProdt, PDO::PARAM_INT);
-                        $stmt_consult_stock_almacen_principal->execute();
+                    // try {
+                    //     $stmt_consult_stock_almacen_principal = $pdo->prepare($sql_consult_stock_almacen_principal);
+                    //     $stmt_consult_stock_almacen_principal->bindParam(1, $idAlmacenPrincipal, PDO::PARAM_INT);
+                    //     $stmt_consult_stock_almacen_principal->bindParam(2, $idProdt, PDO::PARAM_INT);
+                    //     $stmt_consult_stock_almacen_principal->execute();
 
-                        // Si esta registrado el producto en el almacen principal (UPDATE)
-                        if ($stmt_consult_stock_almacen_principal->rowCount() == 1) {
-                            $sql_update_stock_almacen_principal =
-                                "UPDATE almacen_stock SET
-                            canSto = canSto + $canProdFin, canStoDis = canStoDis + $canProdFin
-                            WHERE idAlm = ? AND idProd = ?";
+                    //     // Si esta registrado el producto en el almacen principal (UPDATE)
+                    //     if ($stmt_consult_stock_almacen_principal->rowCount() == 1) {
+                    //         $sql_update_stock_almacen_principal =
+                    //             "UPDATE almacen_stock SET
+                    //         canSto = canSto + $canProdFin, canStoDis = canStoDis + $canProdFin
+                    //         WHERE idAlm = ? AND idProd = ?";
 
-                            try {
-                                $stmt_update_stock_almacen_principal = $pdo->prepare($sql_update_stock_almacen_principal);
-                                $stmt_update_stock_almacen_principal->bindParam(1, $idAlmacenPrincipal, PDO::PARAM_INT);
-                                $stmt_update_stock_almacen_principal->bindParam(2, $idProdt, PDO::PARAM_INT);
-                                $stmt_update_stock_almacen_principal->execute();
-                            } catch (PDOException $e) {
-                                $message_error = "Error en la actualizacion de almacen principal";
-                                $description_error = $e->getMessage();
-                            }
-                            // Si no esta registrado el producto en el almacen principal (CREATE)
-                        } else {
-                            $sql_create_stock_almacen_principal =
-                                "INSERT INTO almacen_stock
-                            (idProd, idAlm, canSto, canStoDis)
-                            VALUES(?, ?, $canProdFin, $canProdFin)";
+                    //         try {
+                    //             $stmt_update_stock_almacen_principal = $pdo->prepare($sql_update_stock_almacen_principal);
+                    //             $stmt_update_stock_almacen_principal->bindParam(1, $idAlmacenPrincipal, PDO::PARAM_INT);
+                    //             $stmt_update_stock_almacen_principal->bindParam(2, $idProdt, PDO::PARAM_INT);
+                    //             $stmt_update_stock_almacen_principal->execute();
+                    //         } catch (PDOException $e) {
+                    //             $message_error = "Error en la actualizacion de almacen principal";
+                    //             $description_error = $e->getMessage();
+                    //         }
+                    //         // Si no esta registrado el producto en el almacen principal (CREATE)
+                    //     } else {
+                    //         $sql_create_stock_almacen_principal =
+                    //             "INSERT INTO almacen_stock
+                    //         (idProd, idAlm, canSto, canStoDis)
+                    //         VALUES(?, ?, $canProdFin, $canProdFin)";
 
-                            try {
-                                $stmt_create_stock_almacen_principal = $pdo->prepare($sql_create_stock_almacen_principal);
-                                $stmt_create_stock_almacen_principal->bindParam(1, $idProdt, PDO::PARAM_INT);
-                                $stmt_create_stock_almacen_principal->bindParam(2, $idAlmacenPrincipal, PDO::PARAM_INT);
-                                $stmt_create_stock_almacen_principal->execute();
-                            } catch (PDOException $e) {
-                                $message_error = "Error en la insercion de almacen principal";
-                                $description_error = $e->getMessage();
-                            }
-                        }
-                    } catch (PDOException $e) {
-                        $message_error = "Error en la consulta de almacen principal";
-                        $description_error = $e->getMessage();
-                    }
+                    //         try {
+                    //             $stmt_create_stock_almacen_principal = $pdo->prepare($sql_create_stock_almacen_principal);
+                    //             $stmt_create_stock_almacen_principal->bindParam(1, $idProdt, PDO::PARAM_INT);
+                    //             $stmt_create_stock_almacen_principal->bindParam(2, $idAlmacenPrincipal, PDO::PARAM_INT);
+                    //             $stmt_create_stock_almacen_principal->execute();
+                    //         } catch (PDOException $e) {
+                    //             $message_error = "Error en la insercion de almacen principal";
+                    //             $description_error = $e->getMessage();
+                    //         }
+                    //     }
+                    // } catch (PDOException $e) {
+                    //     $message_error = "Error en la consulta de almacen principal";
+                    //     $description_error = $e->getMessage();
+                    // }
                 } catch (PDOException $e) {
                     $message_error = "Error en la insercion de una entrada de producto final";
                     $description_error = $e->getMessage();
