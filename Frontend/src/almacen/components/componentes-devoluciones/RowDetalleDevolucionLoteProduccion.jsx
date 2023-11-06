@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import { DialogDevolucionByMotivo } from "../../../produccion/components/DialogDevolucionByMotivo";
 import { DetalleDevolucionProduccion } from "./DetalleDevolucionProduccion";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { IconButton } from "@mui/material";
 
-export const RowDetalleDevolucionLoteProduccion = ({ detalle }) => {
+export const RowDetalleDevolucionLoteProduccion = ({
+  detalle,
+  onRenderPDF,
+}) => {
   return (
     <TableRow
       key={detalle.id}
@@ -25,6 +29,16 @@ export const RowDetalleDevolucionLoteProduccion = ({ detalle }) => {
               detalleDevolucionProduccion={detalle}
             />
           }
+          <IconButton
+            aria-label="delete"
+            size="large"
+            onClick={() => {
+              onRenderPDF(detalle);
+            }}
+            color="error"
+          >
+            <PictureAsPdfIcon fontSize="inherit" />
+          </IconButton>
         </div>
       </TableCell>
     </TableRow>

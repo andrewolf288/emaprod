@@ -381,7 +381,6 @@ export const AgregarRequisicionMolienda = () => {
                     // Ingresamos idMol = 51 para traer los datos de polvos
                     <FilterProductoProduccion
                       onNewInput={onAddProductoIntermedio}
-                      idMol={51}
                     />
                   ) : (
                     <input

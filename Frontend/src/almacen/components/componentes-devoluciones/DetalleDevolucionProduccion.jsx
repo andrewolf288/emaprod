@@ -146,6 +146,9 @@ function TableDevolucionDetalleProduccion({ detalle }) {
               <b>Producto</b>
             </TableCell>
             <TableCell align="left">
+              <b>Motivo</b>
+            </TableCell>
+            <TableCell align="left">
               <b>Estado</b>
             </TableCell>
             <TableCell align="right">
@@ -161,6 +164,7 @@ function TableDevolucionDetalleProduccion({ detalle }) {
             >
               <TableCell align="center">{index + 1}</TableCell>
               <TableCell align="left">{element.nomProd}</TableCell>
+              <TableCell align="left">{element.desProdDevMot}</TableCell>
               <TableCell align="left">
                 <span
                   className={

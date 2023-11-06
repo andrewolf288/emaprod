@@ -20,19 +20,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // en primer lugar traemos la informacion de produccion
         $sql =
             "SELECT
-            pd.id,
-            pd.idProdt,
-            p.nomProd,
-            pd.idProdEst,
-            pe.desEstPro,
-            pd.idProdTip,
-            pt.desProdTip,
-            pd.codLotProd,
-            pd.klgLotProd,
-            pd.canLotProd,
-            pd.fecVenLotProd,
-            p.idSubCla,
-            pd.numop 
+                pd.id,
+                pd.idProdt,
+                p.nomProd,
+                pd.idProdEst,
+                pe.desEstPro,
+                pd.idProdTip,
+                pt.desProdTip,
+                pd.codLotProd,
+                pd.klgTotalLoteProduccion,
+                pd.totalUnidadesLoteProduccion,
+                pd.fecVenLotProd,
+                pd.fecProdIniProg,
+                pd.fecProdFinProg,
+                pd.fecCreProd,
+                p.idSubCla,
+                pd.numop,
+                pd.obsProd
             FROM produccion pd
             JOIN producto as p ON p.id = pd.idProdt
             JOIN produccion_estado as pe ON pe.id = pd.idProdEst
@@ -93,12 +97,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 rd.canTotUndReqDev,
                 rd.idProdt,
                 p.nomProd,
+                p.codProd,
+                p.codProd2,
+                me.simMed,
                 rd.idReqEst,
                 re.desReqEst,
+                rd.fecComReqDev,
                 rd.fecCreReqDev,
                 rd.fecActReqDev
                 FROM requisicion_devolucion AS rd
                 JOIN producto AS p ON p.id = rd.idProdt
+                JOIN medida AS me ON me.id = p.idMed
                 JOIN requisicion_estado AS re ON re.id = rd.idReqEst
                 WHERE rd.idProdc = ?";
 
@@ -115,6 +124,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         rdd.idReqDev,
                         rdd.idProdt,
                         p.nomProd,
+                        p.codProd,
+                        p.codProd2,
+                        me.simMed,
                         rdd.idMotDev,
                         pdm.desProdDevMot,
                         rdd.canReqDevDet,
@@ -124,6 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         rdd.estReg
                         FROM requisicion_devolucion_detalle AS rdd
                         JOIN producto AS p ON p.id = rdd.idProdt
+                        JOIN medida AS me ON me.id = p.idMed
                         JOIN produccion_devolucion_motivo AS pdm ON pdm.id = rdd.idMotDev
                         WHERE rdd.idReqDev = ?";
                     $stmt_requisicion_devolucion_detalle = $pdo->prepare($sql_requisicion_devolucion_detalle);

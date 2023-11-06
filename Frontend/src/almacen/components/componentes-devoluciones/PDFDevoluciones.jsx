@@ -9,13 +9,14 @@ import {
 } from "@react-pdf/renderer";
 import logo from "../emaran.png";
 import { stylesPDF } from "../pdf-components/stylePDF";
-import { PDFRequisicionAgregacion } from "./PDFRequisicionAgregacion";
+import { PDFRequisicionDevolucion } from "./PDFRequisicionDevolucion";
 
 const styles = stylesPDF;
 
-export const PDFAgregaciones = ({ data, show }) => {
+export const PDFDevoluciones = ({ data }) => {
   console.log(data);
-  const { produccion, requisicion } = data;
+  const { produccion, requisicion, acumulado } = data;
+
   return (
     <PDFViewer width="100%" height="100%">
       <Document>
@@ -150,7 +151,7 @@ export const PDFAgregaciones = ({ data, show }) => {
                       paddingLeft: 70,
                     }}
                   >
-                    AGREGACIÓN
+                    DEVOLUCIÓN
                   </Text>
                   <View
                     style={{
@@ -245,7 +246,10 @@ export const PDFAgregaciones = ({ data, show }) => {
             </View>
 
             {/* DETALLE DE REQUISICION DE AGREGACION */}
-            <PDFRequisicionAgregacion requisicion={requisicion} />
+            <PDFRequisicionDevolucion
+              requisicion={requisicion}
+              acumulado={acumulado}
+            />
           </View>
         </Page>
       </Document>

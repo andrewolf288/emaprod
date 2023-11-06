@@ -20,28 +20,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // en primer lugar traemos la informacion de produccion
         $sql =
             "SELECT
-        pd.id,
-        pd.idProdt,
-        p.nomProd,
-        pd.idProdEst,
-        pe.desEstPro,
-        pd.idProdTip,
-        pt.desProdTip,
-        pd.codLotProd,
-        pd.klgTotalLoteProduccion,
-        pd.totalUnidadesLoteProduccion,
-        pd.fecVenLotProd,
-        pd.fecProdIniProg,
-        pd.fecProdFinProg,
-        pd.fecCreProd,
-        p.idSubCla,
-        pd.numop,
-        pd.obsProd
-    FROM produccion pd
-    JOIN producto as p ON p.id = pd.idProdt
-    JOIN produccion_estado as pe ON pe.id = pd.idProdEst
-    JOIN produccion_tipo as pt ON pt.id = pd.idProdTip 
-    WHERE pd.id = ?";
+                pd.id,
+                pd.idProdt,
+                p.nomProd,
+                pd.idProdEst,
+                pe.desEstPro,
+                pd.idProdTip,
+                pt.desProdTip,
+                pd.codLotProd,
+                pd.klgTotalLoteProduccion,
+                pd.totalUnidadesLoteProduccion,
+                pd.fecVenLotProd,
+                pd.fecProdIniProg,
+                pd.fecProdFinProg,
+                pd.fecCreProd,
+                p.idSubCla,
+                pd.numop,
+                pd.obsProd
+            FROM produccion pd
+            JOIN producto as p ON p.id = pd.idProdt
+            JOIN produccion_estado as pe ON pe.id = pd.idProdEst
+            JOIN produccion_tipo as pt ON pt.id = pd.idProdTip 
+            WHERE pd.id = ?";
 
         try {
             $stmt = $pdo->prepare($sql);

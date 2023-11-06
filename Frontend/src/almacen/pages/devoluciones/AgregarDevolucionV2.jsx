@@ -18,6 +18,8 @@ import { FilterProductosProgramados } from "../../../components/ReferencialesFil
 import { TextField } from "@mui/material";
 import { RowDevolucionLoteProduccionEdit } from "./RowDevolucionLoteProduccionEdit";
 import { RowDetalleDevolucionLoteProduccion } from "../../components/componentes-devoluciones/RowDetalleDevolucionLoteProduccion";
+import { createRoot } from "react-dom/client";
+import { PDFDevoluciones } from "../../components/componentes-devoluciones/PDFDevoluciones";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -42,29 +44,31 @@ export const AgregarDevolucionV2 = () => {
   // ESTADOS PARA LA DATA DE DEVOLUCIONES
   const [devolucionesProduccionLote, setdevolucionesProduccionLote] = useState({
     id: 0,
-    canLotProd: 0,
-    codLotProd: "",
-    desEstPro: "",
-    desProdTip: "",
-    fecVenLotProd: "",
-    idProdEst: 0,
-    idProdTip: 0,
     idProdt: 0,
-    klgLotProd: "",
     nomProd: "",
+    idProdEst: 0,
+    desEstPro: "",
+    idProdTip: 0,
+    desProdTip: "",
+    codLotProd: "",
+    klgTotalLoteProduccion: "",
+    totalUnidadesLoteProduccion: 0,
+    fecVenLotProd: "",
+    fecProdIniProg: "",
+    fecProdFinProg: "",
+    numop: "",
     prodDetProdc: [],
     prodDetDev: [],
   });
 
   const {
     id,
-    idProdt,
-    canLotProd,
+    totalUnidadesLoteProduccion,
     codLotProd,
     desEstPro,
     desProdTip,
     fecVenLotProd,
-    klgLotProd,
+    klgTotalLoteProduccion,
     nomProd,
     prodDetProdc,
     prodDetDev,
@@ -330,6 +334,57 @@ export const AgregarDevolucionV2 = () => {
     });
   };
 
+  const obtenerAcumulado = (requisicion) => {
+    const { detReqDev } = requisicion;
+    // esta variable guardara los totales: {idProdt: cantidad, idProdt: cantidad}
+    const totales = {};
+    // esta variable guardara los repetidos: {idProdt: {item}, idProdt: {item}}
+    const repetidos = {};
+
+    // recorremos el detalle de requisicion
+    detReqDev.forEach((item) => {
+      // obtenemos id y cantidad
+      const { idProdt, canReqDevDet } = item;
+      // si aun no existe en totales, lo agregamos
+      if (!totales[idProdt]) {
+        totales[idProdt] = 0;
+      } else {
+        // caso contrario chancamos repetios[idProdt] cada vez que se repita
+        repetidos[idProdt] = { ...item };
+      }
+
+      // sumamos el total en totales[idProdt]
+      totales[idProdt] += parseFloat(canReqDevDet);
+      // añadimos la propiedad acu (acumulado parcial) al item
+      item.acu = totales[idProdt];
+    });
+
+    // aqui obtenemos todos los repetidos y le establecemos el acumulado final
+    const totalesFinales = Object.keys(repetidos).map((item) => {
+      return {
+        ...repetidos[item],
+        acu: totales[item],
+      };
+    });
+    return totalesFinales;
+  };
+
+  // funcion para mostrar pdf
+  const generatePDF = (data) => {
+    const acumulado = obtenerAcumulado(data);
+    const formatData = {
+      produccion: devolucionesProduccionLote,
+      requisicion: data,
+      acumulado,
+    };
+    const newWindow = window.open("", "Devoluciones", "fullscreen=yes");
+    // Crear un contenedor específico para tu aplicación
+    const appContainer = newWindow.document.createElement("div");
+    newWindow.document.body.appendChild(appContainer);
+    const root = createRoot(appContainer);
+    root.render(<PDFDevoluciones data={formatData} />);
+  };
+
   // traer informacion de devolucion de produccion
   const traerDatosProduccionLoteWithDevoluciones = async () => {
     if (idLotProdc.length !== 0) {
@@ -502,21 +557,21 @@ export const AgregarDevolucionV2 = () => {
                     <b>Peso de Lote</b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     disabled={true}
-                    value={klgLotProd}
+                    value={`${klgTotalLoteProduccion} KG`}
                     className="form-control"
                   />
                 </div>
                 {/* CANTIDAD DE LOTE */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Cantidad</b>
+                    <b>Cantidad Unidades</b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     disabled={true}
-                    value={canLotProd}
+                    value={`${totalUnidadesLoteProduccion} UND`}
                     className="form-control"
                   />
                 </div>
@@ -567,7 +622,6 @@ export const AgregarDevolucionV2 = () => {
             {/* DEVOLUCIONES ASOCIADAS AL LOTE DE PRODUCCION */}
             <div className="card d-flex mt-4">
               <h6 className="card-header">Devoluciones registradas</h6>
-
               <div className="card-body">
                 <div className="mb-3 row">
                   {/* <Paper> */}
@@ -604,6 +658,7 @@ export const AgregarDevolucionV2 = () => {
                           <RowDetalleDevolucionLoteProduccion
                             key={row.id}
                             detalle={row}
+                            onRenderPDF={generatePDF}
                           />
                         ))}
                       </TableBody>

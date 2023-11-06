@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View } from "@react-pdf/renderer";
 import { stylesPDF } from "../pdf-components/stylePDF";
 import { _parseInt } from "../../../utils/functions/ParseInt";
 
 const styles = stylesPDF;
 
-export const PDFRequisicionAgregacion = ({ requisicion }) => {
-  const { detReqAgr } = requisicion;
+export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
+  const { detReqDev } = requisicion;
+
   return (
     <View>
       <Text
@@ -26,15 +27,6 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
             <Text style={{ ...styles.gridTitle, flex: 0.7 }}> N°</Text>
             <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text>
             <Text style={{ ...styles.gridTitle, flex: 1 }}>EMAPROD</Text>
-            <Text
-              style={{
-                ...styles.gridTitle,
-                flex: 2,
-                textAlign: "center",
-              }}
-            >
-              Motivo agregación
-            </Text>
             <Text
               style={{
                 ...styles.gridTitle,
@@ -60,9 +52,6 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
             <Text style={{ ...styles.gridContent_p, flex: 1 }}>
               {requisicion.codProd2}
             </Text>
-            <Text style={{ ...styles.gridContent_p, flex: 2 }}>
-              {requisicion.desProdAgrMot}
-            </Text>
             <Text
               style={{
                 ...styles.gridContent_p,
@@ -74,7 +63,7 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
             </Text>
             <Text style={styles.gridContent_p}>{requisicion.simMed}</Text>
             <Text style={styles.gridContent_num}>
-              {requisicion.canTotUndReqAgr}
+              {requisicion.canTotUndReqDev}
             </Text>
           </View>
         </View>
@@ -95,7 +84,154 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
         <View style={styles.gridContainer}>
           <View style={[styles.gridHeader, styles.green_]}>
             <Text style={{ ...styles.gridTitle, flex: 0.7 }}> Cód Aso</Text>
-            <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text>
+            {/* <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text> */}
+            <Text
+              style={{
+                flex: 1,
+                fontWeight: "bold",
+                textAlign: "center",
+                fontSize: 7,
+                //border: "1px solid black",
+                maxWidth: "40px",
+              }}
+            >
+              EMAPROD
+            </Text>
+            <Text
+              style={{
+                flex: 3,
+                fontWeight: "bold",
+                textAlign: "center",
+                fontSize: 7,
+                maxWidth: "40px",
+              }}
+            >
+              Motivo
+            </Text>
+            <Text
+              style={{
+                ...styles.gridTitle,
+                flex: 4,
+                textAlign: "center",
+                //border: "1px solid black",
+              }}
+            >
+              Descripción de Item
+            </Text>
+            <Text
+              style={{
+                flex: 1,
+                textAlign: "center",
+                fontSize: 7,
+                maxWidth: "30px",
+                //border: "1px solid black",
+              }}
+            >
+              U.M
+            </Text>
+            <Text
+              style={{
+                flex: 1,
+                fontWeight: "bold",
+                textAlign: "center",
+                fontSize: 7,
+                //border: "1px solid black",
+                maxWidth: "40px",
+              }}
+            >
+              Cantidad
+            </Text>
+          </View>
+          {detReqDev.map((detalle, index) => (
+            <View
+              key={index}
+              style={[
+                styles.gridRow,
+                index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {},
+              ]}
+            >
+              <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                {requisicion.idProdFin}
+              </Text>
+              {/* <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                {detalle.codProd}
+              </Text> */}
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: 5.5,
+                  maxWidth: "40px",
+                }}
+              >
+                {detalle.codProd2}
+              </Text>
+              <Text
+                style={{
+                  flex: 3,
+                  textAlign: "center",
+                  fontSize: 5.5,
+                  maxWidth: "40px",
+                }}
+              >
+                {detalle.desProdDevMot}
+              </Text>
+              <Text
+                style={{
+                  ...styles.gridContent_p,
+                  flex: 4,
+                  textAlign: "left",
+                  //border: "1px solid black",
+                }}
+              >
+                {detalle.nomProd}
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: 5.5,
+                  maxWidth: "25px",
+                  //border: "1px solid black",
+                }}
+              >
+                {detalle.simMed}
+              </Text>
+              {/** <Text style={styles.gridContent_num}>{detalle.canReqDet}</Text> */}
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: 6.5,
+                  maxWidth: "40px",
+                  //border: "1px solid black",
+                }}
+              >
+                {/* {_parseInt(detalle, "canReqDet")} */}
+                {detalle.canReqDevDet}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <Text
+        style={{
+          ...styles.title,
+          fontWeight: "bold",
+          fontSize: 7,
+          marginLeft: -440,
+          marginTop: -12,
+        }}
+      >
+        Detalle acumulado
+      </Text>
+
+      <View style={{ ...styles.section, marginTop: -25 }}>
+        <View style={styles.gridContainer}>
+          <View style={[styles.gridHeader, styles.green_]}>
+            <Text style={{ ...styles.gridTitle, flex: 0.7 }}> Cód Aso</Text>
+            {/* <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text> */}
             <Text
               style={{
                 flex: 1,
@@ -139,10 +275,10 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
                 maxWidth: "40px",
               }}
             >
-              Cantidad
+              Cantidad total
             </Text>
           </View>
-          {detReqAgr.map((detalle, index) => (
+          {acumulado.map((detalle, index) => (
             <View
               key={index}
               style={[
@@ -153,15 +289,14 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
               <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
                 {requisicion.idProdFin}
               </Text>
-              <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+              {/* <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
                 {detalle.codProd}
-              </Text>
+              </Text> */}
               <Text
                 style={{
                   flex: 1,
                   textAlign: "center",
                   fontSize: 5.5,
-                  //border: "1px solid black",
                   maxWidth: "40px",
                 }}
               >
@@ -199,7 +334,7 @@ export const PDFRequisicionAgregacion = ({ requisicion }) => {
                 }}
               >
                 {/* {_parseInt(detalle, "canReqDet")} */}
-                {detalle.canReqAgrDet}
+                {detalle.acu}
               </Text>
             </View>
           ))}

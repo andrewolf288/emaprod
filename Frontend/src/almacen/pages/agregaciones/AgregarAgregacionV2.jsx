@@ -768,9 +768,9 @@ export const AgregarAgregacionV2 = () => {
                     <b>Peso de Lote</b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     disabled={true}
-                    value={klgTotalLoteProduccion}
+                    value={`${klgTotalLoteProduccion} KG`}
                     className="form-control"
                   />
                 </div>
@@ -780,9 +780,9 @@ export const AgregarAgregacionV2 = () => {
                     <b>Cantidad Unidades</b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     disabled={true}
-                    value={totalUnidadesLoteProduccion}
+                    value={`${totalUnidadesLoteProduccion} UND`}
                     className="form-control"
                   />
                 </div>
