@@ -301,24 +301,17 @@ export const AgregarProductosLoteProduccionV2 = () => {
   /*
     Funciones que nos permiten dar por finalizar el ingreso de una presentacion final en particular
   */
-  const finalizarEntregasPresentacionFinal = async (
-    data,
-    esCuadre,
-    esCantidadesIguales = false
-  ) => {
+  const finalizarEntregasPresentacionFinal = async (data, variacion) => {
     const dataActualizacion = {
       dataPresentacionFinal: {
         idProdcProdFin: data.id,
         canTotProgProdFin: data.canTotProgProdFin,
         canTotIngProdFin: data.canTotIngProdFin,
         idProdt: data.idProdt,
-        idProdcProdtFinEst: esCantidadesIguales ? 4 : 3, // conforme o menor a lo programado
+        idProdcProdtFinEst: variacion > 0 ? 3 : variacion == 0 ? 4 : 2, // menor, conforme, mayor a lo programado
       },
-      esCuadre: esCuadre, // no se debe realizar cuadre
       idProdc: id, // id de produccion
     };
-    console.log(dataActualizacion);
-    console.log("finalizar entregas de presentaciones finales");
 
     const { message_error, description_error } =
       await updateFinEntregaProductosFinales(dataActualizacion);

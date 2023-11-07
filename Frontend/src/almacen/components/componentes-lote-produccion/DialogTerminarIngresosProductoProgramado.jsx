@@ -86,25 +86,11 @@ export const DialogTerminarIngresosProductoProgramado = ({
             Cerrar
           </Button>
 
-          {/* BOTON PARA REALIZAR CUADRE */}
-          {variacion < 0 && (
-            <Button
-              onClick={() => {
-                handleClose();
-                handleAccept(data, true);
-              }}
-              color="warning"
-              variant="contained"
-            >
-              Realizar cuadre
-            </Button>
-          )}
-
           {/* BOTON PARA ACEPTAR EL TERMINO DE LA ENTREGA DE PRESENTACION FINAL*/}
           <Button
             onClick={() => {
               handleClose();
-              handleAccept(data, false, variacion === 0);
+              handleAccept(data, variacion);
             }}
             color="info"
             variant="contained"

@@ -20,7 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
     $idProdt = $dataPresentacionFinal["idProdt"]; // presentacion final
     $idProdcProdtFinEst = $dataPresentacionFinal["idProdcProdtFinEst"]; // estado
 
-    $esCuadre = $data["esCuadre"]; // realizar cuadre
     $idProdc = $data["idProdc"]; // id de produccion
 
     $esTerIngProFin = 1; // estado de terminado
@@ -36,20 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
 
         // ahora debemos verificar si se cumplio la entrega de todas las presentaciones
         // para pasar a un estado de terminado de entregar
-
-        // si se va a realizar una operacion de cuadre
-        if ($esCuadre) {
-            /* 
-            - Identificamos el exedente entre lo programado y lo ingresado
-            - Obtenemos la formula de la presentacion final de envasado y encajado
-            - Con la variacion calculada previamente, obenemos el detalle de agregaciones a realizar
-            - A cada agregacion se le debe indicar la referencia del id del producto final de la produccion
-              para que pueda tener una referencia directa
-            - Se le debe especificar el motivo de la agregacion, en este caso seria cuadre.
-            - Una vez sabido detalladamente que cantidades se han agregado debemos realizar las salidas correspondientes
-            - debemos referenciar cada agregacion con su salida correspondiente en la tabla trazabilidad.
-            */
-        }
     } catch (PDOException $e) {
         $message_error = "ERROR SERVER INTERNO: ERROR EN LA ACTUALIZACION DE PRODUCCION";
         $description_error = $e->getMessage();
