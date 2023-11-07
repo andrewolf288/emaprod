@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 es.canTotDis, 
                 es.codLot
             FROM entrada_stock AS es
-            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis <> 0
+            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
             ORDER BY es.fecEntSto ASC";
 
         try {
