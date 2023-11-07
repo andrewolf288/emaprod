@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 (idProdc, idProdFin, idProdt, idReqEst, canTotUndReqDev)
                 VALUES(?, ?, ?, ?, $cantidadDeProducto)";
             $stmt_insert_requisicion_devolucion = $pdo->prepare($sql_insert_requisicion_devolucion);
-            $stmt_insert_requisicion_devolucion->bindParam(1, $idProdt, PDO::PARAM_INT);
+            $stmt_insert_requisicion_devolucion->bindParam(1, $idProdc, PDO::PARAM_INT);
             $stmt_insert_requisicion_devolucion->bindParam(2, $idProdFin, PDO::PARAM_INT);
             $stmt_insert_requisicion_devolucion->bindParam(3, $idProdt, PDO::PARAM_INT);
             $stmt_insert_requisicion_devolucion->bindParam(4, $idReqEst, PDO::PARAM_INT);

@@ -24,22 +24,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($pdo) {
         switch ($idProdDevMot) {
+                // si el motivo es faltante
             case 1:
-                $idAlm = 1; // almacen principal
+                $idAlm = 13; // almacen de faltante
                 break;
+                // si el motivo es desmedro
             case 2:
                 $idAlm = 7; // almacen de desmedros
                 break;
+                // si el motivo es excedente
             case 3:
+                $idAlm = 12; // almacen de excedente
+                break;
+                // si el motivo es devolucion
+            case 4:
                 $idAlm = 1; // almacen principal
                 break;
-            default:
-                $idAlm = 7; // almacen de desmedros
         }
 
 
-        // si el motivo de devolucion no es desmedro
-        if ($idProdDevMot !== 2) {
+        // si el motivo de devolucion es devolucion
+        if ($idProdDevMot == 4) {
             $salidasEmpleadas = []; // salidas empleadas
             /*
                 Primero debemos identificar que entradas fueron utilizadas para

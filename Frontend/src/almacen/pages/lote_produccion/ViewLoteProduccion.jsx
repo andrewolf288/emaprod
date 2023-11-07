@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-//IMPORTACIONES PARA DIALOG DELETE
-import Button from "@mui/material/Button";
 // IMPORTACIONES DE HELPER
 import { RowRequisicionLoteProduccion } from "../../components/componentes-lote-produccion/RowRequisicionLoteProduccion";
 import { viewProduccionRequisicionDetalleById } from "./../../helpers/lote-produccion/viewProduccionRequisicionDetalleById";
@@ -10,13 +8,11 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 // IMPORTACIONES PARA EL PROGRESS LINEAR
 import {
-  DialogActions,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   CircularProgress,
-  TextField,
 } from "@mui/material";
 import { createSalidasStockAutomaticas } from "./../../helpers/lote-produccion/createSalidasStockAutomaticas";
 import { DialogUpdateDetalleRequisicion } from "../../components/componentes-lote-produccion/DialogUpdateDetalleRequisicion";
@@ -106,19 +102,16 @@ export const ViewLoteProduccion = () => {
 
   // crear salidas correspondientes
   const onCreateSalidasStock = async (requisicion_detalle) => {
+    // abrimos el loader
     openLoader();
     const resultPeticion = await createSalidasStockAutomaticas(
       requisicion_detalle
     );
 
-    //console.log(requisicion_detalle, resultPeticion);
-    //return;
     const { message_error, description_error, result } = resultPeticion;
     if (message_error.length === 0) {
       // volvemos a consultar la data
       obtenerDataProduccionRequisicionesDetalle();
-      // cerramos modal
-      closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
@@ -126,8 +119,6 @@ export const ViewLoteProduccion = () => {
       });
       handleClickFeeback();
     } else {
-      // cerramos el modal
-      closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
@@ -135,6 +126,9 @@ export const ViewLoteProduccion = () => {
       });
       handleClickFeeback();
     }
+
+    // cerramos modal
+    closeLoader();
   };
 
   // mostrar y setear dialog update de detalle de requisicion

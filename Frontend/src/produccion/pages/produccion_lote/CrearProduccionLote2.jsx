@@ -318,7 +318,7 @@ export const CrearProduccionLote2 = () => {
   };
 
   // funcion para manejar la cantidad de klg requerida
-  const handleInputsProductoFinalLote = async ({ target }) => {
+  const handleInputsProductoFinalLote = ({ target }) => {
     var { value } = target;
     // cantidad requerida de klg de lote para presentacion final
     try {
@@ -344,7 +344,7 @@ export const CrearProduccionLote2 = () => {
   };
 
   // funcion para manejar la cantidad de unidades requeridas
-  const handleInputsProductoFinalCantidad = async ({ target }) => {
+  const handleInputsProductoFinalCantidad = ({ target }) => {
     var { value } = target;
     // cantidad requerida de klg de lote para presentacion final
     try {

@@ -27,7 +27,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 function parseIntCantidad(str, property) {
-  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(5);
+  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(2);
   let index = str.canReqProdLot.toString().indexOf(".");
   let result = str.canReqProdLot.toString().substring(index + 1);
   let val =
@@ -87,15 +87,6 @@ export const AgregarDevolucionV2 = () => {
   const { requisicionDevolucion, detalleProductosDevueltos } =
     detalleRequisicionDevolucion;
 
-  // STATES PARA AGREGAR PRODUCTOS
-  const [productoDevuelto, setproductoDevuelto] = useState({
-    idProdDev: 0,
-    cantidadDevuelta: 0.0,
-    idProdDevMot: 0,
-  });
-
-  const { idProdDev, cantidadDevuelta } = productoDevuelto;
-
   // ************ ESTADO PARA CONTROLAR EL FEEDBACK **************
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
@@ -122,7 +113,7 @@ export const AgregarDevolucionV2 = () => {
     navigate(-1);
   };
 
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(true);
 
   // ******* MANEJADORES PARA EL AGREGADO DE PRODUCCION *******
   // producto final informacion
@@ -138,43 +129,68 @@ export const AgregarDevolucionV2 = () => {
 
   // funcion para agregar presentacion final para la agregacion
   const onAddProductoFinalLoteProduccionDevolucion = async ({ id, value }) => {
-    const { result } = await getFormulaProductoDetalleByProducto(id);
-    if (result.length === 1) {
-      const { reqDet } = result[0]; // obtenemos las requisiciones
+    if (id !== 0) {
+      const { result } = await getFormulaProductoDetalleByProducto(id);
+      if (result.length === 1) {
+        const { reqDet } = result[0]; // obtenemos las requisiciones
 
-      let reqProdInt = null;
-      let reqEnvEnc = [];
+        let reqProdInt = null;
+        let reqEnvEnc = [];
 
-      reqDet.forEach((detalle) => {
-        if (detalle.idAre === 2 || detalle.idAre === 7) {
-          reqProdInt = detalle;
-        } else {
-          reqEnvEnc.push(detalle);
-        }
-      });
-
-      if (reqProdInt !== null) {
-        const formulaPresentacionFinal = {
-          id: result[0].id,
-          idProdFin: result[0].idProdFin,
-          nomProd: result[0].nomProd,
-          simMed: result[0].simMed,
-          canForProInt: reqProdInt.canForProDet,
-          reqDet: reqEnvEnc,
-        };
-
-        setFormulaProductoFinal(formulaPresentacionFinal);
-
-        // seteamos
-        setproductoLoteProduccion({
-          ...productoLoteProduccion,
-          idProdFin: id,
+        reqDet.forEach((detalle) => {
+          if (detalle.idAre === 2 || detalle.idAre === 7) {
+            reqProdInt = detalle;
+          } else {
+            reqEnvEnc.push(detalle);
+          }
         });
+
+        if (reqProdInt !== null) {
+          const formulaPresentacionFinal = {
+            id: result[0].id,
+            idProdFin: result[0].idProdFin,
+            nomProd: result[0].nomProd,
+            simMed: result[0].simMed,
+            canForProInt: reqProdInt.canForProDet,
+            reqDet: reqEnvEnc,
+          };
+
+          setFormulaProductoFinal(formulaPresentacionFinal);
+
+          // buscamos el producto final y su ingreso
+          const productoFinalProduccion = prodDetProdc.find(
+            (element) => element.idProdt === id
+          );
+          // calculamos la cantidad sobrante
+          const { canTotProgProdFin, canTotIngProdFin } =
+            productoFinalProduccion;
+          const cantidadSobrante = canTotProgProdFin - canTotIngProdFin;
+
+          // seteamos
+          setproductoLoteProduccion({
+            ...productoLoteProduccion,
+            idProdFin: id,
+            cantidadDeProducto: cantidadSobrante,
+          });
+        } else {
+          setfeedbackMessages({
+            style_message: "warning",
+            feedback_description_error:
+              "Esta formula no tiene información de su producto intermedio",
+          });
+          handleClickFeeback();
+
+          // reseteamos los campos
+          setproductoLoteProduccion({
+            idProdFin: 0,
+            cantidadDeProducto: 0,
+          });
+        }
       } else {
         setfeedbackMessages({
           style_message: "warning",
           feedback_description_error:
-            "Esta formula no tiene información de su producto intermedio",
+            "No hay formulas o hay mas de una formula para esta presetacion final",
         });
         handleClickFeeback();
 
@@ -186,35 +202,62 @@ export const AgregarDevolucionV2 = () => {
         });
       }
     } else {
-      setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error:
-          "No hay formulas o hay mas de una formula para esta presetacion final",
-      });
-      handleClickFeeback();
-
-      // reseteamos los campos
+      // limpiamos los campos
       setproductoLoteProduccion({
-        ...productoLoteProduccion,
         idProdFin: 0,
         cantidadDeProducto: 0,
       });
+
+      // limpiamos los detalles
+      setDetalleRequisicionDevolucion({
+        requisicionDevolucion: null,
+        detalleProductosDevueltos: [],
+      });
+
+      // limpiamos la formula
+      setFormulaProductoFinal(null);
     }
   };
 
+  // funcion para cambiar la cantidad de devolucion
+  const onChangeCantidadProduccionDevolucion = ({ target }) => {
+    var { value } = target;
+    try {
+      const arrayAux = detalleProductosDevueltos.map((detalle) => {
+        const cantidadRequisicionDevuelta = parseFloat(
+          value * detalle.canForProDet
+        ).toFixed(5);
+        return {
+          ...detalle,
+          canReqProdLot: cantidadRequisicionDevuelta,
+        };
+      });
+
+      // seteamos la informacion de
+      setDetalleRequisicionDevolucion({
+        ...detalleRequisicionDevolucion,
+        detalleProductosDevueltos: arrayAux,
+      });
+
+      // seteamos la informacion de produccion
+      setproductoLoteProduccion({
+        ...productoLoteProduccion,
+        cantidadDeProducto: value,
+      });
+    } catch (e) {}
+  };
+
+  // funcion para añadir devolucion
   const handleAddProductoDevuelto = async (e) => {
     e.preventDefault();
-    const { idProdFin, nomProd, simMed, reqDet } = formulaProductoFinal;
-    const productoFinalProduccion = prodDetProdc.find(
-      (element) => element.idProdt === idProdFin
-    );
-    const { canTotProgProdFin, canTotIngProdFin } = productoFinalProduccion;
-    const cantidadSobrante = canTotProgProdFin - canTotIngProdFin;
-    if (cantidadSobrante > 0) {
+    const { reqDet } = formulaProductoFinal;
+
+    // verificamos si la cantidad de producto es mayor a 0
+    if (cantidadDeProducto > 0) {
       let detalleRequisicion = [];
       reqDet.forEach((detalle) => {
         const cantidadRequisicionDevuelta = parseFloat(
-          cantidadSobrante * detalle.canForProDet
+          cantidadDeProducto * detalle.canForProDet
         ).toFixed(5);
         detalleRequisicion.push({
           ...detalle,
@@ -235,18 +278,23 @@ export const AgregarDevolucionV2 = () => {
           motivos: [
             {
               idProdDevMot: 1,
-              nomDevMot: "Sobrantes de requisicion",
-              canProdDev: cantidadParser,
+              nomDevMot: "Faltante",
+              canProdDev: 0,
             },
             {
               idProdDevMot: 2,
-              nomDevMot: "Desmedros de produccion",
+              nomDevMot: "Desmedro",
               canProdDev: 0,
             },
             {
               idProdDevMot: 3,
-              nomDevMot: "Otros",
+              nomDevMot: "Excedente",
               canProdDev: 0,
+            },
+            {
+              idProdDevMot: 4,
+              nomDevMot: "Devolución",
+              canProdDev: cantidadParser,
             },
           ],
         };
@@ -256,7 +304,7 @@ export const AgregarDevolucionV2 = () => {
       setDetalleRequisicionDevolucion({
         requisicionDevolucion: {
           ...productoLoteProduccion,
-          cantidadDeProducto: cantidadSobrante,
+          cantidadDeProducto: cantidadDeProducto,
         },
         detalleProductosDevueltos: detalleRequisicionMotivos,
       });
@@ -271,7 +319,7 @@ export const AgregarDevolucionV2 = () => {
   };
 
   // ACCION PARA EDITAR CAMPOS EN DETALLE DE PRODUCTO DEVUELTO
-  const handleChangeInputProductoDevuelto = async (
+  const handleChangeInputProductoDevuelto = (
     { target },
     detalle,
     indexProd
@@ -291,15 +339,6 @@ export const AgregarDevolucionV2 = () => {
 
         // Actualiza los motivos en el detalle
         element.motivos = nuevosMotivos;
-
-        // Calcula la suma de canProdDev en motivos
-        const sumaMotivos = nuevosMotivos.reduce(
-          (suma, motivo) => suma + Number(motivo.canProdDev || 0),
-          0
-        );
-
-        // Actualiza canProdDev en el detalle del producto con la suma de motivos
-        element.canProdDev = sumaMotivos;
       }
 
       return element;
@@ -312,7 +351,7 @@ export const AgregarDevolucionV2 = () => {
   };
 
   // Manejador de eliminacion de un detalle de devolucion
-  const handleDeleteProductoDevuelto = async (idItem) => {
+  const handleDeleteProductoDevuelto = (idItem) => {
     const dataDetalleProductosDevueltos = detalleProductosDevueltos.filter(
       (element) => {
         if (element.idProd !== idItem) {
@@ -453,6 +492,7 @@ export const AgregarDevolucionV2 = () => {
           idProdt: informacionRequisicionDevolucion["idProdFin"],
         },
       };
+      console.log(formatDataRequisicion);
 
       const resultPeticion = await createDevolucionesLoteProduccion(
         formatDataRequisicion
@@ -484,7 +524,6 @@ export const AgregarDevolucionV2 = () => {
       });
       handleClickFeeback();
     }
-    setdisableButton(false);
   };
 
   const handleSubmitDevolucionesLoteProduccion = (e) => {
@@ -671,27 +710,44 @@ export const AgregarDevolucionV2 = () => {
                 <div className="col-md-5">
                   <label className="form-label">Presentación final</label>
                   <FilterProductosProgramados
-                    defaultValue={productoLoteProduccion.idProdFin}
+                    defaultValue={idProdFin}
                     onNewInput={onAddProductoFinalLoteProduccionDevolucion}
                     products={productosDisponibles}
                   />
                 </div>
 
                 {/* CANTIDAD DE PRRODUCTOS FINALES ESPERADOS */}
-                <div className="col-md-2 d-flex flex-column">
-                  <label className="form-label">Cantidad devuelta</label>
-                  <TextField
-                    type="number"
-                    autoComplete="off"
-                    size="small"
-                    name="cantidadDevuelta"
-                    disabled={true}
-                    value={
-                      requisicionDevolucion
-                        ? requisicionDevolucion.cantidadDeProducto
-                        : 0
-                    }
-                  />
+                <div className="col-md-3 d-flex flex-column">
+                  <label className="form-label">Cantidad recomendada</label>
+                  <div className="d-flex">
+                    <TextField
+                      type="number"
+                      autoComplete="off"
+                      size="small"
+                      name="cantidadDeProducto"
+                      disabled={disableButton}
+                      value={cantidadDeProducto}
+                      onChange={onChangeCantidadProduccionDevolucion}
+                    />
+                    <button
+                      className="btn btn-success ms-2"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setdisableButton(!disableButton);
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-pencil-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
                 {/* BOTON AGREGAR PRODUCTO */}
                 <div className="col-md-3 d-flex justify-content-end align-self-center ms-auto">
@@ -732,8 +788,11 @@ export const AgregarDevolucionV2 = () => {
                           <TableCell align="left" width={50}>
                             <b>Medida</b>
                           </TableCell>
+                          <TableCell align="left" width={100}>
+                            <b>Recomendado</b>
+                          </TableCell>
                           <TableCell align="left" width={120}>
-                            <b>Cantidad</b>
+                            <b>Total</b>
                           </TableCell>
                           <TableCell align="left" width={120}>
                             <b>Acciones</b>
@@ -741,8 +800,7 @@ export const AgregarDevolucionV2 = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {requisicionDevolucion !== null &&
-                          detalleProductosDevueltos.length !== 0 &&
+                        {detalleProductosDevueltos.length !== 0 &&
                           detalleProductosDevueltos.map((detalle, index) => (
                             <RowDevolucionLoteProduccionEdit
                               key={index}

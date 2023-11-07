@@ -302,7 +302,7 @@ export const AgregarAgregacionV2 = () => {
   };
 
   // funcion para manejar la cantidad de klg requerida
-  const handleInputsProductoFinalLoteAgregacion = async ({ target }) => {
+  const handleInputsProductoFinalLoteAgregacion = ({ target }) => {
     var { value } = target;
     // cantidad requerida de klg de lote para presentacion final
     try {
@@ -326,7 +326,7 @@ export const AgregarAgregacionV2 = () => {
   };
 
   // funcion para manejar la cantidad de unidades requeridas
-  const handleInputsProductoFinalCantidadAgregacion = async ({ target }) => {
+  const handleInputsProductoFinalCantidadAgregacion = ({ target }) => {
     var { value } = target;
     // cantidad requerida de klg de lote para presentacion final
     try {

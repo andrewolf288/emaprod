@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 es.canTotDis, 
                 es.codLot
             FROM entrada_stock AS es
-            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis <> 0.000
+            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis <> 0
             ORDER BY es.fecEntSto ASC";
 
         try {
@@ -113,11 +113,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         break; // salimos del flujo
                     }
                 }
-              // die(json_encode($cantidad_faltante));
+                // die(json_encode($cantidad_faltante));
                 // comprobamos finalmente que la cantidad faltante sea exactamente 0
                 die(json_encode($cantidad_faltante));
-
-                
             } else {
                 $message_error = "No hay entradas disponibles";
                 $description_error = "No hay entradas disponibles para el producto del detalle";

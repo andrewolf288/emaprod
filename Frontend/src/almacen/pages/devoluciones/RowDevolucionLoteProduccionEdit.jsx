@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import { FilterMotivoDevolucion } from "../../../components/ReferencialesFilters/MotivoDevolucion/FilterMotivoDevolucion";
 import { TextField } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableHead from "@mui/material/TableHead";
-import Typography from "@mui/material/Typography";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Box from "@mui/material/Box";
@@ -19,21 +17,42 @@ export const RowDevolucionLoteProduccionEdit = ({
   onChangeInputDetalle,
   onDeleteItemDetalle,
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
   const [open, setOpen] = React.useState(false);
+  const [valueTotal, setvalueTotal] = useState(0);
+
+  const calculateTotalMotivos = () => {
+    let totalAcu = 0;
+    detalle?.motivos?.forEach((item, index) => {
+      // los exedentes no deben sumar
+      if (index !== 2) {
+        const canProdDev = parseFloat(item.canProdDev);
+
+        if (!isNaN(canProdDev)) {
+          totalAcu += canProdDev;
+        }
+      }
+    });
+
+    setvalueTotal(totalAcu.toFixed(2));
+  };
+
+  useEffect(() => {
+    calculateTotalMotivos();
+  }, [detalle]);
 
   return (
     <React.Fragment>
       <TableRow>
         <TableCell>{detalle.nomProd}</TableCell>
         <TableCell>{detalle.simMed}</TableCell>
+        <TableCell>{detalle.canReqProdLot}</TableCell>
         <TableCell>
           <TextField
-            disabled={disabledInput}
+            disabled={true}
             type="number"
             autoComplete="off"
             size="small"
-            value={detalle.canReqProdLot}
+            value={valueTotal}
           />
         </TableCell>
         <TableCell>
@@ -57,7 +76,7 @@ export const RowDevolucionLoteProduccionEdit = ({
               onDeleteItemDetalle(detalle.idProd);
             }}
           >
-            <DeleteIcon sx={{ fontSize: 30 }} />
+            <DeleteIcon sx={{ fontSize: 30 }} color="error" />
           </IconButton>
         </TableCell>
       </TableRow>
@@ -87,6 +106,7 @@ export const RowDevolucionLoteProduccionEdit = ({
                         <TextField
                           onChange={(e) => {
                             onChangeInputDetalle(e, detalle, index);
+                            calculateTotalMotivos();
                           }}
                           type="number"
                           autoComplete="off"
