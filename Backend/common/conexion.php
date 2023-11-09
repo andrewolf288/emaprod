@@ -1,9 +1,13 @@
 <?php
 
-function getPDO(){
-    $password = obtenerVariableDelEntorno("MYSQL_PASSWORD");
-    $user = obtenerVariableDelEntorno("MYSQL_USER");
-    $dbName = obtenerVariableDelEntorno("MYSQL_DATABASE_NAME");
+function getPDO()
+{
+    // $password = obtenerVariableDelEntorno("MYSQL_PASSWORD");
+    // $user = obtenerVariableDelEntorno("MYSQL_USER");
+    // $dbName = obtenerVariableDelEntorno("MYSQL_DATABASE_NAME");
+    $password = "";
+    $user = "root";
+    $dbName = "emaprod_dev";
     //$database = new PDO('mysql:host=45.77.80.71;dbname=' . $dbName, $user, $password);
     $database = new PDO('mysql:host=localhost;dbname=' . $dbName, $user, $password);
     $database->query("set names utf8;");

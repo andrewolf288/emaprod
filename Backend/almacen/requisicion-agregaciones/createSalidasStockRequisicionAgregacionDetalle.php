@@ -160,16 +160,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 "INSERT
                             salida_stock
                             (idEntSto, idProdt, idAlm, idEstSalSto, canSalStoReq, merSalStoReq, idAgre)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)";
+                            VALUES (?, ?, ?, ?, $canSalStoReq, $merSalStoReq, ?)";
 
                             $stmt = $pdo->prepare($sql);
                             $stmt->bindParam(1, $idEntSto, PDO::PARAM_INT);
                             $stmt->bindParam(2, $idProdt, PDO::PARAM_INT);
                             $stmt->bindParam(3, $idAlmDes, PDO::PARAM_INT);
                             $stmt->bindParam(4, $idEstSalSto, PDO::PARAM_INT);
-                            $stmt->bindParam(5, $canSalStoReq, PDO::PARAM_INT);
-                            $stmt->bindParam(6, $merSalStoReq, PDO::PARAM_INT);
-                            $stmt->bindParam(7, $idReqAgr, PDO::PARAM_INT);
+                            $stmt->bindParam(5, $idReqAgr, PDO::PARAM_INT);
 
                             // EJECUTAMOS LA CREACION DE UNA SALIDA
                             $stmt->execute();
@@ -185,15 +183,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $sql_update_entrada_stock =
                                     "UPDATE
                                     entrada_stock
-                                    SET canTotDis = ?, merDis = merDis - ?, idEntStoEst = ?, fecFinSto = ?
+                                    SET canTotDis = $canResAftOpe, merDis = merDis - $merSalStoReq, idEntStoEst = ?, fecFinSto = ?
                                     WHERE id = ?
                                     ";
                                 $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
-                                $stmt_update_entrada_stock->bindParam(1, $canResAftOpe, PDO::PARAM_INT);
-                                $stmt_update_entrada_stock->bindParam(2, $merSalStoReq, PDO::PARAM_INT);
-                                $stmt_update_entrada_stock->bindParam(3, $idEntStoEst, PDO::PARAM_INT);
-                                $stmt_update_entrada_stock->bindParam(4, $fecFinSto);
-                                $stmt_update_entrada_stock->bindParam(5, $idEntSto, PDO::PARAM_INT);
+                                $stmt_update_entrada_stock->bindParam(1, $idEntStoEst, PDO::PARAM_INT);
+                                $stmt_update_entrada_stock->bindParam(2, $fecFinSto);
+                                $stmt_update_entrada_stock->bindParam(3, $idEntSto, PDO::PARAM_INT);
 
                                 $stmt_update_entrada_stock->execute();
                             } else {
@@ -203,28 +199,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $sql_update_entrada_stock =
                                     "UPDATE
                                     entrada_stock
-                                    SET canTotDis = ?, merDis = merDis - ?, idEntStoEst = ?
+                                    SET canTotDis = $canResAftOpe, merDis = merDis - $merSalStoReq, idEntStoEst = ?
                                     WHERE id = ?
                                     ";
                                 $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
-                                $stmt_update_entrada_stock->bindParam(1, $canResAftOpe, PDO::PARAM_INT);
-                                $stmt_update_entrada_stock->bindParam(2, $merSalStoReq, PDO::PARAM_INT);
-                                $stmt_update_entrada_stock->bindParam(3, $idEntStoEst, PDO::PARAM_INT);
-                                $stmt_update_entrada_stock->bindParam(4, $idEntSto, PDO::PARAM_INT);
+                                $stmt_update_entrada_stock->bindParam(1, $idEntStoEst, PDO::PARAM_INT);
+                                $stmt_update_entrada_stock->bindParam(2, $idEntSto, PDO::PARAM_INT);
                                 $stmt_update_entrada_stock->execute();
                             }
 
                             // ACTUALIZAMOS EL ALMACEN CORRESPONDIENTE A LA ENTRADA
                             $sql_update_almacen_stock =
                                 "UPDATE almacen_stock
-                                    SET canSto = canSto - ?, canStoDis = canStoDis - ?
+                                    SET canSto = canSto - $canSalStoReq, canStoDis = canStoDis - $canSalStoReq
                                     WHERE idAlm = ? AND idProd = ?";
 
                             $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
-                            $stmt_update_almacen_stock->bindParam(1, $canSalStoReq, PDO::PARAM_INT);
-                            $stmt_update_almacen_stock->bindParam(2, $canSalStoReq, PDO::PARAM_INT);
-                            $stmt_update_almacen_stock->bindParam(3, $idAlmacen, PDO::PARAM_INT);
-                            $stmt_update_almacen_stock->bindParam(4, $idProdt, PDO::PARAM_INT);
+                            $stmt_update_almacen_stock->bindParam(1, $idAlmacen, PDO::PARAM_INT);
+                            $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
                             $stmt_update_almacen_stock->execute();
 
                             // TERMINAMOS LA TRANSACCION
@@ -377,8 +369,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $message_error = "Error con la conexion a la base de datos";
         $description_error = "Error con la conexion a la base de datos a traves de PDO";
     }
-
-
 
     // Retornamos el resultado
     $return['message_error'] = $message_error;

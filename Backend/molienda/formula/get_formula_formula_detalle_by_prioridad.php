@@ -21,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             f.id,
             f.idProd,
             p.nomProd,
+            p.codProd2,
             f.nomFor,
             f.desFor,
             f.lotKgrFor,
@@ -31,8 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             JOIN clase c ON p.idCla = c.id
             JOIN sub_clase sc ON p.idSubCla = sc.id
             WHERE f.idProd = ? ";
-            //AND f.lotKgrFor = $lotKgrFor
-            
+        //AND f.lotKgrFor = $lotKgrFor
+
         try {
             // PREPARAMOS LA CONSULTA
             $stmt = $pdo->prepare($sql);
@@ -51,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 fd.idAre,
                 a.desAre,
                 p.codProd,
+                p.codProd2,
                 p.nomProd,
                 m.simMed,
                 c.desCla,
