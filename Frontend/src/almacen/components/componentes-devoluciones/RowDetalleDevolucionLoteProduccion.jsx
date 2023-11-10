@@ -21,7 +21,19 @@ export const RowDetalleDevolucionLoteProduccion = ({
       </TableCell>
       <TableCell align="left">{detalle.nomProd}</TableCell>
       <TableCell align="left">{detalle.canTotUndReqDev}</TableCell>
-      <TableCell align="left">{detalle.desReqEst}</TableCell>
+      <TableCell align="left">
+        <span
+          className={
+            detalle.idReqEst === 1
+              ? "badge text-bg-danger"
+              : detalle.idReqEst === 2
+              ? "badge text-bg-warning"
+              : "badge text-bg-success"
+          }
+        >
+          {detalle.desReqEst}
+        </span>
+      </TableCell>
       <TableCell align="center">
         <div className="btn-toolbar">
           {

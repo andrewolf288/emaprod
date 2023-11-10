@@ -14,17 +14,18 @@ import { DialogUpdateDetalleRequisicionDevolucion } from "./DialogUpdateDetalleR
 import { DialogDeleteDetalleRequisicionDevolucion } from "./DialogDeleteDetalleRequisicionDevolucion";
 
 export const RowDetalleRequisicionDevolucion = ({
-  detalles,
+  requisicion,
   onUpdateDetalle,
   onDeleteDetalle,
   onCheckDetalle,
 }) => {
+  const { detReqDev } = requisicion;
   return (
     <div className="mt-2">
       <p>
         <b>Detalle</b>
       </p>
-      <TableContainer key={detalles.id} component={Paper}>
+      <TableContainer key={detReqDev.id} component={Paper}>
         <Table>
           <TableHead style={{ backgroundColor: "#FEE7BC" }}>
             <TableRow>
@@ -52,7 +53,7 @@ export const RowDetalleRequisicionDevolucion = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {detalles.map((detalle, index) => (
+            {detReqDev.map((detalle, index) => (
               <TableRow key={`${detalle.id} - ${index}`}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{detalle.desProdDevMot}</TableCell>
@@ -86,7 +87,7 @@ export const RowDetalleRequisicionDevolucion = ({
                       color="success"
                       disabled={detalle.esComReqDevDet === 1}
                       onClick={() => {
-                        onCheckDetalle(detalle);
+                        onCheckDetalle(detalle, requisicion);
                       }}
                     >
                       <CheckCircleRoundedIcon fontSize="inherit" />

@@ -31,7 +31,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 function parseIntCantidad(str, property) {
-  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(5);
+  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(2);
   let index = str.canReqProdLot.toString().indexOf(".");
   let result = str.canReqProdLot.toString().substring(index + 1);
   let val =

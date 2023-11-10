@@ -101,7 +101,7 @@ export const CardRequisicionDevolucion = ({
         </TableContainer>
         {mostrarDetalle && (
           <RowDetalleRequisicionDevolucion
-            detalles={requisicion.detReqDev}
+            requisicion={requisicion}
             onUpdateDetalle={onUpdateRequisicionDevolucionDetalle}
             onDeleteDetalle={onDeleteRequisicionDevolucionDetalle}
             onCheckDetalle={onCheckRequisicionDevolucionDetalle}

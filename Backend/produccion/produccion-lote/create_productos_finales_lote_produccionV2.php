@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 try {
                     // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
                     $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
-                    $stmt_numero_entrada->bindParam(1, $idProd, PDO::PARAM_INT);
+                    $stmt_numero_entrada->bindParam(1, $idProdt, PDO::PARAM_INT);
                     $stmt_numero_entrada->bindParam(2, $anioActual);
                     $stmt_numero_entrada->execute();
 

@@ -109,8 +109,8 @@ if (isset($_GET["id"])) {
             // Preparamos la respuesta con los datos de producción, las requisiciones con sus detalles y los productos finales
             $result["produccion"] = $resultProduccion;
             $result["requisiciones"] = $resultRequisiciones;
-            $result["agregaciones"] = getAgregationsByOrderProdc($pdo, $id);;
-            $result["prodFinalWithAgreg"] = agregWithProdFinal($pdo, $id);;
+            // $result["agregaciones"] = getAgregationsByOrderProdc($pdo, $id);;
+            // $result["prodFinalWithAgreg"] = agregWithProdFinal($pdo, $id);;
             //$result["AllAgregations"] = AllAgregations($pdo);
 
 
@@ -121,7 +121,7 @@ if (isset($_GET["id"])) {
         }
     } else {
 
-        $result["AllAgregations"] = AllAgregations($pdo);
+        // $result["AllAgregations"] = AllAgregations($pdo);
     }
 } else {
     // Si no se ha enviado el parámetro "id", configuramos un mensaje de error

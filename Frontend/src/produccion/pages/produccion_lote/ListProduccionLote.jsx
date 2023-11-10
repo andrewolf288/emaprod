@@ -259,8 +259,8 @@ export const ListProduccionLote = () => {
       result.map(async (obj) => {
         var resultPeticion = await getAgregationsByOrderProduccion(obj.id);
         const { result } = resultPeticion;
-        const { agregaciones, produccion } = result;
-        obj.agregaciones = agregaciones.detAgr;
+        // const { agregaciones, produccion } = result;
+        // obj.agregaciones = agregaciones.detAgr;
       })
     );
 
@@ -313,15 +313,15 @@ export const ListProduccionLote = () => {
       }
 
       const response = await axios.get(url);
-      var productosFinal =
-        response.data.result.prodFinalWithAgreg.detAgr.filter(
-          (obj) => obj.id == null
-        );
-      var productosFinal = productosFinal.map((obj) => obj.idProdFin);
-      response.data.result.productos_finales =
-        response.data.result.productos_finales.filter((obj) =>
-          productosFinal.includes(obj.id)
-        );
+      // var productosFinal =
+      //   response.data.result.prodFinalWithAgreg.detAgr.filter(
+      //     (obj) => obj.id == null
+      //   );
+      // var productosFinal = productosFinal.map((obj) => obj.idProdFin);
+      // response.data.result.productos_finales =
+      //   response.data.result.productos_finales.filter((obj) =>
+      //     productosFinal.includes(obj.id)
+      //   );
 
       // recorremos las requisiciones del proceso de produccion
       response.data.result?.requisiciones?.map((req) => {

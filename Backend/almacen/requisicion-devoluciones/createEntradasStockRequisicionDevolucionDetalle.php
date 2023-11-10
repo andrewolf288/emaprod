@@ -15,6 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $idProdc = $data["idProdc"]; // lote produccion
     $idProdt = $data["idProdt"]; // producto
+    $idProdFin = $data["idProdFin"]; // referencia la producto final de produccion id
     $idProdDevMot = $data["idMotDev"]; // motivo de devolucion
     $canProdDev = floatval($data["canReqDevDet"]); // cantidad devuelta
     $nomProd = $data["nomProd"]; // producto
@@ -57,11 +58,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 5. Creamos cada registro para la trazabilidad
                 6. Fin del algoritmo
             */
-            $sql_salidas_empleadas_requisicion_detalle =
-                "SELECT * FROM salida_stock st
-            JOIN requisicion AS r ON r.id = st.idReq
-            WHERE st.idProdt = ? AND r.idProdc = ?
-            ORDER BY idEntSto DESC";
+
+            // primero debemos identificar si el producto final no fue programado
+            $esProdcProdtProg = 1;
+
+            $sql_select_presentacion_final =
+                "SELECT esProdcProdtProg 
+            FROM produccion_producto_final
+            WHERE id = ?";
+            $stmt_select_presentacion_final = $pdo->prepare($sql_select_presentacion_final);
+            $stmt_select_presentacion_final->bindParam(1, $idProdFin, PDO::PARAM_INT);
+            $stmt_select_presentacion_final->execute();
+
+            $row_select = $stmt_select_presentacion_final->fetch(PDO::FETCH_ASSOC);
+            if ($row_select !== false) {
+                // Comprueba si es true o false (asumiendo que es un booleano en la base de datos)
+                if ($row_select['esProdcProdtProg'] == 0) {
+                    $esProdcProdtProg = 0;
+                }
+            }
+
+            // debemos formar un sql adecuado para cada ocasion
+            /*
+                1. si el producto final fue algo programado, su requisicion se encuentra en requisicon
+                2. si el producto final no fue programado y fue agregado se encuentra en requisicion agregacion
+            */
+            $sql_salidas_empleadas_requisicion_detalle = "";
+
+            // si fue un producto programado
+            if ($esProdcProdtProg == 1) {
+                $sql_salidas_empleadas_requisicion_detalle =
+                    "SELECT * FROM salida_stock st
+                JOIN requisicion AS r ON r.id = st.idReq
+                WHERE st.idProdt = ? AND r.idProdc = ?
+                ORDER BY idEntSto DESC";
+            }
+
+            // si no fue un producto programado
+            else {
+                $sql_salidas_empleadas_requisicion_detalle =
+                    "SELECT * FROM salida_stock st
+                JOIN requisicion_agregacion AS ra ON ra.id = st.idAgre
+                WHERE st.idProdt = ? AND ra.idProdc = ?
+                ORDER BY idEntSto DESC";
+            }
+
             try {
                 $stmt_salidas_empleadas_requisicion_detalle = $pdo->prepare($sql_salidas_empleadas_requisicion_detalle);
                 $stmt_salidas_empleadas_requisicion_detalle->bindParam(1, $idProdt, PDO::PARAM_INT);
@@ -81,7 +122,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // ahora recorremos las salidas
                     foreach ($salidasEmpleadas as $value) {
                         $idEntSto = $value["idEntSto"]; // entrada
-                        $idReq = $value["idReq"]; // requisicion
                         $canSalStoReq = $value["canSalStoReq"]; // cantidad
 
                         if ($cantidadAdevolver >= $canSalStoReq) {
