@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         switch ($idProdDevMot) {
                 // si el motivo es faltante
             case 1:
-                $idAlm = 13; // almacen de faltante
+                $idAlm = 1; // almacen principal
                 break;
                 // si el motivo es desmedro
             case 2:
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 break;
                 // si el motivo es excedente
             case 3:
-                $idAlm = 12; // almacen de excedente
+                $idAlm = 1; // almacen principal
                 break;
                 // si el motivo es devolucion
             case 4:
@@ -44,8 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
-        // si el motivo de devolucion es devolucion
-        if ($idProdDevMot == 4) {
+        // si el motivo de devolucion no es desmedro
+        if (!$idProdDevMot == 2) {
             $salidasEmpleadas = []; // salidas empleadas
             /*
                 Primero debemos identificar que entradas fueron utilizadas para
@@ -175,11 +175,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         if (empty($message_error)) {
-            // AHORA ACTUALIZAMOS EL STOCK FINAL
             // primero consultamos si existe ese almacen stock
             $sql_consult_almacen_stock =
                 "SELECT * FROM almacen_stock
-            WHERE idProd = ? AND idAlm = ?";
+                WHERE idProd = ? AND idAlm = ?";
             try {
                 $stmt_consult_almacen_stock = $pdo->prepare($sql_consult_almacen_stock);
                 $stmt_consult_almacen_stock->bindParam(1, $idProdt, PDO::PARAM_INT);
@@ -190,8 +189,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // ACTUALIZAMOS
                     $sql_update_almacen_stock =
                         "UPDATE almacen_stock 
-                    SET canSto = canSto + $canProdDev, canStoDis = canStoDis + $canProdDev
-                    WHERE idProd = ? AND idAlm = ?";
+                        SET canSto = canSto + $canProdDev, canStoDis = canStoDis + $canProdDev
+                        WHERE idProd = ? AND idAlm = ?";
 
                     try {
                         $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
@@ -206,8 +205,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // CREAMOS
                     $sql_insert_almacen_stock =
                         "INSERT INTO almacen_stock
-                    (idProd, idAlm, canSto, canStoDis)
-                    VALUES(?, ?, $canProdDev, $canProdDev)";
+                        (idProd, idAlm, canSto, canStoDis)
+                        VALUES(?, ?, $canProdDev, $canProdDev)";
 
                     try {
                         $stmt_insert_almacen_stock = $pdo->prepare($sql_insert_almacen_stock);

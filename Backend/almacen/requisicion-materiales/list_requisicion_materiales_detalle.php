@@ -55,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     p.nomProd,
                     me.simMed,
                     p.codProd,
+                    p.codProd2,
                     rde.desReqDetEst,
                     rd.canReqDet
                     FROM requisicion_detalle rd
