@@ -19,11 +19,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result["header"] =
         [
             "Código entrada", "SIIGO", "EMPAROD",
-            "Producto", "Medida", "Fecha Entrada",
-            "Fecha Vencimiento", "Fecha Salida",
-            "Lote", "Ingreso", "Salida", "Disponible"
+            "Producto", "Medida", "Lote",
+            "Fecha Vencimiento", "Fecha Ingreso", "Fecha Salida",
+            "Motivo", "Ingreso", "Salida", "Disponible"
         ];
-    $result["columnWidths"] = [17.88, 8, 9, 66, 5.75, 10, 10, 10, 5.75, 10, 10, 10];
+    $result["columnWidths"] = [17.88, 8, 9, 66, 5.75, 6, 10, 10, 10, 20, 10, 10, 10];
     $result["data"] = [];
 
     // vamos a recibir información del producto y de las fechas que se quiere el reporte
@@ -50,21 +50,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_entradas->execute();
 
     while ($row_entrada = $stmt_entradas->fetch(PDO::FETCH_ASSOC)) {
-        $idEntSto = $row_entrada["id"];
-        $codEntSto = $row_entrada["codEntSto"];
-        $idProd = $row_entrada["idProd"];
-        $codProd = $row_entrada["codProd"];
-        $codProd2 = $row_entrada["codProd2"];
-        $nomProd = $row_entrada["nomProd"];
-        $simMed = $row_entrada["simMed"];
-        $fecEntSto = $row_entrada["fecEntSto"];
-        $fecVenEntSto = $row_entrada["fecVenEntSto"];
-        $canTotEnt = $row_entrada["canTotEnt"];
-        $canTotDis = $row_entrada["canTotDis"];
+        $idEntSto = $row_entrada["id"]; // id entrada stokc
+        $codEntSto = $row_entrada["codEntSto"]; // codigo de entrada de stock
+        $idProd = $row_entrada["idProd"]; // producto
+        $codProd = $row_entrada["codProd"]; // codigo SIIGO
+        $codProd2 = $row_entrada["codProd2"]; // codigo EMAPROD
+        $nomProd = $row_entrada["nomProd"]; // nombre de producto
+        $simMed = $row_entrada["simMed"]; // simbolo de medida
+        $fecEntSto = $row_entrada["fecEntSto"]; // fecha de entrada
+        $fecVenEntSto = $row_entrada["fecVenEntSto"]; // fecha de vencimiento
+        $canTotEnt = $row_entrada["canTotEnt"]; // cantidad ingresada
+        $canTotDis = $row_entrada["canTotDis"]; // cantidad disponible
 
-        $auxEnt = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $fecEntSto, $fecVenEntSto, "", "", $canTotEnt, "", $canTotDis];
+        $auxEnt = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, "", $fecVenEntSto, $fecEntSto, "", "", $canTotEnt, "", $canTotDis];
         array_push($result["data"], $auxEnt);
 
+        // salidas realizadas por requisicion
         $sql_salida =
             "SELECT 
         ss.idReq,
@@ -77,18 +78,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_salida = $pdo->prepare($sql_salida);
         $stmt_salida->execute();
         while ($row_salida = $stmt_salida->fetch(PDO::FETCH_ASSOC)) {
-            $codLotProd = $row_salida["codLotProd"];
-            $canSalStoReq = $row_salida["canSalStoReq"];
-            $fecSalStoReq = $row_salida["fecSalStoReq"];
+            $codLotProd = $row_salida["codLotProd"]; // codigo lote produccion
+            $canSalStoReq = $row_salida["canSalStoReq"]; // cantidad salida
+            $fecSalStoReq = $row_salida["fecSalStoReq"];  //
 
-            $aux_salida = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, "", "", $fecSalStoReq, $codLotProd, "", $canSalStoReq, ""];
+            $aux_salida = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, "", $fecSalStoReq, "", "", $canSalStoReq, ""];
             array_push($result["data"], $aux_salida);
         }
+
+        // agregaciones realizadas
+        $sql_salida =
+            "SELECT 
+        ss.idReq,
+        r.codLotProd,
+        pma.desProdAgrMot,
+        ss.canSalStoReq,
+        DATE(ss.fecSalStoReq) AS fecSalStoReq
+        FROM salida_stock ss
+        JOIN requisicion AS r ON r.id = ss.idAgre
+        JOIN requisicion_agregacion AS ra ON ra.id = ss.idAgre
+        JOIN produccion_motivo_agregacon AS pma ON pma.id = ra.idProdcMot
+        WHERE ss.idEntSto = $idEntSto";
+        $stmt_salida = $pdo->prepare($sql_salida);
+        $stmt_salida->execute();
+        while ($row_agregacion = $stmt_salida->fetch(PDO::FETCH_ASSOC)) {
+            $codLotProd = $row_agregacion["codLotProd"]; // codigo lote produccion
+            $canSalStoReq = $row_agregacion["canSalStoReq"]; // cantidad salida
+            $fecSalStoReq = $row_agregacion["fecSalStoReq"];  // fecha de salida
+            $desProdAgrMot = $row_agregacion["desProdAgrMot"]; // motivo agregacion
+
+            $aux_agregacion = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, "", $fecSalStoReq, $desProdAgrMot, "", $canSalStoReq, ""];
+            array_push($result["data"], $aux_agregacion);
+        }
+
+        // devoluciones realizadas
+        $sql_devoluciones =
+            "SELECT
+            tde.idReqDevDet,
+            tde.canReqDevDet,
+            pmd.desProdDevMot,
+            p.codLotProd,
+            DATE(tde.fecCreTraDevEnt) AS fecCreTraDevEnt
+            FROM trazabilidad_devolucion_entrada AS tde
+            JOIN requisicion_devolucion_detalle AS rdd ON rdd.id = tde.idReqDevDet
+            JOIN produccion_motivo_devolucion AS pmd ON rdd.idMotDev = pmd.id
+            JOIN requisicion_devolucion AS rd ON rd.id = rdd.idReqDev
+            JOIN produccion AS p ON p.id = rd.idProdc
+            WHERE idEntSto = ?";
+        $stmt_devoluciones = $pdo->prepare($sql_devoluciones);
+        $stmt_devoluciones->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_devoluciones->execute();
+        while ($row_devolucion = $stmt_devoluciones->fetch(PDO::FETCH_ASSOC)) {
+            $codLotProd = $row_devolucion["codLotProd"]; // codigo lote produccion
+            $fechaEntradaDevolucion = $row_devolucion["fecCreTraDevEnt"]; // fec. entrada devolucion
+            $canReqDevDet = $row_devolucion["canReqDevDet"]; // cantidad entrada
+            $motivo_devolucion = $row_devolucion["desProdDevMot"]; // motivo de devolucion
+            $aux_devolucion = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, $fechaEntradaDevolucion, "", $motivo_devolucion, $canReqDevDet, "", ""];
+            array_push($result["data"], $aux_devolucion);
+        }
     }
-
-
-
-
     // Retornamos el resultado
     $return['message_error'] = $message_error;
     $return['description_error'] = $description_error;
