@@ -6,29 +6,24 @@ function getPDO()
     $databaseName = 'ERP_EMAR';
     $username = 'sistemas2';
     $password = 'Sistemas@369741258%';
-    //$database = new PDO("sqlsrv:server=$serverName;database=$databaseName,$username,$password");
-    $database = new PDO("sqlsrv:server=$serverName;database=$databaseName", $username, $password);
-    $database->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
-    $database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-    return $database;
-}
 
-// function obtenerVariableDelEntorno($key)
-// {
-//     if (defined("_ENV_CACHE")) {
-//         $vars = _ENV_CACHE;
-//     } else {
-//         $file = "../../env.php";
-//         if (!file_exists($file)) {
-//             throw new Exception("El archivo de las variables de entorno ($file) no existe. Favor de crearlo");
-//         }
-//         $vars = parse_ini_file($file);
-//         define("_ENV_CACHE", $vars);
-//     }
-//     if (isset($vars[$key])) {
-//         return $vars[$key];
-//     } else {
-//         throw new Exception("La clave especificada (" . $key . ") no existe en el archivo de las variables de entorno");
-//     }
-// }
+    // Opciones para configurar la conexión
+    $connectionOptions = array(
+        "Database" => $databaseName,
+        "Uid" => $username,
+        "PWD" => $password,
+        "Encrypt" => 'true', // Configura a 'true' o 'false' según sea necesario (Solución 2)
+        "TrustServerCertificate" => 'true' // Solución 3
+    );
+
+    try {
+        $pdo = new PDO("sqlsrv:Server=$serverName", options: $connectionOptions);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+        return $pdo;
+    } catch (PDOException $e) {
+        // Manejo de errores (puedes personalizar según tus necesidades)
+        echo "Error de conexión: " . $e->getMessage();
+        return null;
+    }
+}

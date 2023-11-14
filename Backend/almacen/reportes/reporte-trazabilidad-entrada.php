@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $canTotEnt = $row_entrada["canTotEnt"]; // cantidad ingresada
         $canTotDis = $row_entrada["canTotDis"]; // cantidad disponible
 
-        $auxEnt = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, "", $fecVenEntSto, $fecEntSto, "", "", $canTotEnt, "", $canTotDis];
+        $auxEnt = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, "", $fecVenEntSto, $fecEntSto, "", "Entrada", $canTotEnt, "", $canTotDis];
         array_push($result["data"], $auxEnt);
 
         // salidas realizadas por requisicion
@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $canSalStoReq = $row_salida["canSalStoReq"]; // cantidad salida
             $fecSalStoReq = $row_salida["fecSalStoReq"];  //
 
-            $aux_salida = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, "", $fecSalStoReq, "", "", $canSalStoReq, ""];
+            $aux_salida = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, "", $fecSalStoReq, "Salida", "", $canSalStoReq, ""];
             array_push($result["data"], $aux_salida);
         }
 
@@ -91,13 +91,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "SELECT 
         ss.idReq,
         r.codLotProd,
-        pma.desProdAgrMot,
+        pam.desProdAgrMot,
         ss.canSalStoReq,
         DATE(ss.fecSalStoReq) AS fecSalStoReq
         FROM salida_stock ss
         JOIN requisicion AS r ON r.id = ss.idAgre
         JOIN requisicion_agregacion AS ra ON ra.id = ss.idAgre
-        JOIN produccion_motivo_agregacon AS pma ON pma.id = ra.idProdcMot
+        JOIN produccion_agregacion_motivo AS pam ON pam.id = ra.idProdcMot
         WHERE ss.idEntSto = $idEntSto";
         $stmt_salida = $pdo->prepare($sql_salida);
         $stmt_salida->execute();
@@ -116,12 +116,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "SELECT
             tde.idReqDevDet,
             tde.canReqDevDet,
-            pmd.desProdDevMot,
+            pdm.desProdDevMot,
             p.codLotProd,
             DATE(tde.fecCreTraDevEnt) AS fecCreTraDevEnt
             FROM trazabilidad_devolucion_entrada AS tde
             JOIN requisicion_devolucion_detalle AS rdd ON rdd.id = tde.idReqDevDet
-            JOIN produccion_motivo_devolucion AS pmd ON rdd.idMotDev = pmd.id
+            JOIN produccion_devolucion_motivo AS pdm ON rdd.idMotDev = pdm.id
             JOIN requisicion_devolucion AS rd ON rd.id = rdd.idReqDev
             JOIN produccion AS p ON p.id = rd.idProdc
             WHERE idEntSto = ?";
