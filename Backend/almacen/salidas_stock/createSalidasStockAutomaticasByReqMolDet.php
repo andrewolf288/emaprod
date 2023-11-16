@@ -170,7 +170,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $merSalStoReq = 0; // merma de la salida de stock
                             if ($esSel) {
                                 $merSalStoReq = ($canSalStoReq * $merDis) / $canTotDisEntSto;
-                                $merSalStoReq = round($merSalStoReq);
+                                $merSalStoReq = round($merSalStoReq, 2);
                             }
                             // sentencia sql
                             $sql =
