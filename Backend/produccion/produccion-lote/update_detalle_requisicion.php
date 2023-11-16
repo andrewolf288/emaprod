@@ -17,22 +17,18 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
     $canReqDetNew = floatval($data["cantidadNueva"]); // cantidad nueva
 
     if ($pdo) {
-        // variables utilizadas
-        $cantidadResultante = 0; // cantidad diferencia entre nuevo y actual
-        $canReqDet = 0; // cantidad actual de la requisicion
-        $idProd = 0; // producto de la requisicion
-        $idAlm = 0; // almacen destino
-        $idAlmacenPrincipal = 1; // almacen principal
 
         // finalmente actualizamos la requisicion detalle
+        $fecActReqDet = date('Y-m-d H:i:s'); // Fecha de actualizacion de requisicion detalle
         $sql_update_requisicion_detalle =
             "UPDATE requisicion_detalle SET
-            canReqDet = $canReqDetNew
+            canReqDet = $canReqDetNew, fecActReqDet = ?
             WHERE id = ?";
 
         try {
             $stmt_update_requisicion_detalle = $pdo->prepare($sql_update_requisicion_detalle);
             $stmt_update_requisicion_detalle->bindParam(1, $idReqDet, PDO::PARAM_INT);
+            $stmt_update_requisicion_detalle->bindParam(2, $fecActReqDet, PDO::PARAM_STR);
             $stmt_update_requisicion_detalle->execute();
 
             // actualizamos el almacen principal

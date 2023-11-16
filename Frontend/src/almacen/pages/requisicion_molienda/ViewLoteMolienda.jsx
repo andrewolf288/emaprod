@@ -30,7 +30,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export const ViewLoteMolienda = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const { idProdc, idReq } = useParams();
+  const { idReq } = useParams();
   const [produccionRequisicionDetalle, setproduccionRequisicionDetalle] =
     useState({
       idProdt: 0,
@@ -188,7 +188,7 @@ export const ViewLoteMolienda = () => {
 
   // funcion para obtener la produccion con sus requisiciones y su detalle
   const obtenerDataProduccionRequisicionesDetalle = async () => {
-    const resultPeticion = await viewMoliendaRequisicionId(idProdc, idReq);
+    const resultPeticion = await viewMoliendaRequisicionId(idReq);
 
     const { message_error, description_error, result } = resultPeticion;
 
