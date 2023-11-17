@@ -27,8 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
 
         try {
             $stmt_update_requisicion_detalle = $pdo->prepare($sql_update_requisicion_detalle);
-            $stmt_update_requisicion_detalle->bindParam(1, $idReqDet, PDO::PARAM_INT);
-            $stmt_update_requisicion_detalle->bindParam(2, $fecActReqDet, PDO::PARAM_STR);
+            $stmt_update_requisicion_detalle->bindParam(1, $fecActReqDet, PDO::PARAM_STR);
+            $stmt_update_requisicion_detalle->bindParam(2, $idReqDet, PDO::PARAM_INT);
             $stmt_update_requisicion_detalle->execute();
 
             // actualizamos el almacen principal

@@ -48,8 +48,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             while ($row_consult_estado_requisicion = $stmt_consult_estado_requisicion->fetch(PDO::FETCH_ASSOC)) {
                 $requisiciones_pendientes = $row_consult_estado_requisicion["requisiciones_pendientes"];
                 $requisicion_completas = $row_consult_estado_requisicion["requisicion_completas"];
+                $total_requisiciones = $row_consult_estado_requisicion["total_requisiciones"];
             }
 
+            $idReqEst = 2;
             // si existen requisiciones pendientes o en proceso
             if ($total_requisiciones == $requisiciones_pendientes) {
                 $idReqEst = 1; // estado pendiente

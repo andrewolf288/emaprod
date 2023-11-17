@@ -11,11 +11,13 @@ import Paper from "@mui/material/Paper";
 
 export const RowRequisicionLoteProduccion = ({
   requisicion,
-  onCreateSalidasStock,
   onUpdateDetalleRequisicion,
+  onDeleteDetalleRequisicion,
+  onCreateSalidaTotal,
+  onCreateSalidaParcial,
+  onTerminarSalidaParcial,
   show,
 }) => {
-  //console.log("REQUISICIONES:  ",requisicion);
   return (
     <div className="card d-flex mb-4">
       <h6 className="card-header">
@@ -126,11 +128,14 @@ export const RowRequisicionLoteProduccion = ({
                         <TableCell align="left" width={20}>
                           <b>U.M</b>
                         </TableCell>
-                        <TableCell align="left" width={150}>
-                          <b>Cantidad</b>
+                        <TableCell align="left" width={120}>
+                          <b>Can. Requisicion</b>
+                        </TableCell>
+                        <TableCell align="left" width={120}>
+                          <b>Can. Salidas</b>
                         </TableCell>
                         {show && (
-                          <TableCell align="left" width={150}>
+                          <TableCell align="left" width={180}>
                             <b>Acciones</b>
                           </TableCell>
                         )}
@@ -142,10 +147,15 @@ export const RowRequisicionLoteProduccion = ({
                           <RowRequisicionDetalleLoteProduccion
                             key={row.id}
                             detalle={{ ...row, idAre: requisicion.idAre }}
-                            onCreateSalidasStock={onCreateSalidasStock}
                             onUpdateDetalleRequisicion={
                               onUpdateDetalleRequisicion
                             }
+                            onDeleteDetalleRequisicion={
+                              onDeleteDetalleRequisicion
+                            }
+                            onCreateSalidaTotal={onCreateSalidaTotal}
+                            onCreateSalidaParcial={onCreateSalidaParcial}
+                            onTerminarSalidaParcial={onTerminarSalidaParcial}
                             show={show}
                           />
                         );

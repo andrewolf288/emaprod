@@ -156,11 +156,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             }
 
                             // sentencia sql
+                            $esSalTot = 1; // es salida total
                             $sql =
                                 "INSERT
                             salida_stock
-                            (idEntSto, idProdt, idAlm, idEstSalSto, canSalStoReq, merSalStoReq, idAgre)
-                            VALUES (?, ?, ?, ?, $canSalStoReq, $merSalStoReq, ?)";
+                            (idEntSto, idProdt, idAlm, idEstSalSto, canSalStoReq, merSalStoReq, idAgre, idAgreDet, esSalTot)
+                            VALUES (?, ?, ?, ?, $canSalStoReq, $merSalStoReq, ?, ?, ?)";
 
                             $stmt = $pdo->prepare($sql);
                             $stmt->bindParam(1, $idEntSto, PDO::PARAM_INT);
@@ -168,7 +169,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $stmt->bindParam(3, $idAlmDes, PDO::PARAM_INT);
                             $stmt->bindParam(4, $idEstSalSto, PDO::PARAM_INT);
                             $stmt->bindParam(5, $idReqAgr, PDO::PARAM_INT);
-
+                            $stmt->bindParam(6, $idReqAgrDet, PDO::PARAM_INT);
+                            $stmt->bindParam(7, $esSalTot, PDO::PARAM_BOOL);
                             // EJECUTAMOS LA CREACION DE UNA SALIDA
                             $stmt->execute();
 

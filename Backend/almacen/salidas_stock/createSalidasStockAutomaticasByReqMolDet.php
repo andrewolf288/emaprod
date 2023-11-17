@@ -127,6 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                     //die(json_encode($entradasUtilizadas));
 
+                    $fecSalStoReq = date('Y-m-d H:i:s');
                     $sql = "";
                     // RECORREMOS TODAS LAS ENTRADAS UTILIZADAS PARA LA SALIDA
                     foreach ($entradasUtilizadas as $item) {
@@ -178,8 +179,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $sql =
                                 "INSERT
                             salida_stock
-                            (idEntSto, idReq, idReqDet, idProdt, idAlm, idEstSalSto, canSalStoReq, merSalStoReq, numop, esSalTot)
-                            VALUES (?, ?, ?, ?, ?, $canSalStoReq, $merSalStoReq, ?)";
+                            (idEntSto, idReq, idReqDet, idProdt, idAlm, idEstSalSto, canSalStoReq, merSalStoReq, numop, esSalTot, fecSalStoReq)
+                            VALUES (?, ?, ?, ?, ?, ?, $canSalStoReq, $merSalStoReq, ?, ?, ?)";
 
                             $stmt = $pdo->prepare($sql);
                             $stmt->bindParam(1, $idEntSto, PDO::PARAM_INT);
@@ -190,6 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $stmt->bindParam(6, $idEstSalSto, PDO::PARAM_INT);
                             $stmt->bindParam(7, $numop, PDO::PARAM_INT);
                             $stmt->bindParam(8, $esSalTot, PDO::PARAM_BOOL);
+                            $stmt->bindParam(9, $fecSalStoReq, PDO::PARAM_STR);
 
                             // EJECUTAMOS LA CREACION DE UNA SALIDA
                             $stmt->execute();

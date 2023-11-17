@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             JOIN producto as p on p.id = rd.idProdt
                             JOIN medida as me on me.id = p.idMed
                             JOIN requisicion_detalle_estado as rde on rde.id = rd.idReqDetEst
-                            WHERE rd.idReq = ?  ORDER BY p.nomProd ASC";
+                            WHERE rd.idReq = ? ORDER BY p.nomProd ASC";
 
                         $stmt_requisicion_detalle = $pdo->prepare($sql_requisicion_detalle);
                         $stmt_requisicion_detalle->bindParam(1, $idReq, PDO::PARAM_INT);
@@ -91,6 +91,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // AÑADIMOS LAS REQUISICIONES
                         while ($row_requisicion_detalle = $stmt_requisicion_detalle->fetch(PDO::FETCH_ASSOC)) {
+                            $idReqDet = $row_requisicion_detalle["id"];
+                            $row_requisicion_detalle["salParc"] = []; // salidas parciales
+                            $row_requisicion_detalle["canTotSalParc"] = 0; // cantidad total de salidas parciales
+                            $cantidadSalidasParciales = 0;
+
+                            $sql_salidas_parciales_requisicion_detalle =
+                                "SELECT canSalStoReq, fecSalStoReq, esSalPar, esSalTot
+                                FROM salida_stock
+                                WHERE idReq = ? AND idReqDet = ?";
+                            $stmt_salidas_parciales_requisicion_detalle = $pdo->prepare($sql_salidas_parciales_requisicion_detalle);
+                            $stmt_salidas_parciales_requisicion_detalle->bindParam(1, $idReq, PDO::PARAM_INT);
+                            $stmt_salidas_parciales_requisicion_detalle->bindParam(2, $idReqDet, PDO::PARAM_INT);
+                            $stmt_salidas_parciales_requisicion_detalle->execute();
+
+                            while ($row_salidas_stock = $stmt_salidas_parciales_requisicion_detalle->fetch(PDO::FETCH_ASSOC)) {
+                                $cantidadSalidasParciales += $row_salidas_stock["canSalStoReq"];
+                                array_push($row_requisicion_detalle["salParc"], $row_salidas_stock);
+                            }
+                            // agregamos la cantidad total parcial
+                            $row_requisicion_detalle["canTotSalParc"] = $cantidadSalidasParciales;
+
                             array_push($row_requisicion["reqDet"], $row_requisicion_detalle);
                         }
                         array_push($row["prodLotReq"], $row_requisicion);

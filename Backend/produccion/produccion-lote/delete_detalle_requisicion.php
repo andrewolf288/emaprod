@@ -9,13 +9,12 @@ $result = [];
 $message_error = "";
 $description_error = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "PUT") {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
     $idReq = $data["idReq"]; // ide de requesicion
     $idReqDet = $data["id"]; // id requisicion detalle
-    $canReqDetNew = floatval($data["cantidadNueva"]); // cantidad nueva
 
     if ($pdo) {
         try {
@@ -27,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
             $stmt_delete_detalle_requisicion->bindParam(1, $idReqDet, PDO::PARAM_INT);
             $stmt_delete_detalle_requisicion->execute();
 
-            $idReqEst = 2; // estado en proceso
             $total_requisiciones = 0; // total de requisiciones
             $requisiciones_pendientes = 0;
             $requisicion_completas = 0;
@@ -47,8 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
             while ($row_consult_estado_requisicion = $stmt_consult_estado_requisicion->fetch(PDO::FETCH_ASSOC)) {
                 $requisiciones_pendientes = $row_consult_estado_requisicion["requisiciones_pendientes"];
                 $requisicion_completas = $row_consult_estado_requisicion["requisicion_completas"];
+                $total_requisiciones = $row_consult_estado_requisicion["total_requisiciones"];
             }
 
+            $idReqEst = 2; // estado en proceso
             // si existen requisiciones pendientes o en proceso
             if ($total_requisiciones == $requisiciones_pendientes) {
                 $idReqEst = 1; // estado pendiente

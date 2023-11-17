@@ -74,9 +74,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             while ($row_requisicion_detalle = $stmt_requisicion_detalle->fetch(PDO::FETCH_ASSOC)) {
                 $idReqDet = $row_requisicion_detalle["id"];
                 $row_requisicion_detalle["salParc"] = []; // salidas parciales
+                $row_requisicion_detalle["canTotSalParc"] = 0; // cantidad total de salidas parciales
+                $cantidadSalidasParciales = 0;
 
                 $sql_salidas_parciales_requisicion_detalle =
-                    "SELECT canSalStoReq, fecSalStoReq
+                    "SELECT canSalStoReq, fecSalStoReq, esSalPar, esSalTot
                     FROM salida_stock
                     WHERE idReq = ? AND idReqDet = ?";
                 $stmt_salidas_parciales_requisicion_detalle = $pdo->prepare($sql_salidas_parciales_requisicion_detalle);
@@ -85,8 +87,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt_salidas_parciales_requisicion_detalle->execute();
 
                 while ($row_salidas_stock = $stmt_salidas_parciales_requisicion_detalle->fetch(PDO::FETCH_ASSOC)) {
+                    $cantidadSalidasParciales += $row_salidas_stock["canSalStoReq"];
                     array_push($row_requisicion_detalle["salParc"], $row_salidas_stock);
                 }
+                // agregamos la cantidad total parcial
+                $row_requisicion_detalle["canTotSalParc"] = $cantidadSalidasParciales;
 
                 array_push($row_requisicion["reqDet"], $row_requisicion_detalle);
             }

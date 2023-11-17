@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 //IMPORTACIONES PARA DIALOG DELETE
-import Button from "@mui/material/Button";
 // IMPORTACIONES DE HELPER
 import { RowRequisicionLoteProduccion } from "../../components/componentes-lote-produccion/RowRequisicionLoteProduccion";
 import { viewMoliendaRequisicionId } from "./../../helpers/requisicion-molienda/viewMoliendaRequisicionId";
@@ -10,18 +9,18 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 // IMPORTACIONES PARA EL PROGRESS LINEAR
 import {
-  DialogActions,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   CircularProgress,
-  TextField,
 } from "@mui/material";
-import { createSalidasStockAutomaticas } from "./../../helpers/lote-produccion/createSalidasStockAutomaticas";
-import { DialogUpdateDetalleRequisicion } from "../../components/componentes-lote-produccion/DialogUpdateDetalleRequisicion";
-import { updateProduccionDetalleRequisicion } from "../../helpers/lote-produccion/updateProduccionDetalleRequisicion";
 import { useAuth } from "../../../hooks/useAuth";
+import { createSalidasStockAutomaticas } from "./../../helpers/lote-produccion/createSalidasStockAutomaticas";
+import { updateProduccionDetalleRequisicion } from "../../helpers/lote-produccion/updateProduccionDetalleRequisicion";
+import { createSalidasParcialesStockAutomaticas } from "../../helpers/lote-produccion/createSalidasParcialesStockAutomaticas";
+import { checkFinSalidasParcialesDetalle } from "../../helpers/lote-produccion/checkFinSalidasParcialesDetalle";
+import { deleteProduccionDetalleRequisicion } from "../../helpers/lote-produccion/deleteProduccionDetalleRequisicion";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -82,10 +81,6 @@ export const ViewLoteMolienda = () => {
     setfeedbackCreate(false);
   };
 
-  // ****** MANEJADORES DE DIALOG UPDATE CANTIDAD *******
-  const [showDialogUpdate, setshowDialogUpdate] = useState(false);
-  const [itemSeleccionado, setItemSeleccionado] = useState(null);
-
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -103,18 +98,52 @@ export const ViewLoteMolienda = () => {
   // ******* ACCIONES DE DETALLES DE REQUISICION *********
 
   // crear salidas correspondientes
-  const onCreateSalidasStock = async (requisicion_detalle) => {
-    // abrimos el loader
-    //openLoader();
-
+  const onCreateSalidaTotalRequisicionDetalle = async (requisicion_detalle) => {
     requisicion_detalle.numop = numop;
-
+    // abrimos el loader
+    // openLoader();
     const resultPeticion = await createSalidasStockAutomaticas(
       requisicion_detalle
     );
 
-    console.log(resultPeticion);
-    //return
+    const { message_error, description_error, result } = resultPeticion;
+
+    if (message_error?.length === 0) {
+      // volvemos a consultar la data
+      obtenerDataProduccionRequisicionesDetalle();
+      // cerramos modal
+      // closeLoader();
+      // mostramos el feedback
+      setfeedbackMessages({
+        style_message: "success",
+        feedback_description_error: "Se cumplio la requisicion exitosamente",
+      });
+      handleClickFeeback();
+    } else {
+      // cerramos el modal
+      // closeLoader();
+      // mostramos el feedback
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error,
+      });
+      handleClickFeeback();
+    }
+  };
+
+  // funcion para crear salidas parciales
+  const onCreateSalidaParcialRequisicionDetalle = async (
+    requisicion_detalle,
+    inputValue
+  ) => {
+    requisicion_detalle.numop = numop;
+    // abrimos el loader
+    openLoader();
+    const resultPeticion = await createSalidasParcialesStockAutomaticas(
+      requisicion_detalle,
+      inputValue
+    );
+
     const { message_error, description_error, result } = resultPeticion;
 
     if (message_error?.length === 0) {
@@ -140,43 +169,32 @@ export const ViewLoteMolienda = () => {
     }
   };
 
-  // mostrar y setear dialog update de detalle de requisicion
-  const showAndSetDialogUpdateDetalleRequisicion = (item) => {
-    // establecemos los valores
-    setItemSeleccionado(item);
-    // abrimos el modal
-    setshowDialogUpdate(true);
-  };
+  // funcion para terminar el ingreso de salidas parciales
+  const onTerminarSalidaParcialRequisicionDetalle = async (
+    requisicion_detalle
+  ) => {
+    // abrimos el loader
+    openLoader();
+    const resultPeticion = await checkFinSalidasParcialesDetalle(
+      requisicion_detalle
+    );
 
-  const closeDialogUpdateDetalleRequisicion = () => {
-    setshowDialogUpdate(false);
-    setItemSeleccionado(null);
-  };
+    const { message_error, description_error, result } = resultPeticion;
 
-  // actualizar detalle de requisicion
-  const updateDetalleRequisicion = async (itemUpdate, cantidadNueva) => {
-    const { id } = itemUpdate;
-    let body = {
-      id: id,
-      cantidadNueva: cantidadNueva,
-    };
-    const resultPeticion = await updateProduccionDetalleRequisicion(body);
-    const { message_error, description_error } = resultPeticion;
-    if (message_error.length === 0) {
-      // actualizamos la cantidad
+    if (message_error?.length === 0) {
+      // volvemos a consultar la data
       obtenerDataProduccionRequisicionesDetalle();
-      // cerramos el modal
-      closeDialogUpdateDetalleRequisicion();
+      // cerramos modal
+      closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error:
-          "Se actualizó el detalle de la requisicion con exito",
+        feedback_description_error: "Se cumplio la requisicion exitosamente",
       });
       handleClickFeeback();
     } else {
       // cerramos el modal
-      closeDialogUpdateDetalleRequisicion();
+      closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
@@ -186,7 +204,74 @@ export const ViewLoteMolienda = () => {
     }
   };
 
-  // funcion para obtener la produccion con sus requisiciones y su detalle
+  // actualizar detalle de requisicion
+  const onUpdateRequisicionDetalle = async (
+    requisicion_detalle,
+    cantidadNueva
+  ) => {
+    const { id } = requisicion_detalle;
+    let body = {
+      id: id,
+      cantidadNueva: cantidadNueva,
+    };
+    const resultPeticion = await updateProduccionDetalleRequisicion(body);
+    const { message_error, description_error } = resultPeticion;
+    if (message_error.length === 0) {
+      // actualizamos la cantidad
+      obtenerDataProduccionRequisicionesDetalle();
+      // mostramos el feedback
+      setfeedbackMessages({
+        style_message: "success",
+        feedback_description_error:
+          "Se actualizó el detalle de la requisicion con exito",
+      });
+      handleClickFeeback();
+    } else {
+      // mostramos el feedback
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error,
+      });
+      handleClickFeeback();
+    }
+  };
+
+  // funcion para eliminar el detalle de la requisicion
+  const onDeleteRequisicionDetalle = async (requisicion_detalle) => {
+    // abrimos el loader
+    openLoader();
+    const resultPeticion = await deleteProduccionDetalleRequisicion(
+      requisicion_detalle
+    );
+
+    const { message_error, description_error, result } = resultPeticion;
+
+    if (message_error?.length === 0) {
+      // volvemos a consultar la data
+      obtenerDataProduccionRequisicionesDetalle();
+      // cerramos modal
+      closeLoader();
+      // mostramos el feedback
+      setfeedbackMessages({
+        style_message: "success",
+        feedback_description_error: "Se cumplio la requisicion exitosamente",
+      });
+      handleClickFeeback();
+    } else {
+      // cerramos el modal
+      closeLoader();
+      // mostramos el feedback
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error,
+      });
+      handleClickFeeback();
+    }
+  };
+
+  /* 
+    FUNCIONES PARA TRAER LOS DATOS DE LAS REQUISICIONES
+  */
   const obtenerDataProduccionRequisicionesDetalle = async () => {
     const resultPeticion = await viewMoliendaRequisicionId(idReq);
 
@@ -392,24 +477,23 @@ export const ViewLoteMolienda = () => {
           <div className="card d-flex mt-4">
             <h6 className="card-header">Requisiciones</h6>
             <div className="card-body">
-              {prodLotReq.map((element) => {
-                {
-                  /**  
-               if(user.idAre === 4 && element.idAre == 2){
-                } */
-                }
-                return (
+              {prodLotReq.length !== 0 &&
+                prodLotReq.map((element) => (
                   <RowRequisicionLoteProduccion
                     key={element.id}
-                    onCreateSalidasStock={onCreateSalidasStock}
-                    onUpdateDetalleRequisicion={
-                      showAndSetDialogUpdateDetalleRequisicion
-                    }
                     requisicion={element}
+                    onUpdateDetalleRequisicion={onUpdateRequisicionDetalle}
+                    onDeleteDetalleRequisicion={onDeleteRequisicionDetalle}
+                    onCreateSalidaTotal={onCreateSalidaTotalRequisicionDetalle}
+                    onCreateSalidaParcial={
+                      onCreateSalidaParcialRequisicionDetalle
+                    }
+                    onTerminarSalidaParcial={
+                      onTerminarSalidaParcialRequisicionDetalle
+                    }
                     show={user.idAre === 1}
                   />
-                );
-              })}
+                ))}
             </div>
           </div>
           <div className="btn-toolbar mt-4">
@@ -425,15 +509,6 @@ export const ViewLoteMolienda = () => {
           </div>
         </div>
       </div>
-
-      {/* DIALOG UPDATE DETALLE REQUISICION */}
-      {showDialogUpdate && (
-        <DialogUpdateDetalleRequisicion
-          itemUpdate={itemSeleccionado}
-          onClose={closeDialogUpdateDetalleRequisicion}
-          onUpdateItemSelected={updateDetalleRequisicion}
-        />
-      )}
 
       {/* LOADER CON DIALOG */}
       <Dialog open={openDialog}>
