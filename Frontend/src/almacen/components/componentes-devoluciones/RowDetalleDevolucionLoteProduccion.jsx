@@ -8,6 +8,7 @@ import { IconButton } from "@mui/material";
 export const RowDetalleDevolucionLoteProduccion = ({
   detalle,
   onRenderPDF,
+  index,
 }) => {
   return (
     <TableRow
@@ -45,7 +46,7 @@ export const RowDetalleDevolucionLoteProduccion = ({
             aria-label="delete"
             size="large"
             onClick={() => {
-              onRenderPDF(detalle);
+              onRenderPDF(detalle, index);
             }}
             color="error"
           >

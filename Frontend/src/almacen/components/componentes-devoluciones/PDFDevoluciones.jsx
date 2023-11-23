@@ -13,7 +13,7 @@ import { PDFRequisicionDevolucion } from "./PDFRequisicionDevolucion";
 
 const styles = stylesPDF;
 
-export const PDFDevoluciones = ({ data }) => {
+export const PDFDevoluciones = ({ data, index }) => {
   const { produccion, requisicion, acumulado } = data;
 
   return (
@@ -152,28 +152,24 @@ export const PDFDevoluciones = ({ data }) => {
                   >
                     DEVOLUCIÓN
                   </Text>
-                  <View
+                  <Text
                     style={{
-                      ...styles.row,
-                      justifyContent: "center",
-                      alignItems: "center",
+                      ...styles.gridContent,
+                      flexDirection: "row",
+                      marginLeft: 30,
+                      marginTop: 10,
+                      textAlign: "center",
                     }}
                   >
-                    <Text
-                      style={{
-                        ...styles.gridContent,
-                        marginLeft: 50,
-                        marginTop: 10,
-                      }}
-                    >
-                      {produccion.numop}
-                    </Text>
-                  </View>
+                    {`${produccion.numop} - D${(index + 1)
+                      .toString()
+                      .padStart(2, "0")}`}
+                  </Text>
 
                   <View
                     style={{
                       ...styles.sectionWithBorder,
-                      marginTop: 10,
+                      marginTop: 25,
                       backgroundColor: "#d8dbe3",
                       width: 220,
                       height: 70,
@@ -232,13 +228,13 @@ export const PDFDevoluciones = ({ data }) => {
                   <Text
                     style={{
                       ...styles.content,
-                      marginLeft: 130,
-                      marginTop: -10,
+                      marginLeft: 75,
+                      marginTop: -5,
                       maxWidth: "100%",
-                      fontSize: 5,
+                      fontSize: 8,
                     }}
                   >
-                    Fecha de Creación: {produccion.fecCreProd}
+                    Fecha de Creación: {requisicion.fecCreReqDev}
                   </Text>
                 </View>
               </View>

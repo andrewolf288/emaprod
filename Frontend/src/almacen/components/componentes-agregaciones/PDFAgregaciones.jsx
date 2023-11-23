@@ -13,8 +13,7 @@ import { PDFRequisicionAgregacion } from "./PDFRequisicionAgregacion";
 
 const styles = stylesPDF;
 
-export const PDFAgregaciones = ({ data, show }) => {
-  console.log(data);
+export const PDFAgregaciones = ({ data, show, index }) => {
   const { produccion, requisicion } = data;
   return (
     <PDFViewer width="100%" height="100%">
@@ -152,28 +151,24 @@ export const PDFAgregaciones = ({ data, show }) => {
                   >
                     AGREGACIÓN
                   </Text>
-                  <View
+                  <Text
                     style={{
-                      ...styles.row,
-                      justifyContent: "center",
-                      alignItems: "center",
+                      ...styles.gridContent,
+                      flexDirection: "row",
+                      marginLeft: 30,
+                      marginTop: 10,
+                      textAlign: "center",
                     }}
                   >
-                    <Text
-                      style={{
-                        ...styles.gridContent,
-                        marginLeft: 50,
-                        marginTop: 10,
-                      }}
-                    >
-                      {produccion.numop}
-                    </Text>
-                  </View>
+                    {`${produccion.numop} - A${(index + 1)
+                      .toString()
+                      .padStart(2, "0")}`}
+                  </Text>
 
                   <View
                     style={{
                       ...styles.sectionWithBorder,
-                      marginTop: 10,
+                      marginTop: 25,
                       backgroundColor: "#d8dbe3",
                       width: 220,
                       height: 70,
@@ -232,13 +227,13 @@ export const PDFAgregaciones = ({ data, show }) => {
                   <Text
                     style={{
                       ...styles.content,
-                      marginLeft: 130,
-                      marginTop: -10,
+                      marginLeft: 75,
+                      marginTop: -5,
                       maxWidth: "100%",
-                      fontSize: 5,
+                      fontSize: 8,
                     }}
                   >
-                    Fecha de Creación: {produccion.fecCreProd}
+                    Fecha de Creación: {requisicion.fecCreReqAgr}
                   </Text>
                 </View>
               </View>

@@ -101,7 +101,7 @@ export const ViewLoteMolienda = () => {
   const onCreateSalidaTotalRequisicionDetalle = async (requisicion_detalle) => {
     requisicion_detalle.numop = numop;
     // abrimos el loader
-    // openLoader();
+    openLoader();
     const resultPeticion = await createSalidasStockAutomaticas(
       requisicion_detalle
     );
@@ -112,7 +112,7 @@ export const ViewLoteMolienda = () => {
       // volvemos a consultar la data
       obtenerDataProduccionRequisicionesDetalle();
       // cerramos modal
-      // closeLoader();
+      closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
@@ -121,7 +121,7 @@ export const ViewLoteMolienda = () => {
       handleClickFeeback();
     } else {
       // cerramos el modal
-      // closeLoader();
+      closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
@@ -209,6 +209,8 @@ export const ViewLoteMolienda = () => {
     requisicion_detalle,
     cantidadNueva
   ) => {
+    // abrimos el loader
+    openLoader();
     const { id } = requisicion_detalle;
     let body = {
       id: id,
@@ -219,6 +221,8 @@ export const ViewLoteMolienda = () => {
     if (message_error.length === 0) {
       // actualizamos la cantidad
       obtenerDataProduccionRequisicionesDetalle();
+      // cerramos modal
+      closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
@@ -227,6 +231,8 @@ export const ViewLoteMolienda = () => {
       });
       handleClickFeeback();
     } else {
+      // cerramos modal
+      closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
@@ -477,23 +483,22 @@ export const ViewLoteMolienda = () => {
           <div className="card d-flex mt-4">
             <h6 className="card-header">Requisiciones</h6>
             <div className="card-body">
-              {prodLotReq.length !== 0 &&
-                prodLotReq.map((element) => (
-                  <RowRequisicionLoteProduccion
-                    key={element.id}
-                    requisicion={element}
-                    onUpdateDetalleRequisicion={onUpdateRequisicionDetalle}
-                    onDeleteDetalleRequisicion={onDeleteRequisicionDetalle}
-                    onCreateSalidaTotal={onCreateSalidaTotalRequisicionDetalle}
-                    onCreateSalidaParcial={
-                      onCreateSalidaParcialRequisicionDetalle
-                    }
-                    onTerminarSalidaParcial={
-                      onTerminarSalidaParcialRequisicionDetalle
-                    }
-                    show={user.idAre === 1}
-                  />
-                ))}
+              {prodLotReq.map((element) => (
+                <RowRequisicionLoteProduccion
+                  key={element.id}
+                  requisicion={element}
+                  onUpdateDetalleRequisicion={onUpdateRequisicionDetalle}
+                  onDeleteDetalleRequisicion={onDeleteRequisicionDetalle}
+                  onCreateSalidaTotal={onCreateSalidaTotalRequisicionDetalle}
+                  onCreateSalidaParcial={
+                    onCreateSalidaParcialRequisicionDetalle
+                  }
+                  onTerminarSalidaParcial={
+                    onTerminarSalidaParcialRequisicionDetalle
+                  }
+                  show={user.idAre === 1}
+                />
+              ))}
             </div>
           </div>
           <div className="btn-toolbar mt-4">

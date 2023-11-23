@@ -448,7 +448,7 @@ export const AgregarAgregacionV2 = () => {
   };
 
   // funcion para mostrar pdf
-  const generatePDF = (data) => {
+  const generatePDF = (data, index) => {
     const formatData = {
       produccion: agregacionesProduccionLote,
       requisicion: data,
@@ -458,7 +458,7 @@ export const AgregarAgregacionV2 = () => {
     const appContainer = newWindow.document.createElement("div");
     newWindow.document.body.appendChild(appContainer);
     const root = createRoot(appContainer);
-    root.render(<PDFAgregaciones data={formatData} />);
+    root.render(<PDFAgregaciones data={formatData} index={index} />);
   };
 
   // ******** MANEJADORES PARA EL ARREGLO DE DEVOLUCIONES ******
@@ -866,6 +866,7 @@ export const AgregarAgregacionV2 = () => {
                       {prodDetAgr.map((row, i) => (
                         <RowDetalleAgregacionLoteProduccion
                           key={row.id}
+                          index={i}
                           detalle={row}
                           onRenderPDF={generatePDF}
                         />

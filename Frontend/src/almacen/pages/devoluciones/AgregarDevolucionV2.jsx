@@ -404,7 +404,7 @@ export const AgregarDevolucionV2 = () => {
   };
 
   // funcion para mostrar pdf
-  const generatePDF = (data) => {
+  const generatePDF = (data, index) => {
     const acumulado = obtenerAcumulado(data);
     const formatData = {
       produccion: devolucionesProduccionLote,
@@ -416,7 +416,7 @@ export const AgregarDevolucionV2 = () => {
     const appContainer = newWindow.document.createElement("div");
     newWindow.document.body.appendChild(appContainer);
     const root = createRoot(appContainer);
-    root.render(<PDFDevoluciones data={formatData} />);
+    root.render(<PDFDevoluciones data={formatData} index={index} />);
   };
 
   // traer informacion de devolucion de produccion
@@ -690,6 +690,7 @@ export const AgregarDevolucionV2 = () => {
                             key={row.id}
                             detalle={row}
                             onRenderPDF={generatePDF}
+                            index={i}
                           />
                         ))}
                       </TableBody>

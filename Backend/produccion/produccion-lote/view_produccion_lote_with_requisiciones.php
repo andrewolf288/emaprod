@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             JOIN producto as p on p.id = rd.idProdt
                             JOIN medida as me on me.id = p.idMed
                             JOIN requisicion_detalle_estado as rde on rde.id = rd.idReqDetEst
-                            WHERE rd.idReq = ? ORDER BY p.nomProd ASC";
+                            WHERE rd.idReq = ?";
 
                         $stmt_requisicion_detalle = $pdo->prepare($sql_requisicion_detalle);
                         $stmt_requisicion_detalle->bindParam(1, $idReq, PDO::PARAM_INT);
