@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $idOpeFacMot = 1; // motivo salida de GRE
             $esSal = 1; // es una operaicon de saida
-            $idLastInsertion = 0; // id de lautlima insercion
+            $idLastInsertion = 0; // id de la utlima insercion
 
             // 1. primero realizamos la insercion de la operacion de factura
             $sql_insert_operacion_facturacion =
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 foreach ($items as $item) {
                     $idProdt = $item["idProdt"]; // obtenemos informacion del producto
-                    $refProdt = $item["reference"]; // referencia del produto
+                    $refProdt = $item["product_reference"]; // referencia del produto
                     $cantidad = $item["quantity"]; // cantidad requerida
                     $array_entradas_disponibles = []; // arreglo de entradas disponibles
 
@@ -156,7 +156,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             "SELECT 
                                             canTotDis,
                                             idAlm,
-                                            refProdc
+                                            refProdc,
+                                            codLot
                                             FROM entrada_stock
                                             WHERE id = ?";
                                         $stmt_consulta_entrada_stock = $pdo->prepare($sql_consult_entrada_stock);
@@ -199,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             $sql_update_entrada_stock =
                                                 "UPDATE
                                                 entrada_stock
-                                                SET canTotDis = $canResAftOpe, merDis = merDis - $merSalStoReq, idEntStoEst = ?, fecFinSto = ?
+                                                SET canTotDis = $canResAftOpe, idEntStoEst = ?, fecFinSto = ?
                                                 WHERE id = ?
                                                 ";
                                             $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
@@ -215,7 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             $sql_update_entrada_stock =
                                                 "UPDATE
                                                 entrada_stock
-                                                SET canTotDis = $canResAftOpe, merDis = merDis - $merSalStoReq, idEntStoEst = ?
+                                                SET canTotDis = $canResAftOpe, idEntStoEst = ?
                                                 WHERE id = ?
                                                 ";
                                             $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
@@ -278,7 +279,7 @@ function stockSuficiente(&$items, $pdo)
     $errors = []; // arreglo de errores
 
     foreach ($items as &$item) {
-        $reference = $item["reference"]; // referencia del producto
+        $reference = $item["product_reference"]; // referencia del producto
         $cantidad = $item["quantity"]; // cantidad requerida
 
         // consulta de producto stock en almacen
