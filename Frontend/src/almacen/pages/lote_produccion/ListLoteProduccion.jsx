@@ -371,41 +371,16 @@ export const ListLoteProduccion = () => {
                       />
                     </TableCell>
                     <TableCell align="left" width={100}>
-                      <b>Estado</b>
-                      {/* <FilterEstadoProduccion
-                        onNewInput={onChangeEstadoProduccion}
-                        inputs={inputs}
-                      /> */}
+                      <b>Inicio</b>
                     </TableCell>
                     <TableCell align="left" width={100}>
-                      <b>Tipo</b>
-                      {/* <FilterTipoProduccion
-                        onNewInput={onChangeTipoProduccion}
-                        inputs={inputs}
-                      /> */}
+                      <b>Env. y Enc.</b>
                     </TableCell>
-                    <TableCell align="left" width={140}>
-                      <b>Inicio</b>
-                      {/**
-                         <FechaPickerDay
-                        onNewfecEntSto={onChangeDateFechaIniciado}
-                      />
-                         */}
+                    <TableCell align="left" width={100}>
+                      <b>Agregacion</b>
                     </TableCell>
-                    <TableCell align="left" width={140}>
-                      <b>Inicio programado</b>
-                      {/**
-                         <FechaPickerDay
-                        onNewfecEntSto={onChangeDateFechaIniciadoProgramado}
-                      />
-                         */}
-                    </TableCell>
-                    <TableCell align="left" width={140}>
-                      <b>Estado Inicio</b>
-                      {/* <FilterEstadoInicioProgramadoProduccion
-                        onNewInput={onChangeEstadoInicioProduccion}
-                        inputs={inputs}
-                      /> */}
+                    <TableCell align="left" width={100}>
+                      <b>Devolucion</b>
                     </TableCell>
                     <TableCell align="left" width={120}>
                       <b>Acciones</b>
@@ -427,14 +402,75 @@ export const ListLoteProduccion = () => {
                         </TableCell>
                         <TableCell align="left">{row.numop}</TableCell>
                         <TableCell align="left">{row.nomProd}</TableCell>
-                        <TableCell align="left">{row.desEstPro}</TableCell>
-                        <TableCell align="left">{row.desProdTip}</TableCell>
                         <TableCell align="center">{row.fecProdIni}</TableCell>
                         <TableCell align="center">
-                          {row.fecProdIniProg}
+                          {row["req_env_enc"][0]["requerido"] != 0 && (
+                            <span className="d-block mb-2 badge text-bg-danger p-2">
+                              {`Requerido: ${row["req_env_enc"][0]["requerido"]}`}
+                            </span>
+                          )}
+                          {row["req_env_enc"][0]["en_proceso"] != 0 && (
+                            <span className="d-block badge text-bg-warning p-2">
+                              {`En proceso: ${row["req_env_enc"][0]["en_proceso"]}`}
+                            </span>
+                          )}
+
+                          {row["req_env_enc"][0]["terminado"] != 0 && (
+                            <span className="d-block badge text-bg-success p-2">
+                              {`Completo: ${row["req_env_enc"][0]["terminado"]}`}
+                            </span>
+                          )}
+                          {row["req_env_enc"][0]["requerido"] == 0 &&
+                            row["req_env_enc"][0]["en_proceso"] == 0 &&
+                            row["req_env_enc"][0]["terminado"] == 0 && (
+                              <p>No hay requisiciones</p>
+                            )}
                         </TableCell>
-                        <TableCell align="left">
-                          {row.desProdIniProgEst}
+                        <TableCell align="center">
+                          {row["req_agr"][0]["requerido"] != 0 && (
+                            <span className="d-block mb-2 badge text-bg-danger p-2">
+                              {`Requerido: ${row["req_agr"][0]["requerido"]}`}
+                            </span>
+                          )}
+                          {row["req_agr"][0]["en_proceso"] != 0 && (
+                            <span className="d-block badge text-bg-warning p-2">
+                              {`En proceso: ${row["req_agr"][0]["en_proceso"]}`}
+                            </span>
+                          )}
+
+                          {row["req_agr"][0]["terminado"] != 0 && (
+                            <span className="d-block badge text-bg-success p-2">
+                              {`Completo: ${row["req_agr"][0]["terminado"]}`}
+                            </span>
+                          )}
+                          {row["req_agr"][0]["requerido"] == 0 &&
+                            row["req_agr"][0]["en_proceso"] == 0 &&
+                            row["req_agr"][0]["terminado"] == 0 && (
+                              <p>No hay requisiciones</p>
+                            )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {row["req_dev"][0]["requerido"] != 0 && (
+                            <span className="d-block mb-2 badge text-bg-danger p-2">
+                              {`Requerido: ${row["req_dev"][0]["requerido"]}`}
+                            </span>
+                          )}
+                          {row["req_dev"][0]["en_proceso"] != 0 && (
+                            <span className="d-block badge text-bg-warning p-2">
+                              {`En proceso: ${row["req_dev"][0]["en_proceso"]}`}
+                            </span>
+                          )}
+
+                          {row["req_dev"][0]["terminado"] != 0 && (
+                            <span className="d-block badge text-bg-success p-2">
+                              {`Completo: ${row["req_dev"][0]["terminado"]}`}
+                            </span>
+                          )}
+                          {row["req_dev"][0]["requerido"] == 0 &&
+                            row["req_dev"][0]["en_proceso"] == 0 &&
+                            row["req_dev"][0]["terminado"] == 0 && (
+                              <p>No hay requisiciones</p>
+                            )}
                         </TableCell>
                         <TableCell
                           align="left"
@@ -464,21 +500,6 @@ export const ListLoteProduccion = () => {
                               <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
                             </svg>
                           </div>
-
-                          {/**
-                            
-                          <div className="btn-toolbar">
-                            <Link
-                              to={`/almacen/lote-produccion/assist-agregation/${row.id}`}
-                              className="btn btn-primary me-2 btn"
-                            >
-                             TEST
-
-                            </Link>
-                          </div>
-
-
-                           */}
                         </TableCell>
                       </TableRow>
                     ))}

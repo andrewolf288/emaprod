@@ -34,40 +34,70 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             pd.id,
             pd.idProdt,
             p.nomProd,
-            pd.idProdEst,
-            pde.desEstPro,
-            pd.idProdTip,
-            pdt.desProdTip,
-            pd.idProdIniProgEst,
-            pdipe.desProdIniProgEst,
-            pd.idProdFinProgEst,
-            pdfpe.desProdFinProgEst,
             pd.esEnv,
             pd.codLotProd,
             pd.klgLotProd,
             pd.fecProdIni,
-            pd.fecProdIniProg,
-            pd.fecProdFin,
-            pd.fecProdFinProg,
-            pd.fecFinMolProd,
-            pd.fecFinEnvProd,
-            pd.fecFinEncProd,
             pd.fecVenLotProd,
             pd.numop
         FROM produccion pd
         JOIN producto p ON pd.idProdt = p.id
-        JOIN produccion_estado pde ON pd.idProdEst = pde.id
-        JOIN produccion_tipo pdt ON pd.idProdTip = pdt.id
-        JOIN produccion_inicio_programado_estado pdipe ON pd.idProdIniProgEst = pdipe.id
-        JOIN produccion_fin_programado_estado pdfpe ON pd.idProdFinProgEst = pdfpe.id
         WHERE DATE(pd.fecProdIni) BETWEEN '$fechaInicio' AND '$fechaFin'
         ORDER BY pd.fecProdIni DESC";
 
         try {
             $stmt = $pdo->prepare($sql);
             $stmt->execute(); // ejecutamos
+            $estado_requerido = 1; // requerido
+            $estado_en_proceso = 2; // en proceso
+            $estado_terminado = 3; // terminado
+            $idAreEnv = 5; // area de envasado
+            $idAreEnc = 6; // srea de encajonado
+
             // Recorremos los resultados
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $idLoteProduccion = $row["id"];
+                // buscamos requisicion de envase y encaje
+                $sql_select_requisicion_encaje_envase =
+                    "SELECT
+                COALESCE(SUM(CASE WHEN r.idReqEst = 1 THEN 1 ELSE 0 END), 0) AS requerido,
+                COALESCE(SUM(CASE WHEN r.idReqEst = 2 THEN 1 ELSE 0 END), 0) AS en_proceso,
+                COALESCE(SUM(CASE WHEN r.idReqEst = 3 THEN 1 ELSE 0 END), 0) AS terminado
+                FROM requisicion AS r
+                WHERE r.idProdc = ? AND (r.idAre = ? OR r.idAre = ?)";
+                $stmt_select_requisicion_encaje_envase = $pdo->prepare($sql_select_requisicion_encaje_envase);
+                $stmt_select_requisicion_encaje_envase->bindParam(1, $idLoteProduccion, PDO::PARAM_INT);
+                $stmt_select_requisicion_encaje_envase->bindParam(2, $idAreEnv, PDO::PARAM_INT);
+                $stmt_select_requisicion_encaje_envase->bindParam(3, $idAreEnc, PDO::PARAM_INT);
+                $stmt_select_requisicion_encaje_envase->execute();
+                $row["req_env_enc"] = $stmt_select_requisicion_encaje_envase->fetchAll(PDO::FETCH_ASSOC);
+
+                // buscamos agregaciones
+                $sql_select_requisicion_agregacion =
+                    "SELECT
+                COALESCE(SUM(CASE WHEN r.idReqEst = 1 THEN 1 ELSE 0 END), 0) AS requerido,
+                COALESCE(SUM(CASE WHEN r.idReqEst = 2 THEN 1 ELSE 0 END), 0) AS en_proceso,
+                COALESCE(SUM(CASE WHEN r.idReqEst = 3 THEN 1 ELSE 0 END), 0) AS terminado
+                FROM requisicion_agregacion AS r
+                WHERE r.idProdc = ?";
+                $stmt_select_requisicion_agregacion = $pdo->prepare($sql_select_requisicion_agregacion);
+                $stmt_select_requisicion_agregacion->bindParam(1, $idLoteProduccion, PDO::PARAM_INT);
+                $stmt_select_requisicion_agregacion->execute();
+                $row["req_agr"] = $stmt_select_requisicion_agregacion->fetchAll(PDO::FETCH_ASSOC);
+
+                // buscamos devoluciones
+                $sql_select_requisicion_devolucion =
+                    "SELECT
+                 COALESCE(SUM(CASE WHEN r.idReqEst = 1 THEN 1 ELSE 0 END), 0) AS requerido,
+                 COALESCE(SUM(CASE WHEN r.idReqEst = 2 THEN 1 ELSE 0 END), 0) AS en_proceso,
+                 COALESCE(SUM(CASE WHEN r.idReqEst = 3 THEN 1 ELSE 0 END), 0) AS terminado
+                FROM requisicion_devolucion AS r
+                WHERE r.idProdc = ?";
+                $stmt_select_requisicion_devolucion = $pdo->prepare($sql_select_requisicion_devolucion);
+                $stmt_select_requisicion_devolucion->bindParam(1, $idLoteProduccion, PDO::PARAM_INT);
+                $stmt_select_requisicion_devolucion->execute();
+                $row["req_dev"] = $stmt_select_requisicion_devolucion->fetchAll(PDO::FETCH_ASSOC);
+
                 array_push($result, $row);
             }
         } catch (PDOException $e) {
