@@ -34,14 +34,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             pd.id,
             pd.idProdt,
             p.nomProd,
+            pd.idProdEst,
+            pde.desEstPro,
+            pd.idProdIniProgEst,
+            pdipe.desProdIniProgEst,
             pd.esEnv,
             pd.codLotProd,
             pd.klgLotProd,
             pd.fecProdIni,
+            pd.fecProdIniProg,
             pd.fecVenLotProd,
             pd.numop
         FROM produccion pd
         JOIN producto p ON pd.idProdt = p.id
+        JOIN produccion_estado pde ON pd.idProdEst = pde.id
+        JOIN produccion_inicio_programado_estado pdipe ON pd.idProdIniProgEst = pdipe.id
         WHERE DATE(pd.fecProdIni) BETWEEN '$fechaInicio' AND '$fechaFin'
         ORDER BY pd.fecProdIni DESC";
 
