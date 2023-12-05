@@ -25,6 +25,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { deleteProduccionDetalleRequisicion } from "../../helpers/lote-produccion/deleteProduccionDetalleRequisicion";
 import { checkFinSalidasParcialesDetalle } from "../../helpers/lote-produccion/checkFinSalidasParcialesDetalle";
 import { createSalidasParcialesStockAutomaticas } from "../../helpers/lote-produccion/createSalidasParcialesStockAutomaticas";
+import { getFormulaWithDetalleByPrioridad } from "../../../frescos/helpers/formula/getFormulaWithDetalleByPrioridad";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -55,6 +56,7 @@ export const ViewLoteFrescos = () => {
     desProdTip,
     codLotProd,
     klgLotProd,
+    idProdt,
     canLotProd,
     fecVenLotProd,
     prodLotReq,
@@ -62,6 +64,14 @@ export const ViewLoteFrescos = () => {
   } = produccionRequisicionDetalle;
 
   const { user } = useAuth();
+
+  // ESTADOS PARA DATOS DE DETALLE FORMULA (DETALLE)
+  const [cantidadOllas, setCantidadOllas] = useState(0);
+
+  const handleCantidadMateriaPrima = ({ target }) => {
+    const { value } = target;
+    setCantidadOllas(value);
+  };
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
   // ESTADO PARA CONTROLAR EL FEEDBACK
@@ -294,6 +304,7 @@ export const ViewLoteFrescos = () => {
       result[0].numop = result[0].prodLotReq[0].codReq;
       result[0].canLotProd = result[0].prodLotReq[0].cantProg;
       result[0].nomProd = result[0].prodLotReq[0].nomProd;
+      result[0].idProdt = result[0].prodLotReq[0].idProdt;
 
       result[0].prodLotReq[0].reqDet.sort(function (a, b) {
         if (a.nomProd < b.nomProd) {
@@ -309,6 +320,62 @@ export const ViewLoteFrescos = () => {
       setfeedbackMessages({
         style_message: "error",
         feedback_description_error: description_error,
+      });
+      handleClickFeeback();
+    }
+  };
+
+  // funcion para calcular requisicon segun numero de ollas
+  const handleCalculateSalidaParcial = async (e) => {
+    e.preventDefault();
+    if (cantidadOllas > 0) {
+      const formatData = {
+        idProd: idProdt,
+      };
+      // llamamos a la formula correspondiente
+      const resultPeticion = await getFormulaWithDetalleByPrioridad(formatData);
+      const { result } = resultPeticion;
+      const { forDet } = result[0];
+
+      const formulaDetalle = forDet.map((element) => {
+        return {
+          ...element,
+          canMatPriFor: (
+            parseFloat(element["canMatPriFor"]) * cantidadOllas
+          ).toFixed(3),
+        };
+      });
+
+      // debemos colocarlo en el input de entrega parcial
+      formulaDetalle.sort(function (a, b) {
+        if (a.nomProd < b.nomProd) {
+          return -1;
+        }
+        if (a.nomProd > b.nomProd) {
+          return 1;
+        }
+        return 0;
+      });
+
+      const formatProdLotReq = prodLotReq[0]["reqDet"].map((element, index) => {
+        return {
+          ...element,
+          canProgSalPar: formulaDetalle[index]["canMatPriFor"],
+        };
+      });
+
+      let formatDataRequisicion = [...prodLotReq];
+      formatDataRequisicion[0]["reqDet"] = formatProdLotReq;
+
+      console.log(formatDataRequisicion);
+      setproduccionRequisicionDetalle({
+        ...produccionRequisicionDetalle,
+        prodLotReq: formatDataRequisicion,
+      });
+    } else {
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: "Debes ingresar una cantidad mayor a 0",
       });
       handleClickFeeback();
     }
@@ -476,6 +543,43 @@ export const ViewLoteFrescos = () => {
           {/* DATOS DE LAS REQUISICIONES */}
           <div className="card d-flex mt-4">
             <h6 className="card-header">Requisiciones</h6>
+
+            <div className="card-body">
+              <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
+                {/* AGREGAR CANTIDAD*/}
+                <div className="col-md-2">
+                  <label htmlFor="inputPassword4" className="form-label">
+                    Cantidad ollas
+                  </label>
+                  <input
+                    type="number"
+                    onChange={handleCantidadMateriaPrima}
+                    value={cantidadOllas}
+                    name="cantidadMateriaPrima"
+                    className="form-control"
+                  />
+                </div>
+                {/* BOTON CALCULAR */}
+                <div className="col-md-3 d-flex">
+                  <button
+                    onClick={handleCalculateSalidaParcial}
+                    className="btn btn-primary"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-plus-circle-fill me-2"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                    </svg>
+                    Calcular
+                  </button>
+                </div>
+              </form>
+            </div>
             <div className="card-body">
               {prodLotReq.map((element) => {
                 return (

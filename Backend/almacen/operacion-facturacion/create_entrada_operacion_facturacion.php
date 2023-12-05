@@ -87,8 +87,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $salidas_producto = array();
 
                             $sql_select_salida_producto =
-                                "SELECT * FROM salida_operacion_facturacion
-                            WHERE idOpeFac = ? AND refProdt = ? ORDER BY id DESC";
+                                "SELECT * FROM operacion_facturacion_detalle
+                            WHERE idOpeFac = ? AND refProdt = ?";
                             $stmt_select_salida_producto = $pdo->prepare($sql_select_salida_producto);
                             $stmt_select_salida_producto->bindParam(1, $idOpeFac, PDO::PARAM_INT);
                             $stmt_select_salida_producto->bindParam(2, $reference, PDO::PARAM_STR);
@@ -98,72 +98,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             // si las salidas de productos no esta vacia
                             if (!empty($salidas_producto)) {
+                                while ($row_salidas_operacion = $salidas_producto) {
+                                    $refProdt = $row_salidas_operacion["refProdt"]; // referencia
+                                    $idProdt = $row_salidas_operacion["idProdt"]; // producto
+                                    $canOpeFacDet = $row_salidas_operacion["canOpeFacDet"]; // cantidad salida
+                                    $esMerProm = $row_salidas_operacion["esMerProm"];
+                                    $esProdFin = $row_salidas_operacion["esProdFin"];
 
-                                $cantidadAdevolver = $quantity; // acumulado
-                                $cantSalPorIteracion = 0; // cantidad auxiliar
-                                $idEntStoEst = 1; // estado de disponible de entrada
-
-                                foreach ($salidas_producto as $value) {
-                                    $idEntSto = $value["idEntSto"]; // entrada
-                                    $canSalStoReq = $value["canSalOpeFac"]; // cantidad
-                                    $idProdt = $value["idProdt"]; // producto
-                                    $refProdt = $value["refProdt"]; // referencia
-                                    $idProdc = $value["idProdc"]; // produccion
-                                    $codLotProd = $value["codLotProd"]; // codigo de lote
-
-                                    if ($cantidadAdevolver >= $canSalStoReq) {
-                                        $cantidadAdevolver -= $canSalStoReq;
-                                        $cantSalPorIteracion = $canSalStoReq;
-                                    } else {
-                                        $cantSalPorIteracion = $cantidadAdevolver;
-                                        $cantidadAdevolver = 0;
-                                    }
-
-                                    $sql_update_entrada_stock =
-                                        "UPDATE entrada_stock
-                                        SET canTotDis = canTotDis + $cantSalPorIteracion, idEntStoEst = ?
-                                        WHERE id = ?";
-
-                                    $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
-                                    $stmt_update_entrada_stock->bindParam(1, $idEntStoEst, PDO::PARAM_INT);
-                                    $stmt_update_entrada_stock->bindParam(2, $idEntSto, PDO::PARAM_INT);
-                                    $stmt_update_entrada_stock->execute();
-
-                                    // luego actualizamos el stock del almacen principal
-                                    $idAlm = 1; // almacen principal
-
-                                    $sql_update_almacen_stock =
-                                        "UPDATE almacen_stock
-                                        SET canSto = canSto + $cantSalPorIteracion, canStoDis = canStoDis + $cantSalPorIteracion
-                                        WHERE idAlm = ? AND idProd = ?";
-                                    $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
-                                    $stmt_update_almacen_stock->bindParam(1, $idAlm, PDO::PARAM_INT);
-                                    $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
-                                    $stmt_update_almacen_stock->execute();
-
-                                    // realizamos una insercion de registro de entrada a almacen
-                                    $sql_insert_entrada_operacion_facturacion =
-                                        "INSERT INTO 
-                                        entrada_operacion_facturacion (idOpeFac, refProdt, idProdt, idEntSto, idProdc, codLotProd, canEntOpeFac)
-                                        VALUES (?, ?, ?, ?, ?, ?, $cantSalPorIteracion)";
-                                    $stmt_insert_entrada_operacion_facturacion = $pdo->prepare($sql_insert_entrada_operacion_facturacion);
-                                    $stmt_insert_entrada_operacion_facturacion->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
-                                    $stmt_insert_entrada_operacion_facturacion->bindParam(2, $refProdt, PDO::PARAM_STR);
-                                    $stmt_insert_entrada_operacion_facturacion->bindParam(3, $idProdt, PDO::PARAM_INT);
-                                    $stmt_insert_entrada_operacion_facturacion->bindParam(4, $idEntSto, PDO::PARAM_INT);
-                                    $stmt_insert_entrada_operacion_facturacion->bindParam(5, $idProdc, PDO::PARAM_INT);
-                                    $stmt_insert_entrada_operacion_facturacion->bindParam(6, $codLotProd, PDO::PARAM_STR);
-                                    $stmt_insert_entrada_operacion_facturacion->execute();
-
-                                    if ($cantidadAdevolver == 0) {
-                                        break;
-                                    }
+                                    $sql_create_operacion_facturacion_detalle =
+                                        "INSERT INTO operacion_facturacion_detalle
+                                    (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProdFin)
+                                    VALUES(?, ?, ?, $canOpeFacDet, ?, ?)";
+                                    $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
+                                    $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
+                                    $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
+                                    $stmt_create_operacion_facturacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
+                                    $stmt_create_operacion_facturacion_detalle->bindParam(4, $esMerProm, PDO::PARAM_BOOL);
+                                    $stmt_create_operacion_facturacion_detalle->bindParam(5, $esProdFin, PDO::PARAM_BOOL);
+                                    $stmt_create_operacion_facturacion_detalle->execute();
                                 }
                             }
                         }
                     } else {
                         $sql_select_salidas_operacion =
-                            "SELECT * FROM salida_operacion_facturacion
+                            "SELECT * FROM operacion_facturacion_detalle
                             WHERE idOpeFac = ?";
                         $stmt_select_salidas_operacion = $pdo->prepare($sql_select_salidas_operacion);
                         $stmt_select_salidas_operacion->bindParam(1, $idOpeFac, PDO::PARAM_INT);
@@ -172,48 +130,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         while ($row_salidas_operacion = $stmt_select_salidas_operacion->fetch(PDO::FETCH_ASSOC)) {
                             $refProdt = $row_salidas_operacion["refProdt"]; // referencia
                             $idProdt = $row_salidas_operacion["idProdt"]; // producto
-                            $idEntSto = $row_salidas_operacion["idEntSto"]; // entrada stock
-                            $idProdc = $row_salidas_operacion["idProdc"]; // produccion
-                            $codLotProd = $row_salidas_operacion["codLotProd"]; // codigo de lote
-                            $canSalOpeFac = $row_salidas_operacion["canSalOpeFac"]; // cantidad salida
+                            $canOpeFacDet = $row_salidas_operacion["canOpeFacDet"]; // cantidad salida
+                            $esMerProm = $row_salidas_operacion["esMerProm"];
+                            $esProdFin = $row_salidas_operacion["esProdFin"];
 
-                            // primero hacemos el retorno a la entrada correspondiente
-                            $idEntStoEst = 1; // disponible
-
-                            $sql_update_entrada_stock =
-                                "UPDATE entrada_stock 
-                                SET canTotDis = canTotDis + $canSalOpeFac, idEntStoEst = ? 
-                                WHERE id = ?";
-                            $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
-                            $stmt_update_entrada_stock->bindParam(1, $idEntStoEst, PDO::PARAM_INT);
-                            $stmt_update_entrada_stock->bindParam(2, $idEntSto, PDO::PARAM_INT);
-                            $stmt_update_entrada_stock->execute();
-
-                            // luego actualizamos el stock del almacen principal
-                            $idAlm = 1; // almacen principal
-
-                            $sql_update_almacen_stock =
-                                "UPDATE almacen_stock
-                                SET canSto = canSto + $canSalOpeFac, canStoDis = canStoDis + $canSalOpeFac
-                                WHERE idAlm = ? AND idProd = ?";
-                            $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
-                            $stmt_update_almacen_stock->bindParam(1, $idAlm, PDO::PARAM_INT);
-                            $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
-                            $stmt_update_almacen_stock->execute();
-
-                            // realizamos una insercion de registro de entrada a almacen
-                            $sql_insert_entrada_operacion_facturacion =
-                                "INSERT INTO 
-                                entrada_operacion_facturacion (idOpeFac, refProdt, idProdt, idEntSto, idProdc, codLotProd, canEntOpeFac)
-                                VALUES (?, ?, ?, ?, ?, ?, $canSalOpeFac)";
-                            $stmt_insert_entrada_operacion_facturacion = $pdo->prepare($sql_insert_entrada_operacion_facturacion);
-                            $stmt_insert_entrada_operacion_facturacion->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
-                            $stmt_insert_entrada_operacion_facturacion->bindParam(2, $refProdt, PDO::PARAM_STR);
-                            $stmt_insert_entrada_operacion_facturacion->bindParam(3, $idProdt, PDO::PARAM_INT);
-                            $stmt_insert_entrada_operacion_facturacion->bindParam(4, $idEntSto, PDO::PARAM_INT);
-                            $stmt_insert_entrada_operacion_facturacion->bindParam(5, $idProdc, PDO::PARAM_INT);
-                            $stmt_insert_entrada_operacion_facturacion->bindParam(6, $codLotProd, PDO::PARAM_STR);
-                            $stmt_insert_entrada_operacion_facturacion->execute();
+                            $sql_create_operacion_facturacion_detalle =
+                                "INSERT INTO operacion_facturacion_detalle
+                            (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProdFin)
+                            VALUES(?, ?, ?, $canOpeFacDet, ?, ?)";
+                            $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(4, $esMerProm, PDO::PARAM_BOOL);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(5, $esProdFin, PDO::PARAM_BOOL);
+                            $stmt_create_operacion_facturacion_detalle->execute();
                         }
                     }
 

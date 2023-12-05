@@ -47,7 +47,7 @@ export const RowRequisicionLoteProduccion = ({
               htmlFor="nombre"
               className="form-label d-flex justify-content-center"
             >
-              <b>Estado requisIcion</b>
+              <b>Estado requisicion</b>
             </label>
             <div className="d-flex justify-content-center">
               <span

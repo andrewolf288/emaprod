@@ -5,3 +5,10 @@ function getStartEndDateNow()
     $fin =  date("Y-m-t");
     return [$inicio, $fin];
 }
+
+function getTodayDateNow()
+{
+    $inicio = date("Y-m-d");
+    $fin =  date("Y-m-d");
+    return [$inicio, $fin];
+}

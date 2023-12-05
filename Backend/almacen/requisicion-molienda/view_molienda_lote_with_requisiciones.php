@@ -30,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 r.codReq, 
                 r.cantProg,
                 r.canIng,
+                r.idProdt,
                 p.nomProd, 
                 p.id as idProdt,
                 r.reqFinEst,

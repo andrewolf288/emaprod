@@ -4,6 +4,7 @@ header('Content-Type: application/json; charset=utf-8');
 require('../../common/conexion.php');
 
 $pdo = getPDO();
+$result = array();
 $message_error = "";
 $description_error = "";
 

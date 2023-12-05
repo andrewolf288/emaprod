@@ -201,12 +201,21 @@ const DialogCrearSalidaParcial = ({
   const handleClose = () => {
     setOpen(false);
   };
+
   const [inputValue, setinputValue] = React.useState(0.0);
 
   const handleInputValue = ({ target }) => {
     const { value, name } = target;
     setinputValue(value);
   };
+
+  React.useEffect(() => {
+    const canProgSalPar =
+      detalle["canProgSalPar"] !== undefined
+        ? parseFloat(detalle["canProgSalPar"]).toFixed(3)
+        : 0.0;
+    setinputValue(canProgSalPar);
+  }, [detalle]);
 
   return (
     <div>
