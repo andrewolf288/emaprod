@@ -62,91 +62,126 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $idOpeFacDet = $row_operacion_facturacion_detalle["id"];
                     $idProdt = $row_operacion_facturacion_detalle["idProdt"];
                     $cantidad = $row_operacion_facturacion_detalle["canOpeFacDet"];
-                    $row_operacion_facturacion_detalle["detSal"] = [];
+                    $esMerProm = $row_operacion_facturacion_detalle["esMerProm"];
+                    $row_operacion_facturacion_detalle["canOpeFacDetAct"] = $cantidad;
+                    $row_operacion_facturacion_detalle["detSal"] = array();
                     $array_entradas_disponibles = [];
 
-                    // tenemos que traer informacion de los lotes necesarios para cumplir con el detalle
-                    $sql_consult_entradas_disponibles =
-                        "SELECT
-                    es.id,
-                    es.codEntSto,
-                    es.refNumIngEntSto,
-                    es.fecVenEntSto,
-                    es.codLot,
-                    es.refProdc,
-                    DATE(es.fecEntSto) AS fecEntSto,
-                    es.canTotDis
-                    FROM entrada_stock AS es
-                    WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
-                    ORDER BY es.fecEntSto ASC";
+                    // si no es una mercancia de promocion
+                    if ($esMerProm == 0) {
+                        // tenemos que traer informacion de los lotes necesarios para cumplir con el detalle
+                        $sql_consult_entradas_disponibles =
+                            "SELECT
+                        es.id,
+                        es.refProdc,
+                        DATE(es.fecEntSto) AS fecEntSto,
+                        es.canTotDis
+                        FROM entrada_stock AS es
+                        WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
+                        ORDER BY es.fecEntSto ASC";
 
-                    $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
-                    $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
-                    $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
-                    $stmt_consult_entradas_disponibles->execute();
+                        $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
+                        $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
+                        $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
+                        $stmt_consult_entradas_disponibles->execute();
+                        $array_entradas_disponibles = $stmt_consult_entradas_disponibles->fetchAll(PDO::FETCH_ASSOC);
 
-                    // AÑADIMOS AL ARRAY
-                    while ($row = $stmt_consult_entradas_disponibles->fetch(PDO::FETCH_ASSOC)) {
-                        array_push($array_entradas_disponibles, $row);
-                    }
+                        if (!empty($array_entradas_disponibles)) {
+                            $entradasUtilizadas = []; // entradas utilizadas
+                            $cantidad_faltante = $cantidad; // cantidad total faltante
 
-                    if (!empty($array_entradas_disponibles)) {
-                        $entradasUtilizadas = []; // entradas utilizadas
-                        $cantidad_faltante = $cantidad; // cantidad total faltante
+                            foreach ($array_entradas_disponibles as $row_entrada_dispomible) {
+                                if ($cantidad_faltante > 0) {
 
-                        foreach ($array_entradas_disponibles as $row_entrada_dispomible) {
-                            if ($cantidad_faltante > 0) {
+                                    $idEntStoUti = $row_entrada_dispomible["id"]; // id entrada
+                                    $canDisEnt = $row_entrada_dispomible["canTotDis"]; // cantidad disponible
+                                    $refProdc = $row_entrada_dispomible["refProdc"]; // referencia a produccion
 
-                                $idEntStoUti = $row_entrada_dispomible["id"]; // id entrada
-                                $canDisEnt = $row_entrada_dispomible["canTotDis"]; // cantidad disponible
-                                $codEntSto = $row_entrada_dispomible["codEntSto"]; // codigo de entrada
-                                $fecVenEntSto = $row_entrada_dispomible["fecVenEntSto"]; // fecha de vencimiento
-                                $codLot = $row_entrada_dispomible["codLot"]; // codigo de lote
-                                $refProdc = $row_entrada_dispomible["refProdc"]; // referencia a produccion
-                                $fecEntSto = $row_entrada_dispomible["fecEntSto"]; // fecha de entrada stock
+                                    if ($canDisEnt >= $cantidad_faltante) {
+                                        // añadimos a entradas utilizadas
+                                        array_push(
+                                            $entradasUtilizadas,
+                                            array(
+                                                "idEntSto" => $idEntStoUti,
+                                                "canSalStoReq" => $cantidad_faltante, // la cantidad de la requisicion detalle
+                                                "refProdc" => $refProdc,
 
-                                if ($canDisEnt >= $cantidad_faltante) {
-                                    // añadimos a entradas utilizadas
-                                    array_push(
-                                        $entradasUtilizadas,
-                                        array(
-                                            "idEntSto" => $idEntStoUti,
-                                            "canSalStoReq" => $cantidad_faltante, // la cantidad de la requisicion detalle
-                                            "codEntSto" => $codEntSto,
-                                            "fecVenEntSto" => $fecVenEntSto,
-                                            "fecEntSto" => $fecEntSto,
-                                            "codLot" => $codLot,
-                                            "refProdc" => $refProdc,
+                                            )
+                                        );
 
-                                        )
-                                    );
+                                        $cantidad_faltante = 0;
 
-                                    $cantidad_faltante = 0;
-
-                                    break; // termina el flujo
+                                        break; // termina el flujo
+                                    } else {
+                                        $cantidad_faltante -= $canDisEnt;
+                                        array_push(
+                                            $entradasUtilizadas,
+                                            array(
+                                                "idEntSto" => $idEntStoUti,
+                                                "canSalStoReq" => $canDisEnt, // la cantidad disponible de la entrada
+                                                "refProdc" => $refProdc,
+                                            )
+                                        );
+                                    }
                                 } else {
-                                    $cantidad_faltante -= $canDisEnt;
-                                    array_push(
-                                        $entradasUtilizadas,
-                                        array(
-                                            "idEntSto" => $idEntStoUti,
-                                            "canSalStoReq" => $canDisEnt, // la cantidad disponible de la entrada
-                                            "codEntSto" => $codEntSto,
-                                            "fecVenEntSto" => $fecVenEntSto,
-                                            "fecEntSto" => $fecEntSto,
-                                            "codLot" => $codLot,
-                                            "refProdc" => $refProdc,
-                                        )
-                                    );
+                                    break; // salimos del flujo
                                 }
-                            } else {
-                                break; // salimos del flujo
                             }
-                        }
 
-                        if ($cantidad_faltante == 0) {
-                            // entonces le asignamos las entrada utilizadas
-                            $row_operacion_facturacion_detalle["detSal"] = $entradasUtilizadas;
+                            if ($cantidad_faltante == 0) {
+                                // entonces le asignamos las entrada utilizadas
+                                // Primero tenemos que juntar aquellas entradas que corresponden a la misma produccion
+                                $totalPorLoteProduccion = [];
+                                foreach ($entradasUtilizadas as $fila) {
+                                    $refProdc = $fila['refProdc'];
+                                    $cantidad = floatval($fila['canSalStoReq']); // Convertir a número si es necesario
+
+                                    // Verificar si ya existe la referencia en el arreglo de totales
+                                    $indice = -1;
+                                    foreach ($totalPorLoteProduccion as $key => $item) {
+                                        if ($item['refProdc'] === $refProdc) {
+                                            $indice = $key;
+                                            break;
+                                        }
+                                    }
+
+                                    if ($indice !== -1) {
+                                        // Si existe, sumar la cantidad
+                                        $totalPorLoteProduccion[$indice]['canSalLotProd'] += $cantidad;
+                                    } else {
+                                        // Si no existe, crear una nueva entrada en el arreglo
+                                        $totalPorLoteProduccion[] = [
+                                            'refProdc' => $refProdc,
+                                            'canSalLotProd' => $cantidad,
+                                        ];
+                                    }
+                                }
+                                // $row_operacion_facturacion_detalle["detSal"] = $totalPorLoteProduccion;
+                                $totalConInformacionProduccion = array();
+                                // ahora debemos traer informacion de la produccion
+                                foreach ($totalPorLoteProduccion as $fila) {
+                                    $row_data = array();
+                                    $row_data["refProdc"] = $fila["refProdc"];
+                                    $row_data["canSalLotProd"] = $fila["canSalLotProd"];
+
+                                    $sql_consult_lote_produccion =
+                                        "SELECT codProd, codLotProd, fecProdIni, fecVenLotProd
+                                    FROM produccion
+                                    WHERE id = ?";
+                                    $stmt_consult_lote_produccion = $pdo->prepare($sql_consult_lote_produccion);
+                                    $stmt_consult_lote_produccion->bindParam(1, $fila["refProdc"], PDO::PARAM_INT);
+                                    $stmt_consult_lote_produccion->execute();
+                                    $row_produccion = $stmt_consult_lote_produccion->fetch(PDO::FETCH_ASSOC);
+
+                                    $row_data["codProd"] = $row_produccion["codProd"];
+                                    $row_data["codLotProd"] = $row_produccion["codLotProd"];
+                                    $row_data["fecProdIni"] = $row_produccion["fecProdIni"];
+                                    $row_data["fecVenLotProd"] = $row_produccion["fecVenLotProd"];
+                                    array_push($totalConInformacionProduccion, $row_data);
+                                }
+                                // agregamos el detalle de salidas de lote
+                                $row_operacion_facturacion_detalle["detSal"] = $totalConInformacionProduccion;
+                            }
                         }
                     }
                     array_push($row_operacion_facturacion["detOpeFac"], $row_operacion_facturacion_detalle);

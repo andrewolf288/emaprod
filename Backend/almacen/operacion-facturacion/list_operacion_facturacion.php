@@ -9,7 +9,6 @@ $message_error = "";
 $description_error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    echo "entro aqui";
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
