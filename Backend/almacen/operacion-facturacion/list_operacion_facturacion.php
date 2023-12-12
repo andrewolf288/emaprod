@@ -33,11 +33,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         of.invSerFac,
         of.invNumFac,
         of.idOpeFacMot,
+        of.idReqEst,
+        re.desReqEst,
         ofm.desOpeFacMot,
         of.fueAfePorDev,
         of.fecCreOpeFac
         FROM operacion_facturacion AS of
         JOIN operacion_facturacion_motivo AS ofm ON ofm.id = of.idOpeFacMot
+        JOIN requisicion_estado AS re ON re.id = of.idReqEst
         WHERE DATE(of.fecCreOpeFac) BETWEEN '$fechaInicio' AND '$fechaFin'";
 
         $stmt_select_operaciones_facturacion = $pdo->prepare($sql_select_operaciones_facturacion);
