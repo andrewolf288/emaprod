@@ -12,6 +12,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
+    $esEnt = $data["esEnt"];
+    $esSal = $data["esSal"];
+
     $fechaToday = getTodayDateNow();
     $fechaInicio = $fechaToday[0]; // inicio del mes
     $fechaFin = $fechaToday[1]; // fin del mes
@@ -26,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($pdo) {
-
         $sql_select_operaciones_facturacion =
             "SELECT 
         of.id,
@@ -41,9 +43,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         FROM operacion_facturacion AS of
         JOIN operacion_facturacion_motivo AS ofm ON ofm.id = of.idOpeFacMot
         JOIN requisicion_estado AS re ON re.id = of.idReqEst
-        WHERE DATE(of.fecCreOpeFac) BETWEEN '$fechaInicio' AND '$fechaFin'";
+        WHERE of.esSal = ? AND of.esEnt = ? AND DATE(of.fecCreOpeFac) BETWEEN '$fechaInicio' AND '$fechaFin'";
 
         $stmt_select_operaciones_facturacion = $pdo->prepare($sql_select_operaciones_facturacion);
+        $stmt_select_operaciones_facturacion->bindParam(1, $esSal, PDO::PARAM_BOOL);
+        $stmt_select_operaciones_facturacion->bindParam(2, $esEnt, PDO::PARAM_BOOL);
         $stmt_select_operaciones_facturacion->execute();
         $result = $stmt_select_operaciones_facturacion->fetchAll(PDO::FETCH_ASSOC);
     } else {

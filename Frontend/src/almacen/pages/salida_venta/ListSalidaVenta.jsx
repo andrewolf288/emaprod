@@ -82,10 +82,8 @@ export const ListSalidaVenta = () => {
 
   //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataSalidasVenta = async (formState) => {
-    console.log(formState);
     const resultPeticion = await getSalidasVenta(formState);
     const { message_error, description_error, result } = resultPeticion;
-    console.log(result);
     if (message_error.length === 0) {
       setDataSalidasVenta(result);
       setDataSalidasVentaTemp(result);

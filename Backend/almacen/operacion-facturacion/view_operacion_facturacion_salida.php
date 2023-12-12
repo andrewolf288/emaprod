@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $row_operacion_facturacion["detOpeFac"] = [];
 
                 $sql_select_operacion_facturacion_detalle =
-                    "SELECT 
+                    "SELECT
                 ofd.id,
                 ofd.idOpeFac,
                 ofd.idProdt,
@@ -155,12 +155,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $entradasUtilizadas = []; // entradas utilizadas
                                 $cantidad_faltante = $cantidad; // cantidad total faltante
 
-                                foreach ($array_entradas_disponibles as $row_entrada_dispomible) {
+                                foreach ($array_entradas_disponibles as $row_entrada_disponible) {
                                     if ($cantidad_faltante > 0) {
 
-                                        $idEntStoUti = $row_entrada_dispomible["id"]; // id entrada
-                                        $canDisEnt = $row_entrada_dispomible["canTotDis"]; // cantidad disponible
-                                        $refProdc = $row_entrada_dispomible["refProdc"]; // referencia a produccion
+                                        $idEntStoUti = $row_entrada_disponible["id"]; // id entrada
+                                        $canDisEnt = $row_entrada_disponible["canTotDis"]; // cantidad disponible
+                                        $refProdc = $row_entrada_disponible["refProdc"]; // referencia a produccion
 
                                         if ($canDisEnt >= $cantidad_faltante) {
                                             // añadimos a entradas utilizadas
@@ -250,10 +250,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             }
                         }
                     }
-
                     array_push($row_operacion_facturacion["detOpeFac"], $row_operacion_facturacion_detalle);
                 }
-
                 array_push($result, $row_operacion_facturacion);
             }
         } catch (PDOException $e) {

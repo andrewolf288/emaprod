@@ -14,6 +14,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idRefGui = intVal($data["idRefGui"]); // id de la guia de remision
     $idCredNot = $data["idCredNot"]; // id de la nota decredito
     $idMot = intVal($data["idMotivo"]); // motivo
+    $invoice_serie = $data["invoice_serie"]; // serie
+    $invoice_number = $data["invoice_number"]; // numero
     $items = $data["items"]; // items
 
     if ($pdo) {
@@ -23,6 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo json_encode(["message_error" => "No se proporciono la GR", "description_error" => "No se proporciono la GR: $idRefGui"]);
         } else {
             $idOpeFacMot = 1; // motivo de salida de guia de remision
+            $idReqEst = 1;
             $fueAfePorDev = false;
 
             $sql_consult_operacion =
@@ -61,12 +64,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($idMot == 100) {
                     $idOpeFacMot = 2;
                     $idCredNot = NULL;
+                    $invoice_serie = $row["invSerFac"]; // serie
+                    $invoice_number = $row["invNumFac"]; // numero
                 }
 
                 // insertamos la operacion facturacion
                 $sql_insert_operacion_facturacion =
-                    "INSERT INTO operacion_facturacion (idGuiRem, idNotCre, idOpeFacMot, esEnt)
-                VALUES (?, ?, ?, ?)";
+                    "INSERT INTO 
+                    operacion_facturacion (idGuiRem, idNotCre, idOpeFacMot, esEnt, invSerFac, invNumFac, idReqEst)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try {
                     $pdo->beginTransaction();
                     $stmt_insert_operacion_facturacion = $pdo->prepare($sql_insert_operacion_facturacion);
@@ -74,6 +80,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt_insert_operacion_facturacion->bindParam(2, $idCredNot, PDO::PARAM_INT);
                     $stmt_insert_operacion_facturacion->bindParam(3, $idOpeFacMot, PDO::PARAM_INT);
                     $stmt_insert_operacion_facturacion->bindParam(4, $esEnt, PDO::PARAM_BOOL);
+                    $stmt_insert_operacion_facturacion->bindParam(5, $invoice_serie, PDO::PARAM_STR);
+                    $stmt_insert_operacion_facturacion->bindParam(6, $invoice_number, PDO::PARAM_STR);
+                    $stmt_insert_operacion_facturacion->bindParam(7, $idReqEst, PDO::PARAM_INT);
                     $stmt_insert_operacion_facturacion->execute();
 
                     $idLastInsertion = $pdo->lastInsertId();
@@ -83,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // recorremos cada item de la devolucion
                         foreach ($items as $item) {
                             $reference = $item["product_reference"];
-                            $quantity = $item["quantity"];
+                            $quantity = intval($item["quantity"]);
                             $salidas_producto = array();
 
                             $sql_select_salida_producto =
@@ -98,17 +107,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             // si las salidas de productos no esta vacia
                             if (!empty($salidas_producto)) {
-                                while ($row_salidas_operacion = $salidas_producto) {
+                                foreach ($salidas_producto as $row_salidas_operacion) {
                                     $refProdt = $row_salidas_operacion["refProdt"]; // referencia
                                     $idProdt = $row_salidas_operacion["idProdt"]; // producto
-                                    $canOpeFacDet = $row_salidas_operacion["canOpeFacDet"]; // cantidad salida
                                     $esMerProm = $row_salidas_operacion["esMerProm"];
-                                    $esProdFin = $row_salidas_operacion["esProdFin"];
+                                    $esProdFin = $row_salidas_operacion["esProFin"];
 
                                     $sql_create_operacion_facturacion_detalle =
                                         "INSERT INTO operacion_facturacion_detalle
-                                    (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProdFin)
-                                    VALUES(?, ?, ?, $canOpeFacDet, ?, ?)";
+                                    (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProFin)
+                                    VALUES(?, ?, ?, $quantity , ?, ?)";
                                     $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
                                     $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
                                     $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
@@ -132,11 +140,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $idProdt = $row_salidas_operacion["idProdt"]; // producto
                             $canOpeFacDet = $row_salidas_operacion["canOpeFacDet"]; // cantidad salida
                             $esMerProm = $row_salidas_operacion["esMerProm"];
-                            $esProdFin = $row_salidas_operacion["esProdFin"];
+                            $esProdFin = $row_salidas_operacion["esProFin"];
 
                             $sql_create_operacion_facturacion_detalle =
                                 "INSERT INTO operacion_facturacion_detalle
-                            (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProdFin)
+                            (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProFin)
                             VALUES(?, ?, ?, $canOpeFacDet, ?, ?)";
                             $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
                             $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
@@ -161,7 +169,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt_update_operacion_facturacion->bindParam(2, $idOpeFac, PDO::PARAM_INT);
                         $stmt_update_operacion_facturacion->execute();
                     }
-
                     $pdo->commit();
                 } catch (PDOException $e) {
                     $pdo->rollBack();
