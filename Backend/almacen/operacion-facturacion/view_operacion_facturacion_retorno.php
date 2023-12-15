@@ -203,6 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         $totalPorLoteProduccion[] = [
                                             'refProdc' => $refProdc,
                                             'canSalLotProd' => $cantidad,
+                                            'canSalLotProdSal' => $cantidad,
                                             'codProd' => $codProd,
                                             'codLotProd' => $codLotProd,
                                             'fecProdIni' => $fecProdIni,
@@ -213,10 +214,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                                 // si es una devolucion por items, debemos quitar los totales
                                 if ($idOpeFacMot == 5) {
-                                    foreach ($totalPorLoteProduccion as &$item) {
-                                        $item["canSalLotProd"] = 0;
-                                    }
+                                    $itemsReset = array_map('resetCantidad', $totalPorLoteProduccion);
+                                    $totalPorLoteProduccion = $itemsReset;
                                 }
+
                                 // agregamos el detalle de salidas de lote
                                 $row_operacion_facturacion_detalle["detSal"] = $totalPorLoteProduccion;
                             }
@@ -240,4 +241,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $return['description_error'] = $description_error;
     $return['result'] = $result;
     echo json_encode($return);
+}
+
+// reset cantidades
+function resetCantidad($item)
+{
+    $item["canSalLotProd"] = 0;
+    return $item;
 }

@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             of.id,
             of.invSerFac,
             of.invNumFac,
+            of.idGuiRem,
             of.idOpeFacMot,
             of.idReqEst,
             re.desReqEst,

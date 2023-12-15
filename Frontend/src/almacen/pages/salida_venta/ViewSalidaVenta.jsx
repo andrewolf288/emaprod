@@ -11,7 +11,7 @@ import {
   DialogContentText,
   DialogTitle
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -153,7 +153,7 @@ export const ViewSalidaVenta = () => {
           canSalLotProd: value
         };
       } else {
-        auxTotalSalidaStock += element.canSalLotProd;
+        auxTotalSalidaStock += parseInt(element.canSalLotProd);
         return element;
       }
     });

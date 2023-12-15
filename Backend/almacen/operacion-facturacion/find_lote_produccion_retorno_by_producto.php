@@ -12,93 +12,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $lotesUsados = $data["lotUsa"]; // lotes utilizados
+    $codLot = $data["codLot"]; // lotes utilizados
+    $anioCreLote = $data["anioCreLote"]; // producto
     $idProdt = $data["idProdt"]; // producto
+    $proRef = 0;
 
-    $idEntStoEst = 1; // ESTADO DISPONIBLE DE LAS ENTRADAS
-    $array_entradas_disponibles = array();
+    // buscamos la referencia del producto del detalle
+    $sql_consult_producto =
+        "SELECT proRef FROM producto WHERE id = ?";
+    $stmt_consult_producto = $pdo->prepare($sql_consult_producto);
+    $stmt_consult_producto->bindParam(1, $idProdt, PDO::PARAM_INT);
+    $stmt_consult_producto->execute();
 
-    $sql_consult_entradas_disponibles =
-        "SELECT
-    es.id,
-    es.refProdc,
-    DATE(es.fecEntSto) AS fecEntSto,
-    es.canTotDis
-    FROM entrada_stock AS es
-    WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
-    AND es.fecEntSto BETWEEN DATE_SUB(NOW(), INTERVAL 4 YEAR) AND NOW()
-    ORDER BY es.fecEntSto ASC";
+    $row_consult_producto = $stmt_consult_producto->fetch(PDO::FETCH_ASSOC);
+    if ($row_consult_producto) {
+        $proRef = $row_consult_producto["proRef"];
+    }
 
-    $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
-    $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
-    $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
-    $stmt_consult_entradas_disponibles->execute();
-    $array_entradas_disponibles = $stmt_consult_entradas_disponibles->fetchAll(PDO::FETCH_ASSOC);
+    $sql_find_lote_produccion =
+        "SELECT pd.id AS refProdc, pd.idProdt, pd.codProd, pd.codLotProd, pd.fecProdIni, pd.fecVenLotProd 
+    FROM produccion AS pd
+    WHERE pd.codLotProd = ? AND YEAR(pd.fecProdIni) = ? AND pd.idProdt = ? LIMIT 1";
 
-    if (!empty($array_entradas_disponibles)) {
-        // entonces le asignamos las entrada utilizadas
-        // Primero tenemos que juntar aquellas entradas que corresponden a la misma produccion
-        $totalPorLoteProduccion = [];
-        foreach ($array_entradas_disponibles as $fila) {
-            $refProdc = $fila['refProdc'];
-            $cantidad = floatval($fila['canTotDis']); // Convertir a número si es necesario
+    $stmt_find_lote_produccion = $pdo->prepare($sql_find_lote_produccion);
+    $stmt_find_lote_produccion->bindParam(1, $codLot, PDO::PARAM_STR);
+    $stmt_find_lote_produccion->bindParam(2, $anioCreLote, PDO::PARAM_STR);
+    $stmt_find_lote_produccion->bindParam(3, $proRef, PDO::PARAM_INT);
+    $stmt_find_lote_produccion->execute();
 
-            // Verificar si ya existe la referencia en el arreglo de totales
-            $indice = -1;
-            foreach ($totalPorLoteProduccion as $key => $item) {
-                if ($item['refProdc'] === $refProdc) {
-                    $indice = $key;
-                    break;
-                }
-            }
+    $row_find_element = $stmt_find_lote_produccion->fetch(PDO::FETCH_ASSOC);
 
-            if ($indice !== -1) {
-                // Si existe, sumar la cantidad
-                $totalPorLoteProduccion[$indice]['canSalLotProd'] += $cantidad;
-            } else {
-                // Si no existe, crear una nueva entrada en el arreglo
-                $totalPorLoteProduccion[] = [
-                    'refProdc' => $refProdc,
-                    'canSalLotProd' => $cantidad,
-                ];
-            }
+    if ($row_find_element) {
+        $refProdc = $row_find_element["id"];
+        $entradas_lote = array();
+        // debemos comprobar que el lote elegido tenga entradas
+        $sql_select_entradas_stock_lote =
+            "SELECT * FROM entrada_stock
+        WHERE refProdc = ? LIMIT 1";
+        $stmt_select_entradas_stock_lote = $pdo->prepare($sql_select_entradas_stock_lote);
+        $stmt_select_entradas_stock_lote->bindParam(1, $refProdc, PDO::PARAM_INT);
+        $stmt_select_entradas_stock_lote->execute();
+
+        $entradas_lote = $stmt_select_entradas_stock_lote->rowCount();
+        if ($entradas_lote > 0) {
+
+            $result = $row_find_element;
+        } else {
+            $message_error = "No se encontraron entradas";
+            $description_error = "El lote seleccionado no tiene entradas";
         }
-        // $row_operacion_facturacion_detalle["detSal"] = $totalPorLoteProduccion;
-        $totalConInformacionProduccion = array();
-        // ahora debemos traer informacion de la produccion
-        foreach ($totalPorLoteProduccion as $fila) {
-            $row_data = array();
-            $row_data["refProdc"] = $fila["refProdc"];
-            $row_data["canSalLotProd"] = $fila["canSalLotProd"];
-            $row_data["canSalLotProdAct"] = 0;
-
-            $sql_consult_lote_produccion =
-                "SELECT codProd, codLotProd, fecProdIni, fecVenLotProd
-                FROM produccion
-                WHERE id = ?";
-            $stmt_consult_lote_produccion = $pdo->prepare($sql_consult_lote_produccion);
-            $stmt_consult_lote_produccion->bindParam(1, $fila["refProdc"], PDO::PARAM_INT);
-            $stmt_consult_lote_produccion->execute();
-            $row_produccion = $stmt_consult_lote_produccion->fetch(PDO::FETCH_ASSOC);
-
-            $row_data["codProd"] = $row_produccion["codProd"];
-            $row_data["codLotProd"] = $row_produccion["codLotProd"];
-            $row_data["fecProdIni"] = $row_produccion["fecProdIni"];
-            $row_data["fecVenLotProd"] = $row_produccion["fecVenLotProd"];
-            array_push($totalConInformacionProduccion, $row_data);
-        }
-
-        // por ultimo debemos filtrar aquellos lotes que ya fueron agregados
-        $refNoDeseados = array_map(function ($elemento) {
-            return $elemento['refProdc'];
-        }, $lotesUsados);
-
-        // Filtrar los elementos sugeridos
-        $filtroLotesDisponibles = array_filter($totalConInformacionProduccion, function ($elemento) use ($refNoDeseados) {
-            return !in_array($elemento['refProdc'], $refNoDeseados);
-        });
-
-        $result = array_values($filtroLotesDisponibles);
+    } else {
+        $message_error = "No se encontro el lote de producción";
+        $description_error = "No se encontro el lote de producción o el producto del detalle no corresponde al lote ingresado";
     }
 
     // Retornamos el resultado
