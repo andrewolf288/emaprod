@@ -24,7 +24,7 @@ import {
   FormatDateTimeMYSQLNow,
   letraAnio,
   _parseInt,
-  FormatDateTimeMYSQLNowPlusYears,
+  FormatDateTimeMYSQLNowPlusYears
 } from "../../../utils/functions/FormatDate";
 import { DetalleProductosFinales } from "./DetalleProductosFinales";
 import FechaPicker from "../../../../src/components/Fechas/FechaPicker";
@@ -55,15 +55,17 @@ export const AgregarProductosLoteProduccionV2 = () => {
     idProdEst: 0, // id estado produccion
     idProdTip: 0, // id estado tipo produccion
     idProdt: 0, // id producto intermedio
+    idSubCla: 0, // sub clase
     klgLotProd: "", // peso de la produccion
     nomProd: "", // nombre del producto intermedio
-    proFinProdDet: [], // productos finales programados
+    proFinProdDet: [] // productos finales programados
   });
 
   const {
     id, // id del proceso de produccion
     proFinProdDet, // productos finales programados
     codLotProd, // codigo de lote de produccion
+    idSubCla
   } = proFinProd;
 
   // PRODUCTOS FINALES DISPONIBLES POR PRODUCCIÓN
@@ -74,7 +76,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
     idProdFin: 0,
     cantidadIngresada: 0.0,
     fecEntSto: FormatDateTimeMYSQLNow(),
-    fecVenSto: "",
+    fecVenSto: ""
   });
   const { idProdFin, cantidadIngresada, fecEntSto, fecVenSto } = productoFinal;
 
@@ -83,10 +85,10 @@ export const AgregarProductosLoteProduccionV2 = () => {
   const onAddProductoFinalSubProducto = (value) => {
     var year = 0;
     // si la UM de al presentacion final es LTS, entonces year = 1
-    if (value.item.simMed === "LTS") {
-      year = 1;
+    if (idSubCla === 50) {
+      year = 1; // frescos
     } else {
-      year = 4;
+      year = 4; // otros
     }
 
     // Calculamos automaticamente su fecha de vencimiento
@@ -94,7 +96,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
     setproductoFinal({
       ...productoFinal,
       idProdFin: value.id, // id de de la presentacion final
-      fecVenSto: fecVenEntProdFin, // fecha de vencimiento
+      fecVenSto: fecVenEntProdFin // fecha de vencimiento
     });
   };
 
@@ -103,15 +105,26 @@ export const AgregarProductosLoteProduccionV2 = () => {
     const { name, value } = target;
     setproductoFinal({
       ...productoFinal,
-      [name]: value,
+      [name]: value
     });
   };
 
   // Manejador de fecha de ingreso de presentacion final
   const onAddFecEntSto = (newfecEntSto) => {
+    var year = 0;
+    // si la UM de al presentacion final es LTS, entonces year = 1
+    if (idSubCla === 50) {
+      year = 1; // frescos
+    } else {
+      year = 4; // otros
+    }
+
+    const newfecVenEnt = FormatDateTimeMYSQLNowPlusYears(year, newfecEntSto);
+
     setproductoFinal({
       ...productoFinal,
       fecEntSto: newfecEntSto,
+      fecVenSto: newfecVenEnt
     });
   };
 
@@ -119,7 +132,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
   const onAddFecVenSto = (newfecEntSto) => {
     setproductoFinal({
       ...productoFinal,
-      fecVenSto: newfecEntSto,
+      fecVenSto: newfecEntSto
     });
   };
 
@@ -127,7 +140,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -169,7 +182,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
       if (itemFound) {
         setfeedbackMessages({
           style_message: "warning",
-          feedback_description_error: "Ya se agrego esta presentación final",
+          feedback_description_error: "Ya se agrego esta presentación final"
         });
         handleClickFeeback();
       } else {
@@ -184,7 +197,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
             desCla,
             desSubCla,
             nomProd,
-            simMed,
+            simMed
           } = result[0];
 
           // buscamos en el detall de presentaciones programadas
@@ -207,7 +220,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
             simMed: simMed, // medida del producto
             fecEntSto: fecEntSto, // fecha de entrada
             fecVenEntProdFin: fecVenSto, // fecha de vencimiento
-            canProdFin: cantidadIngresada, // cantidad de presentacion final ingresada
+            canProdFin: cantidadIngresada // cantidad de presentacion final ingresada
           };
 
           const dataDetalle = [...detalleProductosFinales, detalle];
@@ -216,7 +229,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
         } else {
           setfeedbackMessages({
             style_message: "error",
-            feedback_description_error: description_error,
+            feedback_description_error: description_error
           });
           handleClickFeeback();
         }
@@ -234,7 +247,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
 
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: handledErrors,
+        feedback_description_error: handledErrors
       });
       handleClickFeeback();
     }
@@ -244,7 +257,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
       idProdFin: 0,
       cantidadIngresada: 0.0,
       fecEntSto: FormatDateTimeMYSQLNow(),
-      fecVenSto: "",
+      fecVenSto: ""
     });
   };
 
@@ -255,7 +268,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
       if (element.idProdt === idItem) {
         return {
           ...element,
-          [name]: value,
+          [name]: value
         };
       } else {
         return element;
@@ -292,7 +305,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -308,9 +321,9 @@ export const AgregarProductosLoteProduccionV2 = () => {
         canTotProgProdFin: data.canTotProgProdFin,
         canTotIngProdFin: data.canTotIngProdFin,
         idProdt: data.idProdt,
-        idProdcProdtFinEst: variacion > 0 ? 3 : variacion == 0 ? 4 : 2, // menor, conforme, mayor a lo programado
+        idProdcProdtFinEst: variacion > 0 ? 3 : variacion == 0 ? 4 : 2 // menor, conforme, mayor a lo programado
       },
-      idProdc: id, // id de produccion
+      idProdc: id // id de produccion
     };
 
     const { message_error, description_error } =
@@ -318,7 +331,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
     if (message_error.length === 0) {
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se actualizó con éxito",
+        feedback_description_error: "Se actualizó con éxito"
       });
       handleClickFeeback();
 
@@ -328,7 +341,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -338,13 +351,15 @@ export const AgregarProductosLoteProduccionV2 = () => {
   const crearProductosFinalesLoteProduccion = async () => {
     const datosProduccion = {
       idProduccion: id,
-      codLotProd,
+      codLotProd
     };
 
     detalleProductosFinales.map((obj) => {
       obj.letAniEntSto = letraAnio(obj.fecEntSto);
       obj.diaJulEntSto = DiaJuliano(obj.fecEntSto);
     });
+
+    console.log(detalleProductosFinales, datosProduccion);
 
     const resultPeticion = await createProductosFinalesLoteProduccion(
       detalleProductosFinales,
@@ -355,7 +370,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
       onNavigateBack();
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Guardado con exito",
+        feedback_description_error: "Guardado con exito"
       });
       handleClickFeeback();
 
@@ -365,7 +380,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -378,7 +393,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
     if (detalleProductosFinales.length === 0) {
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "No has agregado items al detalle",
+        feedback_description_error: "No has agregado items al detalle"
       });
       handleClickFeeback();
     } else {
@@ -414,8 +429,8 @@ export const AgregarProductosLoteProduccionV2 = () => {
                         sx={{
                           "& th": {
                             color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                            backgroundColor: "#f5f5f5"
+                          }
                         }}
                       >
                         <TableCell align="left" width={200}>
@@ -478,7 +493,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
                           nomProd: element.nomProd,
                           codProd2: element.codProd2,
                           simMed: element.sinMed,
-                          desCla: element.desCla,
+                          desCla: element.desCla
                         }))}
                       defaultValue={idProdFin}
                     />
@@ -541,8 +556,8 @@ export const AgregarProductosLoteProduccionV2 = () => {
                           sx={{
                             "& th": {
                               color: "rgba(96, 96, 96)",
-                              backgroundColor: "#f5f5f5",
-                            },
+                              backgroundColor: "#f5f5f5"
+                            }
                           }}
                         >
                           <TableCell align="left" width={200}>

@@ -43,10 +43,10 @@ export const ListLoteProduccion = () => {
     fecProdLotFin,
     formState,
     setFormState,
-    onInputChange,
+    onInputChange
   } = useForm({
     fecProdLotIni: "",
-    fecProdLotFin: "",
+    fecProdLotFin: ""
   });
 
   // ESTADOS PARA LA PAGINACIÓN
@@ -57,7 +57,7 @@ export const ListLoteProduccion = () => {
   const [feedbackDelete, setfeedbackDelete] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -68,7 +68,7 @@ export const ListLoteProduccion = () => {
     tipoProduccion: { label: "" },
     estadoInicio: { label: "" },
     numeroOP: "",
-    lotePrduccion: "",
+    lotePrduccion: ""
   });
 
   // MANEJADORES DE FEEDBACK
@@ -90,7 +90,7 @@ export const ListLoteProduccion = () => {
     const { name, value } = target;
     setInputs({
       ...inputs,
-      [name]: value,
+      [name]: value
     });
     //filter(value, name);
   };
@@ -104,7 +104,7 @@ export const ListLoteProduccion = () => {
   const onChangeProducto = (obj) => {
     setInputs({
       ...inputs,
-      producto: obj,
+      producto: obj
     });
     //filter(label, "filterProducto");
   };
@@ -112,7 +112,7 @@ export const ListLoteProduccion = () => {
   const onChangeEstadoProduccion = (obj) => {
     setInputs({
       ...inputs,
-      estado: obj,
+      estado: obj
     });
     //filter(label, "filterEstadoProduccion");
   };
@@ -120,7 +120,7 @@ export const ListLoteProduccion = () => {
   const onChangeTipoProduccion = (obj) => {
     setInputs({
       ...inputs,
-      tipoProduccion: obj,
+      tipoProduccion: obj
     });
     //filter(label, "filterTipoProduccion");
   };
@@ -128,7 +128,7 @@ export const ListLoteProduccion = () => {
   const onChangeEstadoInicioProduccion = (obj) => {
     setInputs({
       ...inputs,
-      estadoInicio: obj,
+      estadoInicio: obj
     });
     //filter(label, "filterEstadoInicioProgramado");
   };
@@ -150,7 +150,7 @@ export const ListLoteProduccion = () => {
     // realizamos una promesa
     let body = {
       ...formState,
-      fecProdLotIni: dateFormat,
+      fecProdLotIni: dateFormat
     };
     obtenerDataProduccionLote(body);
   };
@@ -160,7 +160,7 @@ export const ListLoteProduccion = () => {
     setFormState({ ...formState, fecProdLotFin: dateFormat });
     let body = {
       ...formState,
-      fecProdLotFin: dateFormat,
+      fecProdLotFin: dateFormat
     };
     obtenerDataProduccionLote(body);
   };
@@ -179,19 +179,10 @@ export const ListLoteProduccion = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
-  };
-
-  // ******* REQUISICION MOLIENDA DETALLE ********
-
-  const closeOpcionesProduccionLote = () => {
-    // ocultamos el modal
-    setMostrarOpciones(false);
-    // dejamos el null la data del detalle
-    setProduccionSeleccionado(null);
   };
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
@@ -230,7 +221,7 @@ export const ListLoteProduccion = () => {
       tipoProduccion: { label: "" },
       estadoInicio: { label: "" },
       numeroOP: "",
-      lotePrduccion: "",
+      lotePrduccion: ""
     });
   };
 
@@ -321,8 +312,8 @@ export const ListLoteProduccion = () => {
                     sx={{
                       "& th": {
                         color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                        backgroundColor: "#f5f5f5"
+                      }
                     }}
                   >
                     <TableCell align="left" width={70}>
@@ -337,8 +328,8 @@ export const ListLoteProduccion = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -356,8 +347,8 @@ export const ListLoteProduccion = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -377,6 +368,9 @@ export const ListLoteProduccion = () => {
                       <b>Env. y Enc.</b>
                     </TableCell>
                     <TableCell align="left" width={100}>
+                      <b>Ingresos</b>
+                    </TableCell>
+                    <TableCell align="left" width={100}>
                       <b>Agregacion</b>
                     </TableCell>
                     <TableCell align="left" width={100}>
@@ -394,7 +388,7 @@ export const ListLoteProduccion = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          "&:last-child td, &:last-child th": { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -423,6 +417,23 @@ export const ListLoteProduccion = () => {
                           {row["req_env_enc"][0]["requerido"] == 0 &&
                             row["req_env_enc"][0]["en_proceso"] == 0 &&
                             row["req_env_enc"][0]["terminado"] == 0 && (
+                              <p>No hay requisiciones</p>
+                            )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {row["req_ing_prod"][0]["requerido"] != 0 && (
+                            <span className="d-block mb-2 badge text-bg-danger p-2">
+                              {`Requerido: ${row["req_ing_prod"][0]["requerido"]}`}
+                            </span>
+                          )}
+                          {row["req_ing_prod"][0]["requerido"] == 0 &&
+                            row["req_ing_prod"][0]["terminado"] != 0 && (
+                              <span className="d-block badge text-bg-success p-2">
+                                {`Completo: ${row["req_ing_prod"][0]["terminado"]}`}
+                              </span>
+                            )}
+                          {row["req_agr"][0]["requerido"] == 0 &&
+                            row["req_agr"][0]["terminado"] == 0 && (
                               <p>No hay requisiciones</p>
                             )}
                         </TableCell>
@@ -475,7 +486,7 @@ export const ListLoteProduccion = () => {
                         <TableCell
                           align="left"
                           sx={{
-                            display: "flex",
+                            display: "flex"
                           }}
                         >
                           <div

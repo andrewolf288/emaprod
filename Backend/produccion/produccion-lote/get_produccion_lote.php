@@ -79,6 +79,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt_select_requisicion_encaje_envase->execute();
                 $row["req_env_enc"] = $stmt_select_requisicion_encaje_envase->fetchAll(PDO::FETCH_ASSOC);
 
+                // buscamos requisiciones de ingreso
+                $sql_select_requisicion_ingreso_producto =
+                    "SELECT
+                COALESCE(SUM(CASE WHEN pip.esComProdIng = 0 THEN 1 ELSE 0 END), 0) AS requerido,
+                COALESCE(SUM(CASE WHEN pip.esComProdIng = 1 THEN 1 ELSE 0 END), 0) AS terminado
+                FROM produccion_ingreso_producto AS pip
+                WHERE pip.idProdc = ?";
+                $stmt_select_requisicion_ingreso_producto = $pdo->prepare($sql_select_requisicion_ingreso_producto);
+                $stmt_select_requisicion_ingreso_producto->bindParam(1, $idLoteProduccion, PDO::PARAM_INT);
+                $stmt_select_requisicion_ingreso_producto->execute();
+                $row["req_ing_prod"] = $stmt_select_requisicion_ingreso_producto->fetchAll(PDO::FETCH_ASSOC);
+
                 // buscamos agregaciones
                 $sql_select_requisicion_agregacion =
                     "SELECT

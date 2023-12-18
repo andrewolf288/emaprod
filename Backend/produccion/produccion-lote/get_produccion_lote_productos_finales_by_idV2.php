@@ -21,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             pd.numop,
             pd.idProdt,
             p.nomProd,
+            p.idSubCla,
             pd.idProdEst,
             pe.desEstPro,
             pd.idProdTip,
