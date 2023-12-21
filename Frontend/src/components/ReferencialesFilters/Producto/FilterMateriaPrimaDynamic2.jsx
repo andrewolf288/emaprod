@@ -1,20 +1,14 @@
 import { Autocomplete, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { getMateriaPrima } from "../../../helpers/Referenciales/producto/getMateriasPrimas";
 
 const defaultOption = {
-  value: "",
-  label: "Selecciona un tipo atributo",
-  id: ""
+  value: 0,
+  label: "Selecciona una materia prima",
+  id: 0
 };
 
-const data = [
-  { id: "N", nomTipAtr: "Numerico" },
-  { id: "T", nomTipAtr: "Texto" },
-  { id: "B", nomTipAtr: "Booleano" },
-  { id: "O", nomTipAtr: "Opciones" }
-];
-
-export const FilterTipoAtributoDynamic = ({
+export const FilterMateriaPrimaDynamic2 = ({
   defaultValue = null,
   onNewInput
 }) => {
@@ -22,12 +16,16 @@ export const FilterTipoAtributoDynamic = ({
   const [value, setValue] = useState(defaultOption);
 
   const obtenerDataMateriaPrima = async () => {
+    var result = await getMateriaPrima();
+    result = result.filter(
+      (element) => element.idCla !== 2 && element.idCla !== 4
+    );
     const formatSelect = [
       defaultOption,
-      ...data.map((element) => {
+      ...result.map((element) => {
         return {
-          value: element.id,
-          label: `${element.nomTipAtr}`,
+          value: element.codProd2,
+          label: element.nomProd,
           id: element.id
         };
       })

@@ -12,7 +12,7 @@ export const RouterAtributoCalidad = [
     element: <UpdateAtributosCalidad />
   },
   {
-    path: "create",
+    path: "crear",
     element: <AgregarAtributosCalidad />
   }
 ];

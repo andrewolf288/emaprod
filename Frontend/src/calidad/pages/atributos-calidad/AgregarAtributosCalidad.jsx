@@ -1,8 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FilterMateriaPrimaDynamic } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic";
-import { TextField } from "@mui/material";
+import { Snackbar, TextField, Typography } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import { FilterTipoAtributoDynamic } from "../../../components/ReferencialesFilters/TipoAtributo/FilterTipoAtributoDynamic";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import { RowAtributoCalidad } from "../../components/atributos-calidad/RowAtributoCalidad";
+import { createAtributosCalidadProducto } from "../../helpers/atributos-calidad/createAtributosCalidadProducto";
+
+// CONFIGURACION DE FEEDBACK
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export const AgregarAtributosCalidad = () => {
   // detalle de atributos de calidad
@@ -16,10 +31,14 @@ export const AgregarAtributosCalidad = () => {
   // detalle de filtro de producto
   const [atributoDetalle, setAtributoDetalle] = useState({
     nomAtr: "",
-    tipAtr: 0
+    tipAtr: "",
+    desTipAtr: ""
   });
 
-  const { nomAtr, tipAtr } = atributoDetalle;
+  const { nomAtr, tipAtr, desTipAtr } = atributoDetalle;
+
+  // ESTADO PARA BOTON CREAR
+  const [disableButton, setdisableButton] = useState(false);
 
   // ************* FEEDBACK ******************
   const [feedbackCreate, setfeedbackCreate] = useState(false);
@@ -64,13 +83,148 @@ export const AgregarAtributosCalidad = () => {
       nomAtr: value
     });
   };
-  const handleTipoAtributo = ({ id }) => {
+  const handleTipoAtributo = ({ id, label }) => {
     setAtributoDetalle({
       ...atributoDetalle,
-      tipAtr: id
+      tipAtr: id,
+      desTipAtr: label
     });
   };
-  const handleAddAtributoDetalle = () => {};
+
+  // eliminar atributo de calidad
+  const handleDeleteAtributoDetalle = (nombreAtributo) => {
+    const parserNombre = nombreAtributo.toLowerCase();
+    const filterItems = detAtriCal.filter(
+      (element) => element.nomProdAtr.toLowerCase() !== parserNombre
+    );
+    setDataAtributosCalidad({
+      ...dataAtributosCalidad,
+      detAtriCal: filterItems
+    });
+  };
+
+  // modificar atributo de calidad
+  const handleChangeAtributoDetalle = (value, nombreAtributo) => {
+    const parserNombre = nombreAtributo.toLowerCase();
+    const mapItems = detAtriCal.map((element) => {
+      if (element.nomProdAtr.toLowerCase() === parserNombre) {
+        return {
+          ...element,
+          opcProdAtr: value
+        };
+      } else {
+        return element;
+      }
+    });
+    setDataAtributosCalidad({
+      ...dataAtributosCalidad,
+      detAtriCal: mapItems
+    });
+  };
+
+  // añadir atributo de calidad
+  const handleAddAtributoDetalle = (e) => {
+    e.preventDefault();
+    const parserNomAtr = nomAtr.trim();
+
+    if (parserNomAtr.length === 0 || tipAtr.length === 0) {
+      let handleErrors = "";
+      if (parserNomAtr.length === 0) {
+        handleErrors += "No se agrego un nombre al atributo de calidad\n";
+      }
+      if (tipAtr.length === 0) {
+        handleErrors += "No se agrego un tipo al atributo de calidad\n";
+      }
+
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: handleErrors
+      });
+      handleClickFeeback();
+    } else {
+      // debemos comprobar que el atributo no se haya ingresado antes
+      const parserBusquedaNomAtr = parserNomAtr.toLocaleLowerCase();
+      const findElement = detAtriCal.find(
+        (element) =>
+          element.nomProdAtr.toLocaleLowerCase() === parserBusquedaNomAtr
+      );
+      if (findElement) {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error:
+            "Este atributo de calidad ya fue agregado al detalle\n"
+        });
+        handleClickFeeback();
+      } else {
+        const opciones =
+          tipAtr == "N"
+            ? "Sin opciones"
+            : tipAtr == "T"
+            ? "Sin opciones"
+            : tipAtr == "B"
+            ? "Yes, No"
+            : "";
+        const formatData = {
+          nomProdAtr: parserNomAtr,
+          tipProdAtr: desTipAtr,
+          idTipProdAtr: tipAtr,
+          opcProdAtr: opciones
+        };
+        const detalleAtrbiutos = [...detAtriCal, formatData];
+        setDataAtributosCalidad({
+          ...dataAtributosCalidad,
+          detAtriCal: detalleAtrbiutos
+        });
+      }
+    }
+  };
+
+  // añadir atributos de calidad
+  const crearAtributosCalidadMateriPrima = async () => {
+    console.log(dataAtributosCalidad);
+    const resultPeticion = await createAtributosCalidadProducto(
+      dataAtributosCalidad
+    );
+    const { message_error, description_error } = resultPeticion;
+    if (message_error.length === 0) {
+      // regresamos a la anterior vista
+      onNavigateBack();
+    } else {
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error
+      });
+      handleClickFeeback();
+    }
+    setdisableButton(false);
+  };
+
+  // manjear creacion atributos calidad
+  const handleSubmitAtributosCalidad = (e) => {
+    e.preventDefault();
+    if (idProdt === 0 || detAtriCal.length === 0) {
+      let advertenciaDetalleFormulaProducto = "";
+
+      if (idProdt === 0) {
+        advertenciaDetalleFormulaProducto +=
+          "No se proporciono una materia prima para asociar los atributos de calidad\n";
+      }
+      if (detAtriCal.length === 0) {
+        advertenciaDetalleFormulaProducto +=
+          "El detalle de los atrbiutos debe tener al menos 1 item\n";
+      }
+      // MANEJAMOS FORMULARIOS INCOMPLETOS
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: advertenciaDetalleFormulaProducto
+      });
+      handleClickFeeback();
+    } else {
+      setdisableButton(true);
+      // LLAMAMOS A LA FUNCION CREAR MATERIA PRIMA
+      crearAtributosCalidadMateriPrima();
+    }
+  };
 
   return (
     <>
@@ -138,10 +292,97 @@ export const AgregarAtributosCalidad = () => {
                   </button>
                 </div>
               </form>
+
+              {/* DETALLE DE MATERIA PRIMA */}
+              <div className="card text-bg-primary d-flex">
+                <h6 className="card-header">Detalle atributos</h6>
+                <div className="card-body">
+                  <Paper>
+                    <TableContainer>
+                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow
+                            sx={{
+                              "& th": {
+                                color: "rgba(96, 96, 96)",
+                                backgroundColor: "#f5f5f5"
+                              }
+                            }}
+                          >
+                            <TableCell align="left" width={180}>
+                              <b>Nombre atributo</b>
+                            </TableCell>
+                            <TableCell align="left" width={60}>
+                              <b>Tipo Atributo</b>
+                            </TableCell>
+                            <TableCell align="left" width={220}>
+                              <b>Valores</b>
+                            </TableCell>
+                            <TableCell align="left" width={80}>
+                              <b>Acciones</b>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {detAtriCal.map((element, index) => (
+                            <RowAtributoCalidad
+                              detalle={element}
+                              key={index}
+                              onDeleteDetalleAtributo={
+                                handleDeleteAtributoDetalle
+                              }
+                              onChangeDetalleAtributo={
+                                handleChangeAtributoDetalle
+                              }
+                            />
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Paper>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* BOTONES DE CANCELAR Y GUARDAR */}
+          <div className="btn-toolbar mt-4">
+            <button
+              type="button"
+              onClick={onNavigateBack}
+              className="btn btn-secondary me-2"
+            >
+              Volver
+            </button>
+            <button
+              type="submit"
+              disabled={disableButton}
+              onClick={handleSubmitAtributosCalidad}
+              className="btn btn-primary"
+            >
+              Guardar
+            </button>
           </div>
         </div>
       </div>
+
+      {/* FEEDBACK AGREGAR MATERIA PRIMA */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={feedbackCreate}
+        autoHideDuration={6000}
+        onClose={handleCloseFeedback}
+      >
+        <Alert
+          onClose={handleCloseFeedback}
+          severity={style_message}
+          sx={{ width: "100%" }}
+        >
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
+        </Alert>
+      </Snackbar>
     </>
   );
 };

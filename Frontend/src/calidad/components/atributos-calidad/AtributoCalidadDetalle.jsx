@@ -8,7 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import "../../styles/style-modal.css";
 
-export const FormulaProductoDetalle = ({ detalle, onClose }) => {
+export const AtributoCalidadDetalle = ({ detalle, onClose }) => {
   return (
     <div
       className="modal"
@@ -21,7 +21,7 @@ export const FormulaProductoDetalle = ({ detalle, onClose }) => {
       <div className="modal-dialog modal-lg" role="document">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Detalle de la formula de producto</h5>
+            <h5 className="modal-title">Detalle de atributos de calidad</h5>
             <button
               type="button"
               className="close"
@@ -45,27 +45,21 @@ export const FormulaProductoDetalle = ({ detalle, onClose }) => {
                         }
                       }}
                     >
-                      <TableCell align="left" width={180}>
-                        <b>Producto</b>
+                      <TableCell align="left" width={170}>
+                        <b>Nombre atributo</b>
+                      </TableCell>
+                      <TableCell align="left" width={100}>
+                        <b>Tipo atributo</b>
+                      </TableCell>
+                      <TableCell align="left" width={220}>
+                        <b>Opciones atributo</b>
                       </TableCell>
                       <TableCell align="left" width={70}>
-                        <b>Clase</b>
+                        <b>Fecha actualización</b>
                       </TableCell>
                       <TableCell align="left" width={70}>
-                        <b>Area responsable</b>
+                        <b>Fecha creación</b>
                       </TableCell>
-                      <TableCell align="left" width={70}>
-                        <b>Almacen</b>
-                      </TableCell>
-                      <TableCell align="left" width={20}>
-                        <b>Medida</b>
-                      </TableCell>
-                      <TableCell align="left" width={70}>
-                        <b>Cantidad</b>
-                      </TableCell>
-                      {/* <TableCell align="left" width={50}>
-                        <b>Acciones</b>
-                      </TableCell> */}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -77,13 +71,24 @@ export const FormulaProductoDetalle = ({ detalle, onClose }) => {
                         }}
                       >
                         <TableCell component="th" scope="row">
-                          {row.nomProd}
+                          {row.nomProdAtr}
                         </TableCell>
-                        <TableCell align="left">{row.desCla}</TableCell>
-                        <TableCell align="left">{row.desAre}</TableCell>
-                        <TableCell align="left">{row.nomAlm}</TableCell>
-                        <TableCell align="left">{row.simMed}</TableCell>
-                        <TableCell align="left">{row.canForProDet}</TableCell>
+                        <TableCell align="left">
+                          {row.tipProdAtr === "N"
+                            ? "Numérico"
+                            : row.tipProdAtr === "T"
+                            ? "Texto"
+                            : row.tipProdAtr === "B"
+                            ? "Booleano"
+                            : "Opciones"}
+                        </TableCell>
+                        <TableCell align="left">{row.opcProdAtr}</TableCell>
+                        <TableCell align="left">
+                          {row.fecActProAtrCal}
+                        </TableCell>
+                        <TableCell align="left">
+                          {row.fecCreProAtrCal}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
