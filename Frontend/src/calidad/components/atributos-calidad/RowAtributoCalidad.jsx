@@ -81,7 +81,7 @@ export const RowAtributoCalidad = ({
         {detalle.tipProdAtr}
       </TableCell>
       <TableCell align="left">
-        {detalle.idTipProdAtr == "N" || detalle.idTipProdAtr == "T" ? (
+        {detalle.idTipProdAtr === 1 || detalle.idTipProdAtr === 2 ? (
           "Sin opciones"
         ) : (
           <Textarea
@@ -99,7 +99,7 @@ export const RowAtributoCalidad = ({
             onClick={() => {
               setdisabledInput(!disabledInput);
             }}
-            disabled={detalle.idTipProdAtr != "O"}
+            disabled={detalle.idTipProdAtr !== 4}
             className="btn btn-success me-2"
           >
             <svg

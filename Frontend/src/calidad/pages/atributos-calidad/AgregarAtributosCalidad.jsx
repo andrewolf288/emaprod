@@ -157,13 +157,15 @@ export const AgregarAtributosCalidad = () => {
         handleClickFeeback();
       } else {
         const opciones =
-          tipAtr == "N"
+          tipAtr == 1
             ? "Sin opciones"
-            : tipAtr == "T"
+            : tipAtr == 2
             ? "Sin opciones"
-            : tipAtr == "B"
-            ? "Yes, No"
-            : "";
+            : tipAtr == 3
+            ? "C, I"
+            : tipAtr == 4
+            ? ""
+            : "Sin opciones";
         const formatData = {
           nomProdAtr: parserNomAtr,
           tipProdAtr: desTipAtr,
@@ -182,20 +184,20 @@ export const AgregarAtributosCalidad = () => {
   // añadir atributos de calidad
   const crearAtributosCalidadMateriPrima = async () => {
     console.log(dataAtributosCalidad);
-    const resultPeticion = await createAtributosCalidadProducto(
-      dataAtributosCalidad
-    );
-    const { message_error, description_error } = resultPeticion;
-    if (message_error.length === 0) {
-      // regresamos a la anterior vista
-      onNavigateBack();
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
-    }
+    // const resultPeticion = await createAtributosCalidadProducto(
+    //   dataAtributosCalidad
+    // );
+    // const { message_error, description_error } = resultPeticion;
+    // if (message_error.length === 0) {
+    //   // regresamos a la anterior vista
+    //   onNavigateBack();
+    // } else {
+    //   setfeedbackMessages({
+    //     style_message: "error",
+    //     feedback_description_error: description_error
+    //   });
+    //   handleClickFeeback();
+    // }
     setdisableButton(false);
   };
 

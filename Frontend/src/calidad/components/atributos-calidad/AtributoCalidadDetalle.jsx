@@ -51,7 +51,7 @@ export const AtributoCalidadDetalle = ({ detalle, onClose }) => {
                       <TableCell align="left" width={100}>
                         <b>Tipo atributo</b>
                       </TableCell>
-                      <TableCell align="left" width={220}>
+                      <TableCell align="center" width={220}>
                         <b>Opciones atributo</b>
                       </TableCell>
                       <TableCell align="left" width={70}>
@@ -74,15 +74,17 @@ export const AtributoCalidadDetalle = ({ detalle, onClose }) => {
                           {row.nomProdAtr}
                         </TableCell>
                         <TableCell align="left">
-                          {row.tipProdAtr === "N"
+                          {row.idTipProdAtr === 1
                             ? "Numérico"
-                            : row.tipProdAtr === "T"
+                            : row.idTipProdAtr === 2
                             ? "Texto"
-                            : row.tipProdAtr === "B"
+                            : row.idTipProdAtr === 3
                             ? "Booleano"
-                            : "Opciones"}
+                            : row.idTipProdAtr === 4
+                            ? "Opciones"
+                            : "Fecha"}
                         </TableCell>
-                        <TableCell align="left">{row.opcProdAtr}</TableCell>
+                        <TableCell align="center">{row.opcProdAtr}</TableCell>
                         <TableCell align="left">
                           {row.fecActProAtrCal}
                         </TableCell>

@@ -1,18 +1,12 @@
 import { Autocomplete, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { getAtributoCalidadTipo } from "../../../helpers/Referenciales/atributo_calidad_tipo/getAtributoCalidadTipo";
 
 const defaultOption = {
-  value: "",
+  value: 0,
   label: "Selecciona un tipo atributo",
-  id: ""
+  id: 0
 };
-
-const data = [
-  { id: "N", nomTipAtr: "Numerico" },
-  { id: "T", nomTipAtr: "Texto" },
-  { id: "B", nomTipAtr: "Booleano" },
-  { id: "O", nomTipAtr: "Opciones" }
-];
 
 export const FilterTipoAtributoDynamic = ({
   defaultValue = null,
@@ -22,12 +16,13 @@ export const FilterTipoAtributoDynamic = ({
   const [value, setValue] = useState(defaultOption);
 
   const obtenerDataMateriaPrima = async () => {
+    var result = await getAtributoCalidadTipo();
     const formatSelect = [
       defaultOption,
-      ...data.map((element) => {
+      ...result.map((element) => {
         return {
           value: element.id,
-          label: `${element.nomTipAtr}`,
+          label: `${element.nomAtrCalTip}`,
           id: element.id
         };
       })

@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             foreach ($detAtriCal as $detalle) {
                 $sql_create_atributo_calidad =
                     "INSERT INTO producto_atributo_calidad
-                (idProdt, nomProdAtr, tipProdAtr, opcProdAtr)
+                (idProdt, nomProdAtr, idTipProdAtr, opcProdAtr)
                 VALUES(?, ?, ?, ?)";
                 $stmt_create_atributo_calidad = $pdo->prepare($sql_create_atributo_calidad);
                 $stmt_create_atributo_calidad->bindParam(1, $idProdt, PDO::PARAM_INT);
