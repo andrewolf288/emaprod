@@ -8,6 +8,8 @@ export const getSalidasVenta = async (body) => {
 
   const { data } = await axios.post(url, {
     ...body,
+    esEnt: 0,
+    esSal: 1
   });
   return data;
 };

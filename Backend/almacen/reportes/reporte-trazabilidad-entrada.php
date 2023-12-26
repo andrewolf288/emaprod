@@ -18,18 +18,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $result["header"] =
         [
-            "Código entrada", "SIIGO", "EMPAROD",
+            "Documento", "Código entrada", "SIIGO", "EMPAROD",
             "Producto", "Medida", "Lote",
             "Fecha Vencimiento", "Fecha Ingreso", "Fecha Salida",
             "Motivo", "Ingreso", "Salida", "Disponible"
         ];
-    $result["columnWidths"] = [17.88, 8, 9, 66, 5.75, 6, 10, 10, 10, 20, 10, 10, 10];
+    $result["columnWidths"] = [17.88, 17.88, 8, 9, 66, 5.75, 6, 10, 10, 10, 20, 10, 10, 10];
     $result["data"] = [];
 
     // vamos a recibir información del producto y de las fechas que se quiere el reporte
     $sql_entradas =
         "SELECT
         es.id,
+		es.docEntSto,
         es.codEntSto,
         es.idProd,
         p.codProd,
@@ -51,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     while ($row_entrada = $stmt_entradas->fetch(PDO::FETCH_ASSOC)) {
         $idEntSto = $row_entrada["id"]; // id entrada stokc
+        $docEntSto = $row_entrada["docEntSto"]; // documento de entrada
         $codEntSto = $row_entrada["codEntSto"]; // codigo de entrada de stock
         $idProd = $row_entrada["idProd"]; // producto
         $codProd = $row_entrada["codProd"]; // codigo SIIGO
@@ -62,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $canTotEnt = $row_entrada["canTotEnt"]; // cantidad ingresada
         $canTotDis = $row_entrada["canTotDis"]; // cantidad disponible
 
-        $auxEnt = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, "", $fecVenEntSto, $fecEntSto, "", "Entrada", $canTotEnt, "", $canTotDis];
+        $auxEnt = [$docEntSto, $codEntSto, $codProd, $codProd2, $nomProd, $simMed, "", $fecVenEntSto, $fecEntSto, "", "Entrada", $canTotEnt, "", $canTotDis];
         array_push($result["data"], $auxEnt);
 
         // salidas realizadas por requisicion
@@ -82,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $canSalStoReq = $row_salida["canSalStoReq"]; // cantidad salida
             $fecSalStoReq = $row_salida["fecSalStoReq"];  //
 
-            $aux_salida = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, "", $fecSalStoReq, "Salida", "", $canSalStoReq, ""];
+            $aux_salida = [$docEntSto, $codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, "", $fecSalStoReq, "Salida", "", $canSalStoReq, ""];
             array_push($result["data"], $aux_salida);
         }
 
@@ -107,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $fecSalStoReq = $row_agregacion["fecSalStoReq"];  // fecha de salida
             $desProdAgrMot = $row_agregacion["desProdAgrMot"]; // motivo agregacion
 
-            $aux_agregacion = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, "", $fecSalStoReq, $desProdAgrMot, "", $canSalStoReq, ""];
+            $aux_agregacion = [$docEntSto, $codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, "", $fecSalStoReq, "AG - " . $desProdAgrMot, "", $canSalStoReq, ""];
             array_push($result["data"], $aux_agregacion);
         }
 
@@ -133,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $fechaEntradaDevolucion = $row_devolucion["fecCreTraDevEnt"]; // fec. entrada devolucion
             $canReqDevDet = $row_devolucion["canReqDevDet"]; // cantidad entrada
             $motivo_devolucion = $row_devolucion["desProdDevMot"]; // motivo de devolucion
-            $aux_devolucion = [$codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, $fechaEntradaDevolucion, "", $motivo_devolucion, $canReqDevDet, "", ""];
+            $aux_devolucion = [$docEntSto, $codEntSto, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $fecVenEntSto, $fechaEntradaDevolucion, "", "DE - " . $motivo_devolucion, $canReqDevDet, "", ""];
             array_push($result["data"], $aux_devolucion);
         }
     }

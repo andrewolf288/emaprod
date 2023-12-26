@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
         // si el motivo de devolucion no es desmedro
-        if (!$idProdDevMot == 2) {
+        if ($idProdDevMot != 2) {
             $salidasEmpleadas = []; // salidas empleadas
             /*
                 Primero debemos identificar que entradas fueron utilizadas para

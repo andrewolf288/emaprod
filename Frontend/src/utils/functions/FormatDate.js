@@ -31,8 +31,12 @@ const FormatDateTimeMYSQLNow = () => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-const FormatDateTimeMYSQLNowPlusYears = (numYears) => {
-  const nowDate = new Date();
+const FormatDateTimeMYSQLNowPlusYears = (numYears, dateString = null) => {
+  console.log(dateString);
+  let nowDate = new Date();
+  if (dateString !== null) {
+    nowDate = new Date(dateString);
+  }
   nowDate.setFullYear(nowDate.getFullYear() + numYears);
   const year = nowDate.getFullYear();
   const month = (nowDate.getMonth() + 1).toString().padStart(2, "0"); // Agregar 1 al mes porque en JavaScript los meses comienzan desde 0.
@@ -166,5 +170,5 @@ export {
   DiaJuliano,
   letraAnio,
   FormatDateMYSQL,
-  _parseInt,
+  _parseInt
 };

@@ -56,6 +56,35 @@ const NavCalidad = () => {
                   </li>
                 </ul>
               </li>
+              {/* ATRIBUTOS CALIDAD */}
+              <li className="nav-item dropdown">
+                <button
+                  className="btn btn-lg dropdown-toggle"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Atributos calidad
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={"/calidad/atributos-calidad"}
+                    >
+                      Administrar
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={"/calidad/atributos-calidad/crear"}
+                    >
+                      Crear
+                    </Link>
+                  </li>
+                </ul>
+              </li>
             </ul>
             <ul className="navbar-nav d-none d-lg-flex ml-2 order-3">
               <li className="nav-item">

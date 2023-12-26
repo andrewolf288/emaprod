@@ -5,28 +5,28 @@ import { Login } from "./auth/pages/Login";
 import Home from "./home/pages/Home";
 
 // ROUTERS IMPORTADOS
-import { RouterAlmacen } from './almacen/router/router';
-import { RouterCalidad } from './calidad/router/router';
+import { RouterAlmacen } from "./almacen/router/router";
+import { RouterCalidad } from "./calidad/router/router";
 
-import { RouterMolienda } from './molienda/router/router';
-import { RouterSeleccion } from './seleccion/router/router';
-import { RouterProduccion } from './produccion/router/router';
-import { RouterFrescos } from './frescos/router/router';
-import { RouterEncajonado } from './encajonado/router/router';
-import { RouterEnvasado } from './envasado/router/router';
+import { RouterMolienda } from "./molienda/router/router";
+import { RouterSeleccion } from "./seleccion/router/router";
+import { RouterProduccion } from "./produccion/router/router";
+import { RouterFrescos } from "./frescos/router/router";
+import { RouterEncajonado } from "./encajonado/router/router";
+import { RouterEnvasado } from "./envasado/router/router";
 
 // PLANTILLA NOT FOUND
-import NotFound from './pages/NotFound';
+import NotFound from "./pages/NotFound";
 
 // PROTECCION DE RUTAS PERSONALIZADAS
 import { AuthLayout } from "./components/AuthLayout";
 import { ProtectedLayoutAlmacen } from "./components/ProtectedLayoutAlmacen";
 import { ProtectedLayoutCalidad } from "./components/ProtectedLayoutCalidad";
-import { ProtectedLayoutMolienda } from './components/ProtectedLayoutMolienda';
-import { ProtectedLayoutSeleccion } from './components/ProtectedLayoutSeleccion';
+import { ProtectedLayoutMolienda } from "./components/ProtectedLayoutMolienda";
+import { ProtectedLayoutSeleccion } from "./components/ProtectedLayoutSeleccion";
 import { ProtectedLayoutProduccion } from "./components/ProtectedLayoutProduccion";
 import { ProtectedLayoutFrescos } from "./components/ProtectedLayoutFrescos";
-import { ProtectedLayoutEncajonado } from './components/ProtectedLayoutEncajonado';
+import { ProtectedLayoutEncajonado } from "./components/ProtectedLayoutEncajonado";
 import { ProtectedLayoutEnvasado } from "./components/ProtectedLayoutEnvasado";
 
 export const router = createBrowserRouter([
@@ -36,52 +36,52 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
-        errorElement: <NotFound />,
+        errorElement: <NotFound />
       },
       {
         path: "/login",
-        element: <Login />,
+        element: <Login />
       },
       {
         path: "/almacen",
         element: <ProtectedLayoutAlmacen />,
-        children: RouterAlmacen,
+        children: RouterAlmacen
       },
       {
         path: "/molienda",
         element: <ProtectedLayoutMolienda />,
-        children: RouterMolienda,
+        children: RouterMolienda
       },
       {
         path: "/seleccion",
         element: <ProtectedLayoutSeleccion />,
-        children: RouterSeleccion,
+        children: RouterSeleccion
       },
       {
         path: "/produccion",
         element: <ProtectedLayoutProduccion />,
-        children: RouterProduccion,
+        children: RouterProduccion
       },
       {
         path: "/frescos",
         element: <ProtectedLayoutFrescos />,
-        children: RouterFrescos,
+        children: RouterFrescos
       },
       {
         path: "/encajonado",
         element: <ProtectedLayoutEncajonado />,
-        children: RouterEncajonado,
+        children: RouterEncajonado
       },
       {
         path: "/envasado",
         element: <ProtectedLayoutEnvasado />,
-        children: RouterEnvasado,
+        children: RouterEnvasado
       },
       {
         path: "/calidad",
         element: <ProtectedLayoutCalidad />,
-        children: RouterCalidad,
-      },
-    ],
-  },
+        children: RouterCalidad
+      }
+    ]
+  }
 ]);

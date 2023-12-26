@@ -21,86 +21,86 @@ import { RouterRetornoVenta } from "../pages/retorno_venta/RouterRetornoVenta";
 export const RouterAlmacen = [
   {
     path: "",
-    element: <HomeAlmacen />,
+    element: <HomeAlmacen />
   },
   {
     path: "materia-prima",
     element: <LayoutModulo />,
-    children: RouterAlmacenMateriaPrima,
+    children: RouterAlmacenMateriaPrima
   },
   {
     path: "proveedor",
     element: <LayoutModulo />,
-    children: RouterAlmacenProveedor,
+    children: RouterAlmacenProveedor
   },
   {
     path: "entradas-stock",
     element: <LayoutModulo />,
-    children: RouterAlmacenEntradaStock,
+    children: RouterAlmacenEntradaStock
   },
   {
     path: "salidas-stock",
     element: <LayoutModulo />,
-    children: RouterAlmacenSalidasStock,
+    children: RouterAlmacenSalidasStock
   },
   {
     path: "requisicion-seleccion",
     element: <LayoutModulo />,
-    children: RouterRequisicionSeleccion,
+    children: RouterRequisicionSeleccion
   },
   {
     path: "requisicion-molienda",
     element: <LayoutModulo />,
-    children: RouterRequisicionMolienda,
+    children: RouterRequisicionMolienda
   },
   {
     path: "requisicion-frescos",
     element: <LayoutModulo />,
-    children: RouterRequisicionFrescos,
+    children: RouterRequisicionFrescos
   },
   {
     path: "reportes-almacen",
     element: <LayoutModulo />,
-    children: RouterReportesAlmacen,
+    children: RouterReportesAlmacen
   },
   {
     path: "productos-lote",
     element: <LayoutModulo />,
-    children: RouterAlmacenProductosLote,
+    children: RouterAlmacenProductosLote
   },
   {
     path: "lote-produccion",
     element: <LayoutModulo />,
-    children: RouterAlmacenLoteProduccion,
+    children: RouterAlmacenLoteProduccion
   },
   {
     path: "produccion-devoluciones",
     element: <LayoutModulo />,
-    children: RouterAlmacenDevoluciones,
+    children: RouterAlmacenDevoluciones
   },
   {
     path: "produccion-agregaciones",
     element: <LayoutModulo />,
-    children: RouterAlmacenAgregaciones,
+    children: RouterAlmacenAgregaciones
   },
   {
     path: "stock-almacen",
     element: <LayoutModulo />,
-    children: RouterAlmacenStock,
+    children: RouterAlmacenStock
   },
   {
     path: "requisicion-materiales",
     element: <LayoutModulo />,
-    children: RouterRequisicionMateriales,
+    children: RouterRequisicionMateriales
   },
   {
     path: "salida-venta",
     element: <LayoutModulo />,
-    children: RouterSalidaVenta,
+    children: RouterSalidaVenta
   },
   {
     path: "retorno-venta",
     element: <LayoutModulo />,
-    children: RouterRetornoVenta,
-  },
+    children: RouterRetornoVenta
+  }
 ];

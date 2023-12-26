@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $lotesUsado = $data["lotUsa"]; // lotes utilizados
+    $lotesUsados = $data["lotUsa"]; // lotes utilizados
     $idProdt = $data["idProdt"]; // producto
 
     $idEntStoEst = 1; // ESTADO DISPONIBLE DE LAS ENTRADAS
@@ -70,6 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $row_data = array();
             $row_data["refProdc"] = $fila["refProdc"];
             $row_data["canSalLotProd"] = $fila["canSalLotProd"];
+            $row_data["canSalLotProdAct"] = 0;
 
             $sql_consult_lote_produccion =
                 "SELECT codProd, codLotProd, fecProdIni, fecVenLotProd
@@ -86,9 +87,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $row_data["fecVenLotProd"] = $row_produccion["fecVenLotProd"];
             array_push($totalConInformacionProduccion, $row_data);
         }
+        $refNoDeseados = array_map(function ($elemento) {
+            return $elemento['refProdc'];
+        }, $lotesUsados);
 
-        // por ultimo debemos filtrar aquellos lotes que ya fueron agregados
+        // Filtrar los elementos sugeridos
+        $filtroLotesDisponibles = array_filter($totalConInformacionProduccion, function ($elemento) use ($refNoDeseados) {
+            return !in_array($elemento['refProdc'], $refNoDeseados);
+        });
 
+        $result = array_values($filtroLotesDisponibles);
     }
 
     // Retornamos el resultado

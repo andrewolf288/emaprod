@@ -10,7 +10,7 @@ import {
   TableContainer,
   TableHead,
   TablePagination,
-  TableRow,
+  TableRow
 } from "@mui/material";
 
 export const ListSalidaVenta = () => {
@@ -20,7 +20,7 @@ export const ListSalidaVenta = () => {
   // filtros
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
-    fechaFin: FormatDateMYSQL(),
+    fechaFin: FormatDateMYSQL()
   });
 
   // ESTADOS PARA LA PAGINACIÓN
@@ -31,7 +31,7 @@ export const ListSalidaVenta = () => {
   const [feedbackDelete, setfeedbackDelete] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -54,13 +54,13 @@ export const ListSalidaVenta = () => {
     let dateFormat = newfecEntSto.split(" ")[0];
     setformState({
       ...formState,
-      fechaInicio: dateFormat,
+      fechaInicio: dateFormat
     });
 
     // armamos el body
     let body = {
       ...formState,
-      fechaInicio: dateFormat,
+      fechaInicio: dateFormat
     };
     obtenerDataSalidasVenta(body);
   };
@@ -69,30 +69,28 @@ export const ListSalidaVenta = () => {
     let dateFormat = newfecEntSto.split(" ")[0];
     setformState({
       ...formState,
-      fechaFin: dateFormat,
+      fechaFin: dateFormat
     });
 
     // armamos el body
     let body = {
       ...formState,
-      fechaFin: dateFormat,
+      fechaFin: dateFormat
     };
     obtenerDataSalidasVenta(body);
   };
 
   //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataSalidasVenta = async (formState) => {
-    console.log(formState);
     const resultPeticion = await getSalidasVenta(formState);
     const { message_error, description_error, result } = resultPeticion;
-    console.log(result);
     if (message_error.length === 0) {
       setDataSalidasVenta(result);
       setDataSalidasVentaTemp(result);
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -134,8 +132,8 @@ export const ListSalidaVenta = () => {
                     sx={{
                       "& th": {
                         color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                        backgroundColor: "#f5f5f5"
+                      }
                     }}
                   >
                     <TableCell align="left" width={50}>
@@ -143,6 +141,9 @@ export const ListSalidaVenta = () => {
                     </TableCell>
                     <TableCell align="left" width={50}>
                       <b>Numero</b>
+                    </TableCell>
+                    <TableCell align="center" width={50}>
+                      <b>Estado</b>
                     </TableCell>
                     <TableCell align="center" width={120}>
                       <b>Motivo</b>
@@ -165,11 +166,26 @@ export const ListSalidaVenta = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          "&:last-child td, &:last-child th": { border: 0 }
                         }}
                       >
                         <TableCell align="left">{row.invSerFac}</TableCell>
                         <TableCell align="left">{row.invNumFac}</TableCell>
+                        <TableCell align="center">
+                          {row.idReqEst === 1 ? (
+                            <span className={"badge text-bg-danger"}>
+                              {row.desReqEst}
+                            </span>
+                          ) : row.idReqEst === 2 ? (
+                            <span className={"badge text-bg-warning"}>
+                              {row.desReqEst}
+                            </span>
+                          ) : (
+                            <span className={"badge text-bg-success"}>
+                              {row.desReqEst}
+                            </span>
+                          )}
+                        </TableCell>
                         <TableCell align="center">{row.desOpeFacMot}</TableCell>
                         <TableCell align="center">
                           {row.fueAfePorDev == 1 ? (

@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  CircularProgress,
+  CircularProgress
 } from "@mui/material";
 import { useAuth } from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ export const ViewLoteProduccion = () => {
       klgLotProd: "",
       canLotProd: "",
       fecVenLotProd: "",
-      prodLotReq: [],
+      prodLotReq: []
     });
 
   const {
@@ -56,7 +56,7 @@ export const ViewLoteProduccion = () => {
     canLotProd,
     fecVenLotProd,
     prodLotReq,
-    numop,
+    numop
   } = produccionRequisicionDetalle;
 
   const { user } = useAuth();
@@ -66,7 +66,7 @@ export const ViewLoteProduccion = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -117,7 +117,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -126,7 +126,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -155,7 +155,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -164,7 +164,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -190,7 +190,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -199,7 +199,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -215,7 +215,7 @@ export const ViewLoteProduccion = () => {
     const { id } = requisicion_detalle;
     let body = {
       id: id,
-      cantidadNueva: cantidadNueva,
+      cantidadNueva: cantidadNueva
     };
     const resultPeticion = await updateProduccionDetalleRequisicion(body);
     const { message_error, description_error } = resultPeticion;
@@ -228,7 +228,7 @@ export const ViewLoteProduccion = () => {
       setfeedbackMessages({
         style_message: "success",
         feedback_description_error:
-          "Se actualizó el detalle de la requisicion con exito",
+          "Se actualizó el detalle de la requisicion con exito"
       });
       handleClickFeeback();
     } else {
@@ -237,7 +237,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -261,7 +261,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -270,7 +270,7 @@ export const ViewLoteProduccion = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -296,7 +296,7 @@ export const ViewLoteProduccion = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -315,20 +315,16 @@ export const ViewLoteProduccion = () => {
           <div className="card d-flex mb-4">
             <h6 className="card-header">Acciones</h6>
             <div className="card-body align-self-center">
-              {/* <div
+              <div
                 onClick={() => {
-                  //console.log(prodLotReq);
-                  let result = prodLotReq.every(
-                    (value) => value.idReqEst === 3 // estado completado
+                  navigate(
+                    `/almacen/productos-lote/atender-requisiciones?idLotProdc=${id}`
                   );
-                  if (result) {
-                    navigate(`/almacen/productos-lote/crear?idLotProdc=${id}`);
-                  }
                 }}
                 className="btn btn-primary"
               >
-                Registrar Productos Finales
-              </div> */}
+                Requisiciones de ingresos
+              </div>
               <div
                 onClick={() => {
                   navigate(
