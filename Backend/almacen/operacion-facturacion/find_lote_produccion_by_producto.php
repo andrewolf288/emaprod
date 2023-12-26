@@ -26,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     es.canTotDis
     FROM entrada_stock AS es
     WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
+    AND es.fecEntSto BETWEEN DATE_SUB(NOW(), INTERVAL 4 YEAR) AND NOW()
     ORDER BY es.fecEntSto ASC";
 
     $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
@@ -38,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // entonces le asignamos las entrada utilizadas
         // Primero tenemos que juntar aquellas entradas que corresponden a la misma produccion
         $totalPorLoteProduccion = [];
-        foreach ($entradasUtilizadas as $fila) {
+        foreach ($array_entradas_disponibles as $fila) {
             $refProdc = $fila['refProdc'];
             $cantidad = floatval($fila['canTotDis']); // Convertir a número si es necesario
 
@@ -85,10 +86,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $row_data["fecVenLotProd"] = $row_produccion["fecVenLotProd"];
             array_push($totalConInformacionProduccion, $row_data);
         }
-        // agregamos el detalle de salidas de lote
-        $row_operacion_facturacion_detalle["detSal"] = $totalConInformacionProduccion;
-    }
 
+        // por ultimo debemos filtrar aquellos lotes que ya fueron agregados
+
+    }
 
     // Retornamos el resultado
     $return['message_error'] = $message_error;
