@@ -7,14 +7,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
+  Paper
 } from "@mui/material";
 
 export const CardRequisicionAgregacion = ({
+  correlativo,
   requisicion,
   onDeleteRequisicionAgregacionDetalle,
   onUpdateRequisicionAgregacionDetalle,
-  onCheckRequisicionAgrgeacionDetalle,
+  onCheckRequisicionAgrgeacionDetalle
 }) => {
   const [mostrarDetalle, setMostrarDetalle] = useState(false);
   const toggleDetalle = () => {
@@ -23,7 +24,7 @@ export const CardRequisicionAgregacion = ({
   return (
     <div className="card mt-4">
       <div className="card-header d-flex justify-content-between align-items-center">
-        <h6>Detalle de Requisición</h6>
+        <h6>{`Detalle de Requisición: ${correlativo}`}</h6>
         <button
           className="btn btn-link ms-auto" // Utiliza ms-auto para alinear a la derecha
           onClick={toggleDetalle}

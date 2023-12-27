@@ -65,14 +65,14 @@ const ListEntradaStock = () => {
     tipoEntrada: "TODO",
     documento: "",
     procesar: false,
-    merTot: "",
+    merTot: ""
   });
 
   // ESTADOS PARA FILTROS GENERALES DE FECHA
   const { fecEntIniSto, fecEntFinSto, formState, setFormState, onInputChange } =
     useForm({
       fecEntIniSto: FormatDateMYSQL(),
-      fecEntFinSto: FormatDateMYSQL(),
+      fecEntFinSto: FormatDateMYSQL()
     });
 
   // ESTADOS PARA LA PAGINACIÓN
@@ -83,7 +83,7 @@ const ListEntradaStock = () => {
   const [feedbackDelete, setfeedbackDelete] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -119,34 +119,34 @@ const ListEntradaStock = () => {
     const { name, value } = target;
     setInputs({
       ...inputs,
-      [name]: value,
+      [name]: value
     });
   };
 
   const onChangeProducto = (obj) => {
     setInputs({
       ...inputs,
-      producto: obj,
+      producto: obj
     });
   };
 
   const onChangeProveedor = (obj) => {
     setInputs({
       ...inputs,
-      provedor: obj,
+      provedor: obj
     });
   };
 
   const onChangeAlmacen = (obj) => {
     setInputs({
       ...inputs,
-      almacen: obj,
+      almacen: obj
     });
   };
   const onChangeTipoEntrada = (event) => {
     setInputs({
       ...inputs,
-      tipoEntrada: event.target.value,
+      tipoEntrada: event.target.value
     });
   };
   const onChangeDate = (newDate) => {
@@ -165,7 +165,7 @@ const ListEntradaStock = () => {
     setFormState({ ...formState, fecEntIniSto: dateFormat });
     let body = {
       ...formState,
-      fecEntIniSto: dateFormat,
+      fecEntIniSto: dateFormat
     };
     //obtenerDataEntradaStock(body);
   };
@@ -176,80 +176,10 @@ const ListEntradaStock = () => {
     // realizamos una promesa
     let body = {
       ...formState,
-      fecEntFinSto: dateFormat,
+      fecEntFinSto: dateFormat
     };
     //obtenerDataEntradaStock(body);
   };
-
-  /**
-   useEffect(() => {
-    let resultSearch = [];
-
-    if (inputs.procesar) {
-      getEntradasStock({
-        ...formState,
-        ...{
-          ...inputs,
-          producto: inputs.producto.label,
-          provedor: inputs.provedor.label,
-          almacen: inputs.almacen.label,
-        },
-      })
-        .then((response) => {
-          console.log(response);
-          setdataEntSto(response.result);
-          setInputs({
-            ...inputs,
-            procesar: false,
-          });
-          setfeedbackMessages({
-            style_message: "info",
-            feedback_description_error: response.result.length + " reguistros",
-          });
-          handleClickFeeback();
-          return;
-          var { result } = response;
-          var dataEntSto = result;
-
-          dataEntSto.map((data) => {
-            if (
-              (inputs.almacen.label?.includes(data.nomAlm) ||
-                inputs.almacen.label?.length == 0) &&
-              (inputs.provedor.label?.includes(data.nomProv) ||
-                inputs.provedor.label?.length == 0) &&
-              (inputs.producto.label == data.nomProd ||
-                inputs.producto.label?.length == 0) &&
-              (data.codEntSto?.includes(inputs.codigo) ||
-                inputs.codigo?.length == 0) &&
-              (data.docEntSto?.includes(inputs.documento) ||
-                inputs.documento?.length == 0) &&
-              (data.canTotEnt?.includes(inputs.ingresado) ||
-                inputs.ingresado?.length == 0) &&
-              (data.canTotDis?.includes(inputs.disponible) ||
-                inputs.disponible?.length == 0) &&
-              (data.merTot?.includes(inputs.merTot) ||
-                inputs.merTot?.length == 0)
-            ) {
-              resultSearch.push({ ...data });
-            }
-          });
-
-          setfeedbackMessages({
-            style_message: "info",
-            feedback_description_error: resultSearch.length + " reguistros",
-          });
-          handleClickFeeback();
-
-          setdataEntSto(resultSearch);
-          setInputs({
-            ...inputs,
-            procesar: false,
-          });
-        })
-        .catch((error) => console.log(error));
-    }
-  }, [inputs, formState]);
-  */
 
   useEffect(() => {
     let resultSearch = [];
@@ -331,14 +261,14 @@ const ListEntradaStock = () => {
 
           setfeedbackMessages({
             style_message: "info",
-            feedback_description_error: resultSearch.length + " reguistros",
+            feedback_description_error: resultSearch.length + " reguistros"
           });
           handleClickFeeback();
 
           setdataEntSto(resultSearch);
           setInputs({
             ...inputs,
-            procesar: false,
+            procesar: false
           });
         })
         .catch((error) => console.log(error));
@@ -359,14 +289,14 @@ const ListEntradaStock = () => {
       disponible: "",
       tipoEntrada: "TODO",
       documento: "",
-      procesar: false,
+      procesar: false
     });
   };
 
   useEffect(() => {
     setInputs({
       ...inputs,
-      procesar: true,
+      procesar: true
     });
     // obtenerDataEntradaStock();
   }, []);
@@ -383,7 +313,7 @@ const ListEntradaStock = () => {
                   border: "0px solid black",
                   display: "flex",
                   justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 <FechaPickerMonth
@@ -396,7 +326,7 @@ const ListEntradaStock = () => {
                 style={{
                   display: "flex",
                   justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 <FechaPickerMonth
@@ -410,32 +340,17 @@ const ListEntradaStock = () => {
                 style={{
                   display: "flex",
                   justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <TypeEntrada
-                  inputs={inputs}
-                  onChangeTipoEntrada={onChangeTipoEntrada}
-                />
-              </div>
-
-              <div
-                className="col-2"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 <Button
                   variant="contained"
                   color="primary"
                   disabled={inputs.procesar}
-                  style={{ marginTop: "10px" }}
                   onClick={() => {
                     setInputs({
                       ...inputs,
-                      procesar: true,
+                      procesar: true
                     });
                   }}
                 >
@@ -450,15 +365,15 @@ const ListEntradaStock = () => {
               </div>
 
               <div
-                className="col-2"
+                className="col-3"
                 style={{
                   display: "flex",
                   justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 <button onClick={resetData} className="btn btn-success">
-                  reset
+                  BORRAR FILTROS
                 </button>
               </div>
             </div>
@@ -484,39 +399,6 @@ const ListEntradaStock = () => {
                   Agregar
                 </Link>
               </div>
-              <div className="col-3">
-                {/* <button className="btn btn-success">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-file-earmark-excel-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z" />
-                  </svg>
-                </button> */}
-                <ExportExcel exelData={dataEntSto} />
-              </div>
-              <div className="col-3">
-                {/* <button className="btn btn-danger">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-file-earmark-pdf-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M5.523 12.424c.14-.082.293-.162.459-.238a7.878 7.878 0 0 1-.45.606c-.28.337-.498.516-.635.572a.266.266 0 0 1-.035.012.282.282 0 0 1-.026-.044c-.056-.11-.054-.216.04-.36.106-.165.319-.354.647-.548zm2.455-1.647c-.119.025-.237.05-.356.078a21.148 21.148 0 0 0 .5-1.05 12.045 12.045 0 0 0 .51.858c-.217.032-.436.07-.654.114zm2.525.939a3.881 3.881 0 0 1-.435-.41c.228.005.434.022.612.054.317.057.466.147.518.209a.095.095 0 0 1 .026.064.436.436 0 0 1-.06.2.307.307 0 0 1-.094.124.107.107 0 0 1-.069.015c-.09-.003-.258-.066-.498-.256zM8.278 6.97c-.04.244-.108.524-.2.829a4.86 4.86 0 0 1-.089-.346c-.076-.353-.087-.63-.046-.822.038-.177.11-.248.196-.283a.517.517 0 0 1 .145-.04c.013.03.028.092.032.198.005.122-.007.277-.038.465z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3zM4.165 13.668c.09.18.23.343.438.419.207.075.412.04.58-.03.318-.13.635-.436.926-.786.333-.401.683-.927 1.021-1.51a11.651 11.651 0 0 1 1.997-.406c.3.383.61.713.91.95.28.22.603.403.934.417a.856.856 0 0 0 .51-.138c.155-.101.27-.247.354-.416.09-.181.145-.37.138-.563a.844.844 0 0 0-.2-.518c-.226-.27-.596-.4-.96-.465a5.76 5.76 0 0 0-1.335-.05 10.954 10.954 0 0 1-.98-1.686c.25-.66.437-1.284.52-1.794.036-.218.055-.426.048-.614a1.238 1.238 0 0 0-.127-.538.7.7 0 0 0-.477-.365c-.202-.043-.41 0-.601.077-.377.15-.576.47-.651.823-.073.34-.04.736.046 1.136.088.406.238.848.43 1.295a19.697 19.697 0 0 1-1.062 2.227 7.662 7.662 0 0 0-1.482.645c-.37.22-.699.48-.897.787-.21.326-.275.714-.08 1.103z"
-                    />
-                  </svg>
-                </button> */}
-              </div>
             </div>
           </div>
         </div>
@@ -526,7 +408,7 @@ const ListEntradaStock = () => {
           style={{
             //overflowY: "auto",
             overflow: "auto",
-            float: "left",
+            float: "left"
             //position: "relative",
             //border: "1px solid black",
           }}
@@ -539,20 +421,10 @@ const ListEntradaStock = () => {
                     sx={{
                       "& th": {
                         color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                        backgroundColor: "#f5f5f5"
+                      }
                     }}
                   >
-                    {/**
-                     <TableCell
-                      align="left"
-                      sx={{
-                        minWidth: 1,
-                      }}
-                    >
-                      <b>#</b>
-                    </TableCell>
-                    */}
                     <TableCell align="left" width={160}>
                       <b>Cod Lote</b>
                     </TableCell>
@@ -561,7 +433,7 @@ const ListEntradaStock = () => {
                       width={360}
                       sx={{
                         //border: "1px solid black",
-                        minWidth: 300,
+                        minWidth: 300
                       }}
                     >
                       <b>Producto</b>
@@ -575,7 +447,7 @@ const ListEntradaStock = () => {
                       width={160}
                       sx={{
                         //border: "1px solid black",
-                        minWidth: 200,
+                        minWidth: 200
                       }}
                     >
                       <b>Proveedor</b>
@@ -589,7 +461,7 @@ const ListEntradaStock = () => {
                       width={140}
                       sx={{
                         //border: "1px solid black",
-                        minWidth: 200,
+                        minWidth: 200
                       }}
                     >
                       <b>Almacen</b>
@@ -609,8 +481,8 @@ const ListEntradaStock = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -618,7 +490,7 @@ const ListEntradaStock = () => {
                       align="left"
                       sx={{
                         //border: "1px solid black",
-                        minWidth: 160,
+                        minWidth: 160
                       }}
                     >
                       <b>Doc.</b>
@@ -631,8 +503,8 @@ const ListEntradaStock = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -641,7 +513,7 @@ const ListEntradaStock = () => {
                       align="left"
                       sx={{
                         //border: "1px solid black",
-                        minWidth: 160,
+                        minWidth: 160
                       }}
                     >
                       <b>Orden Compra</b>
@@ -654,8 +526,8 @@ const ListEntradaStock = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -664,7 +536,7 @@ const ListEntradaStock = () => {
                       align="left"
                       sx={{
                         //border: "1px solid black",
-                        minWidth: 160,
+                        minWidth: 160
                       }}
                     >
                       <b>Guia Remisión</b>
@@ -677,8 +549,8 @@ const ListEntradaStock = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -705,8 +577,27 @@ const ListEntradaStock = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="left" width={50}>
+                      <b>Variacion</b>
+                    </TableCell>
+                    <TableCell align="left" width={50}>
+                      <b>Disponible</b>
+                      <TextField
+                        onChange={handleFormFilter}
+                        type="number"
+                        size="small"
+                        name="disponible"
+                        value={inputs.disponible}
+                        InputProps={{
+                          style: {
+                            color: "black",
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -721,48 +612,26 @@ const ListEntradaStock = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="left" width={50}>
-                      <b>Disponible</b>
-                      <TextField
-                        onChange={handleFormFilter}
-                        type="number"
-                        size="small"
-                        name="disponible"
-                        value={inputs.disponible}
-                        InputProps={{
-                          style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
                     <TableCell align="left" width={160}>
-                      <b>Fecha ent.</b>
-                      {/**
-                       <FechaPickerDay onNewfecEntSto={onChangeDate} />
-                      */}
+                      <b>Fecha entrada</b>
                     </TableCell>
                     <TableCell align="left" width={160}>
-                      <b>Fecha ven.</b>
+                      <b>Fecha vencimiento</b>
                     </TableCell>
-                    <TableCell align="left" width={160}>
+                    {/* <TableCell align="left" width={160}>
                       <b>Fecha cre.</b>
-                    </TableCell>
-                    <TableCell align="left" width={160}>
-                      <b>Variacion</b>
-                    </TableCell>
-                    <TableCell align="left" width={160}>
+                    </TableCell> */}
+                    {/* <TableCell align="left" width={160}>
                       <b>Disponible Acu.</b>
                     </TableCell>
                     <TableCell align="left" width={160}>
                       <b>Merma Acu.</b>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell align="center" width={50}>
                       <b>Acciones</b>
                     </TableCell>
@@ -775,7 +644,7 @@ const ListEntradaStock = () => {
                       <TableRow
                         key={index}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          "&:last-child td, &:last-child th": { border: 0 }
                         }}
                       >
                         {/**
@@ -824,30 +693,16 @@ const ListEntradaStock = () => {
                           )}
                         </TableCell>
                         <TableCell align="left">{row.canTotEnt}</TableCell>
-                        <TableCell align="left">{row.merTot}</TableCell>
+                        <TableCell align="left">{row.canVar}</TableCell>
                         <TableCell align="left">{row.canTotDis}</TableCell>
+                        <TableCell align="left">{row.merTot}</TableCell>
                         <TableCell align="left">{row.fecEntSto}</TableCell>
                         <TableCell align="left">{row.fecVenEntSto}</TableCell>
-                        <TableCell align="left">{row.fecCreEntSto}</TableCell>
-                        <TableCell align="left">{row.canVar}</TableCell>
-                        <TableCell align="left">{row.disAcu}</TableCell>
-                        <TableCell align="left">{row.merAcu}</TableCell>
-                        <TableCell
-                          align="left"
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            //border: "1px solid black",
-                            width: "190px",
-                          }}
-                        >
-                          <div
-                            className="btn-toolbar"
-                            style={{
-                              backgroundColor: "#0E80E5",
-                              borderRadius: "9px",
-                            }}
+                        {/* <TableCell align="left">{row.fecCreEntSto}</TableCell> */}
+                        {/* <TableCell align="left">{row.disAcu}</TableCell>
+                        <TableCell align="left">{row.merAcu}</TableCell> */}
+                        <TableCell align="center">
+                          <IconButton
                             onClick={() => {
                               window.open(
                                 `/almacen/entradas-stock/view/${row.idEntStock}`,
@@ -855,15 +710,9 @@ const ListEntradaStock = () => {
                               );
                             }}
                           >
-                            <IconButton>
-                              <VisibilityIcon
-                                fontSize="small"
-                                sx={{ color: "white" }}
-                              />
-                            </IconButton>
-                          </div>
-
-                          <div
+                            <VisibilityIcon fontSize="large" color="primary" />
+                          </IconButton>
+                          {/* <div
                             className="btn-toolbar"
                             style={{
                               backgroundColor: "#0E80E5",
@@ -936,7 +785,7 @@ const ListEntradaStock = () => {
                                 </IconButton>
                               </Tooltip>
                             )}
-                          </div>
+                          </div> */}
                         </TableCell>
                       </TableRow>
                     ))}

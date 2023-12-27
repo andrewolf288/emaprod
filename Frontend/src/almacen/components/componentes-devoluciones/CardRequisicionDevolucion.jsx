@@ -6,15 +6,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
+  Paper
 } from "@mui/material";
 import { RowDetalleRequisicionDevolucion } from "./RowDetalleRequisicionDevolucion";
 
 export const CardRequisicionDevolucion = ({
+  correlativo,
   requisicion,
   onDeleteRequisicionDevolucionDetalle,
   onUpdateRequisicionDevolucionDetalle,
-  onCheckRequisicionDevolucionDetalle,
+  onCheckRequisicionDevolucionDetalle
 }) => {
   const [mostrarDetalle, setMostrarDetalle] = useState(false);
   const toggleDetalle = () => {
@@ -24,7 +25,7 @@ export const CardRequisicionDevolucion = ({
   return (
     <div className="card mt-4">
       <div className="card-header d-flex justify-content-between align-items-center">
-        <h6>Detalle de Requisición</h6>
+        <h6>{`Detalle de Requisición: ${correlativo}`}</h6>
         <button
           className="btn btn-link ms-auto" // Utiliza ms-auto para alinear a la derecha
           onClick={toggleDetalle}

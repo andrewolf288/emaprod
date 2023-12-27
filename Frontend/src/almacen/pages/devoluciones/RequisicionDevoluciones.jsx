@@ -6,7 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogContentText,
-  DialogTitle,
+  DialogTitle
 } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
@@ -39,7 +39,8 @@ export const RequisicionDevoluciones = () => {
     idProdt: 0,
     klgLotProd: "",
     nomProd: "",
-    prodDetDev: [],
+    numop: "",
+    prodDetDev: []
   });
 
   const {
@@ -52,7 +53,8 @@ export const RequisicionDevoluciones = () => {
     fecVenLotProd,
     klgLotProd,
     nomProd,
-    prodDetDev,
+    numop,
+    prodDetDev
   } = devolucionesProduccionLote;
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
@@ -73,7 +75,7 @@ export const RequisicionDevoluciones = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -108,7 +110,7 @@ export const RequisicionDevoluciones = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -130,7 +132,7 @@ export const RequisicionDevoluciones = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -156,7 +158,7 @@ export const RequisicionDevoluciones = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -178,7 +180,7 @@ export const RequisicionDevoluciones = () => {
       } else {
         setfeedbackMessages({
           style_message: "error",
-          feedback_description_error: description_error,
+          feedback_description_error: description_error
         });
         handleClickFeeback();
       }
@@ -292,9 +294,13 @@ export const RequisicionDevoluciones = () => {
           {/* REQUISICIONES DE AGREGACION REGISTRADAS */}
           <div className="card d-flex mt-4">
             <h6 className="card-header">Requisiciones</h6>
-            {prodDetDev.map((requisicion) => (
+            {prodDetDev.map((requisicion, index) => (
               <CardRequisicionDevolucion
                 key={requisicion.id}
+                correlativo={`${numop} - D${String(index + 1).padStart(
+                  2,
+                  "0"
+                )}`}
                 requisicion={requisicion}
                 onDeleteRequisicionDevolucionDetalle={
                   onDeleteDetalleRequisicionDevolucion

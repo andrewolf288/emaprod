@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 pd.canLotProd,
                 pd.fecVenLotProd,
                 p.idSubCla,
-                pd.numop 
+                pd.numop
             FROM produccion pd
             JOIN producto as p ON p.id = pd.idProdt
             JOIN produccion_estado as pe ON pe.id = pd.idProdEst

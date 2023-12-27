@@ -14,21 +14,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $idProdt = $data["idProdt"]; // id de producto
     //$reqFinEst = 1; // estado de ingreso de producto intermedio
-    $idReqEst = 3; // estado de requisicion completado
     $fueUtiOrdProd = 0; // estado de requisicion no usada aun para produccion
 
     if ($pdo) {
         $sql_select_requisicion_lote =
-            "SELECT * FROM requisicion
-        WHERE idProdt = ? AND idReqEst = ? AND fueUtiOrdProd = ?
-        ORDER BY fecPedReq DESC";
+            "SELECT
+            re.id,
+            re.idProdc,
+            re.idReqEst,
+            re.idAre,
+            re.idReqTip,
+            re.codReq,
+            re.fecPedReq,
+            re.fecEntReq,
+            re.fecCreReq,
+            re.fecActReq,
+            re.estReg,
+            re.idProdt,
+            pt.idSubCla,
+            re.cantProg,
+            re.canIng,
+            re.reqFinEst,
+            re.variacion,
+            re.codLotProd,
+            re.canLotProd,
+            re.fueUtiOrdProd
+            FROM requisicion as re
+        JOIN producto AS pt ON pt.id = re.idProdt
+        WHERE re.idProdt = ? AND re.fueUtiOrdProd = ?
+        ORDER BY re.fecPedReq DESC";
         // se quito condicion de producto intermedio ingresado
         try {
             $stmt_select_requisicion_lote = $pdo->prepare($sql_select_requisicion_lote);
             $stmt_select_requisicion_lote->bindParam(1, $idProdt, PDO::PARAM_INT);
-            // $stmt_select_requisicion_lote->bindParam(2, $reqFinEst, PDO::PARAM_INT);
-            $stmt_select_requisicion_lote->bindParam(2, $idReqEst, PDO::PARAM_INT);
-            $stmt_select_requisicion_lote->bindParam(3, $fueUtiOrdProd, PDO::PARAM_BOOL);
+            $stmt_select_requisicion_lote->bindParam(2, $fueUtiOrdProd, PDO::PARAM_BOOL);
             $stmt_select_requisicion_lote->execute();
             while ($row = $stmt_select_requisicion_lote->fetch(PDO::FETCH_ASSOC)) {
                 array_push($result, $row);

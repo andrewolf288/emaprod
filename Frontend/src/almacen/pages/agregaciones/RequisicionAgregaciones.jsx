@@ -11,7 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogContentText,
-  DialogTitle,
+  DialogTitle
 } from "@mui/material";
 
 import Snackbar from "@mui/material/Snackbar";
@@ -41,7 +41,8 @@ export const RequisicionAgregaciones = () => {
     idProdt: 0,
     klgLotProd: "",
     nomProd: "",
-    prodDetAgr: [],
+    numop: "",
+    prodDetAgr: []
   });
 
   const {
@@ -54,7 +55,8 @@ export const RequisicionAgregaciones = () => {
     fecVenLotProd,
     klgLotProd,
     nomProd,
-    prodDetAgr,
+    numop,
+    prodDetAgr
   } = agregacionesProduccionLote;
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
@@ -75,7 +77,7 @@ export const RequisicionAgregaciones = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -110,7 +112,7 @@ export const RequisicionAgregaciones = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -132,7 +134,7 @@ export const RequisicionAgregaciones = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -153,7 +155,7 @@ export const RequisicionAgregaciones = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -176,7 +178,7 @@ export const RequisicionAgregaciones = () => {
       } else {
         setfeedbackMessages({
           style_message: "error",
-          feedback_description_error: description_error,
+          feedback_description_error: description_error
         });
         handleClickFeeback();
       }
@@ -290,9 +292,13 @@ export const RequisicionAgregaciones = () => {
           {/* REQUISICIONES DE AGREGACION REGISTRADAS */}
           <div className="card d-flex mt-4">
             <h6 className="card-header">Requisiciones</h6>
-            {prodDetAgr.map((requisicion) => (
+            {prodDetAgr.map((requisicion, index) => (
               <CardRequisicionAgregacion
                 key={requisicion.id}
+                correlativo={`${numop} - A${String(index + 1).padStart(
+                  2,
+                  "0"
+                )}`}
                 requisicion={requisicion}
                 onDeleteRequisicionAgregacionDetalle={
                   onDeleteDetalleRequisicionAgregacion

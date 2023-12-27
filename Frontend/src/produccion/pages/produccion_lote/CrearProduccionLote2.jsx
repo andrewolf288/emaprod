@@ -21,7 +21,7 @@ import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/g
 import { FilterAreaEncargada } from "./../../components/FilterAreaEncargada";
 import {
   FormatDateTimeMYSQLNow,
-  FormatDateTimeMYSQLNowPlusYears,
+  FormatDateTimeMYSQLNowPlusYears
 } from "../../../utils/functions/FormatDate";
 
 // IMPROTACIONES PARA LINEA DE PROGRESION
@@ -74,7 +74,7 @@ export const CrearProduccionLote2 = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -93,6 +93,7 @@ export const CrearProduccionLote2 = () => {
   // ESTADO PARA LOS DATOS DE PRODUCCION LOTE
   const [produccionLote, setproduccionLote] = useState({
     idProdt: 0, // producto intermedio (viene del backend)
+    idSubCla: 0, // sub clase
     idReq: 0,
     idProdTip: 6, // envasado y encajado
     codTipProd: "EE",
@@ -107,11 +108,12 @@ export const CrearProduccionLote2 = () => {
     fecVenLotProd: "", // fecha de vencimiento del lote
     reqDetProdc: [], // detalle requisicion de lote
     prodDetProdc: [], // detalle de productos finales esperados
-    fecProdIniProg: FormatDateTimeMYSQLNow(),
+    fecProdIniProg: FormatDateTimeMYSQLNow()
   });
 
   const {
     idProdt,
+    idSubCla,
     idReq,
     idProdTip,
     codLotProd,
@@ -122,27 +124,27 @@ export const CrearProduccionLote2 = () => {
     fecProdFinProg,
     fecVenLotProd,
     reqDetProdc,
-    prodDetProdc,
+    prodDetProdc
   } = produccionLote;
 
   // ESTADO DE KLG DISPONIBLES PARA LOTE PRODUCCION
   const [cantidadLoteProduccion, setcantidadLoteProduccion] = useState({
     totalUnidadesLoteProduccion: 0,
     klgTotalLoteProduccion: 0,
-    klgDisponibleLoteProduccion: 0,
+    klgDisponibleLoteProduccion: 0
   });
 
   const {
     totalUnidadesLoteProduccion,
     klgTotalLoteProduccion,
-    klgDisponibleLoteProduccion,
+    klgDisponibleLoteProduccion
   } = cantidadLoteProduccion;
 
   // STATE PARA CONTROLAR LA AGREGACION DE PRODUCTOS FINALES DEL LOTE
   const [productoLoteProduccion, setproductoLoteProduccion] = useState({
     idProdFin: 0,
     cantidadDeLote: 0.0,
-    cantidadDeProducto: 0,
+    cantidadDeProducto: 0
   });
 
   // producto final informacion
@@ -153,7 +155,7 @@ export const CrearProduccionLote2 = () => {
     useState({
       idProdReq: 0,
       cantidadRequisicion: 0,
-      idAre: 0,
+      idAre: 0
     });
 
   const { idProdReq, cantidadRequisicion, idAre } =
@@ -174,13 +176,12 @@ export const CrearProduccionLote2 = () => {
     const { name, value } = target;
     setproduccionLote({
       ...produccionLote,
-      [name]: value,
+      [name]: value
     });
   };
 
   // Evento para traer requisicion correspondiente al producto intermedio
   const onAddProductoProduccion = async ({ id }) => {
-    // const response = await getLoteStockEnt({ idProdt: id });
     const response = await getRequisicionProcesoProduccion({ idProdt: id });
     var { result } = response;
 
@@ -190,7 +191,7 @@ export const CrearProduccionLote2 = () => {
       setfeedbackMessages({
         style_message: "error",
         feedback_description_error:
-          "No hay requisiciones disponibles para este proceso de produccion",
+          "No hay requisiciones disponibles para este proceso de produccion"
       });
       handleClickFeeback();
     } else {
@@ -201,7 +202,7 @@ export const CrearProduccionLote2 = () => {
           style_message: "warning",
           feedback_description_error:
             "Hay mas de una requisicion disponible para este proceso de produccion\n" +
-            "Por defecto tomaremos la más reciente, pero asegurate de verificar si es correcto",
+            "Por defecto tomaremos la más reciente, pero asegurate de verificar si es correcto"
         });
         handleClickFeeback();
       } else {
@@ -209,7 +210,7 @@ export const CrearProduccionLote2 = () => {
         setfeedbackMessages({
           style_message: "success",
           feedback_description_error:
-            "Se jalo correctamente de la requisición\n",
+            "Se jalo correctamente de la requisición\n"
         });
         handleClickFeeback();
       }
@@ -221,6 +222,10 @@ export const CrearProduccionLote2 = () => {
         canLotProd: canLotProd,
         klgLotProd: canLotProd,
         codLotProd: result[0].codLotProd,
+        idSubCla: result[0].idSubCla,
+        fecVenLotProd: FormatDateTimeMYSQLNowPlusYears(
+          result[0].idSubCla === 50 ? 1 : 4
+        )
       });
       setKlgLotProd(canLotProd);
     }
@@ -231,13 +236,27 @@ export const CrearProduccionLote2 = () => {
     setproduccionLote({
       ...produccionLote,
       idProdTip: id,
-      codTipProd: cod,
+      codTipProd: cod
     });
   };
 
   // ENVENTO DE FECHA INICIO PROGRAMADO
   const onAddFechaInicioProgramado = (newFecha) => {
-    setproduccionLote({ ...produccionLote, fecProdIniProg: newFecha });
+    var year = 0;
+    // si la UM de al presentacion final es LTS, entonces year = 1
+    if (idSubCla === 50) {
+      year = 1; // frescos
+    } else {
+      year = 4; // otros
+    }
+
+    const newfecVenProd = FormatDateTimeMYSQLNowPlusYears(year, newFecha);
+
+    setproduccionLote({
+      ...produccionLote,
+      fecProdIniProg: newFecha,
+      fecVenLotProd: newfecVenProd
+    });
   };
 
   // EVENTO DE FECHA FIN PROGRAMADO
@@ -275,7 +294,7 @@ export const CrearProduccionLote2 = () => {
           nomProd: result[0].nomProd,
           simMed: result[0].simMed,
           canForProInt: reqProdInt.canForProDet,
-          reqDet: reqEnvEnc,
+          reqDet: reqEnvEnc
         };
 
         setFormulaProductoFinal(formulaPresentacionFinal);
@@ -283,13 +302,13 @@ export const CrearProduccionLote2 = () => {
         setproductoLoteProduccion({
           idProdFin: id,
           cantidadDeLote: 0.0,
-          cantidadDeProducto: 0,
+          cantidadDeProducto: 0
         });
       } else {
         setfeedbackMessages({
           style_message: "warning",
           feedback_description_error:
-            "Esta formula no tiene información de su producto intermedio",
+            "Esta formula no tiene información de su producto intermedio"
         });
         handleClickFeeback();
 
@@ -297,14 +316,14 @@ export const CrearProduccionLote2 = () => {
         setproductoLoteProduccion({
           idProdFin: 0,
           cantidadDeLote: 0.0,
-          cantidadDeProducto: 0,
+          cantidadDeProducto: 0
         });
       }
     } else {
       setfeedbackMessages({
         style_message: "warning",
         feedback_description_error:
-          "No hay formulas o hay mas de una formula para esta presetacion final",
+          "No hay formulas o hay mas de una formula para esta presetacion final"
       });
       handleClickFeeback();
 
@@ -312,7 +331,7 @@ export const CrearProduccionLote2 = () => {
       setproductoLoteProduccion({
         idProdFin: 0,
         cantidadDeLote: 0.0,
-        cantidadDeProducto: 0,
+        cantidadDeProducto: 0
       });
     }
   };
@@ -335,7 +354,7 @@ export const CrearProduccionLote2 = () => {
         setproductoLoteProduccion({
           ...productoLoteProduccion,
           cantidadDeLote: cantidadKlgRequerida,
-          cantidadDeProducto: cantidadUniRequerida,
+          cantidadDeProducto: cantidadUniRequerida
         });
       }
     } catch (e) {
@@ -361,7 +380,7 @@ export const CrearProduccionLote2 = () => {
         setproductoLoteProduccion({
           ...productoLoteProduccion,
           cantidadDeLote: cantidadKlgRequerida,
-          cantidadDeProducto: cantidadUniRequerida,
+          cantidadDeProducto: cantidadUniRequerida
         });
       }
     } catch (e) {
@@ -372,7 +391,7 @@ export const CrearProduccionLote2 = () => {
   const onAddProductoRequisicionLoteProduccion = (value) => {
     setproductoRequisicionProduccion({
       ...productoRequisicionProduccion,
-      idProdReq: value.id,
+      idProdReq: value.id
     });
   };
   // MANEJADOR DE INPUTS REQUISICION
@@ -380,7 +399,7 @@ export const CrearProduccionLote2 = () => {
     const { value, name } = target;
     setproductoRequisicionProduccion({
       ...productoRequisicionProduccion,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -388,7 +407,7 @@ export const CrearProduccionLote2 = () => {
   const handleAreaIdProductoRequisicion = ({ id }) => {
     setproductoRequisicionProduccion({
       ...productoRequisicionProduccion,
-      idAre: id,
+      idAre: id
     });
   };
 
@@ -404,7 +423,7 @@ export const CrearProduccionLote2 = () => {
         setfeedbackMessages({
           style_message: "warning",
           feedback_description_error:
-            "Ya se agrego este producto a la requisicion",
+            "Ya se agrego este producto a la requisicion"
         });
         handleClickFeeback();
       } else {
@@ -428,7 +447,7 @@ export const CrearProduccionLote2 = () => {
               nomProd: nomProd,
               simMed: simMed,
               canForProDet: 1,
-              canReqProdLot: cantidadRequisicion, // cantidad
+              canReqProdLot: cantidadRequisicion // cantidad
             };
 
             // seteamos el detalle en general de la formula
@@ -436,12 +455,12 @@ export const CrearProduccionLote2 = () => {
 
             setproduccionLote({
               ...produccionLote,
-              reqDetProdc: dataDetalle,
+              reqDetProdc: dataDetalle
             });
           } else {
             setfeedbackMessages({
               style_message: "error",
-              feedback_description_error: description_error,
+              feedback_description_error: description_error
             });
             handleClickFeeback();
           }
@@ -449,7 +468,7 @@ export const CrearProduccionLote2 = () => {
           setfeedbackMessages({
             style_message: "warning",
             feedback_description_error:
-              "Solo se adminte areas de envasado y encajonado",
+              "Solo se adminte areas de envasado y encajonado"
           });
           handleClickFeeback();
         }
@@ -471,7 +490,7 @@ export const CrearProduccionLote2 = () => {
 
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: advertenciaDetalleRequisicion,
+        feedback_description_error: advertenciaDetalleRequisicion
       });
       handleClickFeeback();
     }
@@ -488,7 +507,7 @@ export const CrearProduccionLote2 = () => {
 
     setproduccionLote({
       ...produccionLote,
-      reqDetProdc: dataDetalleRequisicionProduccion,
+      reqDetProdc: dataDetalleRequisicionProduccion
     });
   };
 
@@ -499,7 +518,7 @@ export const CrearProduccionLote2 = () => {
       if (element.idProd === idItem && element.indexProdFin === index) {
         return {
           ...element,
-          canReqProdLot: value,
+          canReqProdLot: value
         };
       } else {
         return element;
@@ -507,7 +526,7 @@ export const CrearProduccionLote2 = () => {
     });
     setproduccionLote({
       ...produccionLote,
-      reqDetProdc: editFormDetalle,
+      reqDetProdc: editFormDetalle
     });
   };
 
@@ -531,7 +550,7 @@ export const CrearProduccionLote2 = () => {
       if (itemFound) {
         setfeedbackMessages({
           style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto a la orden",
+          feedback_description_error: "Ya se agrego este producto a la orden"
         });
         handleClickFeeback();
       } else {
@@ -565,7 +584,7 @@ export const CrearProduccionLote2 = () => {
             setcantidadLoteProduccion({
               ...cantidadLoteProduccion,
               klgTotalLoteProduccion: cantTotKlgAgr,
-              totalUnidadesLoteProduccion: canTotUndAgr,
+              totalUnidadesLoteProduccion: canTotUndAgr
             });
 
             // actualizamos requisicion de productos finales
@@ -578,8 +597,8 @@ export const CrearProduccionLote2 = () => {
                 nomProd,
                 simMed,
                 canUnd: cantidadDeProducto,
-                canKlg: cantidadDeLote,
-              },
+                canKlg: cantidadDeLote
+              }
             ];
 
             let detalleRequisicionesFormula = [];
@@ -591,7 +610,7 @@ export const CrearProduccionLote2 = () => {
                 idProdFin: productoLoteProduccion.idProdFin,
                 canReqProdLot: parseFloat(
                   cantidadDeProducto * detalle.canForProDet
-                ).toFixed(5),
+                ).toFixed(5)
               });
             });
 
@@ -601,21 +620,21 @@ export const CrearProduccionLote2 = () => {
 
             const detalleRequisicion = [
               ...reqDetProdc,
-              ...detalleRequisicionesFormula,
+              ...detalleRequisicionesFormula
             ];
 
             // lo insertamos en el detalle
             setproduccionLote({
               ...produccionLote,
               prodDetProdc: detalleProductosFinales,
-              reqDetProdc: detalleRequisicion,
+              reqDetProdc: detalleRequisicion
             });
 
             // reseteamos los campos
             setproductoLoteProduccion({
               idProdFin: 0,
               cantidadDeLote: 0.0,
-              cantidadDeProducto: 0,
+              cantidadDeProducto: 0
             });
 
             setFormulaProductoFinal(null);
@@ -623,7 +642,7 @@ export const CrearProduccionLote2 = () => {
             setfeedbackMessages({
               style_message: "warning",
               feedback_description_error:
-                "Asegurese de que la asignancion de kg de lote sea menor al peso total permitido",
+                "Asegurese de que la asignancion de kg de lote sea menor al peso total permitido"
             });
             handleClickFeeback();
           }
@@ -631,7 +650,7 @@ export const CrearProduccionLote2 = () => {
           setfeedbackMessages({
             style_message: "warning",
             feedback_description_error:
-              "No se ha seleccionado ninguna presentacion final",
+              "No se ha seleccionado ninguna presentacion final"
           });
           handleClickFeeback();
         }
@@ -653,7 +672,7 @@ export const CrearProduccionLote2 = () => {
       // mostramos el mensaje de error
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: advertenciaPresentacionFinal,
+        feedback_description_error: advertenciaPresentacionFinal
       });
       handleClickFeeback();
     }
@@ -692,28 +711,23 @@ export const CrearProduccionLote2 = () => {
       ),
       totalUnidadesLoteProduccion: parseInt(
         totalUnidadesLoteProduccion - totalUnidadesProductoFinal
-      ),
+      )
     });
 
     // lo insertamos en el detalle
     setproduccionLote({
       ...produccionLote,
       prodDetProdc: dataDetalleProductoFinalProduccion,
-      reqDetProdc: dataDetalleRequisicionProduccion,
+      reqDetProdc: dataDetalleRequisicionProduccion
     });
   };
 
   const crearProduccionLote = async () => {
-    console.log(totalUnidadesLoteProduccion);
     // actualizamos los valores correspondientes a klg y total de unidades
     const formatProduccionLote = {
       ...produccionLote,
       totalUnidadesLoteProduccion: totalUnidadesLoteProduccion,
-      klgTotalLoteProduccion: klgTotalLoteProduccion,
-      fecVenLotProd:
-        fecVenLotProd.length === 0
-          ? FormatDateTimeMYSQLNowPlusYears(4)
-          : fecVenLotProd,
+      klgTotalLoteProduccion: klgTotalLoteProduccion
     };
     console.log(formatProduccionLote);
 
@@ -730,7 +744,7 @@ export const CrearProduccionLote2 = () => {
       // hubo error en la insercion
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -781,7 +795,7 @@ export const CrearProduccionLote2 = () => {
       // Mostramos el feedback
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: advertenciaOrdenProduccion,
+        feedback_description_error: advertenciaOrdenProduccion
       });
       handleClickFeeback();
     } else {
@@ -797,7 +811,7 @@ export const CrearProduccionLote2 = () => {
         // Mostramos el feedback
         setfeedbackMessages({
           style_message: "warning",
-          feedback_description_error: advertenciaSubProductos,
+          feedback_description_error: advertenciaSubProductos
         });
         handleClickFeeback();
       } else {
@@ -858,14 +872,14 @@ export const CrearProduccionLote2 = () => {
                           setfeedbackMessages({
                             style_message: "error",
                             feedback_description_error:
-                              "la cantidad de peso no puede ser mayor a la cantidad disponible",
+                              "la cantidad de peso no puede ser mayor a la cantidad disponible"
                           });
                           handleClickFeeback();
                         }
 
                         setproduccionLote({
                           ...produccionLote,
-                          [name]: data,
+                          [name]: data
                         });
                       }}
                       value={canLotProd}
@@ -1019,8 +1033,8 @@ export const CrearProduccionLote2 = () => {
                         sx={{
                           "& th": {
                             color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                            backgroundColor: "#f5f5f5"
+                          }
                         }}
                       >
                         <TableCell align="left" width={20}>
@@ -1137,8 +1151,8 @@ export const CrearProduccionLote2 = () => {
                             sx={{
                               "& th": {
                                 color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5",
-                              },
+                                backgroundColor: "#f5f5f5"
+                              }
                             }}
                           >
                             <TableCell align="left" width={20}>
@@ -1198,8 +1212,8 @@ export const CrearProduccionLote2 = () => {
                             sx={{
                               "& th": {
                                 color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5",
-                              },
+                                backgroundColor: "#f5f5f5"
+                              }
                             }}
                           >
                             <TableCell align="left" width={20}>
