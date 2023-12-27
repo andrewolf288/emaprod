@@ -7,21 +7,23 @@ import { IconButton } from "@mui/material";
 
 export const RowDetalleDevolucionLoteProduccion = ({
   detalle,
+  correlativo,
   onRenderPDF,
-  index,
+  index
 }) => {
   return (
     <TableRow
       key={detalle.id}
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
+        "&:last-child td, &:last-child th": { border: 0 }
       }}
     >
       <TableCell component="th" scope="detalle">
-        {detalle.idProdFin}
+        {correlativo}
       </TableCell>
       <TableCell align="left">{detalle.nomProd}</TableCell>
       <TableCell align="left">{detalle.canTotUndReqDev}</TableCell>
+      <TableCell align="left">{detalle.fecCreReqDev}</TableCell>
       <TableCell align="left">
         <span
           className={
@@ -39,6 +41,7 @@ export const RowDetalleDevolucionLoteProduccion = ({
         <div className="btn-toolbar">
           {
             <DetalleDevolucionProduccion
+              correlativo={correlativo}
               detalleDevolucionProduccion={detalle}
             />
           }

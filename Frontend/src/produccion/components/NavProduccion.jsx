@@ -82,7 +82,7 @@ const NavProduccion = () => {
               </li>
 
               {/* REQUISICION MOLIENDA */}
-              <li className="nav-item dropdown">
+              {/* <li className="nav-item dropdown">
                 <button
                   className="btn btn-lg dropdown-toggle"
                   role="button"
@@ -101,10 +101,10 @@ const NavProduccion = () => {
                     </Link>
                   </li>
                 </ul>
-              </li>
+              </li> */}
 
               {/* REQUISICION FRESCOS */}
-              <li className="nav-item dropdown">
+              {/* <li className="nav-item dropdown">
                 <button
                   className="btn btn-lg dropdown-toggle"
                   role="button"
@@ -123,7 +123,7 @@ const NavProduccion = () => {
                     </Link>
                   </li>
                 </ul>
-              </li>
+              </li> */}
 
               {/* ENTRADAS STOCK */}
               {/**
@@ -156,6 +156,36 @@ const NavProduccion = () => {
                 </ul>
               </li>
                 */}
+
+              {/* REQUISICIONES MATERIALES */}
+              <li className="nav-item dropdown">
+                <button
+                  className="btn btn-lg dropdown-toggle"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Requisicion materiales
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={"/produccion/requisicion-materiales"}
+                    >
+                      Administrar
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={"/produccion/requisicion-materiales/crear"}
+                    >
+                      Crear
+                    </Link>
+                  </li>
+                </ul>
+              </li>
               {/* FORMULAS */}
               {show && (
                 <li className="nav-item dropdown">

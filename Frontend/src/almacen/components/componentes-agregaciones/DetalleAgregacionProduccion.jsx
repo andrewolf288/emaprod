@@ -18,15 +18,16 @@ import Paper from "@mui/material/Paper";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2)
   },
   "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
+    padding: theme.spacing(1)
+  }
 }));
 
 export const DetalleAgregacionProduccion = ({
-  detalleAgregacionProduccion,
+  correlativo,
+  detalleAgregacionProduccion
 }) => {
   const [open, setOpen] = React.useState(false);
   const { detReqAgr } = detalleAgregacionProduccion;
@@ -60,6 +61,7 @@ export const DetalleAgregacionProduccion = ({
         </DialogTitle>
         <DialogContent dividers>
           <TableAgregacionProduccion
+            correlativo={correlativo}
             agregacionProduccion={detalleAgregacionProduccion}
           />
           <TableAgregacionDetalleProduccion detalle={detReqAgr} />
@@ -74,7 +76,7 @@ export const DetalleAgregacionProduccion = ({
   );
 };
 
-function TableAgregacionProduccion({ agregacionProduccion }) {
+function TableAgregacionProduccion({ correlativo, agregacionProduccion }) {
   return (
     <TableContainer component={Paper}>
       <br />
@@ -95,6 +97,9 @@ function TableAgregacionProduccion({ agregacionProduccion }) {
               <b>Presentación</b>
             </TableCell>
             <TableCell align="left">
+              <b>Fecha requerimiento</b>
+            </TableCell>
+            <TableCell align="left">
               <b>Estado</b>
             </TableCell>
             {agregacionProduccion.idProdcMot === 2 && (
@@ -111,13 +116,14 @@ function TableAgregacionProduccion({ agregacionProduccion }) {
         </TableHead>
         <TableBody>
           <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-            <TableCell align="center">
-              {agregacionProduccion.idProdFin}
-            </TableCell>
+            <TableCell align="center">{correlativo}</TableCell>
             <TableCell align="left">
               {agregacionProduccion.desProdAgrMot}
             </TableCell>
             <TableCell align="left">{agregacionProduccion.nomProd}</TableCell>
+            <TableCell align="left">
+              {agregacionProduccion.fecCreReqAgr}
+            </TableCell>
             <TableCell align="left">
               <span
                 className={

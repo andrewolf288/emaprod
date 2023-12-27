@@ -58,7 +58,7 @@ export const AgregarDevolucionV2 = () => {
     fecProdFinProg: "",
     numop: "",
     prodDetProdc: [],
-    prodDetDev: [],
+    prodDetDev: []
   });
 
   const {
@@ -70,8 +70,9 @@ export const AgregarDevolucionV2 = () => {
     fecVenLotProd,
     klgTotalLoteProduccion,
     nomProd,
+    numop,
     prodDetProdc,
-    prodDetDev,
+    prodDetDev
   } = devolucionesProduccionLote;
 
   // productos disponibles
@@ -81,7 +82,7 @@ export const AgregarDevolucionV2 = () => {
   const [detalleRequisicionDevolucion, setDetalleRequisicionDevolucion] =
     useState({
       requisicionDevolucion: null,
-      detalleProductosDevueltos: [],
+      detalleProductosDevueltos: []
     });
 
   const { requisicionDevolucion, detalleProductosDevueltos } =
@@ -91,7 +92,7 @@ export const AgregarDevolucionV2 = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -122,7 +123,7 @@ export const AgregarDevolucionV2 = () => {
   // STATE PARA CONTROLAR LA AGREGACION DE PRODUCTOS FINALES DEL LOTE
   const [productoLoteProduccion, setproductoLoteProduccion] = useState({
     idProdFin: 0,
-    cantidadDeProducto: 0,
+    cantidadDeProducto: 0
   });
 
   const { idProdFin, cantidadDeProducto } = productoLoteProduccion;
@@ -152,7 +153,7 @@ export const AgregarDevolucionV2 = () => {
             nomProd: result[0].nomProd,
             simMed: result[0].simMed,
             canForProInt: reqProdInt.canForProDet,
-            reqDet: reqEnvEnc,
+            reqDet: reqEnvEnc
           };
 
           setFormulaProductoFinal(formulaPresentacionFinal);
@@ -170,27 +171,27 @@ export const AgregarDevolucionV2 = () => {
           setproductoLoteProduccion({
             ...productoLoteProduccion,
             idProdFin: id,
-            cantidadDeProducto: cantidadSobrante,
+            cantidadDeProducto: cantidadSobrante
           });
         } else {
           setfeedbackMessages({
             style_message: "warning",
             feedback_description_error:
-              "Esta formula no tiene información de su producto intermedio",
+              "Esta formula no tiene información de su producto intermedio"
           });
           handleClickFeeback();
 
           // reseteamos los campos
           setproductoLoteProduccion({
             idProdFin: 0,
-            cantidadDeProducto: 0,
+            cantidadDeProducto: 0
           });
         }
       } else {
         setfeedbackMessages({
           style_message: "warning",
           feedback_description_error:
-            "No hay formulas o hay mas de una formula para esta presetacion final",
+            "No hay formulas o hay mas de una formula para esta presetacion final"
         });
         handleClickFeeback();
 
@@ -198,20 +199,20 @@ export const AgregarDevolucionV2 = () => {
         setproductoLoteProduccion({
           ...productoLoteProduccion,
           idProdFin: 0,
-          cantidadDeProducto: 0,
+          cantidadDeProducto: 0
         });
       }
     } else {
       // limpiamos los campos
       setproductoLoteProduccion({
         idProdFin: 0,
-        cantidadDeProducto: 0,
+        cantidadDeProducto: 0
       });
 
       // limpiamos los detalles
       setDetalleRequisicionDevolucion({
         requisicionDevolucion: null,
-        detalleProductosDevueltos: [],
+        detalleProductosDevueltos: []
       });
 
       // limpiamos la formula
@@ -229,20 +230,20 @@ export const AgregarDevolucionV2 = () => {
         ).toFixed(5);
         return {
           ...detalle,
-          canReqProdLot: cantidadRequisicionDevuelta,
+          canReqProdLot: cantidadRequisicionDevuelta
         };
       });
 
       // seteamos la informacion de
       setDetalleRequisicionDevolucion({
         ...detalleRequisicionDevolucion,
-        detalleProductosDevueltos: arrayAux,
+        detalleProductosDevueltos: arrayAux
       });
 
       // seteamos la informacion de produccion
       setproductoLoteProduccion({
         ...productoLoteProduccion,
-        cantidadDeProducto: value,
+        cantidadDeProducto: value
       });
     } catch (e) {}
   };
@@ -262,7 +263,7 @@ export const AgregarDevolucionV2 = () => {
         detalleRequisicion.push({
           ...detalle,
           idProdFin: productoLoteProduccion.idProdFin,
-          canReqProdLot: cantidadRequisicionDevuelta,
+          canReqProdLot: cantidadRequisicionDevuelta
         });
       });
 
@@ -279,24 +280,24 @@ export const AgregarDevolucionV2 = () => {
             {
               idProdDevMot: 1,
               nomDevMot: "Faltante",
-              canProdDev: 0,
+              canProdDev: 0
             },
             {
               idProdDevMot: 2,
               nomDevMot: "Desmedro",
-              canProdDev: 0,
+              canProdDev: 0
             },
             {
               idProdDevMot: 3,
               nomDevMot: "Excedente",
-              canProdDev: 0,
+              canProdDev: 0
             },
             {
               idProdDevMot: 4,
               nomDevMot: "Devolución",
-              canProdDev: cantidadParser,
-            },
-          ],
+              canProdDev: cantidadParser
+            }
+          ]
         };
       });
 
@@ -304,15 +305,15 @@ export const AgregarDevolucionV2 = () => {
       setDetalleRequisicionDevolucion({
         requisicionDevolucion: {
           ...productoLoteProduccion,
-          cantidadDeProducto: cantidadDeProducto,
+          cantidadDeProducto: cantidadDeProducto
         },
-        detalleProductosDevueltos: detalleRequisicionMotivos,
+        detalleProductosDevueltos: detalleRequisicionMotivos
       });
     } else {
       setfeedbackMessages({
         style_message: "warning",
         feedback_description_error:
-          "No sobra cantidad para devolver de esta presentación",
+          "No sobra cantidad para devolver de esta presentación"
       });
       handleClickFeeback();
     }
@@ -346,7 +347,7 @@ export const AgregarDevolucionV2 = () => {
 
     setDetalleRequisicionDevolucion({
       ...detalleRequisicionDevolucion,
-      detalleProductosDevueltos: editFormDetalle,
+      detalleProductosDevueltos: editFormDetalle
     });
   };
 
@@ -364,7 +365,7 @@ export const AgregarDevolucionV2 = () => {
 
     setDetalleRequisicionDevolucion({
       ...detalleRequisicionDevolucion,
-      detalleProductosDevueltos: dataDetalleProductosDevueltos,
+      detalleProductosDevueltos: dataDetalleProductosDevueltos
     });
   };
 
@@ -397,7 +398,7 @@ export const AgregarDevolucionV2 = () => {
     const totalesFinales = Object.keys(repetidos).map((item) => {
       return {
         ...repetidos[item],
-        acu: totales[item],
+        acu: totales[item]
       };
     });
     return totalesFinales;
@@ -409,7 +410,7 @@ export const AgregarDevolucionV2 = () => {
     const formatData = {
       produccion: devolucionesProduccionLote,
       requisicion: data,
-      acumulado,
+      acumulado
     };
     const newWindow = window.open("", "Devoluciones", "fullscreen=yes");
     // Crear un contenedor específico para tu aplicación
@@ -437,7 +438,7 @@ export const AgregarDevolucionV2 = () => {
             idProdFin: element.id, // referencia a producto final lote
             nomProd: element.nomProd, // nombre de producto
             simMed: element.simMed, // simbolo de la medida
-            codProd2: element.codProd2, // codigo
+            codProd2: element.codProd2 // codigo
           };
         });
         // seteamos la informacion de productos disponibles
@@ -447,7 +448,7 @@ export const AgregarDevolucionV2 = () => {
       } else {
         setfeedbackMessages({
           style_message: "error",
-          feedback_description_error: description_error,
+          feedback_description_error: description_error
         });
         handleClickFeeback();
       }
@@ -474,7 +475,7 @@ export const AgregarDevolucionV2 = () => {
           const nuevoObjeto = {
             ...element,
             canProdDev: canProdDevMot,
-            idProdDevMot: idMotivo,
+            idProdDevMot: idMotivo
           };
           delete nuevoObjeto.motivos;
           detalleDevoluciones.push(nuevoObjeto);
@@ -489,8 +490,8 @@ export const AgregarDevolucionV2 = () => {
           ...informacionRequisicionDevolucion,
           idProdc: idLotProdc,
           idProdFin: referenciaProductoFinal.id,
-          idProdt: informacionRequisicionDevolucion["idProdFin"],
-        },
+          idProdt: informacionRequisicionDevolucion["idProdFin"]
+        }
       };
       console.log(formatDataRequisicion);
 
@@ -503,7 +504,7 @@ export const AgregarDevolucionV2 = () => {
         //onNavigateBack();
         setfeedbackMessages({
           style_message: "success",
-          feedback_description_error: "Guardado con exito",
+          feedback_description_error: "Guardado con exito"
         });
         handleClickFeeback();
         setTimeout(() => {
@@ -512,7 +513,7 @@ export const AgregarDevolucionV2 = () => {
       } else {
         setfeedbackMessages({
           style_message: "error",
-          feedback_description_error: description_error,
+          feedback_description_error: description_error
         });
         handleClickFeeback();
       }
@@ -520,7 +521,7 @@ export const AgregarDevolucionV2 = () => {
       setfeedbackMessages({
         style_message: "warning",
         feedback_description_error:
-          "No hay productos por devolver, revisa las cantidades",
+          "No hay productos por devolver, revisa las cantidades"
       });
       handleClickFeeback();
     }
@@ -532,7 +533,7 @@ export const AgregarDevolucionV2 = () => {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "No has agregado items al detalle",
+        feedback_description_error: "No has agregado items al detalle"
       });
       handleClickFeeback();
     } else {
@@ -663,11 +664,11 @@ export const AgregarDevolucionV2 = () => {
                           sx={{
                             "& th": {
                               color: "rgba(96, 96, 96)",
-                              backgroundColor: "#f5f5f5",
-                            },
+                              backgroundColor: "#f5f5f5"
+                            }
                           }}
                         >
-                          <TableCell align="left" width={30}>
+                          <TableCell align="left" width={70}>
                             <b>Ref.</b>
                           </TableCell>
                           <TableCell align="left" width={200}>
@@ -675,6 +676,9 @@ export const AgregarDevolucionV2 = () => {
                           </TableCell>
                           <TableCell align="left" width={100}>
                             <b>Cantidad devuelta</b>
+                          </TableCell>
+                          <TableCell align="left" width={100}>
+                            <b>Fecha requerimiento</b>
                           </TableCell>
                           <TableCell align="left" width={100}>
                             <b>Estado</b>
@@ -688,6 +692,10 @@ export const AgregarDevolucionV2 = () => {
                         {prodDetDev.map((row, i) => (
                           <RowDetalleDevolucionLoteProduccion
                             key={row.id}
+                            correlativo={`${numop} - D${String(i + 1).padStart(
+                              2,
+                              "0"
+                            )}`}
                             detalle={row}
                             onRenderPDF={generatePDF}
                             index={i}
@@ -779,8 +787,8 @@ export const AgregarDevolucionV2 = () => {
                           sx={{
                             "& th": {
                               color: "rgba(96, 96, 96)",
-                              backgroundColor: "#f5f5f5",
-                            },
+                              backgroundColor: "#f5f5f5"
+                            }
                           }}
                         >
                           <TableCell align="left" width={200}>

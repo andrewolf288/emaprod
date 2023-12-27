@@ -18,15 +18,16 @@ import Paper from "@mui/material/Paper";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2)
   },
   "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
+    padding: theme.spacing(1)
+  }
 }));
 
 export const DetalleDevolucionProduccion = ({
-  detalleDevolucionProduccion,
+  correlativo,
+  detalleDevolucionProduccion
 }) => {
   const [open, setOpen] = React.useState(false);
   const { detReqDev } = detalleDevolucionProduccion;
@@ -61,6 +62,7 @@ export const DetalleDevolucionProduccion = ({
         <DialogContent dividers>
           <TableDevolucionProduccion
             devolucionProduccion={detalleDevolucionProduccion}
+            correlativo={correlativo}
           />
           <TableDevolucionDetalleProduccion detalle={detReqDev} />
         </DialogContent>
@@ -74,7 +76,7 @@ export const DetalleDevolucionProduccion = ({
   );
 };
 
-function TableDevolucionProduccion({ devolucionProduccion }) {
+function TableDevolucionProduccion({ correlativo, devolucionProduccion }) {
   return (
     <TableContainer component={Paper}>
       <br />
@@ -85,11 +87,14 @@ function TableDevolucionProduccion({ devolucionProduccion }) {
       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
-            <TableCell align="center">
+            <TableCell align="left">
               <b>Ref.</b>
             </TableCell>
             <TableCell align="left">
               <b>Presentación</b>
+            </TableCell>
+            <TableCell align="left">
+              <b>Fecha requerimiento</b>
             </TableCell>
             <TableCell align="left">
               <b>Cantidad unidades</b>
@@ -101,10 +106,11 @@ function TableDevolucionProduccion({ devolucionProduccion }) {
         </TableHead>
         <TableBody>
           <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-            <TableCell align="center">
-              {devolucionProduccion.idProdFin}
-            </TableCell>
+            <TableCell align="left">{correlativo}</TableCell>
             <TableCell align="left">{devolucionProduccion.nomProd}</TableCell>
+            <TableCell align="left">
+              {devolucionProduccion.fecCreReqDev}
+            </TableCell>
             <TableCell align="left">
               {parseInt(devolucionProduccion.canTotUndReqDev)}
             </TableCell>

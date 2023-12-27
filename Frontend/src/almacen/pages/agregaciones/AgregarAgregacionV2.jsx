@@ -62,7 +62,7 @@ export const AgregarAgregacionV2 = () => {
     fecProdFinProg: "",
     numop: "",
     prodDetProdc: [],
-    prodDetAgr: [],
+    prodDetAgr: []
   });
 
   const {
@@ -74,8 +74,9 @@ export const AgregarAgregacionV2 = () => {
     fecVenLotProd,
     klgTotalLoteProduccion,
     nomProd,
+    numop,
     prodDetProdc,
-    prodDetAgr,
+    prodDetAgr
   } = agregacionesProduccionLote;
 
   // productos disponibles
@@ -88,7 +89,7 @@ export const AgregarAgregacionV2 = () => {
   const [detalleRequisicionAgregacion, setDetalleRequisicionAgregacion] =
     useState({
       requisicionAgregacion: null,
-      detalleProductosAgregados: [],
+      detalleProductosAgregados: []
     });
 
   const { requisicionAgregacion, detalleProductosAgregados } =
@@ -98,7 +99,7 @@ export const AgregarAgregacionV2 = () => {
   const [productoAgregado, setproductoAgregado] = useState({
     idProdAgr: 0,
     cantidadAgregada: 0.0,
-    idAreaEncargada: 0,
+    idAreaEncargada: 0
   });
 
   const { idProdAgr, cantidadAgregada, idAreaEncargada } = productoAgregado;
@@ -107,7 +108,7 @@ export const AgregarAgregacionV2 = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -141,7 +142,7 @@ export const AgregarAgregacionV2 = () => {
     idProdFin: 0,
     idProdcMot: 0, // motivo de agregacion
     cantidadDeLote: 0.0,
-    cantidadDeProducto: 0,
+    cantidadDeProducto: 0
   });
 
   const { idProdFin, idProdcMot, cantidadDeLote, cantidadDeProducto } =
@@ -160,13 +161,13 @@ export const AgregarAgregacionV2 = () => {
         idProdcMot: 0,
         idProdFin: 0,
         cantidadDeLote: 0.0,
-        cantidadDeProducto: 0,
+        cantidadDeProducto: 0
       });
       setFilterProductosDisponibles([]);
       setFormulaProductoFinal(null);
       setDetalleRequisicionAgregacion({
         requisicionAgregacion: {},
-        detalleProductosAgregados: [],
+        detalleProductosAgregados: []
       });
     } else {
       if (value.id === 1) {
@@ -182,12 +183,12 @@ export const AgregarAgregacionV2 = () => {
           idProdcMot: value.id,
           idProdFin: 0,
           cantidadDeLote: 0.0,
-          cantidadDeProducto: 1,
+          cantidadDeProducto: 1
         });
         setFormulaProductoFinal(null);
         setDetalleRequisicionAgregacion({
           requisicionAgregacion: {},
-          detalleProductosAgregados: [],
+          detalleProductosAgregados: []
         });
       } else if (value.id === 2) {
         // Filtramos los productos no programados
@@ -202,12 +203,12 @@ export const AgregarAgregacionV2 = () => {
           idProdFin: 0,
           idProdcMot: value.id,
           cantidadDeLote: 0.0,
-          cantidadDeProducto: 0,
+          cantidadDeProducto: 0
         });
         setFormulaProductoFinal(null);
         setDetalleRequisicionAgregacion({
           requisicionAgregacion: {},
-          detalleProductosAgregados: [],
+          detalleProductosAgregados: []
         });
       } else {
         // Filtramos los productos no programados
@@ -222,12 +223,12 @@ export const AgregarAgregacionV2 = () => {
           idProdFin: 0,
           idProdcMot: value.id,
           cantidadDeLote: 0.0,
-          cantidadDeProducto: 0,
+          cantidadDeProducto: 0
         });
         setFormulaProductoFinal(null);
         setDetalleRequisicionAgregacion({
           requisicionAgregacion: {},
-          detalleProductosAgregados: [],
+          detalleProductosAgregados: []
         });
       }
     }
@@ -257,7 +258,7 @@ export const AgregarAgregacionV2 = () => {
           nomProd: result[0].nomProd,
           simMed: result[0].simMed,
           canForProInt: reqProdInt.canForProDet,
-          reqDet: reqEnvEnc,
+          reqDet: reqEnvEnc
         };
 
         setFormulaProductoFinal(formulaPresentacionFinal);
@@ -265,13 +266,13 @@ export const AgregarAgregacionV2 = () => {
         // seteamos
         setproductoLoteProduccion({
           ...productoLoteProduccion,
-          idProdFin: id,
+          idProdFin: id
         });
       } else {
         setfeedbackMessages({
           style_message: "warning",
           feedback_description_error:
-            "Esta formula no tiene información de su producto intermedio",
+            "Esta formula no tiene información de su producto intermedio"
         });
         handleClickFeeback();
 
@@ -280,14 +281,14 @@ export const AgregarAgregacionV2 = () => {
           ...productoLoteProduccion,
           idProdFin: 0,
           cantidadDeLote: 0.0,
-          cantidadDeProducto: 0,
+          cantidadDeProducto: 0
         });
       }
     } else {
       setfeedbackMessages({
         style_message: "warning",
         feedback_description_error:
-          "No hay formulas o hay mas de una formula para esta presetacion final",
+          "No hay formulas o hay mas de una formula para esta presetacion final"
       });
       handleClickFeeback();
 
@@ -296,7 +297,7 @@ export const AgregarAgregacionV2 = () => {
         ...productoLoteProduccion,
         idProdFin: 0,
         cantidadDeLote: 0.0,
-        cantidadDeProducto: 0,
+        cantidadDeProducto: 0
       });
     }
   };
@@ -319,7 +320,7 @@ export const AgregarAgregacionV2 = () => {
         setproductoLoteProduccion({
           ...productoLoteProduccion,
           cantidadDeLote: cantidadKlgRequerida,
-          cantidadDeProducto: cantidadUniRequerida,
+          cantidadDeProducto: cantidadUniRequerida
         });
       }
     } catch (e) {}
@@ -343,7 +344,7 @@ export const AgregarAgregacionV2 = () => {
         setproductoLoteProduccion({
           ...productoLoteProduccion,
           cantidadDeLote: cantidadKlgRequerida,
-          cantidadDeProducto: cantidadUniRequerida,
+          cantidadDeProducto: cantidadUniRequerida
         });
       }
     } catch (e) {}
@@ -371,7 +372,7 @@ export const AgregarAgregacionV2 = () => {
       if (itemFound) {
         setfeedbackMessages({
           style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto a la orden",
+          feedback_description_error: "Ya se agrego este producto a la orden"
         });
         handleClickFeeback();
       } else {
@@ -388,7 +389,7 @@ export const AgregarAgregacionV2 = () => {
               idProdFin: productoLoteProduccion.idProdFin,
               canReqProdLot: parseFloat(
                 cantidadDeProducto * detalle.canForProDet
-              ).toFixed(5),
+              ).toFixed(5)
             });
           });
 
@@ -399,7 +400,7 @@ export const AgregarAgregacionV2 = () => {
           // actualizamos el detalle de la requisicion de agregacion
           setDetalleRequisicionAgregacion({
             requisicionAgregacion: productoLoteProduccion,
-            detalleProductosAgregados: detalleRequisicionesFormula,
+            detalleProductosAgregados: detalleRequisicionesFormula
           });
 
           // reseteamos los campos
@@ -415,7 +416,7 @@ export const AgregarAgregacionV2 = () => {
           setfeedbackMessages({
             style_message: "warning",
             feedback_description_error:
-              "No se ha seleccionado ninguna presentacion final",
+              "No se ha seleccionado ninguna presentacion final"
           });
           handleClickFeeback();
         }
@@ -441,7 +442,7 @@ export const AgregarAgregacionV2 = () => {
       // mostramos el mensaje de error
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: advertenciaPresentacionFinal,
+        feedback_description_error: advertenciaPresentacionFinal
       });
       handleClickFeeback();
     }
@@ -451,7 +452,7 @@ export const AgregarAgregacionV2 = () => {
   const generatePDF = (data, index) => {
     const formatData = {
       produccion: agregacionesProduccionLote,
-      requisicion: data,
+      requisicion: data
     };
     const newWindow = window.open("", "Agregaciones", "fullscreen=yes");
     // Crear un contenedor específico para tu aplicación
@@ -466,7 +467,7 @@ export const AgregarAgregacionV2 = () => {
   const onAddProductoAgregado = (value) => {
     setproductoAgregado({
       ...productoAgregado,
-      idProdAgr: value.id,
+      idProdAgr: value.id
     });
   };
 
@@ -474,7 +475,7 @@ export const AgregarAgregacionV2 = () => {
   const onAddAreaEncargada = (value) => {
     setproductoAgregado({
       ...productoAgregado,
-      idAreaEncargada: value.id,
+      idAreaEncargada: value.id
     });
   };
 
@@ -483,7 +484,7 @@ export const AgregarAgregacionV2 = () => {
     const { name, value } = target;
     setproductoAgregado({
       ...productoAgregado,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -499,7 +500,7 @@ export const AgregarAgregacionV2 = () => {
         if (itemFound) {
           setfeedbackMessages({
             style_message: "warning",
-            feedback_description_error: "Ya se agrego este producto al detalle",
+            feedback_description_error: "Ya se agrego este producto al detalle"
           });
           handleClickFeeback();
         } else {
@@ -512,7 +513,7 @@ export const AgregarAgregacionV2 = () => {
               desCla,
               desSubCla,
               nomProd,
-              simMed,
+              simMed
             } = result[0];
             // generamos nuestro detalle
             const detalle = {
@@ -526,7 +527,7 @@ export const AgregarAgregacionV2 = () => {
               nomProd: nomProd, // nombre del producto
               simMed: simMed, // medida del producto
               canProdAgr: cantidadAgregada, // cantidad devuelta
-              idFinalProduct: productoAgregado.finalProduct,
+              idFinalProduct: productoAgregado.finalProduct
             };
 
             // seteamos el detalle
@@ -535,12 +536,12 @@ export const AgregarAgregacionV2 = () => {
             // actualizamos el detalle de la requisicion de agregacion
             setDetalleRequisicionAgregacion({
               ...detalleRequisicionAgregacion,
-              detalleProductosAgregados: dataDetalle,
+              detalleProductosAgregados: dataDetalle
             });
           } else {
             setfeedbackMessages({
               style_message: "error",
-              feedback_description_error: description_error,
+              feedback_description_error: description_error
             });
             handleClickFeeback();
           }
@@ -549,14 +550,14 @@ export const AgregarAgregacionV2 = () => {
         setfeedbackMessages({
           style_message: "warning",
           feedback_description_error:
-            "Solo se pueden hacer agregaciones de envasado o encajado",
+            "Solo se pueden hacer agregaciones de envasado o encajado"
         });
         handleClickFeeback();
       }
     } else {
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
+        feedback_description_error: "Asegurese de llenar los datos requeridos"
       });
       handleClickFeeback();
     }
@@ -569,7 +570,7 @@ export const AgregarAgregacionV2 = () => {
       if (element.idProd === idItem) {
         return {
           ...element,
-          canReqProdLot: value,
+          canReqProdLot: value
         };
       } else {
         return element;
@@ -579,7 +580,7 @@ export const AgregarAgregacionV2 = () => {
     // actualizamos el detalle de la requisicion de agregacion
     setDetalleRequisicionAgregacion({
       ...detalleRequisicionAgregacion,
-      detalleProductosAgregados: editFormDetalle,
+      detalleProductosAgregados: editFormDetalle
     });
   };
 
@@ -599,7 +600,7 @@ export const AgregarAgregacionV2 = () => {
     // actualizamos el detalle de la requisicion de agregacion
     setDetalleRequisicionAgregacion({
       ...detalleRequisicionAgregacion,
-      detalleProductosAgregados: datadetalleProductosAgregados,
+      detalleProductosAgregados: datadetalleProductosAgregados
     });
   };
 
@@ -623,7 +624,7 @@ export const AgregarAgregacionV2 = () => {
       } else {
         setfeedbackMessages({
           style_message: "error",
-          feedback_description_error: description_error,
+          feedback_description_error: description_error
         });
         handleClickFeeback();
       }
@@ -654,8 +655,8 @@ export const AgregarAgregacionV2 = () => {
           idProdc: idLotProdc, // lote de produccion
           idProdcMot: informacionRequisicionAgregacion["idProdcMot"], // motivo de agregacion
           idProdFin: referenciaProductoFinal.id, // referencia directa a su producto programado
-          idProdt: informacionRequisicionAgregacion["idProdFin"], // producto final agregado
-        },
+          idProdt: informacionRequisicionAgregacion["idProdFin"] // producto final agregado
+        }
       };
     } else {
       formatDataRequisicion = {
@@ -665,8 +666,8 @@ export const AgregarAgregacionV2 = () => {
           idProdc: idLotProdc, // lote de produccion
           idProdcMot: informacionRequisicionAgregacion["idProdcMot"], // motivo de agregacion
           idProdFin: 0, // referencia directa a su producto programado
-          idProdt: informacionRequisicionAgregacion["idProdFin"], // producto final agregado
-        },
+          idProdt: informacionRequisicionAgregacion["idProdFin"] // producto final agregado
+        }
       };
     }
     console.log(formatDataRequisicion);
@@ -681,7 +682,7 @@ export const AgregarAgregacionV2 = () => {
       onNavigateBack();
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Creado con exito",
+        feedback_description_error: "Creado con exito"
       });
       handleClickFeeback();
       setTimeout(() => {
@@ -690,7 +691,7 @@ export const AgregarAgregacionV2 = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -713,7 +714,7 @@ export const AgregarAgregacionV2 = () => {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: handleErrors,
+        feedback_description_error: handleErrors
       });
       handleClickFeeback();
     } else {
@@ -841,11 +842,11 @@ export const AgregarAgregacionV2 = () => {
                         sx={{
                           "& th": {
                             color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                            backgroundColor: "#f5f5f5"
+                          }
                         }}
                       >
-                        <TableCell align="left" width={30}>
+                        <TableCell align="left" width={70}>
                           <b>Ref.</b>
                         </TableCell>
                         <TableCell align="left" width={100}>
@@ -853,6 +854,9 @@ export const AgregarAgregacionV2 = () => {
                         </TableCell>
                         <TableCell align="left" width={200}>
                           <b>Presentacion</b>
+                        </TableCell>
+                        <TableCell align="left" width={100}>
+                          <b>Fecha requerimiento</b>
                         </TableCell>
                         <TableCell align="left" width={100}>
                           <b>Estado</b>
@@ -867,6 +871,10 @@ export const AgregarAgregacionV2 = () => {
                         <RowDetalleAgregacionLoteProduccion
                           key={row.id}
                           index={i}
+                          correlativo={`${numop} - A${String(i + 1).padStart(
+                            2,
+                            "0"
+                          )}`}
                           detalle={row}
                           onRenderPDF={generatePDF}
                         />
@@ -1021,8 +1029,8 @@ export const AgregarAgregacionV2 = () => {
                               sx={{
                                 "& th": {
                                   color: "rgba(96, 96, 96)",
-                                  backgroundColor: "#f5f5f5",
-                                },
+                                  backgroundColor: "#f5f5f5"
+                                }
                               }}
                             >
                               <TableCell align="left" width={230}>
@@ -1078,8 +1086,8 @@ export const AgregarAgregacionV2 = () => {
                               sx={{
                                 "& th": {
                                   color: "rgba(96, 96, 96)",
-                                  backgroundColor: "#f5f5f5",
-                                },
+                                  backgroundColor: "#f5f5f5"
+                                }
                               }}
                             >
                               <TableCell align="left" width={230}>
