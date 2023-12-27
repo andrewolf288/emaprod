@@ -7,7 +7,7 @@ import {
   FormatDateMYSQLNative,
   FormatDateTimeMYSQLNow,
   FormatDateTimeMYSQLNowPlusYears,
-  letraAnio,
+  letraAnio
 } from "../../../utils/functions/FormatDate";
 import Checkbox from "@mui/material/Checkbox";
 // IMPORTACIONES PARA EL FEEDBACK
@@ -45,7 +45,7 @@ export const AgregarEntradaStockV2 = () => {
     codAlm: "001",
     obsEnt: "",
     ordCom: "",
-    guiRem: "",
+    guiRem: ""
   });
   const {
     idProd,
@@ -63,7 +63,7 @@ export const AgregarEntradaStockV2 = () => {
     codAlm,
     obsEnt,
     ordCom,
-    guiRem,
+    guiRem
   } = formState;
 
   // controlador de entradas parciales
@@ -88,7 +88,7 @@ export const AgregarEntradaStockV2 = () => {
       idProv: data["idProv"],
       codProv: data["codProv"],
       canTotCom: data["canTotCom"],
-      docEntSto: data["docEntSto"],
+      docEntSto: data["docEntSto"]
     });
     setOpenDialogEntradasParciales(false);
   };
@@ -96,7 +96,7 @@ export const AgregarEntradaStockV2 = () => {
   // controlador para dialog de confirmacion de entrada parcial
   const [
     openConfirmDialogEntradasParciales,
-    setOpenConfirmDialogEntradasParciales,
+    setOpenConfirmDialogEntradasParciales
   ] = useState(false);
 
   const handleOpenConfirmDialogEntradasParciales = () => {
@@ -112,7 +112,7 @@ export const AgregarEntradaStockV2 = () => {
     // agregamos una nueva propiedad que indique que el final de las entradas parciales
     const formatEntradasParciales = {
       ...entradasParciales,
-      esEntTot: true, // se termina las entradas parciales
+      esEntTot: true // se termina las entradas parciales
     };
     // actualizamos
     setEntradasParciales(formatEntradasParciales);
@@ -126,7 +126,7 @@ export const AgregarEntradaStockV2 = () => {
     // agregamos una nueva propiedad que indique que el final de las entradas parciales
     const formatEntradasParciales = {
       ...entradasParciales,
-      esEntTot: false, // solo ingreso de entrada parcial
+      esEntTot: false // solo ingreso de entrada parcial
     };
     // actualizamos
     setEntradasParciales(formatEntradasParciales);
@@ -141,7 +141,7 @@ export const AgregarEntradaStockV2 = () => {
     const { name, value } = target;
     setFormState({
       ...formState,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -149,7 +149,7 @@ export const AgregarEntradaStockV2 = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -209,14 +209,14 @@ export const AgregarEntradaStockV2 = () => {
       requestJSON = {
         ...requestJSON,
         fecEntSto: FormatDateTimeMYSQLNow(),
-        fecVenEntSto: FormatDateTimeMYSQLNowPlusYears(4), // se puede poner automaticamente el dato
+        fecVenEntSto: FormatDateTimeMYSQLNowPlusYears(4) // se puede poner automaticamente el dato
       };
     }
 
     requestJSON = {
       ...requestJSON,
       diaJulEntSto: DiaJuliano(requestJSON.fecEntSto),
-      letAniEntSto: letraAnio(requestJSON.fecEntSto),
+      letAniEntSto: letraAnio(requestJSON.fecEntSto)
     };
 
     console.log("Informacion de la entrada: ", requestJSON);
@@ -231,7 +231,7 @@ export const AgregarEntradaStockV2 = () => {
       onNavigateBack();
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Creado con exito",
+        feedback_description_error: "Creado con exito"
       });
       handleClickFeeback();
       setTimeout(() => {
@@ -241,7 +241,7 @@ export const AgregarEntradaStockV2 = () => {
       // mostramos el error recepcionado del backend
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
       // habilitamos el boton de crear
@@ -305,7 +305,7 @@ export const AgregarEntradaStockV2 = () => {
       // mostramos el error recepcionado del backend
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: advertenciaFormularioIncompleto,
+        feedback_description_error: advertenciaFormularioIncompleto
       });
       handleClickFeeback();
     } else {
@@ -335,7 +335,7 @@ export const AgregarEntradaStockV2 = () => {
       setfeedbackMessages({
         style_message: "error",
         feedback_description_error:
-          "No hay ingresos parciales para los datos proporcionados",
+          "No hay ingresos parciales para los datos proporcionados"
       });
       handleClickFeeback();
     }
@@ -357,7 +357,7 @@ export const AgregarEntradaStockV2 = () => {
       // mostramos el error recepcionado del backend
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: advertenciaFormularioIncompleto,
+        feedback_description_error: advertenciaFormularioIncompleto
       });
       handleClickFeeback();
     } else {
@@ -369,7 +369,7 @@ export const AgregarEntradaStockV2 = () => {
     if (canTotCom.length === 0 || canTotEnt.length === 0) {
       setFormState({
         ...formState,
-        canVar: 0,
+        canVar: 0
       });
     } else {
       const cantidadVariacion = (
@@ -377,7 +377,7 @@ export const AgregarEntradaStockV2 = () => {
       ).toFixed(3);
       setFormState({
         ...formState,
-        canVar: cantidadVariacion,
+        canVar: cantidadVariacion
       });
     }
   }, [canTotCom, canTotEnt]);
@@ -389,7 +389,7 @@ export const AgregarEntradaStockV2 = () => {
         style={{
           //border: "1px solid black",
           paddingLeft: "70px",
-          paddingRight: "100px",
+          paddingRight: "100px"
         }}
       >
         <h1 className="mt-4 text-center">Registrar Entrada de stock</h1>
@@ -583,6 +583,7 @@ export const AgregarEntradaStockV2 = () => {
                     type="number"
                     name="canTotCom"
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -602,6 +603,7 @@ export const AgregarEntradaStockV2 = () => {
                     type="number"
                     name="canTotEnt"
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
