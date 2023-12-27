@@ -32,7 +32,6 @@ const FormatDateTimeMYSQLNow = () => {
 };
 
 const FormatDateTimeMYSQLNowPlusYears = (numYears, dateString = null) => {
-  console.log(dateString);
   let nowDate = new Date();
   if (dateString !== null) {
     nowDate = new Date(dateString);
