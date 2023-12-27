@@ -16,7 +16,7 @@ import {
   DialogContent,
   DialogContentText,
   CircularProgress,
-  TextField,
+  TextField
 } from "@mui/material";
 import { createSalidasStockAutomaticas } from "./../../helpers/lote-produccion/createSalidasStockAutomaticas";
 import { DialogUpdateDetalleRequisicion } from "../../components/componentes-lote-produccion/DialogUpdateDetalleRequisicion";
@@ -47,7 +47,7 @@ export const ViewLoteFrescos = () => {
       klgLotProd: "",
       canLotProd: "",
       fecVenLotProd: "",
-      prodLotReq: [],
+      prodLotReq: []
     });
 
   const {
@@ -60,7 +60,7 @@ export const ViewLoteFrescos = () => {
     canLotProd,
     fecVenLotProd,
     prodLotReq,
-    numop,
+    numop
   } = produccionRequisicionDetalle;
 
   const { user } = useAuth();
@@ -78,7 +78,7 @@ export const ViewLoteFrescos = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -129,7 +129,7 @@ export const ViewLoteFrescos = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -138,7 +138,7 @@ export const ViewLoteFrescos = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -162,12 +162,14 @@ export const ViewLoteFrescos = () => {
     if (message_error?.length === 0) {
       // volvemos a consultar la data
       obtenerDataProduccionRequisicionesDetalle();
+      // volvemos a calcular las ollas
+      handleCalculateSalidaParcial();
       // cerramos modal
       closeLoader();
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -176,7 +178,7 @@ export const ViewLoteFrescos = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -202,7 +204,7 @@ export const ViewLoteFrescos = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -211,7 +213,7 @@ export const ViewLoteFrescos = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -227,7 +229,7 @@ export const ViewLoteFrescos = () => {
     const { id } = requisicion_detalle;
     let body = {
       id: id,
-      cantidadNueva: cantidadNueva,
+      cantidadNueva: cantidadNueva
     };
     const resultPeticion = await updateProduccionDetalleRequisicion(body);
     const { message_error, description_error } = resultPeticion;
@@ -240,7 +242,7 @@ export const ViewLoteFrescos = () => {
       setfeedbackMessages({
         style_message: "success",
         feedback_description_error:
-          "Se actualizó el detalle de la requisicion con exito",
+          "Se actualizó el detalle de la requisicion con exito"
       });
       handleClickFeeback();
     } else {
@@ -249,7 +251,7 @@ export const ViewLoteFrescos = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -273,7 +275,7 @@ export const ViewLoteFrescos = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -282,7 +284,7 @@ export const ViewLoteFrescos = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -319,18 +321,17 @@ export const ViewLoteFrescos = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
   };
 
   // funcion para calcular requisicon segun numero de ollas
-  const handleCalculateSalidaParcial = async (e) => {
-    e.preventDefault();
+  const handleCalculateSalidaParcial = async () => {
     if (cantidadOllas > 0) {
       const formatData = {
-        idProd: idProdt,
+        idProd: idProdt
       };
       // llamamos a la formula correspondiente
       const resultPeticion = await getFormulaWithDetalleByPrioridad(formatData);
@@ -342,7 +343,7 @@ export const ViewLoteFrescos = () => {
           ...element,
           canMatPriFor: (
             parseFloat(element["canMatPriFor"]) * cantidadOllas
-          ).toFixed(3),
+          ).toFixed(3)
         };
       });
 
@@ -360,7 +361,7 @@ export const ViewLoteFrescos = () => {
       const formatProdLotReq = prodLotReq[0]["reqDet"].map((element, index) => {
         return {
           ...element,
-          canProgSalPar: formulaDetalle[index]["canMatPriFor"],
+          canProgSalPar: formulaDetalle[index]["canMatPriFor"]
         };
       });
 
@@ -370,12 +371,12 @@ export const ViewLoteFrescos = () => {
       console.log(formatDataRequisicion);
       setproduccionRequisicionDetalle({
         ...produccionRequisicionDetalle,
-        prodLotReq: formatDataRequisicion,
+        prodLotReq: formatDataRequisicion
       });
     } else {
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "Debes ingresar una cantidad mayor a 0",
+        feedback_description_error: "Debes ingresar una cantidad mayor a 0"
       });
       handleClickFeeback();
     }
@@ -562,7 +563,10 @@ export const ViewLoteFrescos = () => {
                 {/* BOTON CALCULAR */}
                 <div className="col-md-3 d-flex">
                   <button
-                    onClick={handleCalculateSalidaParcial}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleCalculateSalidaParcial();
+                    }}
                     className="btn btn-primary"
                   >
                     <svg
