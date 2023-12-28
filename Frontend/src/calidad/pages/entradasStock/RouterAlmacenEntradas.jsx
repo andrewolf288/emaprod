@@ -1,14 +1,14 @@
-import ListEntradaStock from "./ListEntradaStock";
-import { ViewEntradaStock } from "./ViewEntradaStock";
+import { ListEntradaStockCalidad } from "./ListEntradaStockCalidad";
+import { ViewEntradaStockCalidad } from "./ViewEntradaStockCalidad";
 // import ActualizarEntradaStock from "./ActualizarEntradaStock";
 
 export const RouterAlmacenEntradaStock = [
   {
     path: "",
-    element: <ListEntradaStock />,
+    element: <ListEntradaStockCalidad />
   },
   {
-    path: "view/:id",
-    element: <ViewEntradaStock />,
-  },
+    path: "view/:idEntSto",
+    element: <ViewEntradaStockCalidad />
+  }
 ];

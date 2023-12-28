@@ -194,6 +194,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bindParam(16, $idEntStoTip, PDO::PARAM_INT); // tipo de entrada (compra)
 
                 $stmt->execute(); // ejecutamos
+                $lastInsertionEntradaStock = $pdo->lastInsertId();
+
+                // ahora debemos crear su informacion de calidad
+                $sql_create_entrada_calidad =
+                    "INSERT INTO entrada_calidad(idEnt)
+                VALUES(?)";
+                $stmt_create_entrada_calidad = $pdo->prepare($sql_create_entrada_calidad);
+                $stmt_create_entrada_calidad->bindParam(1, $lastInsertionEntradaStock, PDO::PARAM_INT);
+                $stmt_create_entrada_calidad->execute();
 
                 // ACTUALIZAMOS EL STOCK TOTAL DEL ALMACEN Y LA MATERIA PRIMA
 

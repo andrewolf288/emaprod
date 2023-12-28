@@ -20,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         5. Buen estado (4) (C,I,NC)
         6. Legibilidad (4) (C,I,NC)
     */
-    $idClaEnvEnc = 26;
-    $idClaAux = 25;
+    $idClaEnvEnc = 3;
+    $idClaAux = 6;
 
     $sql_select_materiales_empaque = "SELECT * FROM producto WHERE idCla = ? OR idCla = ?";
     $stmt_select_materiales_empaque = $pdo->prepare($sql_select_materiales_empaque);

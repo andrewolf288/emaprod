@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ['Lote', 2, '', 1, 'DATOS DEL PRODUCTO'],
             ['Fecha de producción', 5, '', 1, 'DATOS DEL PRODUCTO'],
             ['Fecha de vencimiento', 5, '', 1, 'DATOS DEL PRODUCTO'],
-            ['% Humedad', 1, '', 2, 'EVALUACION FQO'],
+            ['% Humedad', 1, '', NULL, NULL],
             ['Conformidad', 3, 'C,I', NULL, NULL]
         ];
 
