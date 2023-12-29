@@ -1,28 +1,30 @@
-import { Autocomplete, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { getAtributoCalidadTipo } from "../../../helpers/Referenciales/atributo_calidad_tipo/getAtributoCalidadTipo";
+import React from "react";
+import { useState, useEffect } from "react";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import { getEncargadoCalidad } from "../../../helpers/Referenciales/encargado_calidad/getEncargadoCalidad";
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona un tipo atributo",
+  label: "Selecciona un encargado",
   id: 0
 };
 
-export const FilterTipoAtributoDynamic = ({
-  defaultValue = null,
-  onNewInput
-}) => {
+export const FilterEncargadoCalidad = ({ defaultValue = null, onNewInput }) => {
   const [options, setOptions] = useState([defaultOption]);
   const [value, setValue] = useState(defaultOption);
 
-  const obtenerDataMateriaPrima = async () => {
-    var result = await getAtributoCalidadTipo();
+  const obtenerDataProducto = async () => {
+    var result = await getEncargadoCalidad();
+    result = result.filter(
+      (element) => element.idCla !== 2 && element.idCla !== 4
+    );
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
         return {
           value: element.id,
-          label: `${element.nomTipAtrCal}`,
+          label: element.nomEncCal,
           id: element.id
         };
       })
@@ -44,7 +46,7 @@ export const FilterTipoAtributoDynamic = ({
 
   useEffect(() => {
     const controller = new AbortController();
-    obtenerDataMateriaPrima();
+    obtenerDataProducto();
     return () => controller.abort();
   }, []);
 

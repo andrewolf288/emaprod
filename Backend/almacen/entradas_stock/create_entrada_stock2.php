@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $entradasParciales = $data["entradasParciales"];
 
     // DEMAS DATOS
-    $idEntStoEst = 1; // estado de las entrada
+    $idEntStoEst = 2; // estado de las entrada
     $canTotDis = $canTotEnt; // cantidad total disponible
     $canSel = 0; // canttidad seleccionada
     $canPorSel = 0; // cantidad por seleccionar

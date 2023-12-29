@@ -6,6 +6,17 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { getEntradaStockCalidadById } from "../../helpers/entradas-stock/getEntradaStockCalidadById";
 import { CardAtributosCalidadEntrada } from "../../components/entrada-stock/CardAtributosCalidadEntrada";
+import { FilterEncargadoCalidad } from "../../../components/ReferencialesFilters/EncargadoCalidad/FilterEncargadoCalidad";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography
+} from "@mui/material";
+import { createEntradaAtributosCalidad } from "../../helpers/entradas-stock/createEntradaAtributosCalidad";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -44,6 +55,7 @@ export const ViewEntradaStockCalidad = () => {
     fecFinSto: "",
     etiquetasCards: [],
     dataAtributosEntradaCalidad: [],
+    informacion_valores_atributos: [],
     informacion_calidad: {}
   });
   const {
@@ -68,9 +80,32 @@ export const ViewEntradaStockCalidad = () => {
     canTotDis,
     canVar,
     fecFinSto,
-    etiquetasCards,
-    dataAtributosEntradaCalidad
+    dataAtributosEntradaCalidad,
+    informacion_valores_atributos
   } = dataEntradaStockCalidad;
+
+  const [datosEncargadoEvaluacion, setDatosEncargadoEvaluacion] = useState({
+    idResEntCal: 0,
+    obsAccEntCal: ""
+  });
+
+  const { idResEntCal, obsAccEntCal } = datosEncargadoEvaluacion;
+
+  const onChangeEncargadoEvaluacionCaidad = (value) => {
+    const { id } = value;
+    setDatosEncargadoEvaluacion({
+      ...datosEncargadoEvaluacion,
+      idResEntCal: id
+    });
+  };
+
+  const onChangeObservacionesEvaluacionCalidad = ({ target }) => {
+    const { value } = target;
+    setDatosEncargadoEvaluacion({
+      ...datosEncargadoEvaluacion,
+      obsAccEntCal: value
+    });
+  };
 
   // ESTADOS PARA LA NAVEGACION
   const navigate = useNavigate();
@@ -78,8 +113,46 @@ export const ViewEntradaStockCalidad = () => {
     navigate(-1);
   };
 
+  // ESTADO PARA CONTROLAR EL FEEDBACK
+  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackMessages, setfeedbackMessages] = useState({
+    style_message: "",
+    feedback_description_error: ""
+  });
+  const { style_message, feedback_description_error } = feedbackMessages;
+
+  // MANEJADORES DE FEEDBACK
+  const handleClickFeeback = () => {
+    setfeedbackCreate(true);
+  };
+
+  const handleCloseFeedback = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setfeedbackCreate(false);
+  };
+
   // ESTADO PARA BOTON CREAR
   const [disableButton, setdisableButton] = useState(false);
+
+  // controlador para dialog de confirmacion de entrada parcial
+  const [openDialogAprobarEntradaFIFO, setopenDialogAprobarEntradaFIFO] =
+    useState(false);
+
+  const handleOpenDialogAprobarEntradaFIFO = () => {
+    setopenDialogAprobarEntradaFIFO(true);
+  };
+
+  const handleCloseDialogAprobarEntradaFIFO = () => {
+    setopenDialogAprobarEntradaFIFO(false);
+    setdisableButton(false);
+  };
+
+  const handleProcessRespondeDialogAprobarEntradaFIFO = (aprobado) => {
+    // llamamos a la api
+    guardarDatosAtributosCalidad(aprobado);
+  };
 
   // funcion para cambiar valor de texto y numero
   const onChangeValoresAlfanumericos = ({ target }, element) => {
@@ -102,8 +175,101 @@ export const ViewEntradaStockCalidad = () => {
     });
   };
 
-  const guardarDatosAtributosCalidad = () => {
-    console.log(dataAtributosEntradaCalidad);
+  // manejador de errores de atributos de calidad
+  const handleGuardarAtributos = () => {
+    if (idResEntCal === 0) {
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error:
+          "Debe agregar información del encargado de evaluación"
+      });
+      handleClickFeeback();
+    } else {
+      setdisableButton(true);
+      // guardarDatosAtributosCalidad();
+      handleOpenDialogAprobarEntradaFIFO();
+    }
+  };
+
+  // funcion para guardar atributos de calidad asociados a entrada
+  const guardarDatosAtributosCalidad = async (aprobado) => {
+    // primero debemos mostrar un dialog que pregunte si quiere habilitarlo para FIFO
+    // guardamos informacion de calidad
+    // 1. debemos verificar que atributos son para insertar y cuales son para actualizar
+    // 2. Si el registro esta vacio:
+    // - si ya fue registrado, entonces hablamos de una actualizacion
+    // - si no fue registrado; entonces lo quitamos de la data
+    // 3. Si el registro esta lleno:
+    // - si ya fue registrado, entonces hablamos de una actualizacion
+    // - si no fue registrado; entonces hablamos de una nueva insercion
+
+    const dataAtributos = dataAtributosEntradaCalidad.map((itemData) => {
+      const valueAtributo = itemData["valEntCalAtr"].trim();
+      const findElementAtributo = informacion_valores_atributos.find(
+        (itemAtributo) => itemData.id === itemAtributo.idProdtAtrCal
+      );
+
+      // si ya se creo el atributo
+      if (findElementAtributo) {
+        return {
+          ...itemData,
+          valEntCalAtr: valueAtributo,
+          action: "UPDATE"
+        };
+      }
+      // si no se creo el atributo
+      else {
+        // si el valor es vacio
+        if (valueAtributo.length === 0) {
+          return {
+            ...itemData,
+            valEntCalAtr: valueAtributo,
+            action: "DELETE"
+          };
+        } else {
+          return {
+            ...itemData,
+            valEntCalAtr: valueAtributo,
+            action: "CREATE"
+          };
+        }
+      }
+    });
+
+    const filterDatosDelete = dataAtributos.filter(
+      (element) => element["action"] !== "DELETE"
+    );
+
+    const formatData = {
+      ...dataEntradaStockCalidad,
+      esAprEnt: aprobado,
+      dataAtributosEntradaCalidad: filterDatosDelete,
+      datosEncargadoEvaluacion: datosEncargadoEvaluacion
+    };
+
+    console.log(formatData);
+    const resultPeticion = await createEntradaAtributosCalidad(formatData);
+    const { message_error, description_error } = resultPeticion;
+    if (message_error.length !== 0) {
+      // error al crear los atributos de calidad
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error
+      });
+      handleClickFeeback();
+
+      // cerramos el dialog
+      handleCloseDialogAprobarEntradaFIFO();
+      // habilitamos boton de disabled
+      setdisableButton(false);
+    } else {
+      // cerramos dialog
+      handleCloseDialogAprobarEntradaFIFO();
+      // habilitamos boton
+      setdisableButton(false);
+      // navegamos hacia la anterior vista
+      onNavigateBack();
+    }
   };
 
   useEffect(() => {
@@ -133,7 +299,7 @@ export const ViewEntradaStockCalidad = () => {
         }
         // buscamos si se ha registrado un valor del atrbiuto de calidad
         const findElement = informacion_valores_atributos.find(
-          (atributo) => element.idProdtAtrCal === atributo.id
+          (atributo) => element.id === atributo.idProdtAtrCal
         );
 
         // si se encontro un registro previo, formamos la data
@@ -472,6 +638,35 @@ export const ViewEntradaStockCalidad = () => {
                 </div>
               </div>
 
+              <div className="card d-flex mt-4">
+                <h6 className="card-header">
+                  Datos de encargado de evaluacion
+                </h6>
+                <div className="card-body">
+                  <div className="mb-2 row">
+                    <div className="col-md-4">
+                      <label htmlFor="nombre" className="form-label">
+                        <b>Encargado calidad</b>
+                      </label>
+                      <FilterEncargadoCalidad
+                        onNewInput={onChangeEncargadoEvaluacionCaidad}
+                      />
+                    </div>
+                    <div className="col-md-8">
+                      <label htmlFor="nombre" className="form-label">
+                        <b>Observaciones/Acciones correctivas</b>
+                      </label>
+                      <textarea
+                        className="form-control"
+                        placeholder="Escribe aqui"
+                        value={obsAccEntCal}
+                        onChange={onChangeObservacionesEvaluacionCalidad}
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* DATOS DE CALIDAD */}
               <div className="card d-flex mt-4">
                 <h6 className="card-header">Datos de calidad</h6>
@@ -495,7 +690,7 @@ export const ViewEntradaStockCalidad = () => {
                 <button
                   type="submit"
                   disabled={disableButton}
-                  onClick={guardarDatosAtributosCalidad}
+                  onClick={handleGuardarAtributos}
                   className="btn btn-primary"
                 >
                   Guardar
@@ -506,6 +701,74 @@ export const ViewEntradaStockCalidad = () => {
         </>
       )}
       {loading && <div>Cargando...</div>}
+      {openDialogAprobarEntradaFIFO && (
+        <DialogAprobarSalidaFIFO
+          open={openDialogAprobarEntradaFIFO}
+          handleClose={handleCloseDialogAprobarEntradaFIFO}
+          handleProcess={handleProcessRespondeDialogAprobarEntradaFIFO}
+        />
+      )}
+      {/* FEEDBACK AGREGAR MATERIA PRIMA */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={feedbackCreate}
+        autoHideDuration={6000}
+        onClose={handleCloseFeedback}
+      >
+        <Alert
+          onClose={handleCloseFeedback}
+          severity={style_message}
+          sx={{ width: "100%" }}
+        >
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
+        </Alert>
+      </Snackbar>
     </>
+  );
+};
+
+const DialogAprobarSalidaFIFO = ({ open, handleClose, handleProcess }) => {
+  return (
+    <React.Fragment>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Evaluacion de calidad</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Quiere permitir que esta entrada sea utilizada para el FIFO?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="inherit" variant="contained" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => {
+              handleProcess(false);
+            }}
+          >
+            Restringir
+          </Button>
+          <Button
+            color="primary"
+            variant="contained"
+            autoFocus
+            onClick={() => {
+              handleProcess(true);
+            }}
+          >
+            Permitir
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
   );
 };
