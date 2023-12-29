@@ -229,25 +229,24 @@ export const ViewRetornoVenta = () => {
         idGuiRem: dataSalidaVenta["idGuiRem"]
       };
       console.log(formatData);
-      // const resultPeticion = await createRetornoLoteStockByDetalle(detalle);
-      // console.log(resultPeticion);
-      // const { message_error, description_error } = resultPeticion;
+      const resultPeticion = await createRetornoLoteStockByDetalle(formatData);
+      const { message_error, description_error } = resultPeticion;
 
-      // if (message_error.length === 0) {
-      //   setfeedbackMessages({
-      //     style_message: "success",
-      //     feedback_description_error: "La operación se realizó con éxito"
-      //   });
-      //   handleClickFeeback();
-      //   // traemos de nuevo la data
-      //   obtenerDataDetalleVenta();
-      // } else {
-      //   setfeedbackMessages({
-      //     style_message: "error",
-      //     feedback_description_error: description_error
-      //   });
-      //   handleClickFeeback();
-      // }
+      if (message_error.length === 0) {
+        setfeedbackMessages({
+          style_message: "success",
+          feedback_description_error: "La operación se realizó con éxito"
+        });
+        handleClickFeeback();
+        // traemos de nuevo la data
+        obtenerDataDetalleVenta();
+      } else {
+        setfeedbackMessages({
+          style_message: "error",
+          feedback_description_error: description_error
+        });
+        handleClickFeeback();
+      }
     }
   };
 
@@ -275,7 +274,7 @@ export const ViewRetornoVenta = () => {
                     className="form-control"
                   />
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-5">
                   <label htmlFor="nombre" className="form-label">
                     <b>Motivo operación</b>
                   </label>

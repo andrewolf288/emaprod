@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $refProdt = $data["refProdt"]; // referencia del producto
     $idGuiRem = $data["idGuiRem"]; // referencia a su salida
     $detSal = $data["detSal"]; // detalle de salida
+    $idAlmacen = 1; // almacen principal
 
     // si es mercancia promocional
     if ($esMerProm == 1) {
@@ -27,17 +28,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // PASO 2: segun la cantidad a devolver y en base a lo que salio de cada entrada, 
         //         devolvemos las cantidades empezando por el ultimo en salir
         // PASO 3: comprobamos que los saldos se retornaron correctamente
-        $salidasEmpleadas =  array();
 
-        $sql_select_movimiento_operacion_facturacion =
-            "SELECT * FROM movimiento_operacion_facturacion
-        WHERE idOpeFacDet = ? ORDER BY idEntSto DESC";
+        // primero debemos buscar su referencia a la operacion factueacion
+        $esSal = 1;
+        $sql_select_operacion_facturacion =
+            "SELECT id FROM operacion_facturacion
+        WHERE idGuiRem = ? AND esSal = ? LIMIT 1";
+        $stmt_select_operacion_facturacion = $pdo->prepare($sql_select_operacion_facturacion);
+        $stmt_select_operacion_facturacion->bindParam(1, $idGuiRem, PDO::PARAM_INT);
+        $stmt_select_operacion_facturacion->bindParam(2, $esSal, PDO::PARAM_BOOL);
+        $stmt_select_operacion_facturacion->execute();
 
-        $stmt_select_movimiento_operacion_facturacion = $pdo->prepare($sql_select_movimiento_operacion_facturacion);
-        $stmt_select_movimiento_operacion_facturacion->bindParam(1, $idOpeFacDet, PDO::PARAM_INT);
-        $stmt_select_movimiento_operacion_facturacion->execute();
+        $row_select_operacion_facturacion = $stmt_select_operacion_facturacion->fetch(PDO::FETCH_ASSOC);
 
-        $salidasEmpleadas = $stmt_select_movimiento_operacion_facturacion->fetchAll(PDO::FETCH_ASSOC);
+        // luego consultamos los lotes utilizados para la salida
+        $sql_select_movimientos_detalle =
+            "SELECT *
+        FROM movimiento_operacion_facturacion
+        WHERE idOpeFac = ? AND idProdt = ? ORDER BY idEntSto DESC";
+        $sql_select_movimientos_detalle = $pdo->prepare($sql_select_movimientos_detalle);
+        $sql_select_movimientos_detalle->bindParam(1, $row_select_operacion_facturacion["id"], PDO::PARAM_INT);
+        $sql_select_movimientos_detalle->execute();
+
+        $movimientos_detalle = array();
+        $movimientos_detalle = $sql_select_movimientos_detalle->fetchAll(PDO::FETCH_ASSOC);
 
         $cantidadAdevolver = $canOpeFacDet; // acumulado
         $cantSalPorIteracion = 0; // cantidad auxiliar
@@ -46,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $pdo->beginTransaction();
             // ahora recorremos las salidas
-            foreach ($salidasEmpleadas as $value) {
+            foreach ($movimientos_detalle as $value) {
                 $idEntSto = $value["idEntSto"]; // entrada
                 $canSalStoReq = $value["canMovOpeFac"]; // cantidad
 
@@ -85,6 +99,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // EJECUTAMOS LA CREACION DE UNA SALIDA
                 $stmt->execute();
 
+                // ACTUALIZAMOS EL ALMACEN CORRESPONDIENTE A LA ENTRADA
+                $sql_update_almacen_stock =
+                    "UPDATE almacen_stock
+                SET canSto = canSto + $canSalStoReq, canStoDis = canStoDis + $canSalStoReq
+                WHERE idAlm = ? AND idProd = ?";
+
+                $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
+                $stmt_update_almacen_stock->bindParam(1, $idAlmacen, PDO::PARAM_INT);
+                $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
+                $stmt_update_almacen_stock->execute();
+
                 if ($cantidadAdevolver == 0) {
                     break;
                 }
@@ -106,24 +131,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_select_operacion_facturacion->bindParam(2, $esSal, PDO::PARAM_BOOL);
         $stmt_select_operacion_facturacion->execute();
 
-        $row_select_operacion_facturacion = $stmt_select_operacion_facturacion->fetchAll(PDO::FETCH_ASSOC);
+        $row_select_operacion_facturacion = $stmt_select_operacion_facturacion->fetch(PDO::FETCH_ASSOC);
 
         // luego consultamos los lotes utilizados para la salida
         $sql_select_movimientos_detalle =
             "SELECT *
         FROM movimiento_operacion_facturacion
-        WHERE idOpeFact = ? AND idProdt = ? ORDER BY idEntSto DESC";
+        WHERE idOpeFac = ? AND idProdt = ? ORDER BY idEntSto DESC";
         $sql_select_movimientos_detalle = $pdo->prepare($sql_select_movimientos_detalle);
         $sql_select_movimientos_detalle->bindParam(1, $row_select_operacion_facturacion["id"], PDO::PARAM_INT);
+        $sql_select_movimientos_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
         $sql_select_movimientos_detalle->execute();
 
-        $movimientos_detalle = array();
         $movimientos_detalle = $sql_select_movimientos_detalle->fetchAll(PDO::FETCH_ASSOC);
 
         // recorremos el detalle de devolucion
         foreach ($detSal as $detalle) {
             $encontrado = false;
-            $canSalStoProd = $detalle["canSalStoProd"];
+            $canSalLotProd = floatval($detalle["canSalLotProd"]);
             $refProdc = $detalle["refProdc"];
 
             // tenemos que identificar si el detalle de devolucion es un lote que no salio del movimiento de salida
@@ -136,14 +161,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // si el lote fue usado en la salida
             if ($encontrado) {
-                $cantidadAdevolver = $canSalStoProd; // acumulado
+                $cantidadAdevolver = $canSalLotProd; // acumulado
                 $cantSalPorIteracion = 0; // cantidad auxiliar
                 $idEntStoEst = 1; // estado de disponible de entrada
 
-                //aplicamos el algoritmos de reparticion
                 try {
                     $pdo->beginTransaction();
-                    foreach ($movimientos_detalle as $value) {
+
+                    // debemos extraer los movimientos correspondientes al lote de produccion
+                    $movimiento_detalle_produccion = array();
+                    foreach ($movimientos_detalle as $elemento) {
+                        if ($elemento['idProdc'] === $refProdc) {
+                            $movimiento_detalle_produccion[] = $elemento;
+                        }
+                    }
+
+                    //aplicamos el algoritmos de reparticion
+                    foreach ($movimiento_detalle_produccion as $value) {
                         $idEntSto = $value["idEntSto"]; // entrada
                         $canSalStoReq = $value["canMovOpeFac"]; // cantidad
 
@@ -165,12 +199,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt_update_entrada_stock->bindParam(2, $idEntSto, PDO::PARAM_INT);
                         $stmt_update_entrada_stock->execute();
 
+                        // insetamos el movimiento de facturacion
                         $esEnt = 1;
                         $sql =
                             "INSERT
                             movimiento_operacion_facturacion
                             (idOpeFac, idOpeFacDet, idProdt, idEntSto, canMovOpeFac, esEnt)
-                            VALUES (?, ?, ?, ?, $canSalStoReq, ?)";
+                            VALUES (?, ?, ?, ?, $cantSalPorIteracion, ?)";
 
                         $stmt = $pdo->prepare($sql);
                         $stmt->bindParam(1, $idOpeFac, PDO::PARAM_INT); // id de la operacion facturacion
@@ -178,9 +213,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt->bindParam(3, $idProdt, PDO::PARAM_INT);
                         $stmt->bindParam(4, $idEntSto, PDO::PARAM_INT);
                         $stmt->bindParam(5, $esEnt, PDO::PARAM_BOOL);
-
-                        // EJECUTAMOS LA CREACION DE UNA SALIDA
                         $stmt->execute();
+
+                        // ACTUALIZAMOS EL ALMACEN CORRESPONDIENTE A LA ENTRADA
+                        $sql_update_almacen_stock =
+                            "UPDATE almacen_stock
+                        SET canSto = canSto + $cantSalPorIteracion, canStoDis = canStoDis + $cantSalPorIteracion
+                        WHERE idAlm = ? AND idProd = ?";
+
+                        $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
+                        $stmt_update_almacen_stock->bindParam(1, $idAlmacen, PDO::PARAM_INT);
+                        $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
+                        $stmt_update_almacen_stock->execute();
 
                         if ($cantidadAdevolver == 0) {
                             break;
@@ -207,7 +251,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     $row_entrada_lote_produccion = $stmt_consult_entradas_lote_produccion->fetchAll(PDO::FETCH_ASSOC);
 
-                    $cantidadAdevolver = $canSalStoProd; // acumulado
+                    $cantidadAdevolver = $canSalLotProd; // acumulado
                     $cantSalPorIteracion = 0; // cantidad auxiliar
                     $idEntStoEst = 1; // estado de disponible de entrada
 
@@ -225,6 +269,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $cantidadAdevolver = 0;
                         }
 
+                        // actualizamos la entrada stock
                         $sql_update_entrada_stock =
                             "UPDATE entrada_stock
                             SET canTotDis = canTotDis + $cantSalPorIteracion, idEntStoEst = ?
@@ -235,12 +280,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt_update_entrada_stock->bindParam(2, $idEntSto, PDO::PARAM_INT);
                         $stmt_update_entrada_stock->execute();
 
+                        // insertamos un movimiento operacion facturacion
                         $esEnt = 1;
                         $sql =
                             "INSERT
                             movimiento_operacion_facturacion
                             (idOpeFac, idOpeFacDet, idProdt, idEntSto, canMovOpeFac, esEnt)
-                            VALUES (?, ?, ?, ?, $canSalStoReq, ?)";
+                            VALUES (?, ?, ?, ?, $cantSalPorIteracion, ?)";
 
                         $stmt = $pdo->prepare($sql);
                         $stmt->bindParam(1, $idOpeFac, PDO::PARAM_INT); // id de la operacion facturacion
@@ -248,9 +294,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt->bindParam(3, $idProdt, PDO::PARAM_INT);
                         $stmt->bindParam(4, $idEntSto, PDO::PARAM_INT);
                         $stmt->bindParam(5, $esEnt, PDO::PARAM_BOOL);
-
-                        // EJECUTAMOS LA CREACION DE UNA SALIDA
                         $stmt->execute();
+
+                        // ACTUALIZAMOS EL ALMACEN CORRESPONDIENTE A LA ENTRADA
+                        $sql_update_almacen_stock =
+                            "UPDATE almacen_stock
+                        SET canSto = canSto + $cantSalPorIteracion, canStoDis = canStoDis + $cantSalPorIteracion
+                        WHERE idAlm = ? AND idProd = ?";
+
+                        $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
+                        $stmt_update_almacen_stock->bindParam(1, $idAlmacen, PDO::PARAM_INT);
+                        $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
+                        $stmt_update_almacen_stock->execute();
 
                         if ($cantidadAdevolver == 0) {
                             break;

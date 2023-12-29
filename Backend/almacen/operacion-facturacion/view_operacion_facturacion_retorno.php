@@ -198,6 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     if ($indice !== -1) {
                                         // Si existe, sumar la cantidad
                                         $totalPorLoteProduccion[$indice]['canSalLotProd'] += $cantidad;
+                                        $totalPorLoteProduccion[$indice]['canSalLotProdSal'] += $cantidad;
                                     } else {
                                         // Si no existe, crear una nueva entrada en el arreglo
                                         $totalPorLoteProduccion[] = [

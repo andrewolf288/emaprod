@@ -98,6 +98,7 @@ export const RowDetalleRetornosVentaDetalle = ({
                             : "green"
                       }
                     }}
+                    onWheel={(e) => e.target.blur()}
                     value={item.canSalLotProd}
                     disabled={disabledInput}
                   />

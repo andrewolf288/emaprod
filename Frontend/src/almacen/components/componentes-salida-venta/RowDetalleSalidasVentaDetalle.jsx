@@ -84,6 +84,7 @@ export const RowDetalleSalidasVentaDetalle = ({
                     onChange={(e) => {
                       onUpdateSalidaStock(detalle.idProdt, item.refProdc, e);
                     }}
+                    onWheel={(e) => e.target.blur()}
                     type="number"
                     name="canSalLotProd"
                     value={item.canSalLotProd}
@@ -416,6 +417,7 @@ const TableRowSalidaStockDisponible = ({
           autoComplete="off"
           variant="outlined"
           size="small"
+          onWheel={(e) => e.target.blur()}
           inputProps={{
             style: {
               color:
