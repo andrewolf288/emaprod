@@ -227,8 +227,6 @@ export const AgregarEntradaStockV2 = () => {
     );
 
     if (message_error.length === 0) {
-      // navegamos a la anterior vista
-      onNavigateBack();
       setfeedbackMessages({
         style_message: "success",
         feedback_description_error: "Creado con exito"

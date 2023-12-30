@@ -96,8 +96,8 @@ const InputOpcionUnica = ({ atributo, onChangeValoresAlfanumericos }) => {
     <FormControl className="form-control">
       <RadioGroup
         aria-labelledby="demo-radio-buttons-group-label"
-        defaultValue={atributo["valEntCalAtr"]}
-        name={String(atributo.id)}
+        // defaultValue={atributo["valEntCalAtr"]}
+        value={atributo["valEntCalAtr"]}
         onChange={(e) => {
           onChangeValoresAlfanumericos(e, atributo);
         }}

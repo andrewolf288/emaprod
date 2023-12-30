@@ -56,6 +56,10 @@ export const ViewEntradaStockCalidad = () => {
     etiquetasCards: [],
     dataAtributosEntradaCalidad: [],
     informacion_valores_atributos: [],
+    informacion_calidad: {
+      idResEntCal: null,
+      obsAccEntCal: ""
+    },
     informacion_calidad: {}
   });
   const {
@@ -81,29 +85,34 @@ export const ViewEntradaStockCalidad = () => {
     canVar,
     fecFinSto,
     dataAtributosEntradaCalidad,
-    informacion_valores_atributos
+    informacion_valores_atributos,
+    informacion_calidad
   } = dataEntradaStockCalidad;
 
-  const [datosEncargadoEvaluacion, setDatosEncargadoEvaluacion] = useState({
-    idResEntCal: 0,
-    obsAccEntCal: ""
-  });
-
-  const { idResEntCal, obsAccEntCal } = datosEncargadoEvaluacion;
+  const { idResEntCal, obsAccEntCal } = informacion_calidad;
 
   const onChangeEncargadoEvaluacionCaidad = (value) => {
     const { id } = value;
-    setDatosEncargadoEvaluacion({
-      ...datosEncargadoEvaluacion,
+    const formatDataCalidad = {
+      ...informacion_calidad,
       idResEntCal: id
+    };
+    setDataEntradaStockCalidad({
+      ...dataEntradaStockCalidad,
+      informacion_calidad: formatDataCalidad
     });
   };
 
   const onChangeObservacionesEvaluacionCalidad = ({ target }) => {
     const { value } = target;
-    setDatosEncargadoEvaluacion({
-      ...datosEncargadoEvaluacion,
+
+    const formatDataCalidad = {
+      ...informacion_calidad,
       obsAccEntCal: value
+    };
+    setDataEntradaStockCalidad({
+      ...dataEntradaStockCalidad,
+      informacion_calidad: formatDataCalidad
     });
   };
 
@@ -150,8 +159,15 @@ export const ViewEntradaStockCalidad = () => {
   };
 
   const handleProcessRespondeDialogAprobarEntradaFIFO = (aprobado) => {
+    setDataEntradaStockCalidad({
+      ...dataEntradaStockCalidad,
+      informacion_calidad: {
+        ...informacion_calidad,
+        esAprEnt: aprobado
+      }
+    });
     // llamamos a la api
-    guardarDatosAtributosCalidad(aprobado);
+    guardarDatosAtributosCalidad();
   };
 
   // funcion para cambiar valor de texto y numero
@@ -177,7 +193,7 @@ export const ViewEntradaStockCalidad = () => {
 
   // manejador de errores de atributos de calidad
   const handleGuardarAtributos = () => {
-    if (idResEntCal === 0) {
+    if (idResEntCal === null) {
       setfeedbackMessages({
         style_message: "warning",
         feedback_description_error:
@@ -187,12 +203,17 @@ export const ViewEntradaStockCalidad = () => {
     } else {
       setdisableButton(true);
       // guardarDatosAtributosCalidad();
-      handleOpenDialogAprobarEntradaFIFO();
+      // si recien se ingreso a la vista para completar datos de calidad
+      if (informacion_valores_atributos.length === 0) {
+        handleOpenDialogAprobarEntradaFIFO();
+      } else {
+        guardarDatosAtributosCalidad();
+      }
     }
   };
 
   // funcion para guardar atributos de calidad asociados a entrada
-  const guardarDatosAtributosCalidad = async (aprobado) => {
+  const guardarDatosAtributosCalidad = async () => {
     // primero debemos mostrar un dialog que pregunte si quiere habilitarlo para FIFO
     // guardamos informacion de calidad
     // 1. debemos verificar que atributos son para insertar y cuales son para actualizar
@@ -205,17 +226,27 @@ export const ViewEntradaStockCalidad = () => {
 
     const dataAtributos = dataAtributosEntradaCalidad.map((itemData) => {
       const valueAtributo = itemData["valEntCalAtr"].trim();
+      // buscamos
       const findElementAtributo = informacion_valores_atributos.find(
         (itemAtributo) => itemData.id === itemAtributo.idProdtAtrCal
       );
 
       // si ya se creo el atributo
       if (findElementAtributo) {
-        return {
-          ...itemData,
-          valEntCalAtr: valueAtributo,
-          action: "UPDATE"
-        };
+        // si el valor actual es igual al creado
+        if (valueAtributo === findElementAtributo["valEntCalAtr"].trim()) {
+          return {
+            ...itemData,
+            valEntCalAtr: valueAtributo,
+            action: "DELETE"
+          };
+        } else {
+          return {
+            ...itemData,
+            valEntCalAtr: valueAtributo,
+            action: "UPDATE"
+          };
+        }
       }
       // si no se creo el atributo
       else {
@@ -242,13 +273,12 @@ export const ViewEntradaStockCalidad = () => {
 
     const formatData = {
       ...dataEntradaStockCalidad,
-      esAprEnt: aprobado,
-      dataAtributosEntradaCalidad: filterDatosDelete,
-      datosEncargadoEvaluacion: datosEncargadoEvaluacion
+      dataAtributosEntradaCalidad: filterDatosDelete
     };
 
     console.log(formatData);
     const resultPeticion = await createEntradaAtributosCalidad(formatData);
+    console.log(resultPeticion);
     const { message_error, description_error } = resultPeticion;
     if (message_error.length !== 0) {
       // error al crear los atributos de calidad
@@ -257,18 +287,21 @@ export const ViewEntradaStockCalidad = () => {
         feedback_description_error: description_error
       });
       handleClickFeeback();
-
       // cerramos el dialog
       handleCloseDialogAprobarEntradaFIFO();
-      // habilitamos boton de disabled
-      setdisableButton(false);
     } else {
       // cerramos dialog
       handleCloseDialogAprobarEntradaFIFO();
-      // habilitamos boton
-      setdisableButton(false);
+      // mostrar exito
+      setfeedbackMessages({
+        style_message: "success",
+        feedback_description_error: "Se actualizo con éxito"
+      });
+      handleClickFeeback();
       // navegamos hacia la anterior vista
-      onNavigateBack();
+      setTimeout(() => {
+        window.close();
+      }, "1000");
     }
   };
 
@@ -650,6 +683,7 @@ export const ViewEntradaStockCalidad = () => {
                       </label>
                       <FilterEncargadoCalidad
                         onNewInput={onChangeEncargadoEvaluacionCaidad}
+                        defaultValue={idResEntCal}
                       />
                     </div>
                     <div className="col-md-8">

@@ -155,163 +155,164 @@ export const ListEntradaStockCalidad = () => {
           </div>
         </div>
         {/* TABLA DE RESULTADOS */}
-        <div
-          className="mt-4"
-          style={{
-            //overflowY: "auto",
-            overflow: "auto",
-            float: "left"
-            //position: "relative",
-            //border: "1px solid black",
-          }}
-        >
-          <Paper>
-            <TableContainer>
-              <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                <TableHead>
-                  <TableRow
-                    sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableHead>
+              <TableRow
+                sx={{
+                  "& th": {
+                    color: "rgba(96, 96, 96)",
+                    backgroundColor: "#f5f5f5"
+                  }
+                }}
+              >
+                <TableCell align="left" width={100}>
+                  <b>Fecha entrada</b>
+                  <FechaPickerDay onNewfecEntSto={onChangeDate} />
+                </TableCell>
+                <TableCell align="left" width={70}>
+                  ¿Verificado?
+                </TableCell>
+                <TableCell align="left" width={70}>
+                  Estado
+                </TableCell>
+                <TableCell align="left" width={400}>
+                  <b>Producto</b>
+                  <FilterAllProductosFilters onNewInput={onChangeProducto} />
+                </TableCell>
+                <TableCell align="left" width={200}>
+                  <b>Proveedor</b>
+                  <FilterProveedor onNewInput={onChangeProveedor} />
+                </TableCell>
+                <TableCell align="left" width={100}>
+                  <b>Codigo</b>
+                  <TextField
+                    name="codigo"
+                    onChange={handleFormFilter}
+                    size="small"
+                    autoComplete="off"
+                    InputProps={{
+                      style: {
+                        color: "black",
+                        background: "white"
                       }
                     }}
-                  >
-                    <TableCell align="left">
-                      <b>Fecha entrada</b>
-                      <FechaPickerDay onNewfecEntSto={onChangeDate} />
-                    </TableCell>
-                    <TableCell align="left">
-                      <b>Producto</b>
-                      <FilterAllProductosFilters
-                        onNewInput={onChangeProducto}
-                      />
-                    </TableCell>
-                    <TableCell align="left">
-                      <b>Proveedor</b>
-                      <FilterProveedor onNewInput={onChangeProveedor} />
-                    </TableCell>
-                    <TableCell align="left">
-                      <b>Codigo</b>
-                      <TextField
-                        name="codigo"
-                        onChange={handleFormFilter}
-                        size="small"
-                        autoComplete="off"
-                        InputProps={{
-                          style: {
-                            color: "black",
-                            background: "white"
-                          }
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="left">
-                      <b>Documento entrada</b>
-                      <TextField
-                        name="documento"
-                        onChange={handleFormFilter}
-                        size="small"
-                        autoComplete="off"
-                        InputProps={{
-                          style: {
-                            color: "black",
-                            background: "white"
-                          }
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="left">
-                      <b>¿De seleccion?</b>
-                      <div className="d-flex justify-content-center">
-                        <Checkbox
-                          {...label}
-                          name="seleccion"
-                          defaultChecked={false}
-                          onChange={onChangeSeleccionado}
-                        />
-                      </div>
-                    </TableCell>
-                    <TableCell align="left">
-                      <b>Total ingreso</b>
-                      <TextField
-                        onChange={handleFormFilter}
-                        type="number"
-                        size="small"
-                        name="ingresado"
-                        InputProps={{
-                          style: {
-                            color: "black",
-                            background: "white"
-                          }
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="center">
-                      <b>Acciones</b>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {dataEntStoTemp.map((row, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 }
+                  />
+                </TableCell>
+                <TableCell align="left" width={70}>
+                  <b>Documento entrada</b>
+                  <TextField
+                    name="documento"
+                    onChange={handleFormFilter}
+                    size="small"
+                    autoComplete="off"
+                    InputProps={{
+                      style: {
+                        color: "black",
+                        background: "white"
+                      }
+                    }}
+                  />
+                </TableCell>
+                <TableCell align="left" width={20}>
+                  <b>¿De seleccion?</b>
+                  <div className="d-flex justify-content-center">
+                    <Checkbox
+                      {...label}
+                      name="seleccion"
+                      defaultChecked={false}
+                      onChange={onChangeSeleccionado}
+                    />
+                  </div>
+                </TableCell>
+                <TableCell align="left" width={50}>
+                  <b>Total ingreso</b>
+                  <TextField
+                    onChange={handleFormFilter}
+                    type="number"
+                    size="small"
+                    name="ingresado"
+                    InputProps={{
+                      style: {
+                        color: "black",
+                        background: "white"
+                      }
+                    }}
+                  />
+                </TableCell>
+                <TableCell align="center" width={50}>
+                  <b>Acciones</b>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {dataEntStoTemp.map((row, index) => (
+                <TableRow
+                  key={index}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 }
+                  }}
+                >
+                  <TableCell align="center">{row.fecEntSto}</TableCell>
+                  <TableCell>
+                    {row.esAprEnt === null ? "No evaluado" : "Evaluado"}
+                  </TableCell>
+                  <TableCell>
+                    {row.esAprEnt === null
+                      ? "No evaluado"
+                      : row.esAprEnt === 1
+                      ? "Aprobado"
+                      : "Desaprobado"}
+                  </TableCell>
+                  <TableCell>{row.nomProd}</TableCell>
+                  <TableCell>{row.nomProv}</TableCell>
+                  <TableCell>{row.codEntSto}</TableCell>
+                  <TableCell>{row.docEntSto}</TableCell>
+                  <TableCell align="center">
+                    {row.esSel === 1 ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        color="green"
+                        className="bi bi-check-circle-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        color="red"
+                        fill="currentColor"
+                        className="bi bi-x-circle-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                      </svg>
+                    )}
+                  </TableCell>
+                  <TableCell>{row.canTotEnt}</TableCell>
+                  <TableCell align="center">
+                    <IconButton
+                      onClick={() => {
+                        window.open(
+                          `/calidad/entradas-stock/view/${row.id}`,
+                          "_blank"
+                        );
                       }}
                     >
-                      <TableCell align="center">{row.fecEntSto}</TableCell>
-                      <TableCell>{row.nomProd}</TableCell>
-                      <TableCell>{row.nomProv}</TableCell>
-                      <TableCell>{row.codEntSto}</TableCell>
-                      <TableCell>{row.docEntSto}</TableCell>
-                      <TableCell align="center">
-                        {row.esSel === 1 ? (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            color="green"
-                            className="bi bi-check-circle-fill"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                          </svg>
-                        ) : (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            color="red"
-                            fill="currentColor"
-                            className="bi bi-x-circle-fill"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                          </svg>
-                        )}
-                      </TableCell>
-                      <TableCell>{row.canTotEnt}</TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          onClick={() => {
-                            window.open(
-                              `/calidad/entradas-stock/view/${row.id}`,
-                              "_blank"
-                            );
-                          }}
-                        >
-                          <VisibilityIcon fontSize="large" color="primary" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </div>
+                      <VisibilityIcon fontSize="large" color="primary" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
 
       {/* FEEDBACK */}

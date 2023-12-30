@@ -5,9 +5,9 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { getEncargadoCalidad } from "../../../helpers/Referenciales/encargado_calidad/getEncargadoCalidad";
 
 const defaultOption = {
-  value: 0,
+  value: null,
   label: "Selecciona un encargado",
-  id: 0
+  id: null
 };
 
 export const FilterEncargadoCalidad = ({ defaultValue = null, onNewInput }) => {
