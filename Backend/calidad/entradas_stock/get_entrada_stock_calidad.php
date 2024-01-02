@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.esSel,
             es.canTotEnt,
             es.canTotDis,
-            DATE(es.fecEntSto) AS fecEntSto,
+            es.fecEntSto,
             DATE(es.fecVenEntSto) AS fecVenEntSto,
             es.referencia,
             es.docEntSto,
@@ -53,6 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.obsEnt,
             es.ordCom,
             es.guiRem,
+            ec.id AS idEntCal,
             ec.idResEntCal,
             ec.esAprEnt,
             ec.fecActEntCal

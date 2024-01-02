@@ -159,15 +159,8 @@ export const ViewEntradaStockCalidad = () => {
   };
 
   const handleProcessRespondeDialogAprobarEntradaFIFO = (aprobado) => {
-    setDataEntradaStockCalidad({
-      ...dataEntradaStockCalidad,
-      informacion_calidad: {
-        ...informacion_calidad,
-        esAprEnt: aprobado
-      }
-    });
     // llamamos a la api
-    guardarDatosAtributosCalidad();
+    guardarDatosAtributosCalidad(aprobado);
   };
 
   // funcion para cambiar valor de texto y numero
@@ -213,7 +206,7 @@ export const ViewEntradaStockCalidad = () => {
   };
 
   // funcion para guardar atributos de calidad asociados a entrada
-  const guardarDatosAtributosCalidad = async () => {
+  const guardarDatosAtributosCalidad = async (estado = null) => {
     // primero debemos mostrar un dialog que pregunte si quiere habilitarlo para FIFO
     // guardamos informacion de calidad
     // 1. debemos verificar que atributos son para insertar y cuales son para actualizar
@@ -271,10 +264,20 @@ export const ViewEntradaStockCalidad = () => {
       (element) => element["action"] !== "DELETE"
     );
 
-    const formatData = {
+    let formatData = {
       ...dataEntradaStockCalidad,
       dataAtributosEntradaCalidad: filterDatosDelete
     };
+
+    if (estado !== null) {
+      formatData = {
+        ...formatData,
+        informacion_calidad: {
+          ...informacion_calidad,
+          esAprEnt: estado
+        }
+      };
+    }
 
     console.log(formatData);
     const resultPeticion = await createEntradaAtributosCalidad(formatData);

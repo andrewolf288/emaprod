@@ -8,21 +8,31 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
-import { IconButton, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  TextField
+} from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 // IMPORTACIONES PARA EL FEEDBACK
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
 import { FilterProveedor } from "./../../../components/ReferencialesFilters/Proveedor/FilterProveedor";
 import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
 import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
-import CircularProgress from "@mui/material/CircularProgress";
 import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
 import { getEntradasStockCalidad } from "../../helpers/entradas-stock/getEntradasStockCalidad";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { FilterAllProductosFilters } from "../../../components/ReferencialesFilters/Producto/FilterAllProductosFilters";
+import PreviewIcon from "@mui/icons-material/Preview";
+import { verifyEntradaCalidad } from "../../helpers/entradas-stock/verifyEntradaCalidad";
 
 // CONFIGURACIONES DE ESTILOS
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -30,6 +40,16 @@ const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
+const ITEM_HEIGHT = 48;
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2)
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1)
+  }
+}));
 
 export const ListEntradaStockCalidad = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
@@ -108,6 +128,33 @@ export const ListEntradaStockCalidad = () => {
     setdataEntStoTemp(result);
   };
 
+  const handledChangeEstadoVerificacion = async (estado, item) => {
+    const { id, idEntCal } = item;
+
+    const body = {
+      id: id,
+      idEntCal: idEntCal,
+      esAprEnt: estado
+    };
+
+    const resultPeticion = await verifyEntradaCalidad(body);
+    const { message_error, description_error } = resultPeticion;
+    if (message_error.length === 0) {
+      setfeedbackMessages({
+        style_message: "success",
+        feedback_description_error: "Se verifico exitosamente"
+      });
+      handleClickFeeback();
+      obtenerDataEntradaStockCalidad();
+    } else {
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error
+      });
+      handleClickFeeback();
+    }
+  };
+
   useEffect(() => {
     obtenerDataEntradaStockCalidad();
   }, []);
@@ -166,12 +213,12 @@ export const ListEntradaStockCalidad = () => {
                   }
                 }}
               >
-                <TableCell align="left" width={100}>
+                <TableCell align="left" width={180}>
                   <b>Fecha entrada</b>
                   <FechaPickerDay onNewfecEntSto={onChangeDate} />
                 </TableCell>
                 <TableCell align="left" width={70}>
-                  ¿Verificado?
+                  ¿Evaluado?
                 </TableCell>
                 <TableCell align="left" width={70}>
                   Estado
@@ -240,7 +287,7 @@ export const ListEntradaStockCalidad = () => {
                     }}
                   />
                 </TableCell>
-                <TableCell align="center" width={50}>
+                <TableCell align="center" width={120}>
                   <b>Acciones</b>
                 </TableCell>
               </TableRow>
@@ -254,15 +301,41 @@ export const ListEntradaStockCalidad = () => {
                   }}
                 >
                   <TableCell align="center">{row.fecEntSto}</TableCell>
-                  <TableCell>
-                    {row.esAprEnt === null ? "No evaluado" : "Evaluado"}
+                  <TableCell align="center">
+                    {row.esAprEnt !== null ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="30"
+                        height="30"
+                        fill="currentColor"
+                        color="green"
+                        className="bi bi-check-circle-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="30"
+                        height="30"
+                        color="red"
+                        fill="currentColor"
+                        className="bi bi-x-circle-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                      </svg>
+                    )}
                   </TableCell>
                   <TableCell>
-                    {row.esAprEnt === null
-                      ? "No evaluado"
-                      : row.esAprEnt === 1
-                      ? "Aprobado"
-                      : "Desaprobado"}
+                    {row.esAprEnt === null ? (
+                      <span className="badge bg-secondary">No evaluado</span>
+                    ) : row.esAprEnt === 1 ? (
+                      <span className="badge bg-success">Aprobado</span>
+                    ) : (
+                      <span className="badge bg-danger">No aprobado</span>
+                    )}
                   </TableCell>
                   <TableCell>{row.nomProd}</TableCell>
                   <TableCell>{row.nomProv}</TableCell>
@@ -297,16 +370,22 @@ export const ListEntradaStockCalidad = () => {
                   </TableCell>
                   <TableCell>{row.canTotEnt}</TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      onClick={() => {
-                        window.open(
-                          `/calidad/entradas-stock/view/${row.id}`,
-                          "_blank"
-                        );
-                      }}
-                    >
-                      <VisibilityIcon fontSize="large" color="primary" />
-                    </IconButton>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <IconButton
+                        onClick={() => {
+                          window.open(
+                            `/calidad/entradas-stock/view/${row.id}`,
+                            "_blank"
+                          );
+                        }}
+                      >
+                        <VisibilityIcon fontSize="large" color="primary" />
+                      </IconButton>
+                      <DialogAprobarSalidaFIFO
+                        handleProcess={handledChangeEstadoVerificacion}
+                        element={row}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -331,5 +410,62 @@ export const ListEntradaStockCalidad = () => {
         </Alert>
       </Snackbar>
     </>
+  );
+};
+
+const DialogAprobarSalidaFIFO = ({ handleProcess, element }) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  return (
+    <div>
+      <IconButton onClick={handleClickOpen}>
+        <PreviewIcon fontSize="large" color="warning" />
+      </IconButton>
+      <BootstrapDialog
+        maxWidth={"l"}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle id="alert-dialog-title">Evaluacion de calidad</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Quiere permitir que esta entrada sea utilizada para el FIFO?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="inherit" variant="contained" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => {
+              handleProcess(false, element);
+              handleClose();
+            }}
+          >
+            Restringir
+          </Button>
+          <Button
+            color="primary"
+            variant="contained"
+            autoFocus
+            onClick={() => {
+              handleProcess(true, element);
+              handleClose();
+            }}
+          >
+            Permitir
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+    </div>
   );
 };
