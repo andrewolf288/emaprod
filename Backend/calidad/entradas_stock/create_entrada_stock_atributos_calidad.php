@@ -17,22 +17,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $idEntradaStock = $data["id"]; // entrada stock
         $idEntradaCalidad = $data["informacion_calidad"]["id"]; // entrada calidad
-        $esAprEnt = $data["esAprEnt"]; // aprobacion de calidad
-        $idResEntCal = $data["datosEncargadoEvaluacion"]["idResEntCal"]; // responsable de evaluacion
-        $obsAccEntCal = $data["datosEncargadoEvaluacion"]["obsAccEntCal"]; //observacion de evaluacion
+        $esAprEnt = $data["informacion_calidad"]["esAprEnt"]; // aprobacion de calidad
+        $idResEntCal = $data["informacion_calidad"]["idResEntCal"]; // responsable de evaluacion
+        $obsAccEntCal = $data["informacion_calidad"]["obsAccEntCal"]; //observacion de evaluacion
         $dataAtributosEntradaCalidad = $data["dataAtributosEntradaCalidad"]; // data a procesar
 
         try {
             $pdo->beginTransaction();
+            $fecActEntCal = date('Y-m-d H:i:s');;
             // primero debemos actualizar los datos de calidad
             $sql_update_entrada_calidad =
-                "UPDATE entrada_calidad SET idResEntCal = ?, obsAccEntCal = ?, esAprEnt = ?
+                "UPDATE entrada_calidad SET idResEntCal = ?, obsAccEntCal = ?, esAprEnt = ?, fecActEntCal = ?
             WHERE id = ?";
             $stmt_update_entrada_calidad = $pdo->prepare($sql_update_entrada_calidad);
             $stmt_update_entrada_calidad->bindParam(1, $idResEntCal, PDO::PARAM_INT);
             $stmt_update_entrada_calidad->bindParam(2, $obsAccEntCal, PDO::PARAM_STR);
             $stmt_update_entrada_calidad->bindParam(3, $esAprEnt, PDO::PARAM_BOOL);
-            $stmt_update_entrada_calidad->bindParam(4, $idEntradaCalidad, PDO::PARAM_INT);
+            $stmt_update_entrada_calidad->bindParam(4, $fecActEntCal, PDO::PARAM_STR);
+            $stmt_update_entrada_calidad->bindParam(5, $idEntradaCalidad, PDO::PARAM_INT);
             $stmt_update_entrada_calidad->execute();
 
             // ahora debemos procesar la data
@@ -41,10 +43,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $idProdtAtrCal = $atributoEntradaCalidad["id"];
                 $valEntCalAtr = $atributoEntradaCalidad["valEntCalAtr"];
 
-                if ($action === 'CREATE') {
+                if ($action === "CREATE") {
                     $sql_create_atributo_calidad_entrada =
                         "INSERT INTO 
-                    entrada_calidad_atributos(idEntCal, idProdtAtrCal, valEntCalAtr)
+                    entrada_calidad_atributos (idEntCal, idProdtAtrCal, valEntCalAtr)
                     VALUES(?, ?, ?)";
                     $stmt_create_atributo_calidad_entrada = $pdo->prepare($sql_create_atributo_calidad_entrada);
                     $stmt_create_atributo_calidad_entrada->bindParam(1, $idEntradaCalidad, PDO::PARAM_INT);
@@ -52,14 +54,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt_create_atributo_calidad_entrada->bindParam(3, $valEntCalAtr, PDO::PARAM_STR);
                     $stmt_create_atributo_calidad_entrada->execute();
                 } else {
-                    "UPDATE
+                    $sql_update_atributo_calidad_entrada =
+                        "UPDATE
                     entrada_calidad_atributos SET valEntCalAtr = ?
                     WHERE idEntCal = ? AND idProdtAtrCal = ?";
-                    $stmt_create_atributo_calidad_entrada = $pdo->prepare($sql_create_atributo_calidad_entrada);
-                    $stmt_create_atributo_calidad_entrada->bindParam(1, $valEntCalAtr, PDO::PARAM_STR);
-                    $stmt_create_atributo_calidad_entrada->bindParam(2, $idEntradaCalidad, PDO::PARAM_INT);
-                    $stmt_create_atributo_calidad_entrada->bindParam(3, $idProdtAtrCal, PDO::PARAM_INT);
-                    $stmt_create_atributo_calidad_entrada->execute();
+                    $stmt_update_atributo_calidad_entrada = $pdo->prepare($sql_update_atributo_calidad_entrada);
+                    $stmt_update_atributo_calidad_entrada->bindParam(1, $valEntCalAtr, PDO::PARAM_STR);
+                    $stmt_update_atributo_calidad_entrada->bindParam(2, $idEntradaCalidad, PDO::PARAM_INT);
+                    $stmt_update_atributo_calidad_entrada->bindParam(3, $idProdtAtrCal, PDO::PARAM_INT);
+                    $stmt_update_atributo_calidad_entrada->execute();
                 }
             }
             // FINALMENTE DEBEMOS VERIFICAR EL VALOR DE APROBACION
