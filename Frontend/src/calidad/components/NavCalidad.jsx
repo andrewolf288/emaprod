@@ -57,7 +57,7 @@ const NavCalidad = () => {
                 </ul>
               </li>
               {/* ATRIBUTOS CALIDAD */}
-              <li className="nav-item dropdown">
+              {/* <li className="nav-item dropdown">
                 <button
                   className="btn btn-lg dropdown-toggle"
                   role="button"
@@ -84,7 +84,7 @@ const NavCalidad = () => {
                     </Link>
                   </li>
                 </ul>
-              </li>
+              </li> */}
             </ul>
             <ul className="navbar-nav d-none d-lg-flex ml-2 order-3">
               <li className="nav-item">
