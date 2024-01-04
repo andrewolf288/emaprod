@@ -127,10 +127,12 @@ const InputFechaValue = ({ atributo, onChangeValoresAlfanumericos }) => {
     onChangeValoresAlfanumericos(body, atributo);
   };
   return (
-    <FechaPickerYear
-      date={atributo.valEntCalAtr}
-      onNewfecEntSto={onChangeDate}
-    />
+    <div className="form-control">
+      <FechaPickerYear
+        date={atributo.valEntCalAtr}
+        onNewfecEntSto={onChangeDate}
+      />
+    </div>
   );
 };
 
@@ -173,7 +175,6 @@ const InputOpcionesMultiples = ({ atributo, onChangeValoresAlfanumericos }) => {
     else {
       values = optionsMarcados.filter((option) => option !== value);
     }
-    console.log(values);
     const body = {
       target: {
         value: values.join(",")
