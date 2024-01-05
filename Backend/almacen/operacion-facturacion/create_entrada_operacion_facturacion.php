@@ -22,7 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idOpeFac = 0; // id de la operacion de salida de facturacion de GR
 
         if ($idRefGui === 0) {
-            echo json_encode(["message_error" => "No se proporciono la GR", "description_error" => "No se proporciono la GR: $idRefGui"]);
+            $message_error =  "No se proporciono la GR";
+            $description_error = "No se proporciono la GR: $idRefGui";
         } else {
             $idOpeFacMot = 1; // motivo de salida de guia de remision
             $idReqEst = 1;
@@ -175,12 +176,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $message_error = "ERROR EN LA OPERACION";
                     $description_error = $e->getMessage();
                 }
-                echo json_encode(["message_error" => $message_error, "description_error" => $description_error]);
             } else {
-                echo json_encode(["message_error" => "No se registro la GR", "description_error" => "No se registro ninguna salida de almacen o la operacion ya fue afectada con la guia: $idRefGui"]);
+                $message_error =  "No se registro la GR";
+                $description_error = "No se registro ninguna salida de almacen o la operacion ya fue afectada con la guia: $idRefGui";
             }
         }
     } else {
-        echo json_encode(["message_error" => "Error en la conexion", "description_error" => "No se pudo conectar con la base de datos a través de PDO"]);
+        $message_error =  "Error en la conexion";
+        $description_error = "No se pudo conectar con la base de datos a través de PDO";
     }
+
+    // Retornamos el resultado
+    $return['message_error'] = $message_error;
+    $return['description_error'] = $description_error;
+    $return['result'] = $result;
+    echo json_encode($return);
 }
