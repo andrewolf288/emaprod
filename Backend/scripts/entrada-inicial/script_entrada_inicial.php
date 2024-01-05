@@ -12,7 +12,7 @@ $pdo = getPDO();
 // formamos el codigo de ingreso
 if ($pdo) {
 
-    $file = 'entradas-stock.csv'; // Nombre del archivo CSV
+    $file = 'importaciones-2024-mercancias.csv'; // Nombre del archivo CSV
 
     if (($handle = fopen($file, 'r')) !== false) {
         // Iterar sobre cada línea del archivo
@@ -32,7 +32,7 @@ if ($pdo) {
             $idAlm = 1;
             $idEntStoTip = 1;
             $letAniEntSto = "D";
-            $diaJulEntSto = "002";
+            $diaJulEntSto = "004";
             $refNumIngEntSto = "001";
             $codEntSto = $codigo . "00" . $letAniEntSto . $diaJulEntSto . $refNumIngEntSto;
             $docEntSto = "SALDO INICIAL";

@@ -13,7 +13,7 @@ $pdo = getPDO();
 if ($pdo) {
 
     // $file = 'almacen-desmedro.csv'; // Nombre del archivo CSV
-    $file = 'almacen-principal.csv'; // Nombre del archivo CSV
+    $file = 'importaciones-2024-mercancias.csv'; // Nombre del archivo CSV
     if (($handle = fopen($file, 'r')) !== false) {
         // Iterar sobre cada línea del archivo
         while (($data = fgetcsv($handle, 1000, ',')) !== false) {
