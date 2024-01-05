@@ -11,7 +11,7 @@ $description_error = "";
 // este script sirve para resetear las entradas existentes
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $idProdt = 130; // tomate
+    $idProdt = 127; // aji panca fresco
     // Preparar la consulta de inserción una sola vez fuera del bucle
     $sql_create_atributos_calidad_materias_primas = "INSERT INTO 
     producto_atributo_calidad (idProdt, nomProdAtr, idTipProdAtr, opcProdAtr, codGruAtr, labGruAtr)
@@ -21,14 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Ejecutar la consulta preparada para la inserción con los valores específicos
     $atributos_calidad = [
-        ['CALIBRE', 6, 'Calibre GG (82 - 102 mm),Calibre GG (67 - 82 mm),Calibre GG (57 - 67 mm),Calibre GG (47 - 57 mm)', 1, "CALIBRE"],
-        ['% MADUROS', 1, '', 2, 'ANALISIS POSTCOSECHA'],
-        ['% PINTONES', 1, '', 2, 'ANALISIS POSTCOSECHA'],
-        ['% VERDES', 1, '', 2, 'ANALISIS POSTCOSECHA'],
-        ['% CICATRISADOS', 1, '', 2, 'ANALISIS POSTCOSECHA'],
-        ['% SOBREMADUROS, PICADOS, APLASTADOS', 1, '', 2, 'ANALISIS POSTCOSECHA'],
-        ['pH', 1, '', 3, 'ANALISIS FISICOQUIMICOS'],
-        ['ST (°Brix)', 1, '', 3, 'ANALISIS FISICOQUIMICOS'],
+        ['% MADUROS', 1, '', 1, 'ANALISIS POSTCOSECHA'],
+        ['% VERDES', 1, '', 1, 'ANALISIS POSTCOSECHA'],
+        ['% PUNTA VERDE', 1, '', 1, 'ANALISIS POSTCOSECHA'],
+        ['% APLASTADOS O PODRIDOS', 1, '', 1, 'ANALISIS POSTCOSECHA'],
+        ['PICOR', 4, '1 (poco picante),2,3,4,5 (muy picante),No corresponte', 2, "ANALISIS FISICOQUIMICOS"],
+        ['TAMAÑO MIN 7 CM', 4, 'C,LI,I', 2, 'ANALISIS FISICOQUIMICOS'],
+        ['ST (°Brix)', 1, '', 2, 'ANALISIS FISICOQUIMICOS'],
         ['V°B PROD.', 4, 'Vilma,Carlos', NULL, NULL]
     ];
 
