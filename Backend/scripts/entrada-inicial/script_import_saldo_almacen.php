@@ -13,7 +13,7 @@ $pdo = getPDO();
 if ($pdo) {
 
     // $file = 'almacen-desmedro.csv'; // Nombre del archivo CSV
-    $file = 'importaciones-2024-mercancias.csv'; // Nombre del archivo CSV
+    $file = 'importaciones-2024-entrada-auxiliar.csv'; // Nombre del archivo CSV
     if (($handle = fopen($file, 'r')) !== false) {
         // Iterar sobre cada línea del archivo
         while (($data = fgetcsv($handle, 1000, ',')) !== false) {
@@ -28,7 +28,8 @@ if ($pdo) {
 
             $idProd = $result["id"];
             // $idAlm = 7; // desmedro
-            $idAlm = 1; // principal
+            // $idAlm = 1; // principal
+            $idAlm = 8; //auxiliar
 
             $sqlinsertEntrada =
                 "INSERT INTO almacen_stock(idProd, idAlm, canSto, canStoDis) VALUES($idProd,$idAlm,$saldo,$saldo);";

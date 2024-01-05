@@ -102,7 +102,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retornamos el resultado
     $return['message_error'] = $message_error;
     $return['description_error'] = $description_error;
-    $return['result'] = $result;
     echo json_encode($return);
 }
 

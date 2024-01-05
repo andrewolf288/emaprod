@@ -36,7 +36,7 @@ export const ListRequisicionesMolienda = () => {
     useForm({
       fecReqMolIni: "",
       fecReqMolFin: "",
-      idAre: 2, // molienda
+      idAre: 2 // molienda
     });
 
   // ESTADOS PARA LA PAGINACIÓN
@@ -47,7 +47,7 @@ export const ListRequisicionesMolienda = () => {
   const [feedbackDelete, setfeedbackDelete] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -100,7 +100,7 @@ export const ListRequisicionesMolienda = () => {
     // realizamos una promesa
     let body = {
       ...formState,
-      fecReqMolIni: dateFormat,
+      fecReqMolIni: dateFormat
     };
     obtenerDataRequisicionMolienda(body);
   };
@@ -111,7 +111,7 @@ export const ListRequisicionesMolienda = () => {
     // realizamos una promesa
     let body = {
       ...formState,
-      fecReqMolFin: dateFormat,
+      fecReqMolFin: dateFormat
     };
     obtenerDataRequisicionMolienda(body);
   };
@@ -259,7 +259,7 @@ export const ListRequisicionesMolienda = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -357,8 +357,8 @@ export const ListRequisicionesMolienda = () => {
                     sx={{
                       "& th": {
                         color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                        backgroundColor: "#f5f5f5"
+                      }
                     }}
                   >
                     <TableCell align="left" width={80}>
@@ -372,8 +372,8 @@ export const ListRequisicionesMolienda = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -389,8 +389,8 @@ export const ListRequisicionesMolienda = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -415,8 +415,8 @@ export const ListRequisicionesMolienda = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -441,7 +441,7 @@ export const ListRequisicionesMolienda = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          "&:last-child td, &:last-child th": { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -478,7 +478,7 @@ export const ListRequisicionesMolienda = () => {
                         </TableCell>
                         <TableCell align="left">
                           <div className="btn-toolbar">
-                            <button
+                            {/* <button
                               onClick={() => {
                                 showRequisicionMoliendaDetalle(i);
                               }}
@@ -496,7 +496,8 @@ export const ListRequisicionesMolienda = () => {
                                 <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
                                 <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
                               </svg>
-                            </button>
+                            </button> */}
+                            Sin acciones
                           </div>
                         </TableCell>
                       </TableRow>
