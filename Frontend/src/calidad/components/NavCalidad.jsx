@@ -54,6 +54,59 @@ const NavCalidad = () => {
                       Administrar
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={"/calidad/entradas-stock/crear"}
+                    >
+                      Crear
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item dropdown">
+                <button
+                  className="btn btn-lg dropdown-toggle"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Almacen
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <Link className="dropdown-item" to={"/calidad/almacen"}>
+                      Administrar
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item dropdown">
+                <button
+                  className="btn btn-lg dropdown-toggle"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Salida requerimiento
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={"/calidad/salida-requerimiento"}
+                    >
+                      Administrar
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={"/calidad/salida-requerimiento/crear"}
+                    >
+                      Crear
+                    </Link>
+                  </li>
                 </ul>
               </li>
               {/* ATRIBUTOS CALIDAD */}
