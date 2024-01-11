@@ -52,7 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.merTot,
             es.canVar, 
             es.codLot,
-            es.esCertCal,
             es.obsEnt,
             es.ordCom,
             es.guiRem

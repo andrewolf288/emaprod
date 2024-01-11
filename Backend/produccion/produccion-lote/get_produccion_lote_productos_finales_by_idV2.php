@@ -82,19 +82,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // primero tenemos que buscar si se han registrado entradas
                         $sql_select_entradas_parciales =
-                            "SELECT 
-                            es.id,
-                            es.idProd,
-                            p.nomProd,
-                            al.nomAlm,
-                            es.codEntSto,
-                            es.fecEntSto,
-                            es.canTotEnt,
-                            es.canTotDis
-                            FROM entrada_stock AS es
-                            JOIN producto AS p ON p.id = es.idProd
-                            JOIN almacen AS al ON al.id = es.idAlm
-                            WHERE es.refProdc = ? AND es.idProd = ?";
+                            "SELECT
+                        pip.id,
+                        pip.idProdc AS idProd,
+                        p.nomProd,
+                        pip.codLot,
+                        pip.idProdt,
+                        pip.refProdtProg,
+                        pip.canProdIng AS canTotEnt,
+                        pip.fecProdIng AS fecEntSto,
+                        pip.fecProdVen,
+                        pip.fecProdIngAlm,
+                        pip.esComProdIng,
+                        pip.fecCreProdIng,
+                        pip.fecActProdIng
+                        FROM produccion_ingreso_producto AS pip
+                        JOIN producto AS p ON p.id = pip.idProdt
+                        WHERE pip.idProdc = ? AND pip.idProdt = ?";
+                        // $sql_select_entradas_parciales =
+                        //     "SELECT 
+                        //     es.id,
+                        //     es.idProd,
+                        //     p.nomProd,
+                        //     al.nomAlm,
+                        //     es.codEntSto,
+                        //     es.fecEntSto,
+                        //     es.canTotEnt,
+                        //     es.canTotDis
+                        //     FROM entrada_stock AS es
+                        //     JOIN producto AS p ON p.id = es.idProd
+                        //     JOIN almacen AS al ON al.id = es.idAlm
+                        //     WHERE es.refProdc = ? AND es.idProd = ?";
                         $stmt_select_entradas_parciales = $pdo->prepare($sql_select_entradas_parciales);
                         $stmt_select_entradas_parciales->bindParam(1, $idLotProdc, PDO::PARAM_INT);
                         $stmt_select_entradas_parciales->bindParam(2, $idProdFin, PDO::PARAM_INT);

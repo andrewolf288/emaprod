@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 FROM requisicion_devolucion AS rd
                 JOIN producto AS p ON p.id = rd.idProdt
                 JOIN requisicion_estado AS re ON re.id = rd.idReqEst
-                WHERE rd.idProdc = ?";
+                WHERE rd.idProdc = ? ORDER BY rd.fecCreReqDev ASC";
 
                 $stmt_requisicion_devolucion = $pdo->prepare($sql_requisicion_devolucion);
                 $stmt_requisicion_devolucion->bindParam(1, $idLotProdc, PDO::PARAM_INT);

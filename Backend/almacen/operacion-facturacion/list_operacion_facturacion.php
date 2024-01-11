@@ -43,7 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         FROM operacion_facturacion AS of
         JOIN operacion_facturacion_motivo AS ofm ON ofm.id = of.idOpeFacMot
         JOIN requisicion_estado AS re ON re.id = of.idReqEst
-        WHERE of.esSal = ? AND of.esEnt = ? AND DATE(of.fecCreOpeFac) BETWEEN '$fechaInicio' AND '$fechaFin'";
+        WHERE of.esSal = ? AND of.esEnt = ? AND DATE(of.fecCreOpeFac) BETWEEN '$fechaInicio' AND '$fechaFin'
+        ORDER BY of.fecCreOpeFac DESC";
 
         $stmt_select_operaciones_facturacion = $pdo->prepare($sql_select_operaciones_facturacion);
         $stmt_select_operaciones_facturacion->bindParam(1, $esSal, PDO::PARAM_BOOL);

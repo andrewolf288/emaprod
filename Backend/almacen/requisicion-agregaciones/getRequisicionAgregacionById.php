@@ -67,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     JOIN producto AS p ON p.id = ra.idProdt
                     JOIN produccion_agregacion_motivo AS pam ON pam.id = ra.idProdcMot
                     JOIN requisicion_estado AS re ON re.id = ra.idReqEst
-                    WHERE ra.idProdc = ?";
+                    WHERE ra.idProdc = ? ORDER BY ra.fecCreReqAgr ASC";
                 $stmt_requisicion_agregacion = $pdo->prepare($sql_requisicion_agregacion);
                 $stmt_requisicion_agregacion->bindParam(1, $idLotProdc, PDO::PARAM_INT);
                 $stmt_requisicion_agregacion->execute();
