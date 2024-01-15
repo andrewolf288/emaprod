@@ -22,7 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.id,
             es.idProd,
             p.nomProd,
-            P.codProd,
             p.codProd2,
             p.codProd3,
             es.idProv,
@@ -48,7 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.merDis,
             es.canVar, 
             es.codLot,
-            es.esCertCal,
             es.obsEnt,
             es.ordCom,
             es.guiRem
