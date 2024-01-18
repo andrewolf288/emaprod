@@ -16,8 +16,8 @@ $result = array();
 if ($pdo && $pdoEmafact) {
     $sql_select_referrall_guides =
         "SELECT rg.id AS idRefGui, rg.invoice_serie, rg.invoice_number
-    FROM referral_guides as rg
-    WHERE YEAR(rg.issue_date) = '2024' AND rg.id <> 2635;";
+        FROM referral_guides as rg
+        WHERE DATE(rg.issue_date) = '2024-01-05';";
     $stmt_select_referrall_guides = $pdoEmafact->prepare($sql_select_referrall_guides);
     $stmt_select_referrall_guides->execute();
     $referrall_guides = $stmt_select_referrall_guides->fetchAll(PDO::FETCH_ASSOC);

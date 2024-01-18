@@ -76,13 +76,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt_create_operacion_facturacion_detalle->execute();
                 }
                 $pdo->commit();
-                // retornamos
-                echo json_encode(["message_error" => "", "description_error" => ""]);
             } catch (PDOException $e) {
                 $pdo->rollBack();
                 $message_error = "Hubo un error al realizar la operacion";
                 $description_error = $e->getMessage();
-                echo json_encode(["message_error" => $description_error, "description_error" => $description_error]);
             }
         }
 
@@ -91,13 +88,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // formamos la data de string de errores de validacion
             $stringErrorsValidation = implode("\n", $errorsValidation);
             // enviamos el mensaje al cliente
-            echo json_encode(["message_error" => "Error en la validacion", "description_error" => $stringErrorsValidation]);
+            $message_error = "Error en la validacion";
+            $description_error = $stringErrorsValidation;
+
             // terminamos la ejecucion del programa
             exit;
         }
     } else {
-        echo json_encode(["message_error" => "Error en la conexion", "description_error" => "No se pudo conectar con la base de datos a través de PDO"]);
+        $message_error = "Error en la conexion";
+        $description_error = "No se pudo conectar con la base de datos a través de PDO";
     }
+
+    // Retornamos el resultado
+    $return['message_error'] = $message_error;
+    $return['description_error'] = $description_error;
+    echo json_encode($return);
 }
 
 function stockSuficiente(&$items, $pdo)

@@ -32,7 +32,7 @@ export const AgregarRequisicionMolienda = () => {
     codLotProd: "", // codigo del lote
     klgLotProd: "", // kilogramos del lote
     canLotProd: "", // cantidad de lotes
-    nomProd: "", // nombre del producto
+    nomProd: "" // nombre del producto
   });
   const { codLotProd, klgLotProd, canLotProd } = produccionLote;
 
@@ -40,14 +40,14 @@ export const AgregarRequisicionMolienda = () => {
   const [requisicion, setRequisicion] = useState({
     idProdc: 0,
     idProdt: 0,
-    reqMolDet: [],
+    reqMolDet: []
   });
   // const { idProdc, idProdt, reqMolDet } = requisicion;
 
   // ESTADOS PARA DATOS DE DETALLE FORMULA (DETALLE)
   const [materiaPrimaDetalle, setmateriaPrimaDetalle] = useState({
     idMateriaPrima: 0,
-    cantidadMateriaPrima: 0,
+    cantidadMateriaPrima: 0
   });
   const { idMateriaPrima, cantidadMateriaPrima } = materiaPrimaDetalle;
 
@@ -55,7 +55,7 @@ export const AgregarRequisicionMolienda = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -99,7 +99,7 @@ export const AgregarRequisicionMolienda = () => {
   const onMateriaPrimaId = ({ id }) => {
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      idMateriaPrima: id,
+      idMateriaPrima: id
     });
   };
 
@@ -108,7 +108,7 @@ export const AgregarRequisicionMolienda = () => {
     const { name, value } = target;
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -128,7 +128,7 @@ export const AgregarRequisicionMolienda = () => {
     // VOLVEMOS A SETEAR LA DATA
     setRequisicion({
       ...requisicion,
-      reqMolDet: nuevaDataDetalleRequisicion,
+      reqMolDet: nuevaDataDetalleRequisicion
     });
   };
 
@@ -139,7 +139,7 @@ export const AgregarRequisicionMolienda = () => {
       if (element.idMatPri === idItem) {
         return {
           ...element,
-          canMatPriFor: value,
+          canMatPriFor: value
         };
       } else {
         return element;
@@ -148,7 +148,7 @@ export const AgregarRequisicionMolienda = () => {
 
     setRequisicion({
       ...requisicion,
-      reqMolDet: editFormDetalle,
+      reqMolDet: editFormDetalle
     });
   };
 
@@ -164,7 +164,7 @@ export const AgregarRequisicionMolienda = () => {
       if (itemFound) {
         setfeedbackMessages({
           style_message: "warning",
-          feedback_description_error: "Ya se agrego esta materia prima",
+          feedback_description_error: "Ya se agrego esta materia prima"
         });
         handleClickFeeback();
       } else {
@@ -183,22 +183,22 @@ export const AgregarRequisicionMolienda = () => {
             nomProd: nomProd,
             simMed: simMed,
             canMatPriFor: cantidadMateriaPrima,
-            canMatPriForCopy: cantidadMateriaPrima,
+            canMatPriForCopy: cantidadMateriaPrima
           };
 
           // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
           const dataMateriaPrimaDetalle = [
             ...requisicion.reqMolDet,
-            detalleFormulaMateriaPrima,
+            detalleFormulaMateriaPrima
           ];
           setRequisicion({
             ...requisicion,
-            reqMolDet: dataMateriaPrimaDetalle,
+            reqMolDet: dataMateriaPrimaDetalle
           });
         } else {
           setfeedbackMessages({
             style_message: "error",
-            feedback_description_error: description_error,
+            feedback_description_error: description_error
           });
           handleClickFeeback();
         }
@@ -206,7 +206,7 @@ export const AgregarRequisicionMolienda = () => {
     } else {
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
+        feedback_description_error: "Asegurese de llenar los datos requeridos"
       });
       handleClickFeeback();
     }
@@ -219,12 +219,12 @@ export const AgregarRequisicionMolienda = () => {
     var requisicion = {
       ...requisicion,
       idProdc: -1,
-      idProdt: id,
+      idProdt: id
     };
     const body = {
       idProd: id,
       canLotProd: canLotProd,
-      klgLotProd: "",
+      klgLotProd: ""
     };
     getProductosFormulaDetalle(body, requisicion);
   };
@@ -251,7 +251,7 @@ export const AgregarRequisicionMolienda = () => {
         // actualizamos la requisicion detalle de molienda
         setRequisicion({
           ...requisicion,
-          reqMolDet: forDet,
+          reqMolDet: forDet
         });
 
         // actualizamos la informacion de reuqisicion de molienda
@@ -259,14 +259,14 @@ export const AgregarRequisicionMolienda = () => {
           setProduccionLote({
             ...produccionLote,
             canLotProd: 1,
-            klgLotProd: klgLotProd,
+            klgLotProd: klgLotProd
           });
         }
       }
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -285,10 +285,10 @@ export const AgregarRequisicionMolienda = () => {
     setProduccionLote({
       ...produccionLote,
       [name]: parseValue,
-      klgLotProd: klgLotProd,
+      klgLotProd: klgLotProd
     });
     setRequisicion({
-      ...requisicion,
+      ...requisicion
     });
   };
 
@@ -330,7 +330,7 @@ export const AgregarRequisicionMolienda = () => {
 
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: handleErrors,
+        feedback_description_error: handleErrors
       });
       handleClickFeeback();
     } else {
@@ -355,7 +355,7 @@ export const AgregarRequisicionMolienda = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -405,7 +405,7 @@ export const AgregarRequisicionMolienda = () => {
                       const { name, value } = e.target;
                       setProduccionLote({
                         ...produccionLote,
-                        [name]: value,
+                        [name]: value
                       });
                     }}
                     value={codLotProd}
@@ -445,118 +445,120 @@ export const AgregarRequisicionMolienda = () => {
           </div>
         </div>
 
-        <div className="row mt-4 mx-4">
-          <div className="card d-flex">
-            <h6 className="card-header">
-              <b>Detalle de la requisicion</b>
-            </h6>
-            <div className="card-body">
-              <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
-                {/* AGREGAR MATERIA PRIMA */}
-                <div className="col-md-3">
-                  <label htmlFor="inputPassword4" className="form-label">
-                    Materia Prima
-                  </label>
-                  <FilterMateriaPrima onNewInput={onMateriaPrimaId} />
-                </div>
+        {false && (
+          <div className="row mt-4 mx-4">
+            <div className="card d-flex">
+              <h6 className="card-header">
+                <b>Detalle de la requisicion</b>
+              </h6>
+              <div className="card-body">
+                <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
+                  {/* AGREGAR MATERIA PRIMA */}
+                  <div className="col-md-3">
+                    <label htmlFor="inputPassword4" className="form-label">
+                      Materia Prima
+                    </label>
+                    <FilterMateriaPrima onNewInput={onMateriaPrimaId} />
+                  </div>
 
-                {/* AGREGAR CANTIDAD*/}
-                <div className="col-md-4">
-                  <label htmlFor="inputPassword4" className="form-label">
-                    Cantidad
-                  </label>
-                  <input
-                    type="number"
-                    onChange={handleCantidadMateriaPrima}
-                    value={cantidadMateriaPrima}
-                    name="cantidadMateriaPrima"
-                    className="form-control"
-                  />
-                </div>
-                {/* BOTON AGREGAR MATERIA PRIMA */}
-                <div className="col-md-3 d-flex justify-content-end ms-auto">
-                  <button
-                    onClick={handleAddNewMateriPrimaDetalle}
-                    className="btn btn-primary"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-plus-circle-fill me-2"
-                      viewBox="0 0 16 16"
+                  {/* AGREGAR CANTIDAD*/}
+                  <div className="col-md-4">
+                    <label htmlFor="inputPassword4" className="form-label">
+                      Cantidad
+                    </label>
+                    <input
+                      type="number"
+                      onChange={handleCantidadMateriaPrima}
+                      value={cantidadMateriaPrima}
+                      name="cantidadMateriaPrima"
+                      className="form-control"
+                    />
+                  </div>
+                  {/* BOTON AGREGAR MATERIA PRIMA */}
+                  <div className="col-md-3 d-flex justify-content-end ms-auto">
+                    <button
+                      onClick={handleAddNewMateriPrimaDetalle}
+                      className="btn btn-primary"
                     >
-                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                    </svg>
-                    Agregar
-                  </button>
-                </div>
-              </form>
-              {/* TABLA DE RESULTADOS */}
-              <Paper>
-                <TableContainer>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                      <TableRow
-                        sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
-                        }}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-plus-circle-fill me-2"
+                        viewBox="0 0 16 16"
                       >
-                        <TableCell align="left" width={100}>
-                          <b>Codigo</b>
-                        </TableCell>
-                        <TableCell align="left" width={120}>
-                          <b>Clase</b>
-                        </TableCell>
-                        <TableCell align="left" width={140}>
-                          <b>Sub clase</b>
-                        </TableCell>
-                        <TableCell align="left" width={200}>
-                          <b>Nombre</b>
-                        </TableCell>
-                        <TableCell align="left" width={150}>
-                          <b>Cantidad</b>
-                        </TableCell>
-                        <TableCell align="left" width={150}>
-                          <b>Acciones</b>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {requisicion.reqMolDet
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((row, i) => (
-                          <RowDetalleFormula
-                            key={row.idMatPri}
-                            detalle={row}
-                            onDeleteDetalleFormula={deleteDetalleRequisicion}
-                            onChangeFormulaDetalle={handledFormularioDetalle}
-                          />
-                        ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                {/* PAGINACION DE LA TABLA */}
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={requisicion.reqMolDet.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </Paper>
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                      </svg>
+                      Agregar
+                    </button>
+                  </div>
+                </form>
+                {/* TABLA DE RESULTADOS */}
+                <Paper>
+                  <TableContainer>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow
+                          sx={{
+                            "& th": {
+                              color: "rgba(96, 96, 96)",
+                              backgroundColor: "#f5f5f5"
+                            }
+                          }}
+                        >
+                          <TableCell align="left" width={100}>
+                            <b>Codigo</b>
+                          </TableCell>
+                          <TableCell align="left" width={120}>
+                            <b>Clase</b>
+                          </TableCell>
+                          <TableCell align="left" width={140}>
+                            <b>Sub clase</b>
+                          </TableCell>
+                          <TableCell align="left" width={200}>
+                            <b>Nombre</b>
+                          </TableCell>
+                          <TableCell align="left" width={150}>
+                            <b>Cantidad</b>
+                          </TableCell>
+                          <TableCell align="left" width={150}>
+                            <b>Acciones</b>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {requisicion.reqMolDet
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((row, i) => (
+                            <RowDetalleFormula
+                              key={row.idMatPri}
+                              detalle={row}
+                              onDeleteDetalleFormula={deleteDetalleRequisicion}
+                              onChangeFormulaDetalle={handledFormularioDetalle}
+                            />
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  {/* PAGINACION DE LA TABLA */}
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={requisicion.reqMolDet.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </Paper>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* BOTONES DE CANCELAR Y GUARDAR */}
         <div className="btn-toolbar mt-4">

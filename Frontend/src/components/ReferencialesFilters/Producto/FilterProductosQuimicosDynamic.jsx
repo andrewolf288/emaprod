@@ -2,20 +2,23 @@ import React from "react";
 import { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { getAllProductos2 } from "../../../helpers/Referenciales/producto/getAllProductos2";
+import { getProductosQuimicos } from "../../../helpers/Referenciales/producto/getProductosQuimicos";
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona un producto",
+  label: "Selecciona un producto quimico",
   id: 0
 };
 
-export const FilterProductosDynamic = ({ defaultValue = null, onNewInput }) => {
+export const FilterProductosQuimicosDynamic = ({
+  defaultValue = null,
+  onNewInput
+}) => {
   const [options, setOptions] = useState([defaultOption]);
   const [value, setValue] = useState(defaultOption);
 
   const obtenerDataProducto = async () => {
-    var result = await getAllProductos2();
+    var result = await getProductosQuimicos();
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
