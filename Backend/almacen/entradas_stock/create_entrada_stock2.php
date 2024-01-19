@@ -33,8 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // esta variable maneja la data de entradas parciales, puede ser un valor nulo cuando no se manejan entradas parciales
     $entradasParciales = $data["entradasParciales"];
 
-    // DEMAS DATOS
-    $idEntStoEst = 2; // estado de las entrada
+    // DEMAS DATO
     $canTotDis = $canTotEnt; // cantidad total disponible
     $canSel = 0; // canttidad seleccionada
     $canPorSel = 0; // cantidad por seleccionar
@@ -141,6 +140,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $message_error = "Error en la insercion";
             $description_error = "Hay entradas parciales pendientes de este producto en un plazo de un mes";
         } else {
+            // si es un producto de auxiliar
+            $idEntStoEst = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 1 : 2;
+            $idAlm = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 8 : 1;
+
             // ahora iniciamos un proceso de insercion y actualizacion que debe estar envuelto en un rollback
             $pdo->beginTransaction(); // EMPEZAMOS UNA TRANSACCION
             // ***** REALIZAMOS LA ENTRADA RESPECTIVA ******
@@ -197,12 +200,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $lastInsertionEntradaStock = $pdo->lastInsertId();
 
                 // ahora debemos crear su informacion de calidad
-                $sql_create_entrada_calidad =
-                    "INSERT INTO entrada_calidad(idEnt)
-                VALUES(?)";
-                $stmt_create_entrada_calidad = $pdo->prepare($sql_create_entrada_calidad);
-                $stmt_create_entrada_calidad->bindParam(1, $lastInsertionEntradaStock, PDO::PARAM_INT);
-                $stmt_create_entrada_calidad->execute();
+                // solo si no es producto de auxiliar
+                if ($idProd != 167 && $idProd != 168 && $idProd != 169 && $idProd != 170) {
+                    $sql_create_entrada_calidad =
+                        "INSERT INTO entrada_calidad(idEnt)
+                    VALUES(?)";
+                    $stmt_create_entrada_calidad = $pdo->prepare($sql_create_entrada_calidad);
+                    $stmt_create_entrada_calidad->bindParam(1, $lastInsertionEntradaStock, PDO::PARAM_INT);
+                    $stmt_create_entrada_calidad->execute();
+                }
 
                 // ACTUALIZAMOS EL STOCK TOTAL DEL ALMACEN Y LA MATERIA PRIMA
 
