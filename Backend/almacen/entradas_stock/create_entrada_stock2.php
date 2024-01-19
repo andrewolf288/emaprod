@@ -141,7 +141,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $description_error = "Hay entradas parciales pendientes de este producto en un plazo de un mes";
         } else {
             // si es un producto de auxiliar
-            $idEntStoEst = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 1 : 2;
+            // $idEntStoEst = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 1 : 2;
+            $idEntStoEst = 1;
             $idAlm = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 8 : 1;
 
             // ahora iniciamos un proceso de insercion y actualizacion que debe estar envuelto en un rollback
