@@ -18,11 +18,11 @@ import Paper from "@mui/material/Paper";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2)
   },
   "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
+    padding: theme.spacing(1)
+  }
 }));
 
 export function DetalleProductosFinalesV2({ detalleProductoFinal }) {
@@ -96,10 +96,10 @@ function TableProductoProduccion({ productoFinal }) {
               <b>U.M</b>
             </TableCell>
             <TableCell align="right">
-              <b>Cantidad</b>
+              <b>Programado</b>
             </TableCell>
             <TableCell align="right">
-              <b>Acumulado</b>
+              <b>Ingresado</b>
             </TableCell>
           </TableRow>
         </TableHead>
@@ -139,19 +139,10 @@ function TableEntradas({ entradas }) {
               <b>Producto</b>
             </TableCell>
             <TableCell align="left">
-              <b>Almacen</b>
-            </TableCell>
-            <TableCell align="left">
-              <b>Codigo</b>
-            </TableCell>
-            <TableCell align="left">
-              <b>Fecha entrada</b>
-            </TableCell>
-            <TableCell align="right">
               <b>Ingresado</b>
             </TableCell>
-            <TableCell align="right">
-              <b>Disponible</b>
+            <TableCell align="left">
+              <b>Fecha ingreso</b>
             </TableCell>
           </TableRow>
         </TableHead>
@@ -165,11 +156,8 @@ function TableEntradas({ entradas }) {
                 {index + 1}
               </TableCell>
               <TableCell align="left">{entrada.nomProd}</TableCell>
-              <TableCell align="left">{entrada.nomAlm}</TableCell>
-              <TableCell align="left">{entrada.codEntSto}</TableCell>
-              <TableCell align="left">{entrada.fecEntSto}</TableCell>
-              <TableCell align="right">{parseInt(entrada.canTotEnt)}</TableCell>
-              <TableCell align="right">{parseInt(entrada.canTotDis)}</TableCell>
+              <TableCell align="left">{parseInt(entrada.canProdIng)}</TableCell>
+              <TableCell align="left">{entrada.fecProdIng}</TableCell>
             </TableRow>
           ))}
         </TableBody>

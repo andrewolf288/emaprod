@@ -84,13 +84,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $sql_select_entradas_parciales =
                             "SELECT
                         pip.id,
-                        pip.idProdc AS idProd,
-                        p.nomProd,
-                        pip.codLot,
                         pip.idProdt,
+                        p.nomProd,
                         pip.refProdtProg,
-                        pip.canProdIng AS canTotEnt,
-                        pip.fecProdIng AS fecEntSto,
+                        pip.canProdIng,
+                        pip.fecProdIng,
                         pip.fecProdVen,
                         pip.fecProdIngAlm,
                         pip.esComProdIng,
@@ -99,20 +97,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         FROM produccion_ingreso_producto AS pip
                         JOIN producto AS p ON p.id = pip.idProdt
                         WHERE pip.idProdc = ? AND pip.idProdt = ?";
-                        // $sql_select_entradas_parciales =
-                        //     "SELECT 
-                        //     es.id,
-                        //     es.idProd,
-                        //     p.nomProd,
-                        //     al.nomAlm,
-                        //     es.codEntSto,
-                        //     es.fecEntSto,
-                        //     es.canTotEnt,
-                        //     es.canTotDis
-                        //     FROM entrada_stock AS es
-                        //     JOIN producto AS p ON p.id = es.idProd
-                        //     JOIN almacen AS al ON al.id = es.idAlm
-                        //     WHERE es.refProdc = ? AND es.idProd = ?";
                         $stmt_select_entradas_parciales = $pdo->prepare($sql_select_entradas_parciales);
                         $stmt_select_entradas_parciales->bindParam(1, $idLotProdc, PDO::PARAM_INT);
                         $stmt_select_entradas_parciales->bindParam(2, $idProdFin, PDO::PARAM_INT);
@@ -120,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // recorremos las entradas y las agregamos al detalle de entradas parciales
                         while ($row_detalle_entrada = $stmt_select_entradas_parciales->fetch(PDO::FETCH_ASSOC)) {
-                            $canTotEnt = $row_detalle_entrada["canTotEnt"];
+                            $canTotEnt = $row_detalle_entrada["canProdIng"];
                             $row_detalle["cantidad_ingresada"] += $canTotEnt; // sumamos la cantidad ingresada
                             array_push($row_detalle["entradas_parciales"], $row_detalle_entrada);
                         }
