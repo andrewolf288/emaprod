@@ -28,6 +28,8 @@ import { ProtectedLayoutProduccion } from "./components/ProtectedLayoutProduccio
 import { ProtectedLayoutFrescos } from "./components/ProtectedLayoutFrescos";
 import { ProtectedLayoutEncajonado } from "./components/ProtectedLayoutEncajonado";
 import { ProtectedLayoutEnvasado } from "./components/ProtectedLayoutEnvasado";
+import { RouterVentas } from "./ventas/router/router";
+import { ProtectedLayoutVentas } from "./components/ProtectedLayoutVentas";
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +83,11 @@ export const router = createBrowserRouter([
         path: "/calidad",
         element: <ProtectedLayoutCalidad />,
         children: RouterCalidad
+      },
+      {
+        path: "/ventas",
+        element: <ProtectedLayoutVentas />,
+        children: RouterVentas
       }
     ]
   }

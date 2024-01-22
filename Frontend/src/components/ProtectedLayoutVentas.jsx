@@ -1,9 +1,8 @@
 import { Navigate, useOutlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import NavCalidad from "../calidad/components/NavCalidad";
 import NavVentas from "../ventas/components/NavVentas";
 
-export const ProtectedLayoutCalidad = () => {
+export const ProtectedLayoutVentas = () => {
   // OBTENEMOS INFORMACION DEL LOCALSTORAGE
   const { user } = useAuth();
   const outlet = useOutlet();
@@ -13,7 +12,7 @@ export const ProtectedLayoutCalidad = () => {
   } else {
     return (
       <>
-        <NavCalidad />
+        <NavVentas />
         <main>{outlet}</main>
         <footer></footer>
       </>
