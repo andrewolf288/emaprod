@@ -136,6 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // si no es una mercancia de promocion
                         if ($esMerProm == 0) {
                             // tenemos que traer informacion de los lotes necesarios para cumplir con el detalle
+                            $idAlmacenPrincipal = 1;
                             $sql_consult_entradas_disponibles =
                                 "SELECT
                             es.id,
@@ -143,12 +144,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             DATE(es.fecEntSto) AS fecEntSto,
                             es.canTotDis
                             FROM entrada_stock AS es
-                            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
+                            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0 AND idAlm = ?
                             ORDER BY es.fecEntSto ASC";
 
                             $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
                             $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
                             $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
+                            $stmt_consult_entradas_disponibles->bindParam(3, $idAlmacenPrincipal, pdo::PARAM_INT);
                             $stmt_consult_entradas_disponibles->execute();
                             $array_entradas_disponibles = $stmt_consult_entradas_disponibles->fetchAll(PDO::FETCH_ASSOC);
 

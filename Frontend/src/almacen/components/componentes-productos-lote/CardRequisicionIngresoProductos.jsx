@@ -12,6 +12,7 @@ import {
 import { DialogUpdateDetalleRequisicionIngresoProducto } from "./DialogUpdateDetalleRequisicionIngresoProducto";
 import { DialogDeleteDetalleRequisicionIngresoProducto } from "./DialogDeleteDetalleRequisicionIngresoProducto";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import { DialogSalidaDetalleRequisicionIngresoProducto } from "./DialogSalidaDetalleRequisicionIngresoProducto";
 
 export const CardRequisicionIngresoProductos = ({
   requisicion,
@@ -80,17 +81,10 @@ export const CardRequisicionIngresoProductos = ({
                         onDeleteRequisicionAgregacionDetalle
                       }
                     />
-                    <IconButton
-                      aria-label="delete"
-                      size="large"
-                      color="success"
-                      disabled={requisicion.esComProdIng === 1}
-                      onClick={() => {
-                        onCheckRequisicionAgrgeacionDetalle(requisicion);
-                      }}
-                    >
-                      <CheckCircleRoundedIcon fontSize="inherit" />
-                    </IconButton>
+                    <DialogSalidaDetalleRequisicionIngresoProducto
+                      itemSalida={requisicion}
+                      onCheckItemSalida={onCheckRequisicionAgrgeacionDetalle}
+                    />
                   </div>
                 </TableCell>
               </TableRow>

@@ -168,6 +168,7 @@ export const RequisicionIngresoProductos = () => {
       });
       handleClickFeeback();
     }
+
     // cerramos el loader
     closeLoader();
   };
