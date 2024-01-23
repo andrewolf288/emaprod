@@ -5,24 +5,31 @@ import { Autocomplete, TextField } from "@mui/material";
 const defaultOption = {
   value: 0,
   label: "Selecciona un almacen",
-  id: null,
+  id: null
 };
 
-export const FilterAlmacenDynamic = ({ defaultValue = null, onNewInput }) => {
+export const FilterAlmacenDynamic = ({
+  defaultValue = null,
+  onNewInput,
+  onlyData = []
+}) => {
   const [options, setOptions] = useState([defaultOption]);
   const [value, setValue] = useState(defaultOption);
 
   const obtenerAlmacenes = async () => {
     const result = await getAlmacenes();
+    const resultOnlyData = result.filter((element) =>
+      onlyData.includes(element.id)
+    );
     const formatSelect = [
       defaultOption,
-      ...result.map((element) => {
+      ...resultOnlyData.map((element) => {
         return {
           value: element.codAlm,
           label: `${element.codAlm} - ${element.nomAlm}`,
-          id: element.id,
+          id: element.id
         };
-      }),
+      })
     ];
     setOptions(formatSelect);
     // verficar si defualtvalue coincide

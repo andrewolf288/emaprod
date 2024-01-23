@@ -13,7 +13,7 @@ const NavVentas = () => {
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={"/calidad"}>
+          <Link className="navbar-brand" to={"/ventas"}>
             <img
               src={logo}
               alt="Logo"

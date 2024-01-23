@@ -1,11 +1,11 @@
-import { HomeAlmacenVentas } from "../pages/HomeAlmacenVentas";
+import { HomeVentas } from "../pages/HomeVentas";
 import { RouterAlmacenStockVentas } from "../pages/almacen/RouterAlmacenStockVentas";
 import LayoutModulo from "./../../layout/LayoutModulo";
 
 export const RouterVentas = [
   {
     path: "",
-    element: <HomeAlmacenVentas />
+    element: <HomeVentas />
   },
   {
     path: "stock-almacen",

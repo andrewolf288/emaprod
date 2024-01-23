@@ -17,6 +17,7 @@ import { FilterClase } from "./../../../components/ReferencialesFilters/Clase/Fi
 import ExportExcel from "./ExportExcel";
 import { getStockAlmacenVentas } from "../../helpers/stock-almacen/getStockAlmacenVentas";
 import { RowStockAlmacen } from "../../components/stock-almacen/RowStockAlmacen";
+import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic";
 
 export const ListAlmacenStockVentas = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
@@ -25,7 +26,7 @@ export const ListAlmacenStockVentas = () => {
 
   // ESTADOS PARA LA PAGINACIÓN
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
   const [feedbackDelete, setfeedbackDelete] = useState(false);
@@ -272,7 +273,11 @@ export const ListAlmacenStockVentas = () => {
                 }
               >
                 Almacen
-                <FilterAlmacen onNewInput={onChangeFilterAlmacenGeneral} />
+                {/* <FilterAlmacen onNewInput={onChangeFilterAlmacenGeneral}  /> */}
+                <FilterAlmacenDynamic
+                  onNewInput={onChangeFilterAlmacenGeneral}
+                  onlyData={[1]}
+                />
               </div>
               <div
                 className="col-3 d-flex align-items-end"
@@ -360,19 +365,6 @@ export const ListAlmacenStockVentas = () => {
                     </TableCell>
                     <TableCell align="left" width={120}>
                       <b>Almacen</b>
-                      {/**
-                        <FilterAlmacen onNewInput={onChangeAlmacen} />
-                      */}
-                    </TableCell>
-                    <TableCell align="left" width={110}>
-                      <b>Total</b>
-                      <TextField
-                        onChange={handleFormFilter}
-                        name="filterCantidadTotal"
-                        size="small"
-                        type="number"
-                        autoComplete="off"
-                      />
                     </TableCell>
                     <TableCell align="left" width={110}>
                       <b>Disponible</b>
@@ -383,9 +375,6 @@ export const ListAlmacenStockVentas = () => {
                         type="number"
                         autoComplete="off"
                       />
-                    </TableCell>
-                    <TableCell align="left" width={120}>
-                      <b>Acciones</b>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -400,7 +389,7 @@ export const ListAlmacenStockVentas = () => {
             </TableContainer>
             {/* PAGINACION DE LA TABLA */}
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[25, 50, 75, 100]}
               component="div"
               count={dataStockAlmacenTmp.length}
               rowsPerPage={rowsPerPage}

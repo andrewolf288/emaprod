@@ -10,11 +10,7 @@ export const RowStockAlmacen = ({ detalle }) => {
       <TableCell>{detalle.desCla}</TableCell>
       <TableCell>{detalle.simMed}</TableCell>
       <TableCell>{detalle.nomAlm}</TableCell>
-      <TableCell>{detalle.canSto}</TableCell>
       <TableCell>{detalle.canStoDis}</TableCell>
-      <TableCell>
-        <div className="btn-toolbar">No actions</div>
-      </TableCell>
     </TableRow>
   );
 };
