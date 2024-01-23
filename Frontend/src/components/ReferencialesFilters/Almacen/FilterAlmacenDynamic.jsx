@@ -17,13 +17,13 @@ export const FilterAlmacenDynamic = ({
   const [value, setValue] = useState(defaultOption);
 
   const obtenerAlmacenes = async () => {
-    const result = await getAlmacenes();
-    const resultOnlyData = result.filter((element) =>
-      onlyData.includes(element.id)
-    );
+    let result = await getAlmacenes();
+    if (onlyData.length !== 0) {
+      result = result.filter((element) => onlyData.includes(element.id));
+    }
     const formatSelect = [
       defaultOption,
-      ...resultOnlyData.map((element) => {
+      ...result.map((element) => {
         return {
           value: element.codAlm,
           label: `${element.codAlm} - ${element.nomAlm}`,

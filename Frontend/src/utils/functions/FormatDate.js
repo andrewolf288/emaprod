@@ -1,5 +1,6 @@
 const FormatDateTimeMYSQL = (date) => {
-  const nowDate = date;
+  const timeZone = "America/Lima";
+  const nowDate = new Date(date.toLocaleString("en-US", { timeZone }));
   const year = nowDate.getFullYear();
   const month = (nowDate.getMonth() + 1).toString().padStart(2, "0"); // Agregar 1 al mes porque en JavaScript los meses comienzan desde 0.
   const day = nowDate.getDate().toString().padStart(2, "0");
@@ -11,7 +12,8 @@ const FormatDateTimeMYSQL = (date) => {
 };
 
 const FormatDateMYSQL = () => {
-  const nowDate = new Date();
+  const timeZone = "America/Lima";
+  const nowDate = new Date(new Date().toLocaleString("en-US", { timeZone }));
   const year = nowDate.getFullYear();
   const month = (nowDate.getMonth() + 1).toString().padStart(2, "0"); // Agregar 1 al mes porque en JavaScript los meses comienzan desde 0.
   const day = nowDate.getDate().toString().padStart(2, "0");
@@ -20,7 +22,8 @@ const FormatDateMYSQL = () => {
 };
 
 const FormatDateTimeMYSQLNow = () => {
-  const nowDate = new Date();
+  const timeZone = "America/Lima";
+  const nowDate = new Date(new Date().toLocaleString("en-US", { timeZone }));
   const year = nowDate.getFullYear();
   const month = (nowDate.getMonth() + 1).toString().padStart(2, "0"); // Agregar 1 al mes porque en JavaScript los meses comienzan desde 0.
   const day = nowDate.getDate().toString().padStart(2, "0");
@@ -32,7 +35,8 @@ const FormatDateTimeMYSQLNow = () => {
 };
 
 const FormatDateTimeMYSQLNowPlusYears = (numYears, dateString = null) => {
-  let nowDate = new Date();
+  const timeZone = "America/Lima";
+  let nowDate = new Date(new Date().toLocaleString("en-US", { timeZone }));
   if (dateString !== null) {
     nowDate = new Date(dateString);
   }

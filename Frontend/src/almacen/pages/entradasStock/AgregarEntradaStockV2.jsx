@@ -197,7 +197,13 @@ export const AgregarEntradaStockV2 = () => {
 
   // SET VALOR DE FECHA DE formState
   const onAddFecEntSto = (newfecEntSto) => {
-    setFormState({ ...formState, fecEntSto: newfecEntSto });
+    const year = 4;
+    const newfecVenEnt = FormatDateTimeMYSQLNowPlusYears(year, newfecEntSto);
+    setFormState({
+      ...formState,
+      fecEntSto: newfecEntSto,
+      fecVenEntSto: newfecVenEnt
+    });
   };
 
   // CREAR ENTRADA DE STOCK
@@ -221,6 +227,7 @@ export const AgregarEntradaStockV2 = () => {
 
     console.log("Informacion de la entrada: ", requestJSON);
     console.log("Informacion de las entradas parciales: ", entradasParciales);
+
     const { message_error, description_error } = await createEntradaStock(
       requestJSON,
       entradasParciales

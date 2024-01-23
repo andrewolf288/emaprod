@@ -191,8 +191,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bindParam(9, $esSel, PDO::PARAM_BOOL); // es seleccion
                 $stmt->bindParam(10, $docEntSto, PDO::PARAM_STR); // documento
                 $stmt->bindParam(11, $esEntPar, PDO::PARAM_BOOL); // es entrada parcial
-                $stmt->bindParam(12, $fecVenEntSto, PDO::PARAM_STR); // fecha de vencimiento
-                $stmt->bindParam(13, $fecEntSto, PDO::PARAM_STR); // fecha de entrada
+                $stmt->bindParam(12, $fecVenEntSto); // fecha de vencimiento
+                $stmt->bindParam(13, $fecEntSto); // fecha de entrada
                 $stmt->bindParam(14, $ordCom, PDO::PARAM_STR); // fecha de vencimiento
                 $stmt->bindParam(15, $guiRem, PDO::PARAM_STR); // fecha de entrada
                 $stmt->bindParam(16, $idEntStoTip, PDO::PARAM_INT); // tipo de entrada (compra)
