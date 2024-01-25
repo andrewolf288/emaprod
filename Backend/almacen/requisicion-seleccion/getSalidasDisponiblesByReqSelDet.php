@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ses.merReqSel
         FROM salida_entrada_seleccion AS ses
         JOIN entrada_stock AS es ON es.id = ses.idEntSto
-        WHERE ses.idReqSel = ? AND ses.idMatPri = ? AND ses.idSalEntSelEst = ? AND ses.canSalStoReqSel <> 0.00
+        WHERE ses.idReqSel = ? AND ses.idMatPri = ? AND ses.idSalEntSelEst = ? AND ses.canSalStoReqSel > 0
         ";
         //Preparamos la consulta
         $stmt = $pdo->prepare($sql);

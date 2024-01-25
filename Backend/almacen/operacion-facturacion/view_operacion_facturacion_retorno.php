@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $totalPorLoteProduccion = [];
                         foreach ($movimientos_operacion_facturacion as $fila) {
                             $refProdc = $fila['idProdc'];
-                            $cantidad = floatval($fila['canMovOpeFac']); // Convertir a número si es necesario
+                            $cantidad = intval($fila['canMovOpeFac']); // Convertir a número si es necesario
                             $codLotProd = $fila['codLotProd'];
                             $codProd = $fila["codProd"];
                             $fecProdIni = $fila["fecProdIni"];
@@ -180,7 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $totalPorLoteProduccion = [];
                                 foreach ($movimientos_operacion_facturacion as $fila) {
                                     $refProdc = $fila['idProdc'];
-                                    $cantidad = floatval($fila['canMovOpeFac']); // Convertir a número si es necesario
+                                    $cantidad = intval($fila['canMovOpeFac']); // Convertir a número si es necesario
                                     $codLotProd = $fila['codLotProd'];
                                     $codProd = $fila["codProd"];
                                     $fecProdIni = $fila["fecProdIni"];

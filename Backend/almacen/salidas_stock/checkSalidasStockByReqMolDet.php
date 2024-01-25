@@ -22,6 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //$idAlmDes = 0; // almacen destino
     $canReqDet = floatval($data["canReqDet"]); // cantidad de requisicion detalle
     $idEstSalSto = 1; // estado de completado
+    // tolerancia de error de punto flotante
+    $tolerancia = 0.000001;
 
 
     if ($pdo) {
@@ -86,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $idEntStoUti = $row_entrada_dispomible["id"]; // id entrada
                         $canDisEnt = $row_entrada_dispomible["canTotDis"]; // cantidad disponible
 
-                        if ($canDisEnt >= $cantidad_faltante) {
+                        if ($canDisEnt - $cantidad_faltante >= -$tolerancia) {
                             // añadimos a entradas utilizadas
                             array_push(
                                 $entradasUtilizadas,

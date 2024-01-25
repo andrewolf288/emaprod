@@ -124,9 +124,12 @@ const DialogConfirmacion = ({
 
   const enviarDetalleEntradaAlmacenes = () => {
     if (parseInt(canProdIng) === cantidadActual) {
+      const filterIngresos = detalleEntradaAlmacen.filter(
+        (element) => element["canIngAlm"] !== 0
+      );
       const formatData = {
         ...itemSalida,
-        detalleEntradaAlmacen: detalleEntradaAlmacen
+        detalleEntradaAlmacen: filterIngresos
       };
       onCheckItemSalida(formatData);
     } else {

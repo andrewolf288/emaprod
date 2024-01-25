@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idProdt = $data["idProdt"];  // id de producto
     $refProdt = $data["refProdt"]; // referencia del producto
     $detSal = $data["detSal"]; // detalle de salida
+    $idAlmacenPrincipal = 1; // almacen principal
 
     // si es mercancia promocional
     if ($esMerProm == 1) {
@@ -33,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 DATE(es.fecEntSto) AS fecEntSto,
                 es.canTotDis 
             FROM entrada_stock AS es
-            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
+            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0 AND idAlm = ?
             ORDER BY es.fecEntSto ASC";
 
         try {
@@ -42,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
             $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
+            $stmt_consult_entradas_disponibles->bindParam(3, $idAlmacenPrincipal, PDO::PARAM_INT);
             $stmt_consult_entradas_disponibles->execute();
 
             // AÑADIMOS AL ARRAY
@@ -216,13 +218,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 DATE(es.fecEntSto) AS fecEntSto,
                 es.canTotDis
                 FROM entrada_stock AS es
-                WHERE idProd = ? AND idEntStoEst = ? AND refProdc = ? AND canTotDis > 0
+                WHERE idProd = ? AND idEntStoEst = ? AND refProdc = ? AND canTotDis > 0 AND idAlm = ?
                 ORDER BY es.fecEntSto ASC";
 
                 $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
                 $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
                 $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
                 $stmt_consult_entradas_disponibles->bindParam(3, $refProdc, PDO::PARAM_INT);
+                $stmt_consult_entradas_disponibles->bindParam(4, $idAlmacenPrincipal, PDO::PARAM_INT);
                 $stmt_consult_entradas_disponibles->execute();
 
                 // AÑADIMOS AL ARRAY

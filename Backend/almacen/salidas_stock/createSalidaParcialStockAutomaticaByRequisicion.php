@@ -23,6 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $canReqDet = floatval($data["canSalParDet"]); // cantidad de requisicion detalle
     $idEstSalSto = 1; // estado de completado
     $numop = $data["numop"]; // area
+    // tolerancia de error de punto flotante
+    $tolerancia = 0.000001;
 
 
     if ($pdo) {
@@ -86,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $idEntStoUti = $row_entrada_dispomible["id"]; // id entrada
                         $canDisEnt = $row_entrada_dispomible["canTotDis"]; // cantidad disponible
 
-                        if ($canDisEnt >= $cantidad_faltante) {
+                        if ($canDisEnt - $cantidad_faltante >= -$tolerancia) {
                             // añadimos a entradas utilizadas
                             array_push(
                                 $entradasUtilizadas,
@@ -199,7 +201,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             // ********* AHORA ACTUALIZAMOS LA ENTRADA CORRESPONDIENTE **************
                             $canResAftOpe =  $canTotDisEntSto - $canSalStoReq; // cantidad restante luego de la salida
 
-                            if ($canResAftOpe == 0) { // SI LA CANTIDAD RESTANTE ES 0
+                            if (abs($canResAftOpe) < $tolerancia) { // SI LA CANTIDAD RESTANTE ES 0
+                                $canResAftOpe = 0;
                                 $idEntStoEst = 2; // ESTADO DE ENTRADA AGOTADA O TERMINADA
                                 $fecFinSto = date('Y-m-d H:i:s'); // FECHA DE TERMINO DE STOCK DE LA ENTRADA
 
@@ -253,60 +256,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
 
                     // REALIZAMOS LA TRANSFERENCIA AL ALMACEN INDICADO EN LA SALIDA
-                    if (empty($message_error)) {
-                        $sql_consult_almacen_stock =
-                            "SELECT * FROM almacen_stock 
-                                WHERE idProd = ? AND idAlm = ?";
-                        try {
-                            // Iniciamos una transaccion
-                            $pdo->beginTransaction();
-                            // consultamos si existe un registro de almacen stock con el prod y alm
-                            $stmt_consult_almacen_stock =  $pdo->prepare($sql_consult_almacen_stock);
-                            $stmt_consult_almacen_stock->bindParam(1, $idProdt, PDO::PARAM_INT);
-                            $stmt_consult_almacen_stock->bindParam(2, $idAlmDes, PDO::PARAM_INT);
-                            $stmt_consult_almacen_stock->execute();
+                    // if (empty($message_error)) {
+                    //     $sql_consult_almacen_stock =
+                    //         "SELECT * FROM almacen_stock 
+                    //             WHERE idProd = ? AND idAlm = ?";
+                    //     try {
+                    //         // Iniciamos una transaccion
+                    //         $pdo->beginTransaction();
+                    //         // consultamos si existe un registro de almacen stock con el prod y alm
+                    //         $stmt_consult_almacen_stock =  $pdo->prepare($sql_consult_almacen_stock);
+                    //         $stmt_consult_almacen_stock->bindParam(1, $idProdt, PDO::PARAM_INT);
+                    //         $stmt_consult_almacen_stock->bindParam(2, $idAlmDes, PDO::PARAM_INT);
+                    //         $stmt_consult_almacen_stock->execute();
 
-                            if ($stmt_consult_almacen_stock->rowCount() === 1) {
-                                // UPDATE ALMACEN STOCK
-                                $sql_update_almacen_stock =
-                                    "UPDATE almacen_stock 
-                                SET canSto = canSto + $canReqDet, canStoDis = canStoDis + $canReqDet, fecActAlmSto = ?
-                                WHERE idProd = ? AND idAlm = ?";
-                                try {
-                                    $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
-                                    $stmt_update_almacen_stock->bindParam(1, $fecEntSto, PDO::PARAM_INT);
-                                    $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
-                                    $stmt_update_almacen_stock->bindParam(3, $idAlmDes, PDO::PARAM_INT);
+                    //         if ($stmt_consult_almacen_stock->rowCount() === 1) {
+                    //             // UPDATE ALMACEN STOCK
+                    //             $sql_update_almacen_stock =
+                    //                 "UPDATE almacen_stock 
+                    //             SET canSto = canSto + $canReqDet, canStoDis = canStoDis + $canReqDet, fecActAlmSto = ?
+                    //             WHERE idProd = ? AND idAlm = ?";
+                    //             try {
+                    //                 $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
+                    //                 $stmt_update_almacen_stock->bindParam(1, $fecEntSto, PDO::PARAM_INT);
+                    //                 $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
+                    //                 $stmt_update_almacen_stock->bindParam(3, $idAlmDes, PDO::PARAM_INT);
 
-                                    $stmt_update_almacen_stock->execute(); // ejecutamos
-                                } catch (PDOException $e) {
-                                    $message_error = "ERROR INTERNO SERVER AL ACTUALIZAR ALMACEN STOCK";
-                                    $description_error = $e->getMessage();
-                                }
-                            } else {
-                                // CREATE NUEVO REGISTRO ALMACEN STOCK
-                                $sql_create_almacen_stock =
-                                    "INSERT INTO almacen_stock (idProd, idAlm, canSto, canStoDis)
-                            VALUE (?, ?, $canReqDet, $canReqDet)";
-                                try {
-                                    $stmt_create_almacen_stock = $pdo->prepare($sql_create_almacen_stock);
-                                    $stmt_create_almacen_stock->bindParam(1, $idProdt, PDO::PARAM_INT);
-                                    $stmt_create_almacen_stock->bindParam(2, $idAlmDes, PDO::PARAM_INT);
+                    //                 $stmt_update_almacen_stock->execute(); // ejecutamos
+                    //             } catch (PDOException $e) {
+                    //                 $message_error = "ERROR INTERNO SERVER AL ACTUALIZAR ALMACEN STOCK";
+                    //                 $description_error = $e->getMessage();
+                    //             }
+                    //         } else {
+                    //             // CREATE NUEVO REGISTRO ALMACEN STOCK
+                    //             $sql_create_almacen_stock =
+                    //                 "INSERT INTO almacen_stock (idProd, idAlm, canSto, canStoDis)
+                    //         VALUE (?, ?, $canReqDet, $canReqDet)";
+                    //             try {
+                    //                 $stmt_create_almacen_stock = $pdo->prepare($sql_create_almacen_stock);
+                    //                 $stmt_create_almacen_stock->bindParam(1, $idProdt, PDO::PARAM_INT);
+                    //                 $stmt_create_almacen_stock->bindParam(2, $idAlmDes, PDO::PARAM_INT);
 
-                                    $stmt_create_almacen_stock->execute(); // ejecutamos
-                                } catch (PDOException $e) {
-                                    $message_error = "ERROR INTERNO SERVER AL CREAR ALMACEN STOCK";
-                                    $description_error = $e->getMessage();
-                                }
-                            }
-                            // TERMINAMOS LA TRANSACCION
-                            $pdo->commit();
-                        } catch (PDOException $e) {
-                            $pdo->rollback();
-                            $message_error = "ERROR INTERNO SERVER: fallo en la actualización de los estados";
-                            $description_error = $e->getMessage();
-                        }
-                    }
+                    //                 $stmt_create_almacen_stock->execute(); // ejecutamos
+                    //             } catch (PDOException $e) {
+                    //                 $message_error = "ERROR INTERNO SERVER AL CREAR ALMACEN STOCK";
+                    //                 $description_error = $e->getMessage();
+                    //             }
+                    //         }
+                    //         // TERMINAMOS LA TRANSACCION
+                    //         $pdo->commit();
+                    //     } catch (PDOException $e) {
+                    //         $pdo->rollback();
+                    //         $message_error = "ERROR INTERNO SERVER: fallo en la actualización de los estados";
+                    //         $description_error = $e->getMessage();
+                    //     }
+                    // }
 
                     // ACTUALIZAMOS EL ESTADO DE LA REQUISICION
                     if (empty($message_error)) {

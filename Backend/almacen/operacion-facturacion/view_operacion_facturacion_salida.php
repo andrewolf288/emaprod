@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $totalPorLoteProduccion = [];
                         foreach ($movimientos_operacion_facturacion as $fila) {
                             $refProdc = $fila['idProdc'];
-                            $cantidad = floatval($fila['canMovOpeFac']); // Convertir a número si es necesario
+                            $cantidad = intval($fila['canMovOpeFac']); // Convertir a número si es necesario
                             $codLotProd = $fila['codLotProd'];
                             $codProd = $fila["codProd"];
                             $fecProdIni = $fila["fecProdIni"];
@@ -173,7 +173,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                                     "idEntSto" => $idEntStoUti,
                                                     "canSalStoReq" => $cantidad_faltante, // la cantidad de la requisicion detalle
                                                     "refProdc" => $refProdc,
-
                                                 )
                                             );
 
@@ -202,7 +201,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     $totalPorLoteProduccion = [];
                                     foreach ($entradasUtilizadas as $fila) {
                                         $refProdc = $fila['refProdc'];
-                                        $cantidad = floatval($fila['canSalStoReq']); // Convertir a número si es necesario
+                                        $cantidad = intval($fila['canSalStoReq']); // Convertir a número si es necesario
 
                                         // Verificar si ya existe la referencia en el arreglo de totales
                                         $indice = -1;

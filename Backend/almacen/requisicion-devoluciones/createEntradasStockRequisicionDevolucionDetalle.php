@@ -22,6 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idReqDev = $data["idReqDev"]; // id de requisicion de devolucion
     $idReqDevDet = $data["id"]; // id de requisicion devolucion detalle
     $idAlm = 0; // id almacen
+    // tolerancia de error de punto flotante
+    $tolerancia = 0.000001;
 
     if ($pdo) {
         switch ($idProdDevMot) {
@@ -124,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $idEntSto = $value["idEntSto"]; // entrada
                         $canSalStoReq = $value["canSalStoReq"]; // cantidad
 
-                        if ($cantidadAdevolver >= $canSalStoReq) {
+                        if ($cantidadAdevolver - $canSalStoReq >= -$tolerancia) {
                             $cantidadAdevolver -= $canSalStoReq;
                             $cantSalPorIteracion = $canSalStoReq;
                         } else {
@@ -160,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $description_error = $e->getMessage();
                         }
 
-                        if ($cantidadAdevolver == 0) {
+                        if (abs($cantidadAdevolver) < $tolerancia) {
                             break;
                         }
                     }

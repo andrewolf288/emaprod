@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.canSel 
         FROM entrada_stock AS es
         JOIN almacen a ON a.id = es.idAlm 
-        WHERE idProd = ? AND canPorSel <> 0.00 AND es.esSel = ?
+        WHERE idProd = ? AND canPorSel > 0 AND es.esSel = ?
         ORDER BY es.refNumIngEntSto DESC
         ";
         //Preparamos la consulta

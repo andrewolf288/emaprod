@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $letAniEntSto = $data["letAniEntSto"]; // letra anio
     $diaJulEntSto = $data["diaJulEntSto"]; // dia juliano
     $detalleEntradaAlmacen = $data["detalleEntradaAlmacen"]; // detalle de entrada almacen
-    $manLotProd = $data["detalleEntradaAlmacen"];
+    $manLotProd = $data["manLotProd"];
 
     //regProFin
     if ($pdo) {
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $pdo->beginTransaction();
 
             // 1. primero debemos verificar si es un producto que maneja lotes
-            if ($manLotProd) {
+            if ($manLotProd === 0) {
                 // obtenemos informacion del lote
                 $lotPorDef = $data["lotPorDef"];
                 $sql_find_lote_produccion_defecto =
