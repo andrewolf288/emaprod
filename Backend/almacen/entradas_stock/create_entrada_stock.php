@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // si hay ingresos de ese producto ese año
             if ($stmt_numero_entrada->rowCount() == 1) {
                 while ($row = $stmt_numero_entrada->fetch(PDO::FETCH_ASSOC)) {
-                    $refNumIngEntSto = $row["refNumIngEntSto"] + 1;
+                    $refNumIngEntSto = intval($row["refNumIngEntSto"]) + 1;
                 }
             } else {
                 // si no hay ingresos de productos ese año

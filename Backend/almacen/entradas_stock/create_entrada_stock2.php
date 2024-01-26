@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // SERA LA PRIMERA INSERCION DEL AÑO
                 $refNumIngEntSto = 1;
             } else {
-                $refNumIngEntSto = $result_numero_entrada[0]["refNumIngEntSto"] + 1;
+                $refNumIngEntSto = intval($result_numero_entrada[0]["refNumIngEntSto"]) + 1;
             }
 
             // EL CODIGO DE INGRESO ES DE 
