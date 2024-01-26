@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $anio_actual = date('Y'); // obtenemos año actual
             $sql_numero_entrada =
                 "SELECT 
-            max(refNumIngEntSto) as refNumIngEntSto
+            max(CAST(refNumIngEntSto AS UNSIGNED)) as refNumIngEntSto
             FROM entrada_stock
             WHERE idProd = ? AND YEAR(fecEntSto) = ?
             ORDER BY refNumIngEntSto DESC LIMIT 1";
