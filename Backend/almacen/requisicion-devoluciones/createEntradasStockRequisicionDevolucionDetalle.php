@@ -126,6 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $idEntSto = $value["idEntSto"]; // entrada
                         $canSalStoReq = $value["canSalStoReq"]; // cantidad
 
+                        // si la cantidad a devolver es mayor a salida de la entrada
                         if ($cantidadAdevolver - $canSalStoReq >= -$tolerancia) {
                             $cantidadAdevolver -= $canSalStoReq;
                             $cantSalPorIteracion = $canSalStoReq;
@@ -162,6 +163,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $description_error = $e->getMessage();
                         }
 
+                        // si la cantidad a devolver es igual a 0
                         if (abs($cantidadAdevolver) < $tolerancia) {
                             break;
                         }

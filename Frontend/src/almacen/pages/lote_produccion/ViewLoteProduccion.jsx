@@ -103,6 +103,7 @@ export const ViewLoteProduccion = () => {
     requisicion_detalle.numop = numop;
     // abrimos el loader
     openLoader();
+    console.log(requisicion_detalle);
     const resultPeticion = await createSalidasStockAutomaticas(
       requisicion_detalle
     );

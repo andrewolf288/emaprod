@@ -74,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             rd.id,
                             rd.idProdt,
                             p.nomProd,
+                            p.salMixAlm,
                             me.simMed,
                             rd.idReq,
                             rd.idReqDetEst,

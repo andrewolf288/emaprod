@@ -24,11 +24,11 @@ import Paper from "@mui/material/Paper";
 const ITEM_HEIGHT = 48;
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2)
   },
   "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
+    padding: theme.spacing(1)
+  }
 }));
 
 export const ComponentActionRequisicionDetalle = ({
@@ -37,7 +37,7 @@ export const ComponentActionRequisicionDetalle = ({
   onCreateSalidaTotal,
   onCreateSalidaParcial,
   onTerminarSalidaParcial,
-  detalle,
+  detalle
 }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -64,13 +64,17 @@ export const ComponentActionRequisicionDetalle = ({
       <DialogCrearSalidaParcial
         detalle={detalle}
         onCreateSalidaParcial={onCreateSalidaParcial}
-        disabled={detalle.idReqDetEst == 2}
+        disabled={detalle.idReqDetEst == 2 || detalle.salMixAlm == 1}
       />
       {/* Boton de terminar entrega parcial */}
       <DialogTerminarSalidaParcial
         detalle={detalle}
         onTerminarSalidaParcial={onTerminarSalidaParcial}
-        disabled={detalle.idReqDetEst == 2 || detalle.salParc.length === 0}
+        disabled={
+          detalle.idReqDetEst == 2 ||
+          detalle.salParc.length === 0 ||
+          detalle.salMixAlm == 1
+        }
       />
       {/* Menu options de otras opciones */}
       <div>
@@ -87,7 +91,7 @@ export const ComponentActionRequisicionDetalle = ({
         <Menu
           id="long-menu"
           MenuListProps={{
-            "aria-labelledby": "long-button",
+            "aria-labelledby": "long-button"
           }}
           anchorEl={anchorEl}
           open={open}
@@ -95,8 +99,8 @@ export const ComponentActionRequisicionDetalle = ({
           PaperProps={{
             style: {
               maxHeight: ITEM_HEIGHT * 4.5,
-              width: "20ch",
-            },
+              width: "20ch"
+            }
           }}
         >
           {/* Menu de actualizar requisicion */}
@@ -149,41 +153,250 @@ const DialogCrearSalidaTotal = ({ detalle, onCreateSalidaTotal, disabled }) => {
       >
         <img src={iconSalidaTotal} height={20} width={20} />
       </button>
-      <BootstrapDialog
-        maxWidth={"l"}
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
+      <DialogConfirmSalidaTotal
         open={open}
-      >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Salida total
-        </DialogTitle>
-        <DialogContent dividers>
-          <b className="me-2 d-block">Producto:</b>
-          {detalle.nomProd}
-          <b className="me-2 d-block mt-2">Total requisicion:</b>
-          {detalle.canReqDet}
-          <span className="ms-2">{detalle.simMed}</span>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleClose}>
-            Cerrar
-          </Button>
-          <Button
-            color="error"
-            autoFocus
-            onClick={() => {
-              // terminamos de procesar la salida total
-              onCreateSalidaTotal(detalle);
-              // cerramos el cuadro de dialogo emergente
-              handleClose();
-            }}
-          >
-            Aceptar
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
+        handleClose={handleClose}
+        itemSalida={detalle}
+        onCreateSalidaTotal={onCreateSalidaTotal}
+      />
     </div>
+  );
+};
+
+// dialogo de confirmacion de salida de diferentes almacenes
+const DialogConfirmSalidaTotal = ({
+  itemSalida,
+  handleClose,
+  open,
+  onCreateSalidaTotal
+}) => {
+  const { salMixAlm, canReqDet } = itemSalida;
+  const [detalleSalidaAlmacen, setdetalleSalidaAlmacen] = React.useState([
+    {
+      idAlm: 1,
+      nomAlm: "Almacen principal",
+      canSalAlm: 0,
+      porIngAlm: 0
+    },
+    {
+      idAlm: 8,
+      nomAlm: "Almacen auxiliar",
+      canSalAlm: 0,
+      porIngAlm: 0
+    }
+  ]);
+  const [cantidadActual, setCantidadActual] = React.useState(0);
+
+  const handleChangeInputCantidadValue = (idAlm, { target }) => {
+    const { value } = target;
+    const newData = detalleSalidaAlmacen.map((element) => {
+      if (element.idAlm === idAlm) {
+        return {
+          ...element,
+          canSalAlm: parseInt(value)
+        };
+      } else {
+        return element;
+      }
+    });
+    setdetalleSalidaAlmacen(newData);
+  };
+
+  const handleChangeInputPorcentaje = (idAlm, { target }) => {
+    const { value } = target;
+    let porcentaje = isNaN(parseInt(value)) ? 0 : parseInt(value);
+    if (porcentaje < 0) {
+      porcentaje = 0;
+    }
+    if (porcentaje > 100) {
+      porcentaje = 100;
+    }
+    const cantidadRequerida = parseInt(canReqDet);
+    const cantidadAlmacen = Math.round((cantidadRequerida * porcentaje) / 100);
+    const porcentajeOtro = 100 - porcentaje;
+    const cantidadAlmacenOtro = Math.round(
+      (cantidadRequerida * porcentajeOtro) / 100
+    );
+
+    const newData = detalleSalidaAlmacen.map((element) => {
+      if (element.idAlm === idAlm) {
+        return {
+          ...element,
+          canSalAlm: cantidadAlmacen,
+          porIngAlm: value
+        };
+      } else {
+        return {
+          ...element,
+          canSalAlm: cantidadAlmacenOtro,
+          porIngAlm: porcentajeOtro
+        };
+      }
+    });
+
+    setdetalleSalidaAlmacen(newData);
+  };
+
+  const enviardetalleSalidaAlmacenes = () => {
+    if (parseInt(canReqDet) === cantidadActual) {
+      // filtramos aquellos en los que no se realizo ingreso
+      const filterIngresos = detalleSalidaAlmacen.filter(
+        (element) => element["canSalAlm"] !== 0
+      );
+      // lo mantenemos en una variable
+      let formatDetalleSalidaAlmacen = [...filterIngresos];
+      // ordenamos
+      formatDetalleSalidaAlmacen.sort((a, b) => {
+        // Mueve el objeto con idAlm=8 al principio del arreglo
+        if (a.idAlm === 8) return -1;
+        if (b.idAlm === 8) return 1;
+
+        // Si ninguno tiene idAlm=8, no cambia el orden entre ellos
+        return 0;
+      });
+      // format data
+      const formatData = {
+        ...itemSalida,
+        detalleSalidaAlmacen: formatDetalleSalidaAlmacen
+      };
+      // realizamos la salida total
+      onCreateSalidaTotal(formatData);
+    } else {
+      alert("Asegurate de completar la cantidad ingresada");
+    }
+  };
+
+  React.useEffect(() => {
+    let cantidad = 0;
+    detalleSalidaAlmacen.forEach((element) => {
+      cantidad += isNaN(element["canSalAlm"])
+        ? 0
+        : parseInt(element["canSalAlm"]);
+    });
+    setCantidadActual(cantidad);
+  }, [detalleSalidaAlmacen]);
+
+  return (
+    <>
+      {salMixAlm === 1 ? (
+        <BootstrapDialog
+          maxWidth={"lg"}
+          onClose={handleClose}
+          aria-labelledby="customized-dialog-title"
+          open={open}
+        >
+          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+            Salida de requisicion
+          </DialogTitle>
+          <DialogContent dividers>
+            <p
+              className={`${
+                parseInt(canReqDet) === cantidadActual
+                  ? "text-success"
+                  : "text-danger"
+              }`}
+            >{`Cantidad: ${parseInt(canReqDet)}/${cantidadActual}`}</p>
+            {detalleSalidaAlmacen.map((element, index) => (
+              <div className="container mb-2" key={index}>
+                <div className="col-auto">
+                  <p className="font-weight-bold fs-6">{element.nomAlm}</p>
+                </div>
+                <div className="row align-items-center">
+                  <div className="col-auto d-flex align-items-center">
+                    <input
+                      type="number"
+                      value={element.porIngAlm}
+                      className="form-control form-control-sm"
+                      style={{ width: 70, backgroundColor: "#f5f4f0" }}
+                      onChange={(e) => {
+                        handleChangeInputPorcentaje(element.idAlm, e);
+                      }}
+                    />
+                    <span className="mx-1" style={{ fontSize: 15 }}>
+                      %
+                    </span>
+                  </div>
+                  <div className="col-auto d-flex align-items-center">
+                    <input
+                      type="number"
+                      value={element.canSalAlm}
+                      className="form-control form-control-sm"
+                      style={{ width: 100, backgroundColor: "#f5f4f0" }}
+                      onChange={(e) => {
+                        handleChangeInputCantidadValue(element.idAlm, e);
+                      }}
+                    />
+                    <span className="mx-1" style={{ fontSize: 10 }}>
+                      UND
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleClose}>
+              Cerrar
+            </Button>
+            <Button
+              color="error"
+              autoFocus
+              onClick={() => {
+                handleClose();
+                enviardetalleSalidaAlmacenes();
+              }}
+            >
+              Aceptar
+            </Button>
+          </DialogActions>
+        </BootstrapDialog>
+      ) : (
+        <BootstrapDialog
+          maxWidth={"l"}
+          onClose={handleClose}
+          aria-labelledby="customized-dialog-title"
+          open={open}
+        >
+          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+            Salida total
+          </DialogTitle>
+          <DialogContent dividers>
+            <b className="me-2 d-block">Producto:</b>
+            {itemSalida.nomProd}
+            <b className="me-2 d-block mt-2">Total requisicion:</b>
+            {itemSalida.canReqDet}
+            <span className="ms-2">{itemSalida.simMed}</span>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleClose}>
+              Cerrar
+            </Button>
+            <Button
+              color="error"
+              autoFocus
+              onClick={() => {
+                // format data
+                const formatData = {
+                  ...itemSalida,
+                  detalleSalidaAlmacen: [
+                    {
+                      idAlm: 1,
+                      canSalAlm: parseFloat(canReqDet)
+                    }
+                  ]
+                };
+                // terminamos de procesar la salida total
+                onCreateSalidaTotal(formatData);
+                // cerramos el cuadro de dialogo emergente
+                handleClose();
+              }}
+            >
+              Aceptar
+            </Button>
+          </DialogActions>
+        </BootstrapDialog>
+      )}
+    </>
   );
 };
 
@@ -191,7 +404,7 @@ const DialogCrearSalidaTotal = ({ detalle, onCreateSalidaTotal, disabled }) => {
 const DialogCrearSalidaParcial = ({
   detalle,
   onCreateSalidaParcial,
-  disabled,
+  disabled
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -283,7 +496,7 @@ const DialogCrearSalidaParcial = ({
 const DialogTerminarSalidaParcial = ({
   detalle,
   onTerminarSalidaParcial,
-  disabled,
+  disabled
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -358,7 +571,7 @@ const MenuUpdateRequisicionDetalle = ({
   option,
   onUpdateDetalleRequisicion,
   disabled,
-  onCloseMenu,
+  onCloseMenu
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -437,7 +650,7 @@ const MenuDeleteRequisicionDetalle = ({
   option,
   onDeleteDetalleRequisicion,
   disabled,
-  onCloseMenu,
+  onCloseMenu
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -495,7 +708,7 @@ const MenuSalidasParcialesRequisicionDetalle = ({
   detalle,
   option,
   disabled,
-  onCloseMenu,
+  onCloseMenu
 }) => {
   const [open, setOpen] = React.useState(false);
   const { salParc } = detalle;
@@ -555,7 +768,7 @@ const TableSalidasParciales = ({ salidasParciales, detalle }) => {
       acumulador[elemento.fecSalStoReq] = {
         canSalStoReq: parseFloat(elemento.canSalStoReq),
         ocurrencias: 1,
-        fecSalStoReq: elemento.fecSalStoReq,
+        fecSalStoReq: elemento.fecSalStoReq
       };
     }
     return acumulador;
