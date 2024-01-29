@@ -120,6 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $cantidadAdevolver = $canProdDev; // acumulado
                     $cantSalPorIteracion = 0; // cantidad auxiliar
                     $idEntStoEst = 1; // estado de disponible de entrada
+
                     // ahora recorremos las salidas
                     foreach ($salidasEmpleadas as $value) {
                         $idEntSto = $value["idEntSto"]; // entrada
@@ -154,36 +155,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $stmt_insert_trazabilidad_devolucion_entrada->bindParam(1, $idReqDevDet, PDO::PARAM_INT);
                             $stmt_insert_trazabilidad_devolucion_entrada->bindParam(2, $idEntSto, PDO::PARAM_INT);
                             $stmt_insert_trazabilidad_devolucion_entrada->execute();
-
-                            $sql_consult_almacen_stock =
-                                "SELECT * FROM almacen_stock
-                            WHERE idProd = ? AND idAlm = ?";
-                            $stmt_consult_almacen_stock = $pdo->prepare($sql_consult_almacen_stock);
-                            $stmt_consult_almacen_stock->bindParam(1, $idProdt, PDO::PARAM_INT);
-                            $stmt_consult_almacen_stock->bindParam(2, $idAlm, PDO::PARAM_INT);
-                            $stmt_consult_almacen_stock->execute();
-
-                            if ($stmt_consult_almacen_stock->rowCount() === 1) {
-                                // ACTUALIZAMOS
-                                $sql_update_almacen_stock =
-                                    "UPDATE almacen_stock 
-                                    SET canSto = canSto + $cantSalPorIteracion, canStoDis = canStoDis + $cantSalPorIteracion
-                                    WHERE idProd = ? AND idAlm = ?";
-                                $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
-                                $stmt_update_almacen_stock->bindParam(1, $idProdt, PDO::PARAM_INT);
-                                $stmt_update_almacen_stock->bindParam(2, $idAlm, PDO::PARAM_INT);
-                                $stmt_update_almacen_stock->execute();
-                            } else {
-                                // CREAMOS
-                                $sql_insert_almacen_stock =
-                                    "INSERT INTO almacen_stock
-                                    (idProd, idAlm, canSto, canStoDis)
-                                    VALUES(?, ?, $cantSalPorIteracion, $cantSalPorIteracion)";
-                                $stmt_insert_almacen_stock = $pdo->prepare($sql_insert_almacen_stock);
-                                $stmt_insert_almacen_stock->bindParam(1, $idProdt, PDO::PARAM_INT);
-                                $stmt_insert_almacen_stock->bindParam(2, $idAlm, PDO::PARAM_INT);
-                                $stmt_insert_almacen_stock->execute();
-                            }
 
                             $pdo->commit();
                         } catch (PDOException $e) {

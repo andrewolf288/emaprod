@@ -1,11 +1,7 @@
 import axios from "axios";
 import config from "../.././../config";
 
-export const createEntradasStockRequisicionDevolucionDetalle = async (
-  body,
-  idProdc,
-  idProdFin
-) => {
+export const createEntradasStockRequisicionDevolucionDetalle = async (body) => {
   const domain = config.API_URL;
   // const path = '/produccion/produccion-lote/create_agregaciones_lote_produccion.php';
   const path =
@@ -13,9 +9,7 @@ export const createEntradasStockRequisicionDevolucionDetalle = async (
   const url = domain + path;
 
   const { data } = await axios.post(url, {
-    ...body,
-    idProdc,
-    idProdFin,
+    ...body
   });
   return data;
 };

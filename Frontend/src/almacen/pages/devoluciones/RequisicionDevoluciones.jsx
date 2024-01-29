@@ -143,15 +143,16 @@ export const RequisicionDevoluciones = () => {
   // funcion para cumplir la requisicion de agregacion
   const onCheckDetalleRequisicionDevolucion = async (detalle, requisicion) => {
     const { idProdFin } = requisicion;
-    console.log(detalle, idProdFin, idLotProdc);
+    const formatData = {
+      ...detalle,
+      idProdc: idLotProdc,
+      idProdFin
+    };
+    console.log(formatData);
     // abrimos el loader
     openLoader();
     const { message_error, description_error, result } =
-      await createEntradasStockRequisicionDevolucionDetalle(
-        detalle,
-        idLotProdc,
-        idProdFin
-      );
+      await createEntradasStockRequisicionDevolucionDetalle(formatData);
     if (message_error.length === 0) {
       // llamamos a la data
       traerDatosProduccionLoteWithDevoluciones();
