@@ -11,7 +11,7 @@ $description_error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pdo) {
         // primero definimos el almacen
-        $idAlm = 8;
+        $idAlm = 1;
         $tolerancia = 0.000001;
 
         $sql_select_stock_almacen =

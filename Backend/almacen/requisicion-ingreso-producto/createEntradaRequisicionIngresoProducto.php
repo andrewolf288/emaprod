@@ -31,7 +31,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pdo) {
         try {
             $pdo->beginTransaction();
-
             // 1. primero debemos verificar si es un producto que maneja lotes
             if ($manLotProd === 0) {
                 // obtenemos informacion del lote
@@ -192,12 +191,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_update_producto_final->bindParam(1, $fecProdIngAlm); // fecha de actualizacion
             $stmt_update_producto_final->bindParam(2, $refProdtProg, PDO::PARAM_INT);
             $stmt_update_producto_final->execute();
+
+            // hacemos commit a los cambios
+            $pdo->commit();
         } catch (PDOException $e) {
+            $pdo->rollBack();
             $message_error = "Error en la consulta de almacen principal";
             $description_error = $e->getMessage();
         }
-
-        $pdo->commit();
     }
     // Retornamos el resultado
     $return['message_error'] = $message_error;

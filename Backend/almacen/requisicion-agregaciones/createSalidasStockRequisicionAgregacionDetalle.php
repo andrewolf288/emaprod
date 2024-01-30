@@ -111,13 +111,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
 
                     $sql = "";
-
-                    // RECORREMOS TODAS LAS ENTRADAS UTILIZADAS PARA LA SALIDA
-                    foreach ($entradasUtilizadas as $item) {
-                        try {
-                            // INICIAMOS UNA TRANSACCION
-                            $pdo->beginTransaction();
-
+                    try {
+                        // INICIAMOS UNA TRANSACCION
+                        $pdo->beginTransaction();
+                        // RECORREMOS TODAS LAS ENTRADAS UTILIZADAS PARA LA SALIDA
+                        foreach ($entradasUtilizadas as $item) {
                             // OBTENEMOS LOS DATOS
                             $idEntSto = $item["idEntSto"]; // id de la entrada
                             $canSalStoReq = $item["canSalStoReq"]; // cantidad de salida de stock
@@ -216,21 +214,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             // ACTUALIZAMOS EL ALMACEN CORRESPONDIENTE A LA ENTRADA
                             $sql_update_almacen_stock =
                                 "UPDATE almacen_stock
-                                    SET canSto = canSto - $canSalStoReq, canStoDis = canStoDis - $canSalStoReq
-                                    WHERE idAlm = ? AND idProd = ?";
+                                SET canSto = canSto - $canSalStoReq, canStoDis = canStoDis - $canSalStoReq
+                                WHERE idAlm = ? AND idProd = ?";
 
                             $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
                             $stmt_update_almacen_stock->bindParam(1, $idAlmacen, PDO::PARAM_INT);
                             $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
                             $stmt_update_almacen_stock->execute();
-
-                            // TERMINAMOS LA TRANSACCION
-                            $pdo->commit();
-                        } catch (PDOException $e) {
-                            $pdo->rollback();
-                            $message_error = "ERROR INTERNO SERVER: fallo en insercion de salidas";
-                            $description_error = $e->getMessage();
                         }
+                        // TERMINAMOS LA TRANSACCION
+                        $pdo->commit();
+                    } catch (PDOException $e) {
+                        $pdo->rollback();
+                        $message_error = "ERROR INTERNO SERVER: fallo en insercion de salidas";
+                        $description_error = $e->getMessage();
                     }
 
                     // REALIZAMOS LA TRANSFERENCIA AL ALMACEN INDICADO EN LA SALIDA

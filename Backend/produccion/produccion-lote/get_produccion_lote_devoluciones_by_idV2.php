@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     "SELECT
                         DISTINCT
                         ppf.id,
-                        ppf.idProdcProdtFinEst,
+                        ppf.idProdcProdtFinEst,frone
                         ppf.idProdt,
                         ppfe.desProProFinEst,
                         pd.nomProd,
