@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         me.simMed,
                         cl.desCla,
                         ppf.canTotProgProdFin,
-                        ppf.canTotIngProdFin,
+                        (SELECT SUM(pip.canProdIng) FROM produccion_ingreso_producto pip WHERE pip.idProdc = $idLotProdc AND pip.idProdt = ppf.idProdt) as canTotIngProdFin,
                         pd.codProd2,
                         ppf.idProdc,
                         ppf.esTerIngProFin
