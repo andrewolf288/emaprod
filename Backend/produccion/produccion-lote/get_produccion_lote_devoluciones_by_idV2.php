@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     "SELECT
                         DISTINCT
                         ppf.id,
-                        ppf.idProdcProdtFinEst,frone
+                        ppf.idProdcProdtFinEst,
                         ppf.idProdt,
                         ppfe.desProProFinEst,
                         pd.nomProd,
@@ -93,6 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $sql_requisicion_devolucion =
                     "SELECT 
                 rd.id,
+                rd.correlativo,
                 rd.idProdFin,
                 rd.canTotUndReqDev,
                 rd.idProdt,

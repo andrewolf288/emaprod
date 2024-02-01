@@ -613,6 +613,7 @@ export const AgregarAgregacionV2 = () => {
       const { message_error, description_error, result } = resultPeticion;
 
       if (message_error.length === 0) {
+        console.log(result);
         const { idProdt } = result[0];
 
         // ahora debemos obtener los productos que se podran agregar
@@ -649,6 +650,10 @@ export const AgregarAgregacionV2 = () => {
       );
 
       formatDataRequisicion = {
+        correlativo: `${numop} - A${String(prodDetAgr.length + 1).padStart(
+          2,
+          "0"
+        )}`,
         detalleProductosAgregados: informacionDetalleProductosAgregados,
         requisicionAgregacion: {
           ...informacionRequisicionAgregacion,
@@ -660,6 +665,10 @@ export const AgregarAgregacionV2 = () => {
       };
     } else {
       formatDataRequisicion = {
+        correlativo: `${numop} - A${String(prodDetAgr.length + 1).padStart(
+          2,
+          "0"
+        )}`,
         detalleProductosAgregados: informacionDetalleProductosAgregados,
         requisicionAgregacion: {
           ...informacionRequisicionAgregacion,
@@ -670,7 +679,9 @@ export const AgregarAgregacionV2 = () => {
         }
       };
     }
-    console.log(formatDataRequisicion);
+
+    // finalmente, agregamos el correlativo
+
     const resultPeticion = await createAgregacionesLoteProduccion(
       formatDataRequisicion
     );
@@ -871,10 +882,7 @@ export const AgregarAgregacionV2 = () => {
                         <RowDetalleAgregacionLoteProduccion
                           key={row.id}
                           index={i}
-                          correlativo={`${numop} - A${String(i + 1).padStart(
-                            2,
-                            "0"
-                          )}`}
+                          correlativo={row["correlativo"]}
                           detalle={row}
                           onRenderPDF={generatePDF}
                         />

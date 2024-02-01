@@ -298,10 +298,7 @@ export const RequisicionDevoluciones = () => {
             {prodDetDev.map((requisicion, index) => (
               <CardRequisicionDevolucion
                 key={requisicion.id}
-                correlativo={`${numop} - D${String(index + 1).padStart(
-                  2,
-                  "0"
-                )}`}
+                correlativo={requisicion["correlativo"]}
                 requisicion={requisicion}
                 onDeleteRequisicionDevolucionDetalle={
                   onDeleteDetalleRequisicionDevolucion

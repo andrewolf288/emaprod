@@ -5,7 +5,7 @@ import {
   Text,
   View,
   Document,
-  Image,
+  Image
 } from "@react-pdf/renderer";
 import logo from "../emaran.png";
 import { stylesPDF } from "../pdf-components/stylePDF";
@@ -24,7 +24,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
             ...styles.page,
             marginTop: 20,
             paddingTop: 20,
-            paddingBottom: 40,
+            paddingBottom: 40
           }}
         >
           <View style={styles.section}>
@@ -46,7 +46,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                     fontSize: 9,
                     maxWidth: "50%",
                     marginBottom: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
                   Presentación intermedio: {produccion.nomProd}
@@ -58,7 +58,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                     fontSize: 9,
                     maxWidth: "50%",
                     marginBottom: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
                   Fecha de Inicio Programado: {produccion.fecProdIniProg}
@@ -71,7 +71,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                     fontSize: 9,
                     maxWidth: "50%",
                     marginBottom: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
                   Fecha de Fin Programado: {produccion.fecProdFinProg}
@@ -83,7 +83,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                     fontSize: 9,
                     maxWidth: "50%",
                     marginBottom: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
                   Fecha de Vencimiento Lt: {produccion.fecVenLotProd}
@@ -95,7 +95,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                     maxWidth: "50%",
                     marginBottom: 2,
                     marginTop: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
                   Observaciones
@@ -110,7 +110,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                     borderColor: "#000",
                     height: 25,
                     marginTop: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
                   <Text
@@ -123,7 +123,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                       inlineSize: "50px",
                       overflowWrap: "break-word",
                       maxWidth: 275,
-                      maxHeight: 275,
+                      maxHeight: 275
                     }}
                   >
                     {produccion.obsProd}
@@ -146,7 +146,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      paddingLeft: 70,
+                      paddingLeft: 70
                     }}
                   >
                     AGREGACIÓN
@@ -157,12 +157,10 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                       flexDirection: "row",
                       marginLeft: 30,
                       marginTop: 10,
-                      textAlign: "center",
+                      textAlign: "center"
                     }}
                   >
-                    {`${produccion.numop} - A${(index + 1)
-                      .toString()
-                      .padStart(2, "0")}`}
+                    {requisicion["correlativo"]}
                   </Text>
 
                   <View
@@ -173,7 +171,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                       width: 220,
                       height: 70,
                       borderRadius: 5,
-                      marginRight: 20,
+                      marginRight: 20
                     }}
                   >
                     <Text
@@ -181,7 +179,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 7,
-                        maxWidth: "100%",
+                        maxWidth: "100%"
                       }}
                     >
                       Tipo de Producción: {produccion.desProdTip}
@@ -192,7 +190,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%",
+                        maxWidth: "100%"
                       }}
                     >
                       Número de Lote: {produccion.codLotProd}
@@ -201,7 +199,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                       style={{
                         ...styles.content,
                         marginLeft: 10,
-                        marginTop: 4,
+                        marginTop: 4
                       }}
                     >
                       Cantidad total de unidades:{" "}
@@ -214,7 +212,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%",
+                        maxWidth: "100%"
                       }}
                     >
                       Peso Programado:{" "}
@@ -230,7 +228,7 @@ export const PDFAgregaciones = ({ data, show, index }) => {
                       marginLeft: 75,
                       marginTop: -5,
                       maxWidth: "100%",
-                      fontSize: 8,
+                      fontSize: 8
                     }}
                   >
                     Fecha de Creación: {requisicion.fecCreReqAgr}

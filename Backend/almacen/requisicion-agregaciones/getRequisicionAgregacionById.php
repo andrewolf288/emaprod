@@ -52,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $sql_requisicion_agregacion =
                     "SELECT 
                         ra.id,
+                        ra.correlativo,
                         ra.idProdFin,
                         ra.canTotUndReqAgr,
                         ra.canTotKlgReqAgr,

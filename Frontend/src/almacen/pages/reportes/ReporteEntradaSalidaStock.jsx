@@ -1,42 +1,129 @@
 import React, { useState } from "react";
 import { FilterProductosDynamic } from "../../../components/ReferencialesFilters/Producto/FilterProductosDynamic";
-import { getReporteEntradaSalidaStock } from "../../helpers/reportes/getReporteEntradaSalidaStock";
-import { exportJSONtoExcel } from "../../utils/exportJSONtoExcel";
+import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic";
+import config from "../../../config";
+import axios from "axios";
+import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
+import FechaPickerMonthDynamic from "../../../components/Fechas/FechaPickerMonthDynamic";
 
 export const ReporteEntradaSalidaStock = () => {
-  const [producto, setproducto] = useState(0);
-  const handledMateriPrima = ({ id }) => {
-    setproducto(id);
+  const [filterData, setFilterData] = useState({
+    producto: 0,
+    almacen: 0,
+    fechaDesde: "",
+    fechaHasta: ""
+  });
+
+  const { producto, almacen, fechaDesde, fechaHasta } = filterData;
+
+  // controlador de producto
+  const handleProducto = ({ id }) => {
+    setFilterData({
+      ...filterData,
+      producto: id
+    });
+  };
+
+  // controlador de almacne
+  const handleAlmacen = ({ id }) => {
+    setFilterData({
+      ...filterData,
+      almacen: id
+    });
+  };
+
+  // Filtros generales que hacen nuevas consultas
+  const onChangeDateStartData = (newDate) => {
+    let dateFormat = newDate.split(" ")[0];
+    setFilterData({ ...filterData, fechaDesde: dateFormat });
+  };
+
+  const onChangeDateEndData = (newDate) => {
+    let dateFormat = newDate.split(" ")[0];
+    setFilterData({ ...filterData, fechaHasta: dateFormat });
   };
 
   // ENVIAMOS LA DATA DE LOS FILTERS PARA FILTRAR LA DATA
-  const submitDataFilterToExcel = async () => {
-    const { message_error, description_error, result } =
-      await getReporteEntradaSalidaStock(producto);
-    console.log(result);
-    if (message_error.length === 0) {
-      const { data, header, columnWidths } = result;
-      exportExcel(data, header, columnWidths, "reporte-entrada-salida-stock");
+  const submitDataFilterToExcel = () => {
+    let errors = [];
+    // seleccion de producto
+    if (producto === 0) {
+      errors.push("Debes seleccionar un producto");
+    }
+    // seleccion de almacen
+    if (almacen === 0) {
+      errors.push("Debes seleccionar un almacen");
+    }
+
+    if (errors.length === 0) {
+      // hacemos una peticion
+      console.log(filterData);
+      exportarReporte();
     } else {
-      console.log(description_error);
+      const handleErrors = errors.join("\n");
+      alert(handleErrors);
     }
   };
 
-  //FUNCION PARA EXPORTAR EN EXCEL
-  const exportExcel = (dataJSON, header, columnWidths, fileName) => {
-    exportJSONtoExcel(dataJSON, header, columnWidths, fileName);
+  // funcion para descargar
+  const exportarReporte = () => {
+    const domain = config.API_URL;
+    const path = "/almacen/reportes/reporte-trazabilidad-entrada.php";
+    axios({
+      url: domain + path,
+      data: filterData,
+      method: "POST",
+      responseType: "blob" // Importante para recibir datos binarios (Blob)
+    })
+      .then((response) => {
+        // Crear un enlace temporal para descargar el archivo
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "archivo_excel.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => alert("Error al descargar el archivo", error));
   };
 
   return (
     <>
       <div className="container-fluid mx-3">
+        <div className="row d-flex mt-4">
+          <label className="form-label">Fecha de ingreso</label>
+          <div className="col-2">
+            <FechaPickerMonthDynamic
+              dateValue={fechaDesde}
+              onNewfecEntSto={onChangeDateStartData}
+              label="Fecha Desde"
+            />
+          </div>
+          <div className="col-2">
+            <FechaPickerMonthDynamic
+              dateValue={fechaHasta}
+              onNewfecEntSto={onChangeDateEndData}
+              label="Fecha Hasta"
+            />
+          </div>
+        </div>
         <div className="row mt-3">
           <div className="col-6">
             {/* filter */}
-            <label className="form-label">Materia prima</label>
+            <label className="form-label">Producto</label>
             <FilterProductosDynamic
-              onNewInput={handledMateriPrima}
+              onNewInput={handleProducto}
               defaultValue={producto}
+            />
+          </div>
+          <div className="col-3">
+            {/* filter */}
+            <label className="form-label">Almacen</label>
+            <FilterAlmacenDynamic
+              onNewInput={handleAlmacen}
+              defaultValue={almacen}
             />
           </div>
         </div>

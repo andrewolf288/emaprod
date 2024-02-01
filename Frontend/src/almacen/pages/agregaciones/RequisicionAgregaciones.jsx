@@ -295,10 +295,7 @@ export const RequisicionAgregaciones = () => {
             {prodDetAgr.map((requisicion, index) => (
               <CardRequisicionAgregacion
                 key={requisicion.id}
-                correlativo={`${numop} - A${String(index + 1).padStart(
-                  2,
-                  "0"
-                )}`}
+                correlativo={requisicion["correlativo"]}
                 requisicion={requisicion}
                 onDeleteRequisicionAgregacionDetalle={
                   onDeleteDetalleRequisicionAgregacion

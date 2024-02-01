@@ -14,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $requisicionAgregacion = $data["requisicionAgregacion"]; // obtenemos la requisicion de agregacion
     $detalleProductosAgregados = $data["detalleProductosAgregados"]; // obtenemos el detalle
+    $correlativo = $data["correlativo"];
 
     if ($pdo) {
         $idProdc = $requisicionAgregacion["idProdc"]; // id de produccion
@@ -66,15 +67,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // debemos crear la requisicion de agregacion
             $sql_insert_requisicion_agregacion =
                 "INSERT INTO requisicion_agregacion
-            (idProdc, idProdcMot, idProdFin, idProdt, idReqEst, canTotUndReqAgr, canTotKlgReqAgr)
-            VALUES (?, ?, ?, ?, ?, $cantidadDeProducto, $cantidadDeLote)";
+            (idProdc, correlativo, idProdcMot, idProdFin, idProdt, idReqEst, canTotUndReqAgr, canTotKlgReqAgr)
+            VALUES (?, ?, ?, ?, ?, ?, $cantidadDeProducto, $cantidadDeLote)";
 
             $stmt_insert_requisicion_agregacion = $pdo->prepare($sql_insert_requisicion_agregacion);
             $stmt_insert_requisicion_agregacion->bindParam(1, $idProdc, PDO::PARAM_INT);
-            $stmt_insert_requisicion_agregacion->bindParam(2, $idProdcMot, PDO::PARAM_INT);
-            $stmt_insert_requisicion_agregacion->bindParam(3, $idProdFin, PDO::PARAM_INT);
-            $stmt_insert_requisicion_agregacion->bindParam(4, $idProdt, PDO::PARAM_INT);
-            $stmt_insert_requisicion_agregacion->bindParam(5, $idReqEst, PDO::PARAM_INT);
+            $stmt_insert_requisicion_agregacion->bindParam(2, $correlativo, PDO::PARAM_STR);
+            $stmt_insert_requisicion_agregacion->bindParam(3, $idProdcMot, PDO::PARAM_INT);
+            $stmt_insert_requisicion_agregacion->bindParam(4, $idProdFin, PDO::PARAM_INT);
+            $stmt_insert_requisicion_agregacion->bindParam(5, $idProdt, PDO::PARAM_INT);
+            $stmt_insert_requisicion_agregacion->bindParam(6, $idReqEst, PDO::PARAM_INT);
             $stmt_insert_requisicion_agregacion->execute();
 
             $idLastInsert = $pdo->lastInsertId(); // obtenemos el id de la ultima insercion

@@ -14,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $requisicionDevolucion = $data["requisicionDevolucion"]; // obtenemos la requisicion de devolucion
     $detalleProductosDevueltos = $data["detalleProductosDevueltos"]; // obtenemos el detalle
+    $correlativo = $data["correlativo"]; // correlativo
 
     if ($pdo) {
         $idProdc = $requisicionDevolucion["idProdc"]; // id de produccion
@@ -28,13 +29,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $pdo->beginTransaction();
             $sql_insert_requisicion_devolucion =
                 "INSERT INTO requisicion_devolucion
-                (idProdc, idProdFin, idProdt, idReqEst, canTotUndReqDev)
-                VALUES(?, ?, ?, ?, $cantidadDeProducto)";
+                (idProdc, correlativo idProdFin, idProdt, idReqEst, canTotUndReqDev)
+                VALUES(?, ?, ?, ?, ?, $cantidadDeProducto)";
             $stmt_insert_requisicion_devolucion = $pdo->prepare($sql_insert_requisicion_devolucion);
             $stmt_insert_requisicion_devolucion->bindParam(1, $idProdc, PDO::PARAM_INT);
-            $stmt_insert_requisicion_devolucion->bindParam(2, $idProdFin, PDO::PARAM_INT);
-            $stmt_insert_requisicion_devolucion->bindParam(3, $idProdt, PDO::PARAM_INT);
-            $stmt_insert_requisicion_devolucion->bindParam(4, $idReqEst, PDO::PARAM_INT);
+            $stmt_insert_requisicion_devolucion->bindParam(2, $correlativo, PDO::PARAM_STR);
+            $stmt_insert_requisicion_devolucion->bindParam(3, $idProdFin, PDO::PARAM_INT);
+            $stmt_insert_requisicion_devolucion->bindParam(4, $idProdt, PDO::PARAM_INT);
+            $stmt_insert_requisicion_devolucion->bindParam(5, $idReqEst, PDO::PARAM_INT);
             $stmt_insert_requisicion_devolucion->execute();
 
             $idLastInsert = $pdo->lastInsertId();

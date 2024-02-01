@@ -5,7 +5,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { FormatDateTimeMYSQL } from "../../utils/functions/FormatDate";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
-const FechaPickerMonth = ({ onNewfecEntSto, label }) => {
+const FechaPickerMonth = ({ onNewfecEntSto, label = "" }) => {
   const [value, setValue] = useState();
 
   const formatFechaMYSQL = (newValue) => {
@@ -15,7 +15,7 @@ const FechaPickerMonth = ({ onNewfecEntSto, label }) => {
 
   const handleKeyDown = (event) => {
     event.preventDefault();
-  }
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -26,7 +26,7 @@ const FechaPickerMonth = ({ onNewfecEntSto, label }) => {
         views={["year", "month", "day"]}
         onChange={formatFechaMYSQL}
         renderInput={(params) => (
-          <TextField size="small" {...params} onKeyDown={handleKeyDown}/>
+          <TextField size="small" {...params} onKeyDown={handleKeyDown} />
         )}
       />
     </LocalizationProvider>

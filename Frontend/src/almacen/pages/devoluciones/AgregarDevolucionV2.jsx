@@ -485,6 +485,10 @@ export const AgregarDevolucionV2 = () => {
 
     if (detalleDevoluciones.length !== 0) {
       formatDataRequisicion = {
+        correlativo: `${numop} - D${String(prodDetDev.length + 1).padStart(
+          2,
+          "0"
+        )}`,
         detalleProductosDevueltos: detalleDevoluciones,
         requisicionDevolucion: {
           ...informacionRequisicionDevolucion,
@@ -692,10 +696,7 @@ export const AgregarDevolucionV2 = () => {
                         {prodDetDev.map((row, i) => (
                           <RowDetalleDevolucionLoteProduccion
                             key={row.id}
-                            correlativo={`${numop} - D${String(i + 1).padStart(
-                              2,
-                              "0"
-                            )}`}
+                            correlativo={row["correlativo"]}
                             detalle={row}
                             onRenderPDF={generatePDF}
                             index={i}
