@@ -125,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         FROM salida_stock ss
         LEFT JOIN requisicion AS r ON r.id = ss.idReq
         LEFT JOIN produccion AS p ON p.id = r.idProdc
-        WHERE ss.idEntSto = $idEntSto";
+        WHERE ss.idEntSto = $idEntSto AND ss.idAgre IS NULL";
         $stmt_salida = $pdo->prepare($sql_salida);
         $stmt_salida->execute();
         while ($row_salida = $stmt_salida->fetch(PDO::FETCH_ASSOC)) {
@@ -312,51 +312,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 
-    // $row = 2;
-    // foreach ($result["data"] as $rowData) {
-    //     // Crea un arreglo con los nombres de las columnas para acceder a los valores de manera más sencilla
-    //     $columnNames = array_keys($rowData);
-
-    //     foreach ($columnNames as $columnIndex => $columnName) {
-    //         $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
-    //         $value = $rowData[$columnName];
-    //         $sheet->setCellValue("{$columnLetter}{$row}", $value);
-    //     }
-    //     $row++;
-    // }
-
-    // $row = 2;
-    // $columnIndex = 0;  // Asegurémonos de que $columnIndex se inicialice en algún lugar
-
-    // foreach ($result["data"] as $rowData) {
-    //     foreach ($rowData as $value) {
-    //         $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
-    //         $sheet->setCellValue("{$columnLetter}{$row}", $value);
-    //         $columnIndex++;  // Incrementar $columnIndex para la próxima columna
-    //     }
-    //     $row++;
-    //     $columnIndex = 0;  // Reiniciar $columnIndex para la siguiente fila
-    // }
-
-    // Agregar datos
-    // $row = 2;
-    // foreach ($result["data"] as $rowData) {
-    //     foreach ($rowData as $columnIndex => $value) {
-    //         $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
-    //         $sheet->setCellValue("{$columnLetter}{$row}", $value);
-    //     }
-    //     $row++;
-    // }
-
-
     // Guardar el archivo Excel
     $writer = new Xlsx($spreadsheet);
     $writer->save('php://output');
     exit;
-
-    // Retornamos el resultado
-    // $return['message_error'] = $message_error;
-    // $return['description_error'] = $description_error;
-    // $return['result'] = $result;
-    // echo json_encode($return);
 }

@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $pdo->beginTransaction();
             $sql_insert_requisicion_devolucion =
                 "INSERT INTO requisicion_devolucion
-                (idProdc, correlativo idProdFin, idProdt, idReqEst, canTotUndReqDev)
+                (idProdc, correlativo, idProdFin, idProdt, idReqEst, canTotUndReqDev)
                 VALUES(?, ?, ?, ?, ?, $cantidadDeProducto)";
             $stmt_insert_requisicion_devolucion = $pdo->prepare($sql_insert_requisicion_devolucion);
             $stmt_insert_requisicion_devolucion->bindParam(1, $idProdc, PDO::PARAM_INT);

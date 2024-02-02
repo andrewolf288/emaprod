@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             else {
                 // primero debemos averiguar cual fue su requisicion
                 $sql_select_requisicion_agregacion_detalle =
-                    "SELECT * FROM requisicion_agregacion_detalle AS rad
+                    "SELECT rad.id FROM requisicion_agregacion_detalle AS rad
                 JOIN requisicion_agregacion AS ra ON ra.id = rad.idReqAgr
                 WHERE ra.idProdFin = ? AND rad.idProdt = ?";
                 $stmt_select_requisicion_agregacion_detalle = $pdo->prepare($sql_select_requisicion_agregacion_detalle);

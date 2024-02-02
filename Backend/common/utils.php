@@ -100,3 +100,14 @@ function DiaJuliano($fecha)
             ? "0{$diaJulianoToString}"
             : $diaJulianoToString);
 }
+
+function obtenerDiaJulianoDynamic($fecha = "")
+{
+    if (empty($fecha)) {
+        $fecha = date('Y-m-d');
+    }
+
+    $timestamp = strtotime($fecha);  // Convierte la fecha a un timestamp Unix
+    $numeroDelDia = date('z', $timestamp) + 1;  // 'z' devuelve el día del año (0-365), sumamos 1 porque queremos que sea 1-366.
+    return $numeroDelDia;
+}

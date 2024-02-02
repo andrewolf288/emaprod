@@ -9,49 +9,71 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 $pdo = getPDO();
-$result = array();
+$result = array(
+    "header" => [],
+    "columnWidths" => [],
+    "tipoDato" => [],
+    "data" => []
+);
 $message_error = "";
 $description_error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
+    $almacen = $data["almacen"];
 
-    $producto = $data["producto"];
-    $idAlm = $data["almacen"];
+    $result["header"] = ["Almacen", "EMAPROD", "Producto", "Saldo producto", "Medida", "Lote", "Saldo lote"];
+    $result["columnWidths"] = [25, 13, 90, 13, 8, 11, 13];
+    $result["tipoDato"] = ["texto", "texto", "texto", "numero", "texto", "texto", "numero"];
 
-    $result["data"] = [];
-    $result["header"] = ["Clase", "Sub Clase", "Almacen", "SIGO", "EMAPROD", "Nombre", "Medida", "Cantidad"];
-    $result["columnWidths"] = [18, 32, 25, 9, 11, 90, 8, 13];
-    $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "texto", "numero"];
+    $claseProductoFinal = 2;
+    $sql_select_productos_finales =
+        "SELECT p.id, p.nomProd, p.codProd2, me.simMed, p.idCla
+        FROM producto AS p 
+        JOIN medida AS me ON me.id = p.idMed
+        WHERE p.idCla = ?";
+    $stmt_select_productos_finales = $pdo->prepare($sql_select_productos_finales);
+    $stmt_select_productos_finales->bindParam(1, $claseProductoFinal, PDO::PARAM_INT);
+    $stmt_select_productos_finales->execute();
 
-    $sql =
-        "SELECT
-    cl.desCla,
-    scl.desSubCla,
-    al.nomAlm,
-    p.codProd,
-    p.codProd2,
-    p.nomProd,
-    me.simMed,
-    als.canSto
-    FROM almacen_stock AS als
-    JOIN producto AS p ON p.id = als.idProd
-    JOIN medida AS me ON me.id = p.idMed
-    JOIN clase AS cl ON cl.id = p.idCla
-    JOIN sub_clase AS scl ON scl.id = p.idSubCla
-    JOIN almacen AS al ON al.id = als.idAlm
-    WHERE als.idAlm = $idAlm
-    ";
-    if ($producto !== 0) {
-        $sql = $sql . " AND als.idProd = $producto";
+    while ($row_producto_final = $stmt_select_productos_finales->fetch(PDO::FETCH_ASSOC)) {
+        $idProd = $row_producto_final["id"]; // id producto
+        $nomProd = $row_producto_final["nomProd"]; // nombre del producto
+        $codProd2 = $row_producto_final["codProd2"]; // codigo EMPAROD
+        $simMed = $row_producto_final["simMed"]; // medida
+        $nomAlm = "";
+        $canSto = 0.0;
+
+        // primero consultamos su stock en el almacen indicado
+        $select_stock_almacen =
+            "SELECT ast.idProd, ast.idProd, ast.idAlm, ast.canSto, al.nomAlm 
+        FROM almacen_stock AS ast
+        JOIN almacen AS al ON al.id = ast.idAlm
+        WHERE ast.idAlm = ? AND ast.idProd = ?";
+        $stmt_select_stock_almacen = $pdo->prepare($select_stock_almacen);
+        $stmt_select_stock_almacen->bindParam(1, $almacen, PDO::PARAM_INT);
+        $stmt_select_stock_almacen->bindParam(2, $idProd, PDO::PARAM_INT);
+        $stmt_select_stock_almacen->execute();
+
+        $data_almacen_stock = $stmt_select_stock_almacen->fetch(PDO::FETCH_ASSOC);
+        if ($data_almacen_stock) {
+            $nomAlm = $data_almacen_stock["nomAlm"];
+            $canSto = $data_almacen_stock["canSto"];
+
+            $auxStockTotal = array(
+                "nomAlm" => $nomAlm,
+                "codProd2" => $codProd2,
+                "nomProd" => $nomProd,
+                "canSto" => $canSto,
+                "simMed" => $simMed,
+                "codLotProd" => "",
+                "salLotProd" => ""
+            );
+
+            array_push($result["data"], $auxStockTotal);
+        }
     }
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-
-    $result["data"] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Crear el libro de trabajo
     $spreadsheet = new Spreadsheet();

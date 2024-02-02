@@ -4,7 +4,7 @@ import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/A
 import config from "../../../config";
 import axios from "axios";
 
-export const ReporteStockTotal = () => {
+export const ReporteProductoFinalLotes = () => {
   const [filterData, setFilterData] = useState({
     producto: 0,
     almacen: 0
@@ -49,7 +49,7 @@ export const ReporteStockTotal = () => {
   //FUNCION PARA EXPORTAR EN EXCEL
   const exportarReporte = () => {
     const domain = config.API_URL;
-    const path = "/almacen/reportes/reporte-stock-total.php";
+    const path = "/almacen/reportes/reporte-producto-final-lote.php";
     axios({
       url: domain + path,
       data: filterData,

@@ -410,6 +410,7 @@ export const AgregarRequisicionMolienda = () => {
                     }}
                     value={codLotProd}
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -424,6 +425,7 @@ export const AgregarRequisicionMolienda = () => {
                     onChange={onChangeCantidadLote}
                     value={canLotProd}
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -438,6 +440,7 @@ export const AgregarRequisicionMolienda = () => {
                     disabled
                     value={klgLotProd}
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>

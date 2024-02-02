@@ -36,7 +36,7 @@ export const AgregarRequisicionFrescos = () => {
     codLotProd: "",
     klgLotProd: "",
     canLotProd: "",
-    nomProd: "",
+    nomProd: ""
   });
 
   var idFrescos = 50; // el autocompletado cargara frescos
@@ -49,13 +49,13 @@ export const AgregarRequisicionFrescos = () => {
   const [requisicion, setRequisicion] = useState({
     idProdc: 0,
     idProdt: 0,
-    reqMolDet: [],
+    reqMolDet: []
   });
 
   // ESTADOS PARA DATOS DE DETALLE FORMULA (DETALLE)
   const [materiaPrimaDetalle, setmateriaPrimaDetalle] = useState({
     idMateriaPrima: 0,
-    cantidadMateriaPrima: 0,
+    cantidadMateriaPrima: 0
   });
   const { idMateriaPrima, cantidadMateriaPrima } = materiaPrimaDetalle;
 
@@ -63,7 +63,7 @@ export const AgregarRequisicionFrescos = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -105,7 +105,7 @@ export const AgregarRequisicionFrescos = () => {
   const onMateriaPrimaId = ({ id }) => {
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      idMateriaPrima: id,
+      idMateriaPrima: id
     });
   };
 
@@ -113,7 +113,7 @@ export const AgregarRequisicionFrescos = () => {
     const { name, value } = target;
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -133,7 +133,7 @@ export const AgregarRequisicionFrescos = () => {
     // VOLVEMOS A SETEAR LA DATA
     setRequisicion({
       ...requisicion,
-      reqMolDet: nuevaDataDetalleRequisicion,
+      reqMolDet: nuevaDataDetalleRequisicion
     });
   };
 
@@ -145,7 +145,7 @@ export const AgregarRequisicionFrescos = () => {
       if (element.idMatPri === idItem) {
         return {
           ...element,
-          canMatPriFor: value,
+          canMatPriFor: value
         };
       } else {
         return element;
@@ -154,7 +154,7 @@ export const AgregarRequisicionFrescos = () => {
 
     setRequisicion({
       ...requisicion,
-      reqMolDet: editFormDetalle,
+      reqMolDet: editFormDetalle
     });
   };
 
@@ -175,7 +175,7 @@ export const AgregarRequisicionFrescos = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -218,7 +218,7 @@ export const AgregarRequisicionFrescos = () => {
 
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: handleErrors,
+        feedback_description_error: handleErrors
       });
       handleClickFeeback();
     } else {
@@ -247,7 +247,7 @@ export const AgregarRequisicionFrescos = () => {
 
         setRequisicion({
           ...requisicion,
-          reqMolDet: forDet,
+          reqMolDet: forDet
         });
 
         console.log(klgLotProd);
@@ -255,14 +255,14 @@ export const AgregarRequisicionFrescos = () => {
           setProduccionLote({
             ...produccionLote,
             canLotProd: 1,
-            klgLotProd: klgLotProd,
+            klgLotProd: klgLotProd
           });
         }
       }
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -274,12 +274,12 @@ export const AgregarRequisicionFrescos = () => {
     var requisicion = {
       ...requisicion,
       idProdc: -1,
-      idProdt: id,
+      idProdt: id
     };
     const body = {
       idProd: id,
       canLotProd: canLotProd,
-      klgLotProd: "",
+      klgLotProd: ""
     };
 
     // console.log(body, requisicion);
@@ -299,10 +299,10 @@ export const AgregarRequisicionFrescos = () => {
     setProduccionLote({
       ...produccionLote,
       [name]: parseValue,
-      klgLotProd: klgLotProd,
+      klgLotProd: klgLotProd
     });
     setRequisicion({
-      ...requisicion,
+      ...requisicion
     });
   };
 
@@ -322,7 +322,7 @@ export const AgregarRequisicionFrescos = () => {
       if (itemFound) {
         setfeedbackMessages({
           style_message: "warning",
-          feedback_description_error: "Ya se agrego esta materia prima",
+          feedback_description_error: "Ya se agrego esta materia prima"
         });
         handleClickFeeback();
       } else {
@@ -341,22 +341,22 @@ export const AgregarRequisicionFrescos = () => {
             nomProd: nomProd,
             simMed: simMed,
             canMatPriFor: cantidadMateriaPrima,
-            canMatPriForCopy: cantidadMateriaPrima,
+            canMatPriForCopy: cantidadMateriaPrima
           };
 
           // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
           const dataMateriaPrimaDetalle = [
             ...requisicion.reqMolDet,
-            detalleFormulaMateriaPrima,
+            detalleFormulaMateriaPrima
           ];
           setRequisicion({
             ...requisicion,
-            reqMolDet: dataMateriaPrimaDetalle,
+            reqMolDet: dataMateriaPrimaDetalle
           });
         } else {
           setfeedbackMessages({
             style_message: "error",
-            feedback_description_error: description_error,
+            feedback_description_error: description_error
           });
           handleClickFeeback();
         }
@@ -364,7 +364,7 @@ export const AgregarRequisicionFrescos = () => {
     } else {
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
+        feedback_description_error: "Asegurese de llenar los datos requeridos"
       });
       handleClickFeeback();
     }
@@ -413,11 +413,12 @@ export const AgregarRequisicionFrescos = () => {
                       const { name, value } = e.target;
                       setProduccionLote({
                         ...produccionLote,
-                        [name]: value,
+                        [name]: value
                       });
                     }}
                     value={codLotProd}
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -432,6 +433,7 @@ export const AgregarRequisicionFrescos = () => {
                     onChange={onChangeCantidadLote}
                     value={canLotProd}
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -446,6 +448,7 @@ export const AgregarRequisicionFrescos = () => {
                     disabled
                     value={klgLotProd}
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -510,8 +513,8 @@ export const AgregarRequisicionFrescos = () => {
                         sx={{
                           "& th": {
                             color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                            backgroundColor: "#f5f5f5"
+                          }
                         }}
                       >
                         <TableCell align="left" width={100}>

@@ -3,7 +3,6 @@ import { FilterProductosDynamic } from "../../../components/ReferencialesFilters
 import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic";
 import config from "../../../config";
 import axios from "axios";
-import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
 import FechaPickerMonthDynamic from "../../../components/Fechas/FechaPickerMonthDynamic";
 
 export const ReporteEntradaSalidaStock = () => {
