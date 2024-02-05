@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $producto = $data["producto"];
+    $idCla = $data["clase"];
     $idAlm = $data["almacen"];
 
     $result["data"] = [];
@@ -44,8 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     JOIN almacen AS al ON al.id = als.idAlm
     WHERE als.idAlm = $idAlm
     ";
-    if ($producto !== 0) {
-        $sql = $sql . " AND als.idProd = $producto";
+    if ($idCla !== 0) {
+        $sql = $sql . " AND p.idCla = $idCla";
     }
 
     $stmt = $pdo->prepare($sql);

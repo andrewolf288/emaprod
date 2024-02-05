@@ -3,20 +3,21 @@ import { FilterProductosDynamic } from "../../../components/ReferencialesFilters
 import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic";
 import config from "../../../config";
 import axios from "axios";
+import { FilterClaseDynamic } from "../../../components/ReferencialesFilters/Clase/FilterClaseDynamic";
 
 export const ReporteStockTotal = () => {
   const [filterData, setFilterData] = useState({
-    producto: 0,
+    clase: 0,
     almacen: 0
   });
 
-  const { producto, almacen } = filterData;
+  const { clase, almacen } = filterData;
 
   // controlador de producto
-  const handleProducto = ({ id }) => {
+  const handleClase = ({ id }) => {
     setFilterData({
       ...filterData,
-      producto: id
+      clase: id
     });
   };
 
@@ -74,13 +75,10 @@ export const ReporteStockTotal = () => {
     <>
       <div className="container-fluid mx-3">
         <div className="row mt-3">
-          <div className="col-6">
+          <div className="col-4">
             {/* filter */}
-            <label className="form-label">Producto</label>
-            <FilterProductosDynamic
-              onNewInput={handleProducto}
-              defaultValue={producto}
-            />
+            <label className="form-label">Categoria</label>
+            <FilterClaseDynamic onNewInput={handleClase} defaultValue={clase} />
           </div>
           <div className="col-3">
             {/* filter */}
