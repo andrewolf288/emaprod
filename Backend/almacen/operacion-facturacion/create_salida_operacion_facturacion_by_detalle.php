@@ -307,12 +307,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $codLot = $row["codLot"];
                             }
 
-                            $esEnt = 1;
+                            $esSal = 1;
                             // sentencia sql
                             $sql =
                                 "INSERT
                              movimiento_operacion_facturacion
-                             (idOpeFac, idOpeFacDet, idProdt, idEntSto, idProdc, codLotProd, canMovOpeFac, esEnt)
+                             (idOpeFac, idOpeFacDet, idProdt, idEntSto, idProdc, codLotProd, canMovOpeFac, esSal)
                              VALUES (?, ?, ?, ?, ?, ?, $canSalStoReq, ?)";
 
                             $stmt = $pdo->prepare($sql);
@@ -322,7 +322,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $stmt->bindParam(4, $idEntSto, PDO::PARAM_INT);
                             $stmt->bindParam(5, $refProdc, PDO::PARAM_INT);
                             $stmt->bindParam(6, $codLot, PDO::PARAM_STR);
-                            $stmt->bindParam(7, $esEnt, PDO::PARAM_BOOL);
+                            $stmt->bindParam(7, $esSal, PDO::PARAM_BOOL);
 
                             // EJECUTAMOS LA CREACION DE UNA SALIDA
                             $stmt->execute();
