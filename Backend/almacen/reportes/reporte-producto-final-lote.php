@@ -22,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
     $almacen = $data["almacen"];
+    $producto = $data["producto"];
     $idEntStoEst = 1;
 
     $result["header"] = ["Almacen", "SIIGO", "EMAPROD", "Producto", "Saldo producto", "Medida", "Lote", "Saldo lote", "Fecha vencimiento"];
@@ -34,6 +35,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         FROM producto AS p 
         JOIN medida AS me ON me.id = p.idMed
         WHERE p.idCla = ?";
+
+    if ($producto != 0) {
+        $sql_select_productos_finales = $sql_select_productos_finales . " AND p.id = $producto";
+    }
+
     $stmt_select_productos_finales = $pdo->prepare($sql_select_productos_finales);
     $stmt_select_productos_finales->bindParam(1, $claseProductoFinal, PDO::PARAM_INT);
     $stmt_select_productos_finales->execute();
@@ -62,82 +68,84 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($data_almacen_stock) {
             $nomAlm = $data_almacen_stock["nomAlm"];
             $canSto = $data_almacen_stock["canSto"];
+            // si la cantidad de stock es igual a 0, no lo agregamos en el reporte
+            if ($canSto != 0) {
+                $auxStockTotal = array(
+                    "nomAlm" => $nomAlm,
+                    "codProd" => $codProd,
+                    "codProd2" => $codProd2,
+                    "nomProd" => $nomProd,
+                    "canSto" => $canSto,
+                    "simMed" => $simMed,
+                    "codLotProd" => "",
+                    "salLotProd" => "",
+                    "fecVenEntSto" => ""
+                );
 
-            $auxStockTotal = array(
-                "nomAlm" => $nomAlm,
-                "codProd" => $codProd,
-                "codProd2" => $codProd2,
-                "nomProd" => $nomProd,
-                "canSto" => $canSto,
-                "simMed" => $simMed,
-                "codLotProd" => "",
-                "salLotProd" => "",
-                "fecVenEntSto" => ""
-            );
+                array_push($result["data"], $auxStockTotal);
 
-            array_push($result["data"], $auxStockTotal);
-        }
+                //ahora recorremos las entradas en busca de los lotes
+                $select_entradas_producto_final =
+                    "SELECT es.codLot, es.canTotDis, DATE(es.fecVenEntSto) AS fecVenEntSto, es.refProdc 
+                FROM entrada_stock AS es
+                WHERE es.idAlm = ? AND es.idProd = ? AND es.idEntStoEst = ? AND es.canTotDis > 0";
+                $stmt_select_entradas_producto_final = $pdo->prepare($select_entradas_producto_final);
+                $stmt_select_entradas_producto_final->bindParam(1, $almacen, PDO::PARAM_INT);
+                $stmt_select_entradas_producto_final->bindParam(2, $idProd, PDO::PARAM_INT);
+                $stmt_select_entradas_producto_final->bindParam(3, $idEntStoEst, PDO::PARAM_INT);
+                $stmt_select_entradas_producto_final->execute();
 
-        //ahora recorremos las entradas en busca de los lotes
-        $select_entradas_producto_final =
-            "SELECT es.codLot, es.canTotDis, DATE(es.fecVenEntSto) AS fecVenEntSto, es.refProdc 
-        FROM entrada_stock AS es
-        WHERE es.idAlm = ? AND es.idProd = ? AND es.idEntStoEst = ? AND es.canTotDis > 0";
-        $stmt_select_entradas_producto_final = $pdo->prepare($select_entradas_producto_final);
-        $stmt_select_entradas_producto_final->bindParam(1, $almacen, PDO::PARAM_INT);
-        $stmt_select_entradas_producto_final->bindParam(2, $idProd, PDO::PARAM_INT);
-        $stmt_select_entradas_producto_final->bindParam(3, $idEntStoEst, PDO::PARAM_INT);
-        $stmt_select_entradas_producto_final->execute();
+                $rows_entradas_producto_final = $stmt_select_entradas_producto_final->fetchAll(PDO::FETCH_ASSOC);
 
-        $rows_entradas_producto_final = $stmt_select_entradas_producto_final->fetchAll(PDO::FETCH_ASSOC);
+                // Array asociativo para almacenar las sumas por refProdc
+                $sumas_por_refProdc = array();
 
-        // Array asociativo para almacenar las sumas por refProdc
-        $sumas_por_refProdc = array();
+                // Recorrer los registros y realizar la suma
+                foreach ($rows_entradas_producto_final as $registro) {
+                    $refProdc = $registro['refProdc'];
+                    $canTotDis = $registro['canTotDis'];
 
-        // Recorrer los registros y realizar la suma
-        foreach ($rows_entradas_producto_final as $registro) {
-            $refProdc = $registro['refProdc'];
-            $canTotDis = $registro['canTotDis'];
+                    // Utilizar el operador de fusión de null (??) para manejar el caso cuando no existe la clave
+                    $sumas_por_refProdc[$refProdc] = ($sumas_por_refProdc[$refProdc] ?? 0) + $canTotDis;
+                }
 
-            // Utilizar el operador de fusión de null (??) para manejar el caso cuando no existe la clave
-            $sumas_por_refProdc[$refProdc] = ($sumas_por_refProdc[$refProdc] ?? 0) + $canTotDis;
-        }
+                // Construir un nuevo array con un solo registro por refProdc y la cantidad total sumada
+                $nuevos_registros = array();
 
-        // Construir un nuevo array con un solo registro por refProdc y la cantidad total sumada
-        $nuevos_registros = array();
+                foreach ($rows_entradas_producto_final as $registro) {
+                    $refProdc = $registro['refProdc'];
 
-        foreach ($rows_entradas_producto_final as $registro) {
-            $refProdc = $registro['refProdc'];
+                    // Utilizar el operador de fusión de null (??) para manejar el caso cuando no existe la clave
+                    $registro['canTotDis'] = $sumas_por_refProdc[$refProdc] ?? 0;
 
-            // Utilizar el operador de fusión de null (??) para manejar el caso cuando no existe la clave
-            $registro['canTotDis'] = $sumas_por_refProdc[$refProdc] ?? 0;
+                    // Agregar el registro al nuevo array solo si aún no ha sido agregado
+                    if (!isset($nuevos_registros[$refProdc])) {
+                        $nuevos_registros[$refProdc] = $registro;
+                    }
+                }
 
-            // Agregar el registro al nuevo array solo si aún no ha sido agregado
-            if (!isset($nuevos_registros[$refProdc])) {
-                $nuevos_registros[$refProdc] = $registro;
+                // Ahora $nuevos_registros contiene un solo registro por refProdc con la cantidad total sumada
+                $nuevos_registros = array_values($nuevos_registros); // Reindexar el array si es necesario
+                // print_r($nuevos_registros);
+
+                foreach ($nuevos_registros as $registro) {
+                    $canLoteStockTotal = $registro["canTotDis"];
+                    $codLot = $registro["codLot"];
+                    $fecVenEntSto = $registro["fecVenEntSto"];
+                    $auxLoteStockTotal = array(
+                        "nomAlm" => "",
+                        "codProd" => "",
+                        "codProd2" => "",
+                        "nomProd" => "",
+                        "canSto" => "",
+                        "simMed" => $simMed,
+                        "codLotProd" => $codLot,
+                        "salLotProd" => $canLoteStockTotal,
+                        "fecVenEntSto" => $fecVenEntSto
+                    );
+                    array_push($result["data"], $auxLoteStockTotal);
+                }
             }
-        }
-
-        // Ahora $nuevos_registros contiene un solo registro por refProdc con la cantidad total sumada
-        $nuevos_registros = array_values($nuevos_registros); // Reindexar el array si es necesario
-        // print_r($nuevos_registros);
-
-        foreach ($nuevos_registros as $registro) {
-            $canLoteStockTotal = $registro["canTotDis"];
-            $codLot = $registro["codLot"];
-            $fecVenEntSto = $registro["fecVenEntSto"];
-            $auxLoteStockTotal = array(
-                "nomAlm" => "",
-                "codProd" => "",
-                "codProd2" => "",
-                "nomProd" => "",
-                "canSto" => "",
-                "simMed" => $simMed,
-                "codLotProd" => $codLot,
-                "salLotProd" => $canLoteStockTotal,
-                "fecVenEntSto" => $fecVenEntSto
-            );
-            array_push($result["data"], $auxLoteStockTotal);
         }
     }
 
