@@ -96,16 +96,17 @@ export const RowDetalleSalidasVentaDetalle = ({
                 <TableCell>
                   {detalle.fueComDet === 0 ? (
                     <div className="btn-toolbar">
-                      <IconButton
+                      {/* <IconButton
                         aria-label="edit"
                         size="large"
                         color="warning"
+                        disabled={true}
                         onClick={(e) => {
                           setdisabledInput(!disabledInput);
                         }}
                       >
                         <EditIcon fontSize="inherit" />
-                      </IconButton>
+                      </IconButton> */}
                       <IconButton
                         aria-label="delete"
                         size="large"
@@ -176,8 +177,9 @@ const DialogSelectLoteSalida = ({
       detSal
     );
     const { result } = resultPeticion;
+    console.log(result);
     setDataSalidasStock(result);
-    setCantidadTotal(parseInt(detalle.canOpeFacDetAct));
+    // setCantidadTotal(parseInt(detalle.canOpeFacDetAct));
   };
 
   // funcion de actualizar cantidad de lote

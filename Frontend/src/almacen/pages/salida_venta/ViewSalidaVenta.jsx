@@ -222,16 +222,35 @@ export const ViewSalidaVenta = () => {
 
   const generarSalidaVentaWithLotes = async (detalle) => {
     if (detalle.canOpeFacDet !== detalle.canOpeFacDetAct) {
-      setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error:
-          "La cantidad requerida no fue cumplida. Agregue lotes al detalle"
-      });
-      handleClickFeeback();
+      if (detalle.esMerProm === 1) {
+        const resultPeticion = await createSalidaLoteStockByDetalle(detalle);
+        const { message_error, description_error } = resultPeticion;
+
+        if (message_error.length === 0) {
+          setfeedbackMessages({
+            style_message: "success",
+            feedback_description_error: "La operación se realizó con éxito"
+          });
+          handleClickFeeback();
+          // traemos de nuevo la data
+          obtenerDataDetalleVenta();
+        } else {
+          setfeedbackMessages({
+            style_message: "error",
+            feedback_description_error: description_error
+          });
+          handleClickFeeback();
+        }
+      } else {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error:
+            "La cantidad requerida no fue cumplida. Agregue lotes al detalle"
+        });
+        handleClickFeeback();
+      }
     } else {
-      console.log(detalle);
       const resultPeticion = await createSalidaLoteStockByDetalle(detalle);
-      console.log(resultPeticion);
       const { message_error, description_error } = resultPeticion;
 
       if (message_error.length === 0) {

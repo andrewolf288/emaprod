@@ -76,9 +76,11 @@ export const CardSalidaVentaDetalle = ({
                 <TableCell width={30} align="center">
                   <b>Cantidad requerida</b>
                 </TableCell>
-                <TableCell width={30} align="center">
-                  <b>Cantidad actual</b>
-                </TableCell>
+                {detalle.esMerProm === 0 && (
+                  <TableCell width={30} align="center">
+                    <b>Cantidad actual</b>
+                  </TableCell>
+                )}
                 <TableCell width={30} align="center">
                   <b>Estado</b>
                 </TableCell>
@@ -92,17 +94,20 @@ export const CardSalidaVentaDetalle = ({
                 <TableCell>{detalle.refProdt}</TableCell>
                 <TableCell>{detalle.nomProd}</TableCell>
                 <TableCell align="center">{detalle.canOpeFacDet}</TableCell>
-                <TableCell
-                  align="center"
-                  className={
-                    detalle.canOpeFacDetAct != detalle.canOpeFacDet
-                      ? "text-danger font-weight-bold"
-                      : "text-success font-weight-bold"
-                  }
-                  style={{ fontWeight: 600 }}
-                >
-                  {detalle.canOpeFacDetAct}
-                </TableCell>
+
+                {detalle.esMerProm === 0 && (
+                  <TableCell
+                    align="center"
+                    className={
+                      detalle.canOpeFacDetAct != detalle.canOpeFacDet
+                        ? "text-danger font-weight-bold"
+                        : "text-success font-weight-bold"
+                    }
+                    style={{ fontWeight: 600 }}
+                  >
+                    {detalle.canOpeFacDetAct}
+                  </TableCell>
+                )}
                 <TableCell align="center">
                   {detalle.fueComDet == 0 ? (
                     <span className={"badge text-bg-danger"}>Requerido</span>

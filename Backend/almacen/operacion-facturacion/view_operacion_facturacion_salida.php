@@ -68,70 +68,77 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $cantidad = $row_operacion_facturacion_detalle["canOpeFacDet"];
                     $esMerProm = $row_operacion_facturacion_detalle["esMerProm"];
                     $fueComDet = $row_operacion_facturacion_detalle["fueComDet"];
-                    $row_operacion_facturacion_detalle["canOpeFacDetAct"] = $cantidad;
+                    // $row_operacion_facturacion_detalle["canOpeFacDetAct"] = $cantidad;
+                    $row_operacion_facturacion_detalle["canOpeFacDetAct"] = 0;
                     $row_operacion_facturacion_detalle["detSal"] = array();
                     $array_entradas_disponibles = [];
 
-                    if ($fueComDet == 1 && $esMerProm == 0) {
-                        $sql_select_movimiento_operacion =
-                            "SELECT 
-                        mof.id,
-                        mof.idOpeFac,
-                        mof.idOpeFacDet,
-                        mof.idProdt,
-                        mof.idEntSto,
-                        mof.idProdc,
-                        pc.fecVenLotProd,
-                        pc.fecProdIni,
-                        pc.codProd,
-                        mof.codLotProd,
-                        mof.canMovOpeFac
-                        FROM movimiento_operacion_facturacion AS mof
-                        JOIN produccion AS pc ON pc.id = mof.idProdc
-                        WHERE mof.idOpeFacDet = ?";
+                    if ($fueComDet == 1) {
+                        if ($esMerProm == 0) {
 
-                        $stmt_select_movimiento_operacion = $pdo->prepare($sql_select_movimiento_operacion);
-                        $stmt_select_movimiento_operacion->bindParam(1, $idOpeFacDet, PDO::PARAM_INT);
-                        $stmt_select_movimiento_operacion->execute();
+                            $sql_select_movimiento_operacion =
+                                "SELECT 
+                            mof.id,
+                            mof.idOpeFac,
+                            mof.idOpeFacDet,
+                            mof.idProdt,
+                            mof.idEntSto,
+                            mof.idProdc,
+                            pc.fecVenLotProd,
+                            pc.fecProdIni,
+                            pc.codProd,
+                            mof.codLotProd,
+                            mof.canMovOpeFac
+                            FROM movimiento_operacion_facturacion AS mof
+                            JOIN produccion AS pc ON pc.id = mof.idProdc
+                            WHERE mof.idOpeFacDet = ?";
 
-                        $movimientos_operacion_facturacion = $stmt_select_movimiento_operacion->fetchAll(PDO::FETCH_ASSOC);
+                            $stmt_select_movimiento_operacion = $pdo->prepare($sql_select_movimiento_operacion);
+                            $stmt_select_movimiento_operacion->bindParam(1, $idOpeFacDet, PDO::PARAM_INT);
+                            $stmt_select_movimiento_operacion->execute();
 
-                        $totalPorLoteProduccion = [];
-                        foreach ($movimientos_operacion_facturacion as $fila) {
-                            $refProdc = $fila['idProdc'];
-                            $cantidad = intval($fila['canMovOpeFac']); // Convertir a número si es necesario
-                            $codLotProd = $fila['codLotProd'];
-                            $codProd = $fila["codProd"];
-                            $fecProdIni = $fila["fecProdIni"];
-                            $fecVenLotProd = $fila["fecVenLotProd"];
+                            $movimientos_operacion_facturacion = $stmt_select_movimiento_operacion->fetchAll(PDO::FETCH_ASSOC);
 
-                            // Verificar si ya existe la referencia en el arreglo de totales
-                            $indice = -1;
-                            foreach ($totalPorLoteProduccion as $key => $item) {
-                                if ($item['refProdc'] === $refProdc) {
-                                    $indice = $key;
-                                    break;
+                            $totalPorLoteProduccion = [];
+                            foreach ($movimientos_operacion_facturacion as $fila) {
+                                $refProdc = $fila['idProdc'];
+                                $cantidad = intval($fila['canMovOpeFac']); // Convertir a número si es necesario
+                                $codLotProd = $fila['codLotProd'];
+                                $codProd = $fila["codProd"];
+                                $fecProdIni = $fila["fecProdIni"];
+                                $fecVenLotProd = $fila["fecVenLotProd"];
+                                $row_operacion_facturacion_detalle["canOpeFacDetAct"] += $cantidad;
+
+                                // Verificar si ya existe la referencia en el arreglo de totales
+                                $indice = -1;
+                                foreach ($totalPorLoteProduccion as $key => $item) {
+                                    if ($item['refProdc'] === $refProdc) {
+                                        $indice = $key;
+                                        break;
+                                    }
+                                }
+
+                                if ($indice !== -1) {
+                                    // Si existe, sumar la cantidad
+                                    $totalPorLoteProduccion[$indice]['canSalLotProd'] += $cantidad;
+                                } else {
+                                    // Si no existe, crear una nueva entrada en el arreglo
+                                    $totalPorLoteProduccion[] = [
+                                        'refProdc' => $refProdc,
+                                        'canSalLotProd' => $cantidad,
+                                        'codProd' => $codProd,
+                                        'codLotProd' => $codLotProd,
+                                        'fecProdIni' => $fecProdIni,
+                                        'fecVenLotProd' => $fecVenLotProd
+                                    ];
                                 }
                             }
 
-                            if ($indice !== -1) {
-                                // Si existe, sumar la cantidad
-                                $totalPorLoteProduccion[$indice]['canSalLotProd'] += $cantidad;
-                            } else {
-                                // Si no existe, crear una nueva entrada en el arreglo
-                                $totalPorLoteProduccion[] = [
-                                    'refProdc' => $refProdc,
-                                    'canSalLotProd' => $cantidad,
-                                    'codProd' => $codProd,
-                                    'codLotProd' => $codLotProd,
-                                    'fecProdIni' => $fecProdIni,
-                                    'fecVenLotProd' => $fecVenLotProd
-                                ];
-                            }
+                            // agregamos el detalle de salidas de lote
+                            $row_operacion_facturacion_detalle["detSal"] = $totalPorLoteProduccion;
+                        } else {
+                            $row_operacion_facturacion_detalle["canOpeFacDetAct"] = $row_operacion_facturacion_detalle["canOpeFacDet"];
                         }
-
-                        // agregamos el detalle de salidas de lote
-                        $row_operacion_facturacion_detalle["detSal"] = $totalPorLoteProduccion;
                     } else {
                         // si no es una mercancia de promocion
                         if ($esMerProm == 0) {
@@ -202,6 +209,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     foreach ($entradasUtilizadas as $fila) {
                                         $refProdc = $fila['refProdc'];
                                         $cantidad = intval($fila['canSalStoReq']); // Convertir a número si es necesario
+                                        $row_operacion_facturacion_detalle["canOpeFacDetAct"] += $cantidad;
 
                                         // Verificar si ya existe la referencia en el arreglo de totales
                                         $indice = -1;
@@ -250,6 +258,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     $row_operacion_facturacion_detalle["detSal"] = $totalConInformacionProduccion;
                                 }
                             }
+                        } else {
+                            //  $row_operacion_facturacion_detalle["canOpeFacDetAct"] = $row_operacion_facturacion_detalle["canOpeFacDet"];
                         }
                     }
                     array_push($row_operacion_facturacion["detOpeFac"], $row_operacion_facturacion_detalle);

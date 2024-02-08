@@ -10,8 +10,10 @@ import {
   TableContainer,
   TableHead,
   TablePagination,
-  TableRow
+  TableRow,
+  TextField
 } from "@mui/material";
+import { FilterEstadoRequisicion } from "../../../components/ReferencialesFilters/EstadoRequisicion/FilterEstadoRequisicion";
 
 export const ListSalidaVenta = () => {
   const [dataSalidasVenta, setDataSalidasVenta] = useState([]);
@@ -80,6 +82,73 @@ export const ListSalidaVenta = () => {
     obtenerDataSalidasVenta(body);
   };
 
+  const [dataFilter, setDataFilter] = useState({
+    invSerFac: "",
+    invNumFac: "",
+    idReqEst: 0
+  });
+  const { invSerFac, invNumFac, idReqEst } = dataFilter;
+
+  const handleChangeInputValue = ({ target }) => {
+    const { value, name } = target;
+    setDataFilter({
+      ...dataFilter,
+      [name]: value
+    });
+    filter(value, name);
+  };
+
+  const handleChangeSelectValue = (value) => {
+    const { id, label } = value;
+    setDataFilter({
+      ...dataFilter,
+      idReqEst: id
+    });
+    filter(label, "idReqEst");
+  };
+
+  const filter = (terminoBusqueda, name) => {
+    if (name == "invSerFac") {
+      let resultadoBusqueda = dataSalidasVenta.filter((element) => {
+        if (
+          element.invSerFac
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return element;
+        }
+      });
+      setDataSalidasVentaTemp(resultadoBusqueda);
+    }
+    if (name == "invNumFac") {
+      let resultadoBusqueda = dataSalidasVenta.filter((element) => {
+        if (
+          element.invNumFac
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return element;
+        }
+      });
+      setDataSalidasVentaTemp(resultadoBusqueda);
+    }
+    if (name == "idReqEst") {
+      let resultadoBusqueda = dataSalidasVenta.filter((element) => {
+        if (
+          element.desReqEst
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return element;
+        }
+      });
+      setDataSalidasVentaTemp(resultadoBusqueda);
+    }
+  };
+
   //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataSalidasVenta = async (formState) => {
     const resultPeticion = await getSalidasVenta(formState);
@@ -138,12 +207,29 @@ export const ListSalidaVenta = () => {
                   >
                     <TableCell align="left" width={50}>
                       <b>Serie</b>
+                      <TextField
+                        size="small"
+                        type="text"
+                        onChange={handleChangeInputValue}
+                        value={invSerFac}
+                        name="invSerFac"
+                      />
                     </TableCell>
                     <TableCell align="left" width={50}>
                       <b>Numero</b>
+                      <TextField
+                        size="small"
+                        type="number"
+                        onChange={handleChangeInputValue}
+                        value={invNumFac}
+                        name="invNumFac"
+                      />
                     </TableCell>
                     <TableCell align="center" width={50}>
                       <b>Estado</b>
+                      <FilterEstadoRequisicion
+                        onNewInput={handleChangeSelectValue}
+                      />
                     </TableCell>
                     <TableCell align="center" width={120}>
                       <b>Motivo</b>
