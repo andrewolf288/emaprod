@@ -11,6 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
     $idGuiRem = $data["idRefGui"]; // identificador de guia de remision
+    $invoice_serie = $data["invoice_serie"]; // serie
+    $invoice_number = $data["invoice_number"]; // numero
     $items = $data["items"]; // arreglo de items
 
     /* Vamos a describir el procedimiento de procesamiento de guia de remision
@@ -24,18 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // si no se han encontrado errores en la validacion
 
         if (empty($errorsValidation)) {
-            // debemos informarle al cliente que hay stock disponible y que continue con su ejecucion
-            // enviamos el mensaje al cliente
-            ob_end_clean();
-            header("Connection: close");
-            ignore_user_abort(); // optional 
-            ob_start();
-            echo json_encode(["message_error" => "", "description_error" => ""]);
-            $size = ob_get_length();
-            header("Content-Length: $size");
-            ob_end_flush();
-            flush();
-            session_write_close();
 
             /* Ejecutamos la siguiente secuencia de pasos
                     1. Primero creamos la operacion facturacion, indicar motivo
@@ -43,214 +33,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     3. Aplicamos el FIFO de los items
                 */
 
-            $pdo->beginTransaction(); // iniciamos una operacion de transaccion
-
             $idOpeFacMot = 1; // motivo salida de GRE
             $esSal = 1; // es una operaicon de saida
             $idLastInsertion = 0; // id de la utlima insercion
+            $idReqEst = 1;
 
             // 1. primero realizamos la insercion de la operacion de factura
             $sql_insert_operacion_facturacion =
-                "INSERT INTO operacion_facturacion (idGuiRem, idOpeFacMot, esSal)
-            VALUES (?, ?, ?)";
+                "INSERT INTO operacion_facturacion (idGuiRem, idOpeFacMot, esSal, invSerFac, invNumFac, idReqEst)
+            VALUES (?, ?, ?, ?, ?, ?)";
             try {
+                $pdo->beginTransaction(); // iniciamos una operacion de transaccion
                 $stmt_insert_operacion_facturacion = $pdo->prepare($sql_insert_operacion_facturacion);
                 $stmt_insert_operacion_facturacion->bindParam(1, $idGuiRem, PDO::PARAM_INT);
                 $stmt_insert_operacion_facturacion->bindParam(2, $idOpeFacMot, PDO::PARAM_INT);
                 $stmt_insert_operacion_facturacion->bindParam(3, $esSal, PDO::PARAM_BOOL);
+                $stmt_insert_operacion_facturacion->bindParam(4, $invoice_serie, PDO::PARAM_STR);
+                $stmt_insert_operacion_facturacion->bindParam(5, $invoice_number, PDO::PARAM_STR);
+                $stmt_insert_operacion_facturacion->bindParam(6, $idReqEst, PDO::PARAM_INT);
                 $stmt_insert_operacion_facturacion->execute();
 
                 // 2. Obtenemos el id de la ultima insercion
                 $idLastInsertion = $pdo->lastInsertId();
 
-                // 3. Aplicamos el FIFO de los items
-                $idEntStoEst = 1; // ESTADO DISPONIBLE DE LAS ENTRADAS
-
                 foreach ($items as $item) {
                     $idProdt = $item["idProdt"]; // obtenemos informacion del producto
                     $refProdt = $item["product_reference"]; // referencia del produto
                     $cantidad = $item["quantity"]; // cantidad requerida
-                    $array_entradas_disponibles = []; // arreglo de entradas disponibles
+                    $esMerProm = $item["esMerProm"]; // es merma promocional
+                    $esProFin = $item["esProFin"]; // es producto final
 
-                    $sql_consult_entradas_disponibles =
-                        "SELECT
-                    es.id,
-                    es.codEntSto,
-                    es.refNumIngEntSto,
-                    DATE(es.fecEntSto) AS fecEntSto,
-                    es.canTotDis
-                    FROM entrada_stock AS es
-                    WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
-                    ORDER BY es.fecEntSto ASC";
-
-                    try {
-                        $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
-                        $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
-                        $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
-                        $stmt_consult_entradas_disponibles->execute();
-
-                        // AÑADIMOS AL ARRAY
-                        while ($row = $stmt_consult_entradas_disponibles->fetch(PDO::FETCH_ASSOC)) {
-                            array_push($array_entradas_disponibles, $row);
-                        }
-
-                        if (!empty($array_entradas_disponibles)) {
-                            $entradasUtilizadas = []; // entradas utilizadas
-                            $cantidad_faltante = $cantidad; // cantidad total faltante
-                            /* 
-                                1. Si la cantidad disponible de la entrada es mayor o igual a lo solicitado:
-                                Se procede a realizar el descuento
-                            */
-                            foreach ($array_entradas_disponibles as $row_entrada_dispomible) {
-                                if ($cantidad_faltante > 0) {
-
-                                    $idEntStoUti = $row_entrada_dispomible["id"]; // id entrada
-                                    $canDisEnt = $row_entrada_dispomible["canTotDis"]; // cantidad disponible
-
-                                    if ($canDisEnt >= $cantidad_faltante) {
-                                        // añadimos a entradas utilizadas
-                                        array_push(
-                                            $entradasUtilizadas,
-                                            array(
-                                                "idEntSto" => $idEntStoUti,
-                                                "canSalStoReq" => $cantidad_faltante // la cantidad de la requisicion detalle
-                                            )
-                                        );
-
-                                        $cantidad_faltante = 0;
-
-                                        break; // termina el flujo
-                                    } else {
-                                        $cantidad_faltante -= $canDisEnt;
-                                        array_push(
-                                            $entradasUtilizadas,
-                                            array(
-                                                "idEntSto" => $idEntStoUti,
-                                                "canSalStoReq" => $canDisEnt // la cantidad disponible de la entrada
-                                            )
-                                        );
-                                    }
-                                } else {
-                                    break; // salimos del flujo
-                                }
-                            }
-
-                            // comprobamos finalmente que la cantidad faltante sea exactamente 0
-                            if ($cantidad_faltante == 0) {
-                                $sql = "";
-                                foreach ($entradasUtilizadas as $item) {
-                                    try {
-                                        // OBTENEMOS LOS DATOS
-                                        $idEntSto = $item["idEntSto"]; // id de la entrada
-                                        $canSalStoReq = $item["canSalStoReq"]; // cantidad de salida de stock
-                                        //$canTotDis = $item["canTotDis"];
-
-                                        // CONSULTAMOS LA ENTRADA 
-                                        $canTotDisEntSto = 0; // cantidad disponible
-                                        $idEntStoEst = 0; // estado de la entrada
-                                        $idAlmacen = 0; // id del almacen para realizar la actualizacion
-                                        $refProdc = 0; // referencia a produccion
-                                        $codLot = ""; // codigo de lote de produccion
-
-                                        $sql_consult_entrada_stock =
-                                            "SELECT 
-                                            canTotDis,
-                                            idAlm,
-                                            refProdc,
-                                            codLot
-                                            FROM entrada_stock
-                                            WHERE id = ?";
-                                        $stmt_consulta_entrada_stock = $pdo->prepare($sql_consult_entrada_stock);
-                                        $stmt_consulta_entrada_stock->bindParam(1, $idEntSto, PDO::PARAM_INT);
-                                        $stmt_consulta_entrada_stock->execute();
-
-                                        while ($row = $stmt_consulta_entrada_stock->fetch(PDO::FETCH_ASSOC)) {
-                                            $canTotDisEntSto = $row["canTotDis"];
-                                            $idAlmacen = $row["idAlm"];
-                                            $refProdc = $row["refProdc"];
-                                            $codLot = $row["codLot"];
-                                        }
-
-                                        // sentencia sql
-                                        $sql =
-                                            "INSERT
-                                        salida_operacion_facturacion
-                                        (idOpeFac, refProdt, idProdt, idEntSto, idProdc, codLotProd, canSalOpeFac)
-                                        VALUES (?, ?, ?, ?, ?, ?, $canSalStoReq)";
-
-                                        $stmt = $pdo->prepare($sql);
-                                        $stmt->bindParam(1, $idLastInsertion, PDO::PARAM_INT); // id de la operacion facturacion
-                                        $stmt->bindParam(2, $refProdt, PDO::PARAM_STR);
-                                        $stmt->bindParam(3, $idProdt, PDO::PARAM_INT);
-                                        $stmt->bindParam(4, $idEntSto, PDO::PARAM_INT);
-                                        $stmt->bindParam(5, $refProdc, PDO::PARAM_INT);
-                                        $stmt->bindParam(6, $codLot, PDO::PARAM_STR);
-
-                                        // EJECUTAMOS LA CREACION DE UNA SALIDA
-                                        $stmt->execute();
-
-                                        // ********* AHORA ACTUALIZAMOS LA ENTRADA CORRESPONDIENTE **************
-                                        $canResAftOpe =  $canTotDisEntSto - $canSalStoReq; // cantidad restante luego de la salida
-
-                                        if ($canResAftOpe == 0) { // SI LA CANTIDAD RESTANTE ES 0
-                                            $idEntStoEst = 2; // ESTADO DE ENTRADA AGOTADA O TERMINADA
-                                            $fecFinSto = date('Y-m-d H:i:s'); // FECHA DE TERMINO DE STOCK DE LA ENTRADA
-
-                                            // sql actualizar entrada stock con fecha de finalización
-                                            $sql_update_entrada_stock =
-                                                "UPDATE
-                                                entrada_stock
-                                                SET canTotDis = $canResAftOpe, idEntStoEst = ?, fecFinSto = ?
-                                                WHERE id = ?
-                                                ";
-                                            $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
-                                            $stmt_update_entrada_stock->bindParam(1, $idEntStoEst, PDO::PARAM_INT);
-                                            $stmt_update_entrada_stock->bindParam(2, $fecFinSto);
-                                            $stmt_update_entrada_stock->bindParam(3, $idEntSto, PDO::PARAM_INT);
-
-                                            $stmt_update_entrada_stock->execute();
-                                        } else {
-                                            $idEntStoEst = 1; // ESTADO DE ENTRADA DISPONIBLE
-
-                                            // ACTUALIZAMOS LA ENTRADA STOCK
-                                            $sql_update_entrada_stock =
-                                                "UPDATE
-                                                entrada_stock
-                                                SET canTotDis = $canResAftOpe, idEntStoEst = ?
-                                                WHERE id = ?
-                                                ";
-                                            $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
-                                            $stmt_update_entrada_stock->bindParam(1, $idEntStoEst, PDO::PARAM_INT);
-                                            $stmt_update_entrada_stock->bindParam(2, $idEntSto, PDO::PARAM_INT);
-                                            $stmt_update_entrada_stock->execute();
-                                        }
-
-                                        // ACTUALIZAMOS EL ALMACEN CORRESPONDIENTE A LA ENTRADA
-                                        $sql_update_almacen_stock =
-                                            "UPDATE almacen_stock
-                                                SET canSto = canSto - $canSalStoReq, canStoDis = canStoDis - $canSalStoReq
-                                                WHERE idAlm = ? AND idProd = ?";
-
-                                        $stmt_update_almacen_stock = $pdo->prepare($sql_update_almacen_stock);
-                                        $stmt_update_almacen_stock->bindParam(1, $idAlmacen, PDO::PARAM_INT);
-                                        $stmt_update_almacen_stock->bindParam(2, $idProdt, PDO::PARAM_INT);
-                                        $stmt_update_almacen_stock->execute();
-                                    } catch (PDOException $e) {
-                                        $message_error = "ERROR INTERNO SERVER: fallo en insercion de salidas";
-                                        $description_error = $e->getMessage();
-                                    }
-                                }
-                            }
-                        } else {
-                            $message_error = "No hay entradas disponibles";
-                            $description_error = "No hay entradas disponibles para el producto del detalle";
-                        }
-                    } catch (PDOException $e) {
-                        $message_error = "ERROR INTERNO SERVER: fallo en insercion de salidas";
-                        $description_error = $e->getMessage();
-                    }
+                    $sql_create_operacion_facturacion_detalle =
+                        "INSERT INTO operacion_facturacion_detalle
+                    (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProFin)
+                    VALUES(?, ?, ?, $cantidad, ?, ?)";
+                    $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
+                    $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
+                    $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
+                    $stmt_create_operacion_facturacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
+                    $stmt_create_operacion_facturacion_detalle->bindParam(4, $esMerProm, PDO::PARAM_BOOL);
+                    $stmt_create_operacion_facturacion_detalle->bindParam(5, $esProFin, PDO::PARAM_BOOL);
+                    $stmt_create_operacion_facturacion_detalle->execute();
                 }
-
                 $pdo->commit();
             } catch (PDOException $e) {
                 $pdo->rollBack();
@@ -264,57 +88,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // formamos la data de string de errores de validacion
             $stringErrorsValidation = implode("\n", $errorsValidation);
             // enviamos el mensaje al cliente
-            echo json_encode(["message_error" => "Error en la validacion", "description_error" => $stringErrorsValidation]);
+            $message_error = "Error en la validacion";
+            $description_error = $stringErrorsValidation;
+
             // terminamos la ejecucion del programa
             exit;
         }
     } else {
-        echo json_encode(["message_error" => "Error en la conexion", "description_error" => "No se pudo conectar con la base de datos a través de PDO"]);
+        $message_error = "Error en la conexion";
+        $description_error = "No se pudo conectar con la base de datos a través de PDO";
     }
+
+    // Retornamos el resultado
+    $return['message_error'] = $message_error;
+    $return['description_error'] = $description_error;
+    echo json_encode($return);
 }
 
 function stockSuficiente(&$items, $pdo)
 {
-    $idAlm = 1; // almacen principal
     $errors = []; // arreglo de errores
 
     foreach ($items as &$item) {
         $reference = $item["product_reference"]; // referencia del producto
-        $cantidad = $item["quantity"]; // cantidad requerida
 
         // consulta de producto stock en almacen
-        $sql_consult_stock_almacen =
-            "SELECT als.canSto, als.idProd
-        FROM almacen_stock AS als
-        JOIN producto AS p ON p.id = als.idProd
-        WHERE p.codProd = ? AND als.idAlm = ?";
+        $sql_consult_product =
+            "SELECT p.id,
+            p.esMerProm,
+            p.esProFin
+        FROM producto AS p
+        WHERE p.codProd = ?";
 
         try {
-            $stmt_consult_stock_almacen = $pdo->prepare($sql_consult_stock_almacen);
-            $stmt_consult_stock_almacen->bindParam(1, $reference, PDO::PARAM_STR);
-            $stmt_consult_stock_almacen->bindParam(2, $idAlm, PDO::PARAM_INT);
-            $stmt_consult_stock_almacen->execute();
+            $stmt_consult_product = $pdo->prepare($sql_consult_product);
+            $stmt_consult_product->bindParam(1, $reference, PDO::PARAM_STR);
+            $stmt_consult_product->execute();
 
-            $row = $stmt_consult_stock_almacen->fetch(PDO::FETCH_ASSOC);
+            $row = $stmt_consult_product->fetch(PDO::FETCH_ASSOC);
 
             // verificamos si se encontro el producto en almacen
             if ($row) {
-                $cantidadConsult = $row["canSto"]; // cantidad consultada
-                $idProdt = $row["idProd"]; // producto consultado
-
-                // si la cantidad requerida es mayor a la que se encuentra en stock
-                if ($cantidadConsult < $cantidad) {
-                    $cantidadFaltante = $cantidad - $cantidadConsult;
-                    $message_error_faltante_stock = "Falta stock en el item $reference: $cantidadFaltante";
-                    array_push($errors, $message_error_faltante_stock);
-                } else {
-                    // le agregamos el idProdt a la informacion de cada item
-                    $item["idProdt"] = $idProdt;
-                }
+                // le agregamos el idProdt a la informacion de cada item
+                $item["idProdt"] = $row["id"];
+                $item["esMerProm"] = $row["esMerProm"];
+                $item["esProFin"] = $row["esProFin"];
             }
             // en caso no se encuentre el producto en almacen
             else {
-                $message_error_producto_inexistente = "No se ha encontrado el item $reference en almacen";
+                $message_error_producto_inexistente = "No se ha encontrado el producto $reference en la base de datos";
                 array_push($errors, $message_error_producto_inexistente);
             }
         }

@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($cantidad_faltante > 0) {
 
                         $idEntStoUti = $row_entrada_disponible["id"]; // id entrada
-                        $canDisEnt = $row_entrada_disponible["canTotDis"]; // cantidad disponible
+                        $canDisEnt = intval($row_entrada_disponible["canTotDis"]); // cantidad disponible
 
                         if ($canDisEnt >= $cantidad_faltante) {
                             // añadimos a entradas utilizadas
@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     foreach ($entradasUtilizadas as $item) {
                         // OBTENEMOS LOS DATOS
                         $idEntSto = $item["idEntSto"]; // id de la entrada
-                        $canSalStoReq = $item["canSalStoReq"]; // cantidad de salida de stock
+                        $canSalStoReq = intval($item["canSalStoReq"]); // cantidad de salida de stock
                         //$canTotDis = $item["canTotDis"];
 
                         // CONSULTAMOS LA ENTRADA 
@@ -206,7 +206,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             foreach ($detSal as $detalle) {
                 $idEntStoEst = 1; // ESTADO DISPONIBLE DE LAS ENTRADAS
-                $canSalLotProd = $detalle["canSalLotProd"]; // cantidad de salida de lote de produccion
+                $canSalLotProd = intVal($detalle["canSalLotProd"]); // cantidad de salida de lote de produccion
                 $refProdc = $detalle["refProdc"]; // referencia a la produccion
                 $array_entradas_disponibles = []; // arreglo de entradas disponibles
 
@@ -239,7 +239,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         if ($cantidad_faltante > 0) {
 
                             $idEntStoUti = $row_entrada_disponible["id"]; // id entrada
-                            $canDisEnt = $row_entrada_disponible["canTotDis"]; // cantidad disponible
+                            $canDisEnt = intval($row_entrada_disponible["canTotDis"]); // cantidad disponible
                             $refProdc = $row_entrada_disponible["refProdc"]; // referencia a produccion
 
                             if ($canDisEnt >= $cantidad_faltante) {

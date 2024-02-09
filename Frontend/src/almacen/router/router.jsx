@@ -17,6 +17,7 @@ import { RouterAlmacenStock } from "./../pages/almacen/RouterAlmacenStock";
 import { RouterRequisicionMateriales } from "../pages/requisicion_materiales/RouterRequisicionMateriales";
 import { RouterSalidaVenta } from "../pages/salida_venta/RouterSalidaVenta";
 import { RouterRetornoVenta } from "../pages/retorno_venta/RouterRetornoVenta";
+import { RouterOrdenIrradiacion } from "../pages/orden_irradiacion/RouterOrdenIrradiacion";
 
 export const RouterAlmacen = [
   {
@@ -102,5 +103,10 @@ export const RouterAlmacen = [
     path: "retorno-venta",
     element: <LayoutModulo />,
     children: RouterRetornoVenta
+  },
+  {
+    path: "orden-irradiacion",
+    element: <LayoutModulo />,
+    children: RouterOrdenIrradiacion
   }
 ];

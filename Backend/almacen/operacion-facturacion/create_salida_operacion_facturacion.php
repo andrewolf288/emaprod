@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idGuiRem = $data["idRefGui"]; // identificador de guia de remision
     $invoice_serie = $data["invoice_serie"]; // serie
     $invoice_number = $data["invoice_number"]; // numero
+    $address_destination_id = $data["address_destination_id"]; // direccion de destino
     $items = $data["items"]; // arreglo de items
 
     /* Vamos a describir el procedimiento de procesamiento de guia de remision
@@ -38,44 +39,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idLastInsertion = 0; // id de la utlima insercion
             $idReqEst = 1;
 
-            // 1. primero realizamos la insercion de la operacion de factura
-            $sql_insert_operacion_facturacion =
-                "INSERT INTO operacion_facturacion (idGuiRem, idOpeFacMot, esSal, invSerFac, invNumFac, idReqEst)
-            VALUES (?, ?, ?, ?, ?, ?)";
             try {
                 $pdo->beginTransaction(); // iniciamos una operacion de transaccion
-                $stmt_insert_operacion_facturacion = $pdo->prepare($sql_insert_operacion_facturacion);
-                $stmt_insert_operacion_facturacion->bindParam(1, $idGuiRem, PDO::PARAM_INT);
-                $stmt_insert_operacion_facturacion->bindParam(2, $idOpeFacMot, PDO::PARAM_INT);
-                $stmt_insert_operacion_facturacion->bindParam(3, $esSal, PDO::PARAM_BOOL);
-                $stmt_insert_operacion_facturacion->bindParam(4, $invoice_serie, PDO::PARAM_STR);
-                $stmt_insert_operacion_facturacion->bindParam(5, $invoice_number, PDO::PARAM_STR);
-                $stmt_insert_operacion_facturacion->bindParam(6, $idReqEst, PDO::PARAM_INT);
-                $stmt_insert_operacion_facturacion->execute();
+                // si el tipo de serie es T007
+                if ($invoice_serie == "T007") {
+                    // creamos un registro en orden de irradiacion
+                    $sql_insert_orden_irradiacion =
+                        "INSERT INTO orden_irradiacion (idGuiRem, invSerFac, invNumFac, idOrdIrraEst)
+                    VALUES (?, ?, ?, ?)";
+                    $stmt_insert_orden_irradiacion = $pdo->prepare($sql_insert_orden_irradiacion);
+                    $stmt_insert_orden_irradiacion->bindParam(1, $idGuiRem, PDO::PARAM_INT);
+                    $stmt_insert_orden_irradiacion->bindParam(2, $invoice_serie, PDO::PARAM_STR);
+                    $stmt_insert_orden_irradiacion->bindParam(3, $invoice_number, PDO::PARAM_STR);
+                    $stmt_insert_orden_irradiacion->bindParam(4, $idReqEst, PDO::PARAM_INT);
+                    $stmt_insert_orden_irradiacion->execute();
 
-                // 2. Obtenemos el id de la ultima insercion
-                $idLastInsertion = $pdo->lastInsertId();
+                    // 2. Obtenemos el id de la ultima insercion
+                    $idLastInsertion = $pdo->lastInsertId();
 
-                foreach ($items as $item) {
-                    $idProdt = $item["idProdt"]; // obtenemos informacion del producto
-                    $refProdt = $item["product_reference"]; // referencia del produto
-                    $cantidad = $item["quantity"]; // cantidad requerida
-                    $esMerProm = $item["esMerProm"]; // es merma promocional
-                    $esProFin = $item["esProFin"]; // es producto final
+                    foreach ($items as $item) {
+                        $idProdt = $item["idProdt"]; // obtenemos informacion del producto
+                        $refProdt = $item["product_reference"]; // referencia del produto
+                        $cantidad = $item["quantity"]; // cantidad requerida
 
-                    $sql_create_operacion_facturacion_detalle =
-                        "INSERT INTO operacion_facturacion_detalle
-                    (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProFin)
-                    VALUES(?, ?, ?, $cantidad, ?, ?)";
-                    $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
-                    $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
-                    $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
-                    $stmt_create_operacion_facturacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
-                    $stmt_create_operacion_facturacion_detalle->bindParam(4, $esMerProm, PDO::PARAM_BOOL);
-                    $stmt_create_operacion_facturacion_detalle->bindParam(5, $esProFin, PDO::PARAM_BOOL);
-                    $stmt_create_operacion_facturacion_detalle->execute();
+                        $sql_insert_orden_irradiacion_detalle =
+                            "INSERT INTO orden_irradiacion_detalle (idOpeIrra, idProdt, refProdt, canOpeIrra)
+                            VALUES(?, ?, ?, $cantidad)";
+                        $stmt_insert_orden_irradiacion_detalle = $pdo->prepare($sql_insert_orden_irradiacion_detalle);
+                        $stmt_insert_orden_irradiacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
+                        $stmt_insert_orden_irradiacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
+                        $stmt_insert_orden_irradiacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
+                        $stmt_insert_orden_irradiacion_detalle->execute();
+                    }
+                    // commit de las consultas
+                    $pdo->commit();
+                } else {
+                    // si no tiene como destino PUNTA NEGRA
+                    if ($address_destination_id != 89) {
+                        // 1. primero realizamos la insercion de la operacion de factura
+                        $sql_insert_operacion_facturacion =
+                            "INSERT INTO operacion_facturacion (idGuiRem, idOpeFacMot, esSal, invSerFac, invNumFac, idReqEst)
+                        VALUES (?, ?, ?, ?, ?, ?)";
+                        $stmt_insert_operacion_facturacion = $pdo->prepare($sql_insert_operacion_facturacion);
+                        $stmt_insert_operacion_facturacion->bindParam(1, $idGuiRem, PDO::PARAM_INT);
+                        $stmt_insert_operacion_facturacion->bindParam(2, $idOpeFacMot, PDO::PARAM_INT);
+                        $stmt_insert_operacion_facturacion->bindParam(3, $esSal, PDO::PARAM_BOOL);
+                        $stmt_insert_operacion_facturacion->bindParam(4, $invoice_serie, PDO::PARAM_STR);
+                        $stmt_insert_operacion_facturacion->bindParam(5, $invoice_number, PDO::PARAM_STR);
+                        $stmt_insert_operacion_facturacion->bindParam(6, $idReqEst, PDO::PARAM_INT);
+                        $stmt_insert_operacion_facturacion->execute();
+
+                        // 2. Obtenemos el id de la ultima insercion
+                        $idLastInsertion = $pdo->lastInsertId();
+
+                        foreach ($items as $item) {
+                            $idProdt = $item["idProdt"]; // obtenemos informacion del producto
+                            $refProdt = $item["product_reference"]; // referencia del produto
+                            $cantidad = $item["quantity"]; // cantidad requerida
+                            $esMerProm = $item["esMerProm"]; // es merma promocional
+                            $esProFin = $item["esProFin"]; // es producto final
+
+                            $sql_create_operacion_facturacion_detalle =
+                                "INSERT INTO operacion_facturacion_detalle
+                            (idOpeFac, idProdt, refProdt, canOpeFacDet, esMerProm, esProFin)
+                            VALUES(?, ?, ?, $cantidad, ?, ?)";
+                            $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(4, $esMerProm, PDO::PARAM_BOOL);
+                            $stmt_create_operacion_facturacion_detalle->bindParam(5, $esProFin, PDO::PARAM_BOOL);
+                            $stmt_create_operacion_facturacion_detalle->execute();
+                        }
+                        // commit de las consultas
+                        $pdo->commit();
+                    }
                 }
-                $pdo->commit();
             } catch (PDOException $e) {
                 $pdo->rollBack();
                 $message_error = "Hubo un error al realizar la operacion";

@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  CircularProgress,
+  CircularProgress
 } from "@mui/material";
 import { useAuth } from "../../../hooks/useAuth";
 import { createSalidasStockAutomaticas } from "./../../helpers/lote-produccion/createSalidasStockAutomaticas";
@@ -42,7 +42,7 @@ export const ViewLoteMolienda = () => {
       klgLotProd: "",
       canLotProd: "",
       fecVenLotProd: "",
-      prodLotReq: [],
+      prodLotReq: []
     });
 
   const {
@@ -55,7 +55,7 @@ export const ViewLoteMolienda = () => {
     canLotProd,
     fecVenLotProd,
     prodLotReq,
-    numop,
+    numop
   } = produccionRequisicionDetalle;
 
   const { user } = useAuth();
@@ -65,7 +65,7 @@ export const ViewLoteMolienda = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -100,6 +100,7 @@ export const ViewLoteMolienda = () => {
   // crear salidas correspondientes
   const onCreateSalidaTotalRequisicionDetalle = async (requisicion_detalle) => {
     requisicion_detalle.numop = numop;
+    console.log(requisicion_detalle);
     // abrimos el loader
     openLoader();
     const resultPeticion = await createSalidasStockAutomaticas(
@@ -116,7 +117,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -125,7 +126,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -154,7 +155,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -163,7 +164,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -189,7 +190,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -198,7 +199,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -214,7 +215,7 @@ export const ViewLoteMolienda = () => {
     const { id } = requisicion_detalle;
     let body = {
       id: id,
-      cantidadNueva: cantidadNueva,
+      cantidadNueva: cantidadNueva
     };
     const resultPeticion = await updateProduccionDetalleRequisicion(body);
     const { message_error, description_error } = resultPeticion;
@@ -227,7 +228,7 @@ export const ViewLoteMolienda = () => {
       setfeedbackMessages({
         style_message: "success",
         feedback_description_error:
-          "Se actualizó el detalle de la requisicion con exito",
+          "Se actualizó el detalle de la requisicion con exito"
       });
       handleClickFeeback();
     } else {
@@ -236,7 +237,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -260,7 +261,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
+        feedback_description_error: "Se cumplio la requisicion exitosamente"
       });
       handleClickFeeback();
     } else {
@@ -269,7 +270,7 @@ export const ViewLoteMolienda = () => {
       // mostramos el feedback
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -308,7 +309,7 @@ export const ViewLoteMolienda = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }

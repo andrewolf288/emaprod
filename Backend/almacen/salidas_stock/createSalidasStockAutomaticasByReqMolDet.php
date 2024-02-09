@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idProdt = $data["idProdt"]; // producto (materia prima, material, insumo, etc)
     // $idAlm = $data["idAlm"]; // almacen de la transferencia (A. Principal --> A. Correspondiente)
     $idAre = $data["idAre"]; // area
-    $idAlm = 1; // almacen principal
+    // $idAlm = 1; // almacen principal
     $idAlmDes = 0; // almacen destino
     $canReqDet = floatval($data["canReqDet"]); // cantidad de requisicion detalle
     $idEstSalSto = 1; // estado de completado
@@ -56,6 +56,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             foreach ($detalleSalidaAlmacen as $detalleSalida) {
                 $idAlmacenSalidaDetalle = $detalleSalida["idAlm"]; // almacen
+                // estos productos solamente se encuentran en almacen auxiliar
+                if ($idProdt == 167 || $idProdt == 168 || $idProdt == 169 || $idProdt == 170) {
+                    $idAlmacenSalidaDetalle = 8; // salida de almacen auxiliar
+                }
                 $nomAlmacenSalidaDetalle = $detalleSalida["nomAlm"]; // almacen nomnbre
                 $canAlmacenSalidaDetalle = $detalleSalida["canSalAlm"]; // cantidad
                 $array_entradas_disponibles = []; // ARREGLO DE ENTRADAS DISPONIBLES
