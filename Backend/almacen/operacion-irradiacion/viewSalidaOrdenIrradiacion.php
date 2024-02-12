@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $idOpeIrra = $data["idOpeIrra"];
+    $idOrdIrra = $data["idOrdIrra"];
     $idEntStoEst = 1; // ESTADO DISPONIBLE DE LAS ENTRADAS
 
     if ($pdo) {
@@ -30,9 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 oi.fecCreOrdIrra
             FROM orden_irradiacion AS oi
             JOIN orden_irradiacion_estado AS oie ON oie.id = oi.idOrdIrraEst
-            WHERE of.id = ?";
+            WHERE oi.id = ?";
             $stmr_select_orden_irradiacion = $pdo->prepare($sql_select_orden_irradiacion);
-            $stmr_select_orden_irradiacion->bindParam(1, $idOpeIrra, PDO::PARAM_INT);
+            $stmr_select_orden_irradiacion->bindParam(1, $idOrdIrra, PDO::PARAM_INT);
             $stmr_select_orden_irradiacion->execute();
 
             while ($row_orden_irradiacion = $stmr_select_orden_irradiacion->fetch(PDO::FETCH_ASSOC)) {
@@ -41,24 +41,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $sql_select_orden_irradiacion_detalle =
                     "SELECT
                 oid.id,
-                oid.idOpeIrra,
+                oid.idOrdIrra,
                 oid.idProdt,
                 p.nomProd,
                 oid.refProdt,
                 oid.canOpeIrra,
                 oid.fueComSal,
-                oid.fecSalOrdIrra,
-                oid.fecCreOpeFacDet,
-                oid.fecActOpeFacDet
-                FROM operacion_facturacion_detalle AS oid
+                oid.fecSalOrdIrraDet,
+                oid.fecCreOrdIrraDet,
+                oid.fecActOrdIrraDet
+                FROM orden_irradiacion_detalle AS oid
                 JOIN producto AS p ON p.id = oid.idProdt
-                WHERE oid.idOpeIrra = ?";
+                WHERE oid.idOrdIrra = ?";
                 $stmr_select_orden_irradiacion_detalle = $pdo->prepare($sql_select_orden_irradiacion_detalle);
-                $stmr_select_orden_irradiacion_detalle->bindParam(1, $idOpeIrra, PDO::PARAM_INT);
+                $stmr_select_orden_irradiacion_detalle->bindParam(1, $idOrdIrra, PDO::PARAM_INT);
                 $stmr_select_orden_irradiacion_detalle->execute();
 
                 while ($row_orden_irradiacion_detalle = $stmr_select_orden_irradiacion_detalle->fetch(PDO::FETCH_ASSOC)) {
-                    $idOpeIrraDet = $row_orden_irradiacion_detalle["id"];
+                    $idOrdIrraDet = $row_orden_irradiacion_detalle["id"];
                     $idProdt = $row_orden_irradiacion_detalle["idProdt"];
                     $cantidad = $row_orden_irradiacion_detalle["canOpeIrra"];
                     $fueComSal = $row_orden_irradiacion_detalle["fueComSal"];
@@ -71,8 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $sql_select_movimiento_orden_irradiacion =
                             "SELECT 
                         moi.id,
-                        moi.idOpeIrra,
-                        moi.idOpeIrraDet,
+                        moi.idOrdIrra,
+                        moi.idOrdIrraDet,
                         moi.idProdt,
                         moi.idEntSto,
                         moi.idProdc,
@@ -83,10 +83,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         moi.canMovOpeIrra
                         FROM movimiento_orden_irradiacion AS moi
                         JOIN produccion AS pc ON pc.id = moi.idProdc
-                        WHERE moi.idOpeIrraDet = ?";
+                        WHERE moi.idOrdIrraDet = ?";
 
                         $stmt_select_movimiento_orden_irradiacion = $pdo->prepare($sql_select_movimiento_orden_irradiacion);
-                        $stmt_select_movimiento_orden_irradiacion->bindParam(1, $idOpeIrraDet, PDO::PARAM_INT);
+                        $stmt_select_movimiento_orden_irradiacion->bindParam(1, $idOrdIrraDet, PDO::PARAM_INT);
                         $stmt_select_movimiento_orden_irradiacion->execute();
 
                         $movimientos_orden_irradiacion = $stmt_select_movimiento_orden_irradiacion->fetchAll(PDO::FETCH_ASSOC);

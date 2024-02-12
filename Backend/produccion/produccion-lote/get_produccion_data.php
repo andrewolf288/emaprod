@@ -65,13 +65,16 @@ if (isset($_GET["id"])) {
             // Obtenemos los detalles de cada requisición
             foreach ($resultRequisiciones as &$requisicion) {
                 $idReq = $requisicion['id'];
-                $sqlDetallesRequisicion = "SELECT rd.id,p.codProd,p.codProd2, rd.idProdt, p.nomProd, me.simMed, rd.idReq, rd.idReqDetEst, rde.desReqDetEst, rd.canReqDet,
+
+                $sqlDetallesRequisicion =
+                    "SELECT rd.id,p.codProd,p.codProd2, rd.idProdt, p.nomProd, me.simMed, rd.idReq, rd.idReqDetEst, rde.desReqDetEst, rd.canReqDet,
                 rd.idProdFin as prodFCode
-                                          FROM requisicion_detalle rd
-                                          JOIN producto as p ON p.id = rd.idProdt
-                                          JOIN medida as me ON me.id = p.idMed
-                                          JOIN requisicion_detalle_estado as rde ON rde.id = rd.idReqDetEst
-                                          WHERE rd.idReq = :idReq";
+                FROM requisicion_detalle rd
+                JOIN producto as p ON p.id = rd.idProdt
+                JOIN medida as me ON me.id = p.idMed
+                JOIN requisicion_detalle_estado as rde ON rde.id = rd.idReqDetEst
+                WHERE rd.idReq = :idReq";
+
                 $stmtDetallesRequisicion = $pdo->prepare($sqlDetallesRequisicion);
                 $stmtDetallesRequisicion->bindParam(':idReq', $idReq, PDO::PARAM_INT);
                 $stmtDetallesRequisicion->execute();

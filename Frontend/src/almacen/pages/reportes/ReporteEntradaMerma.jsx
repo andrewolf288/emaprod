@@ -3,6 +3,7 @@ import { FilterProductosDynamic } from "../../../components/ReferencialesFilters
 import config from "../../../config";
 import axios from "axios";
 import FechaPickerMonthDynamic from "../../../components/Fechas/FechaPickerMonthDynamic";
+import { FilterMateriaPrimaDynamic2 } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic2";
 
 export const ReporteEntradaMerma = () => {
   const [filterData, setFilterData] = useState({
@@ -98,7 +99,7 @@ export const ReporteEntradaMerma = () => {
           <div className="col-6">
             {/* filter */}
             <label className="form-label">Producto</label>
-            <FilterProductosDynamic
+            <FilterMateriaPrimaDynamic2
               onNewInput={handleProducto}
               defaultValue={producto}
             />
