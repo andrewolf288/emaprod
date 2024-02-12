@@ -3,6 +3,7 @@ import { ListReportes } from "./ListReportes";
 import { ReporteStockTotal } from "./ReporteStockTotal";
 import { ReporteEntradaSalidaStock } from "./ReporteEntradaSalidaStock";
 import { ReporteProductoFinalLotes } from "./ReporteProductoFinalLotes";
+import { ReporteEntradaMerma } from "./ReporteEntradaMerma";
 
 export const RouterReportesAlmacen = [
   {
@@ -24,5 +25,9 @@ export const RouterReportesAlmacen = [
   {
     path: "reporte-producto-final-lotes",
     element: <ReporteProductoFinalLotes />
+  },
+  {
+    path: "reporte-entrada-merma",
+    element: <ReporteEntradaMerma />
   }
 ];

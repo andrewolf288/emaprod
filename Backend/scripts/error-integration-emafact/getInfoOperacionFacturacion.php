@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($pdo) {
         $sql_select_referral_guide =
-            "SELECT id AS idRefGui, invoice_serie, invoice_number
+            "SELECT id AS idRefGui, invoice_serie, invoice_number, address_destination_id
         FROM referral_guides 
         WHERE invoice_serie=? AND invoice_number=?";
 
@@ -30,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $result["idRefGui"] = $row_referral_guide["idRefGui"];
             $result["invoice_serie"] = $row_referral_guide["invoice_serie"];
             $result["invoice_number"] = $row_referral_guide["invoice_number"];
+            $result["address_destination_id"] = $row_referral_guide["address_destination_id"];
 
             $sql_select_referral_guide_detail =
                 "SELECT p.reference AS product_reference, rgd.quantity 
