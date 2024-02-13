@@ -11,13 +11,15 @@ import {
 } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import { createSalidaOrdenIrradiacionByDetalle } from "../../helpers/orden-irradiacion/createSalidaOrdenIrradiacionByDetalle";
+import { createIngresoOrdenIrradiacionByDetalle } from "../../helpers/orden-irradiacion/createIngresoOrdenIrradiacionByDetalle";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const ViewSalidaOrdenIrradiacion = () => {
+export const ViewOrdenIrradiacion = () => {
   // obtenemos el parametro de id de la url
   const { id: idOrdIrra } = useParams();
   const [backupdataOrdIrrad, setBackupdataOrdIrrad] = useState(null);
@@ -99,8 +101,10 @@ export const ViewSalidaOrdenIrradiacion = () => {
     const { detSal } = detalleFindElement;
 
     // mapeamos
+    let auxCanOpeIrraAct = 0;
     const dataMapCantidadLote = salidaLoteDetalle.map((element) => {
       const canSalLotProd = parseInt(element.canSalLotProdAct);
+      auxCanOpeIrraAct += canSalLotProd;
       return {
         ...element,
         canSalLotProd: canSalLotProd,
@@ -113,53 +117,8 @@ export const ViewSalidaOrdenIrradiacion = () => {
 
     const detalleAux = {
       ...detalleFindElement,
-      canOpeIrraAct: detalleFindElement.canOpeFacDet,
+      canOpeIrraAct: detalleFindElement.canOpeIrraAct + auxCanOpeIrraAct,
       detSal: detalleSalidasAgregacion
-    };
-
-    const detalleParser = detOrdIrra.map((element) => {
-      if (element.idProdt === idProdt) {
-        return {
-          ...detalleAux
-        };
-      } else {
-        return element;
-      }
-    });
-
-    setdataOrdIrrad({
-      ...dataOrdIrrad,
-      detOrdIrra: detalleParser
-    });
-  };
-
-  // editar un lote de salida de venta
-  const editLoteSalidaOrdenIrradiacion = (idProdt, refProdc, { target }) => {
-    const { value } = target;
-    // primero debemos encontrar el detalle del elemento
-    const detalleFindElement = detOrdIrra.find(
-      (element) => element.idProdt === idProdt
-    );
-
-    const { detSal } = detalleFindElement;
-    let auxTotalSalidaStock = 0;
-    const detalleSalidasUpdate = detSal.map((element) => {
-      if (element.refProdc === refProdc) {
-        auxTotalSalidaStock += parseInt(value);
-        return {
-          ...element,
-          canSalLotProd: value
-        };
-      } else {
-        auxTotalSalidaStock += parseInt(element.canSalLotProd);
-        return element;
-      }
-    });
-
-    const detalleAux = {
-      ...detalleFindElement,
-      canOpeIrraAct: auxTotalSalidaStock,
-      detSal: detalleSalidasUpdate
     };
 
     const detalleParser = detOrdIrra.map((element) => {
@@ -196,12 +155,15 @@ export const ViewSalidaOrdenIrradiacion = () => {
         return false;
       }
     });
+
+    // formamos la nueva data
     const detalleAux = {
       ...detalleFindElement,
       canOpeIrraAct: auxTotalSalidaStock,
       detSal: detalleSalidasFilter
     };
 
+    // el detalle del detalle afectado debe ser actualizado con la data formada despues de la operacion
     const detalleParser = detOrdIrra.map((element) => {
       if (element.idProdt === idProdt) {
         return {
@@ -212,14 +174,49 @@ export const ViewSalidaOrdenIrradiacion = () => {
       }
     });
 
+    // reflejamos los cambios
     setdataOrdIrrad({
       ...dataOrdIrrad,
       detOrdIrra: detalleParser
     });
   };
 
+  // esta funcion se encarga de comunicarse con el backend para hacer las entradas de productos irradiados correspondiente al detalle de orden de irradiaicon
+  const generarEntradaOrdenIrradiacionWithLotes = async (detalle) => {
+    if (detalle.fueComSal === 0) {
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: "No se realizó la salida de su detalle"
+      });
+      handleClickFeeback();
+    } else {
+      console.log(detalle);
+      const resultPeticion = await createIngresoOrdenIrradiacionByDetalle(
+        detalle
+      );
+      console.log(resultPeticion);
+      const { message_error, description_error } = resultPeticion;
+      if (message_error.length === 0) {
+        setfeedbackMessages({
+          style_message: "success",
+          feedback_description_error: "La operación se realizó con éxito"
+        });
+        handleClickFeeback();
+        // traemos de nuevo la data
+        traerInformacionOrdenIrradiacion();
+      } else {
+        setfeedbackMessages({
+          style_message: "error",
+          feedback_description_error: description_error
+        });
+        handleClickFeeback();
+      }
+    }
+  };
+
+  // esta funcion se encarga de comunicarse con el backend para hacer las salidas correspondientes por orden de irradiacion
   const generarSalidaOrdenIrradiacionWithLotes = async (detalle) => {
-    if (detalle.canOpeFacDet !== detalle.canOpeIrraAct) {
+    if (detalle.canOpeIrra !== detalle.canOpeIrraAct) {
       setfeedbackMessages({
         style_message: "warning",
         feedback_description_error:
@@ -227,23 +224,27 @@ export const ViewSalidaOrdenIrradiacion = () => {
       });
       handleClickFeeback();
     } else {
-      // const resultPeticion = await createSalidaLoteStockByDetalle(detalle);
-      // const { message_error, description_error } = resultPeticion;
-      // if (message_error.length === 0) {
-      //   setfeedbackMessages({
-      //     style_message: "success",
-      //     feedback_description_error: "La operación se realizó con éxito"
-      //   });
-      //   handleClickFeeback();
-      //   // traemos de nuevo la data
-      //   obtenerDataDetalleVenta();
-      // } else {
-      //   setfeedbackMessages({
-      //     style_message: "error",
-      //     feedback_description_error: description_error
-      //   });
-      //   handleClickFeeback();
-      // }
+      console.log(detalle);
+      const resultPeticion = await createSalidaOrdenIrradiacionByDetalle(
+        detalle
+      );
+      console.log(resultPeticion);
+      const { message_error, description_error } = resultPeticion;
+      if (message_error.length === 0) {
+        setfeedbackMessages({
+          style_message: "success",
+          feedback_description_error: "La operación se realizó con éxito"
+        });
+        handleClickFeeback();
+        // traemos de nuevo la data
+        traerInformacionOrdenIrradiacion();
+      } else {
+        setfeedbackMessages({
+          style_message: "error",
+          feedback_description_error: description_error
+        });
+        handleClickFeeback();
+      }
     }
   };
 
@@ -308,12 +309,14 @@ export const ViewSalidaOrdenIrradiacion = () => {
                 key={detalle.id}
                 index={index}
                 onDeleteSalidaStock={deleteLoteSalidaOrdenIrradiacion}
-                onUpdateSalidaStock={editLoteSalidaOrdenIrradiacion}
                 onAddSalidaStock={addLoteSalidaOrdenIrradiacion}
                 setfeedbackMessages={setfeedbackCreate}
                 handleClickFeeback={handleClickFeeback}
                 generarSalidaStockDetalle={
                   generarSalidaOrdenIrradiacionWithLotes
+                }
+                generarEntradaStockDetalle={
+                  generarEntradaOrdenIrradiacionWithLotes
                 }
               />
             ))}

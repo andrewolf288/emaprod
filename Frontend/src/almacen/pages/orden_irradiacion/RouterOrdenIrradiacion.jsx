@@ -1,6 +1,5 @@
 import { ListOrdenesIrradiacion } from "./ListOrdenesIrradiacion";
-import { ViewIngresoOrdenIrradiacion } from "./ViewIngresoOrdenIrradiacion";
-import { ViewSalidaOrdenIrradiacion } from "./ViewSalidaOrdenIrradiacion";
+import { ViewOrdenIrradiacion } from "./ViewOrdenIrradiacion";
 
 export const RouterOrdenIrradiacion = [
   {
@@ -8,11 +7,7 @@ export const RouterOrdenIrradiacion = [
     element: <ListOrdenesIrradiacion />
   },
   {
-    path: "viewSalida/:id",
-    element: <ViewSalidaOrdenIrradiacion />
-  },
-  {
-    path: "viewIngreso/:id",
-    element: <ViewIngresoOrdenIrradiacion />
+    path: "view/:id",
+    element: <ViewOrdenIrradiacion />
   }
 ];

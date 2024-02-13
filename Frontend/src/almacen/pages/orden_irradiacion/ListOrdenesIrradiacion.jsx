@@ -262,11 +262,11 @@ export const ListOrdenesIrradiacion = () => {
                               {row.desOrdIrraEst}
                             </span>
                           ) : row.idOrdIrraEst === 3 ? (
-                            <span className={"badge text-bg-success"}>
+                            <span className={"badge text-bg-danger"}>
                               {row.desOrdIrraEst}
                             </span>
                           ) : row.idOrdIrraEst === 3 ? (
-                            <span className={"badge text-bg-success"}>
+                            <span className={"badge text-bg-warning"}>
                               {row.desOrdIrraEst}
                             </span>
                           ) : (

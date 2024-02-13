@@ -39,7 +39,6 @@ function parseFecha(fecha) {
 export const RowDetalleSalidasOrdenIrradiacionDetalle = ({
   detalle,
   onDeleteSalidaStock,
-  onUpdateSalidaStock,
   onAddSalidaStock,
   setfeedbackMessages,
   handleClickFeeback
@@ -80,9 +79,6 @@ export const RowDetalleSalidasOrdenIrradiacionDetalle = ({
                 <TableCell>
                   <TextField
                     size="small"
-                    onChange={(e) => {
-                      onUpdateSalidaStock(detalle.idProdt, item.refProdc, e);
-                    }}
                     onWheel={(e) => e.target.blur()}
                     type="number"
                     name="canSalLotProd"
@@ -95,17 +91,6 @@ export const RowDetalleSalidasOrdenIrradiacionDetalle = ({
                 <TableCell>
                   {detalle.fueComSal === 0 ? (
                     <div className="btn-toolbar">
-                      {/* <IconButton
-                        aria-label="edit"
-                        size="large"
-                        color="warning"
-                        disabled={true}
-                        onClick={(e) => {
-                          setdisabledInput(!disabledInput);
-                        }}
-                      >
-                        <EditIcon fontSize="inherit" />
-                      </IconButton> */}
                       <IconButton
                         aria-label="delete"
                         size="large"

@@ -47,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 oid.refProdt,
                 oid.canOpeIrra,
                 oid.fueComSal,
+                oid.fueComIngr,
                 oid.fecSalOrdIrraDet,
                 oid.fecCreOrdIrraDet,
                 oid.fecActOrdIrraDet
@@ -67,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $array_entradas_disponibles = [];
 
                     if ($fueComSal == 1) {
-
+                        $esSal = 1;
                         $sql_select_movimiento_orden_irradiacion =
                             "SELECT 
                         moi.id,
@@ -80,13 +81,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         pc.fecProdIni,
                         pc.codProd,
                         moi.codLotProd,
-                        moi.canMovOpeIrra
+                        moi.canMovOpeIrra,
+                        moi.esSal
                         FROM movimiento_orden_irradiacion AS moi
                         JOIN produccion AS pc ON pc.id = moi.idProdc
-                        WHERE moi.idOrdIrraDet = ?";
+                        WHERE moi.idOrdIrraDet = ? AND moi.esSal = ?";
 
                         $stmt_select_movimiento_orden_irradiacion = $pdo->prepare($sql_select_movimiento_orden_irradiacion);
                         $stmt_select_movimiento_orden_irradiacion->bindParam(1, $idOrdIrraDet, PDO::PARAM_INT);
+                        $stmt_select_movimiento_orden_irradiacion->bindParam(2, $esSal, PDO::PARAM_INT);
                         $stmt_select_movimiento_orden_irradiacion->execute();
 
                         $movimientos_orden_irradiacion = $stmt_select_movimiento_orden_irradiacion->fetchAll(PDO::FETCH_ASSOC);

@@ -1,4 +1,9 @@
 import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Paper,
   Table,
@@ -9,18 +14,29 @@ import {
   TableRow
 } from "@mui/material";
 import React, { useState } from "react";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { RowDetalleSalidasOrdenIrradiacionDetalle } from "./RowDetalleSalidasOrdenIrradiacionDetalle";
+import NorthEastIcon from "@mui/icons-material/NorthEast";
+import NorthWestIcon from "@mui/icons-material/NorthWest";
+import { styled } from "@mui/material/styles";
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2)
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1)
+  }
+}));
 
 export const CardSalidaOrdenIrradiacionDetalle = ({
   detalle,
   index,
   onDeleteSalidaStock,
-  onUpdateSalidaStock,
   onAddSalidaStock,
   setfeedbackMessages,
   handleClickFeeback,
-  generarSalidaStockDetalle
+  generarSalidaStockDetalle,
+  generarEntradaStockDetalle
 }) => {
   const [mostrarDetalle, setMostrarDetalle] = useState(false);
   const toggleDetalle = () => {
@@ -75,10 +91,13 @@ export const CardSalidaOrdenIrradiacionDetalle = ({
                   <b>Cantidad requerida</b>
                 </TableCell>
                 <TableCell width={30} align="center">
-                  <b>Cantidad actual</b>
+                  <b>Cantidad salida</b>
                 </TableCell>
                 <TableCell width={30} align="center">
                   <b>Estado salida</b>
+                </TableCell>
+                <TableCell width={30} align="center">
+                  <b>Estado ingreso</b>
                 </TableCell>
                 <TableCell width={30} align="center">
                   <b>Acciones</b>
@@ -110,17 +129,35 @@ export const CardSalidaOrdenIrradiacionDetalle = ({
                   )}
                 </TableCell>
                 <TableCell align="center">
-                  <IconButton
-                    aria-label="edit"
-                    size="large"
-                    disabled={detalle.fueComSal === 1 ? true : false}
-                    color="success"
-                    onClick={(e) => {
-                      generarSalidaStockDetalle(detalle);
-                    }}
-                  >
-                    <CheckCircleIcon fontSize="inherit" />
-                  </IconButton>
+                  {detalle.fueComIngr == 0 ? (
+                    <span className={"badge text-bg-danger"}>Requerido</span>
+                  ) : (
+                    <span className={"badge text-bg-success"}>Completo</span>
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  <div className="btn-toolbar">
+                    <DialogConfirmacionOperacionOrdenIrradiacion
+                      detalle={detalle}
+                      disabled={detalle.fueComSal === 1 ? true : false}
+                      onConfirmOperation={generarSalidaStockDetalle}
+                      title="Salida detalle orden de irradiacion"
+                      message="¿Estas seguro de realizar la salida de este detalle?"
+                      operation="OUTPUT"
+                    />
+                    <DialogConfirmacionOperacionOrdenIrradiacion
+                      detalle={detalle}
+                      disabled={
+                        detalle.fueComIngr === 1 || detalle.fueComSal === 0
+                          ? true
+                          : false
+                      }
+                      onConfirmOperation={generarEntradaStockDetalle}
+                      title="Ingreso detalle orden de irradiacion"
+                      message="¿Estas seguro de realizar el ingreso de este detalle?"
+                      operation="INPUT"
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -130,13 +167,83 @@ export const CardSalidaOrdenIrradiacionDetalle = ({
           <RowDetalleSalidasOrdenIrradiacionDetalle
             detalle={detalle}
             onDeleteSalidaStock={onDeleteSalidaStock}
-            onUpdateSalidaStock={onUpdateSalidaStock}
             onAddSalidaStock={onAddSalidaStock}
             setfeedbackMessages={setfeedbackMessages}
             handleClickFeeback={handleClickFeeback}
           />
         )}
       </div>
+    </div>
+  );
+};
+
+const DialogConfirmacionOperacionOrdenIrradiacion = ({
+  detalle,
+  onConfirmOperation,
+  disabled,
+  title = "",
+  message = "",
+  operation = ""
+}) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <IconButton
+        aria-label="edit"
+        size="large"
+        disabled={disabled}
+        color="primary"
+        onClick={handleClickOpen}
+      >
+        {operation === "OUTPUT" ? (
+          <NorthEastIcon fontSize="inherit" />
+        ) : (
+          <NorthWestIcon fontSize="inherit" />
+        )}
+      </IconButton>
+      <BootstrapDialog
+        maxWidth={"lg"}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          {/* Salida orden irradiación detalle */}
+          {title}
+        </DialogTitle>
+        <DialogContent dividers>
+          {/* <b>¿Estas seguro de realizar la salida del detalle?</b> */}
+          <b>{message}</b>
+          <p className="d-block mb-2">
+            {`Cantidad salida: ${detalle.canOpeIrra}`}
+          </p>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Cerrar
+          </Button>
+          <Button
+            color="error"
+            autoFocus
+            onClick={() => {
+              // terminamos de procesar la salida parcial
+              onConfirmOperation(detalle);
+              // cerramos el cuadro de dialogo
+              handleClose();
+            }}
+          >
+            Aceptar
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
     </div>
   );
 };
