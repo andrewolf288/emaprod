@@ -1,4 +1,9 @@
 import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Paper,
   Table,
@@ -11,6 +16,16 @@ import {
 import React, { useState } from "react";
 import { RowDetalleSalidasVentaDetalle } from "./RowDetalleSalidasVentaDetalle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { styled } from "@mui/material/styles";
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2)
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1)
+  }
+}));
 
 export const CardSalidaVentaDetalle = ({
   detalle,
@@ -78,7 +93,7 @@ export const CardSalidaVentaDetalle = ({
                 </TableCell>
                 {detalle.esMerProm === 0 && (
                   <TableCell width={30} align="center">
-                    <b>Cantidad actual</b>
+                    <b>Cantidad salida</b>
                   </TableCell>
                 )}
                 <TableCell width={30} align="center">
@@ -116,17 +131,11 @@ export const CardSalidaVentaDetalle = ({
                   )}
                 </TableCell>
                 <TableCell align="center">
-                  <IconButton
-                    aria-label="edit"
-                    size="large"
+                  <DialogConfirmacionOperacionSalidaVenta
+                    detalle={detalle}
                     disabled={detalle.fueComDet === 1 ? true : false}
-                    color="success"
-                    onClick={(e) => {
-                      generarSalidaStockDetalle(detalle);
-                    }}
-                  >
-                    <CheckCircleIcon fontSize="inherit" />
-                  </IconButton>
+                    onConfirmOperation={generarSalidaStockDetalle}
+                  />
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -143,6 +152,70 @@ export const CardSalidaVentaDetalle = ({
           />
         )}
       </div>
+    </div>
+  );
+};
+
+const DialogConfirmacionOperacionSalidaVenta = ({
+  detalle,
+  onConfirmOperation,
+  disabled
+}) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <IconButton
+        aria-label="edit"
+        size="large"
+        disabled={disabled}
+        color="success"
+        onClick={handleClickOpen}
+      >
+        <CheckCircleIcon fontSize="inherit" />
+      </IconButton>
+      <BootstrapDialog
+        maxWidth={"lg"}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          {/* Salida orden irradiación detalle */}
+          Salida detalle de venta
+        </DialogTitle>
+        <DialogContent dividers>
+          {/* <b>¿Estas seguro de realizar la salida del detalle?</b> */}
+          <b>¿Estas seguro de realizar la salida de este detalle?</b>
+          <p className="d-block mb-2">
+            {`Cantidad salida: ${detalle.canOpeFacDet}`}
+          </p>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Cerrar
+          </Button>
+          <Button
+            color="error"
+            autoFocus
+            onClick={() => {
+              // terminamos de procesar la salida parcial
+              onConfirmOperation(detalle);
+              // cerramos el cuadro de dialogo
+              handleClose();
+            }}
+          >
+            Aceptar
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
     </div>
   );
 };
