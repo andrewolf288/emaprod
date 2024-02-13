@@ -281,7 +281,7 @@ export const ListOrdenesIrradiacion = () => {
                             <button
                               onClick={() => {
                                 window.open(
-                                  `/almacen/orden-irradiacion/viewSalida/${row.id}`,
+                                  `/almacen/orden-irradiacion/view/${row.id}`,
                                   "_blank"
                                 );
                               }}
