@@ -4,30 +4,36 @@ import { HomeProduccion } from "./../pages/HomeProduccion";
 import { RouterProduccionLote } from "./../pages/produccion_lote/RouterProduccionLote";
 import { RouterFormulaPorProducto } from "./../pages/formulas_por_productos/RouterFormulaPorProducto";
 import { RouterRequisicionMateriales } from "../pages/requisicion-materiales/RouterRequisicionMateriales";
+import { RouterRequisicionTransformacion } from "../pages/requisicion-transformacion/RouterRequisicionTransformacion";
 
 export const RouterProduccion = [
   {
     path: "",
-    element: <HomeProduccion />,
+    element: <HomeProduccion />
   },
   {
     path: "produccion-lote",
     element: <LayoutModulo />,
-    children: RouterProduccionLote,
+    children: RouterProduccionLote
   },
   {
     path: "formula",
     element: <LayoutModulo />,
-    children: RouterMoliendaFormula,
+    children: RouterMoliendaFormula
   },
   {
     path: "formula-producto",
     element: <LayoutModulo />,
-    children: RouterFormulaPorProducto,
+    children: RouterFormulaPorProducto
   },
   {
     path: "requisicion-materiales",
     element: <LayoutModulo />,
-    children: RouterRequisicionMateriales,
+    children: RouterRequisicionMateriales
   },
+  {
+    path: "requisicion-transformacion",
+    element: <LayoutModulo />,
+    children: RouterRequisicionTransformacion
+  }
 ];
