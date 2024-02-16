@@ -5,7 +5,7 @@ import {
   Text,
   View,
   Document,
-  Image,
+  Image
 } from "@react-pdf/renderer";
 import logo from "../emaran.png";
 import { DetalleOrden } from "./DetalleOrden";
@@ -13,7 +13,7 @@ import { stylesPDF } from "./stylePDF";
 
 const styles = stylesPDF;
 
-export const PDFExample = ({ data, show }) => {
+export const PDFExample = ({ result }) => {
   return (
     <PDFViewer width="100%" height="100%">
       <Document>
@@ -23,7 +23,7 @@ export const PDFExample = ({ data, show }) => {
             ...styles.page,
             marginTop: 20,
             paddingTop: 20,
-            paddingBottom: 40,
+            paddingBottom: 40
           }}
         >
           <View style={styles.section}>
@@ -43,10 +43,10 @@ export const PDFExample = ({ data, show }) => {
                     fontSize: 9,
                     maxWidth: "50%",
                     marginBottom: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
-                  Producto Intermedio: {data.result.produccion.nomProd}
+                  Producto Intermedio: {result.produccion.nomProd}
                 </Text>
                 <Text
                   style={{
@@ -55,11 +55,10 @@ export const PDFExample = ({ data, show }) => {
                     fontSize: 9,
                     maxWidth: "50%",
                     marginBottom: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
-                  Fecha de Inicio Programado:{" "}
-                  {data.result.produccion.fecProdIniProg}
+                  Fecha de Inicio Programado: {result.produccion.fecProdIniProg}
                 </Text>
                 ,
                 <Text
@@ -69,11 +68,10 @@ export const PDFExample = ({ data, show }) => {
                     fontSize: 9,
                     maxWidth: "50%",
                     marginBottom: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
-                  Fecha de Fin Programado:{" "}
-                  {data.result.produccion.fecProdFinProg}
+                  Fecha de Fin Programado: {result.produccion.fecProdFinProg}
                 </Text>
                 <Text
                   style={{
@@ -82,11 +80,10 @@ export const PDFExample = ({ data, show }) => {
                     fontSize: 9,
                     maxWidth: "50%",
                     marginBottom: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
-                  Fecha de Vencimiento Lt:{" "}
-                  {data.result.produccion.fecVenLotProd}
+                  Fecha de Vencimiento Lt: {result.produccion.fecVenLotProd}
                 </Text>
                 <Text
                   style={{
@@ -95,7 +92,7 @@ export const PDFExample = ({ data, show }) => {
                     maxWidth: "50%",
                     marginBottom: 2,
                     marginTop: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
                   Observaciones
@@ -110,7 +107,7 @@ export const PDFExample = ({ data, show }) => {
                     borderColor: "#000",
                     height: 25,
                     marginTop: 2,
-                    marginLeft: 20,
+                    marginLeft: 20
                   }}
                 >
                   <Text
@@ -123,10 +120,10 @@ export const PDFExample = ({ data, show }) => {
                       inlineSize: "50px",
                       overflowWrap: "break-word",
                       maxWidth: 275,
-                      maxHeight: 275,
+                      maxHeight: 275
                     }}
                   >
-                    {data.result.produccion.obsProd}
+                    {result.produccion.obsProd}
                   </Text>
                 </View>
               </View>
@@ -142,7 +139,7 @@ export const PDFExample = ({ data, show }) => {
                       marginBottom: 1,
                       backgroundColor: "#d8dbe3",
                       padding: 5,
-                      marginRight: 20,
+                      marginRight: 20
                     }}
                   >
                     ORDEN DE PROCESO
@@ -151,17 +148,17 @@ export const PDFExample = ({ data, show }) => {
                     style={{
                       ...styles.row,
                       justifyContent: "center",
-                      alignItems: "center",
+                      alignItems: "center"
                     }}
                   >
                     <Text
                       style={{
                         ...styles.gridContent,
                         marginLeft: 50,
-                        marginTop: 10,
+                        marginTop: 10
                       }}
                     >
-                      {data.result.produccion.numop}
+                      {result.produccion.numop}
                     </Text>
                   </View>
 
@@ -173,7 +170,7 @@ export const PDFExample = ({ data, show }) => {
                       width: 220,
                       height: 70,
                       borderRadius: 5,
-                      marginRight: 20,
+                      marginRight: 20
                     }}
                   >
                     <Text
@@ -181,10 +178,10 @@ export const PDFExample = ({ data, show }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 7,
-                        maxWidth: "100%",
+                        maxWidth: "100%"
                       }}
                     >
-                      Tipo de Producción: {data.result.produccion.desProdTip}
+                      Tipo de Producción: {result.produccion.desProdTip}
                     </Text>
 
                     <Text
@@ -192,22 +189,21 @@ export const PDFExample = ({ data, show }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%",
+                        maxWidth: "100%"
                       }}
                     >
-                      Número de Lote: {data.result.produccion.codLotProd}
+                      Número de Lote: {result.produccion.codLotProd}
                     </Text>
                     <Text
                       style={{
                         ...styles.content,
                         marginLeft: 10,
-                        marginTop: 4,
+                        marginTop: 4
                       }}
                     >
                       Peso Total de Lote:{" "}
-                      {parseFloat(data.result.produccion.canLotProd).toFixed(
-                        2
-                      ) + " KG"}
+                      {parseFloat(result.produccion.canLotProd).toFixed(2) +
+                        " KG"}
                     </Text>
 
                     <Text
@@ -215,12 +211,12 @@ export const PDFExample = ({ data, show }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%",
+                        maxWidth: "100%"
                       }}
                     >
                       Peso Programado:{" "}
                       {parseFloat(
-                        data.result.produccion.klgTotalLoteProduccion
+                        result.produccion.klgTotalLoteProduccion
                       ).toFixed(2) + " KG"}
                     </Text>
                   </View>
@@ -231,16 +227,16 @@ export const PDFExample = ({ data, show }) => {
                       marginLeft: 130,
                       marginTop: -10,
                       maxWidth: "100%",
-                      fontSize: 5,
+                      fontSize: 5
                     }}
                   >
-                    Fecha de Creación: {data.result.produccion.fecCreProd}
+                    Fecha de Creación: {result.produccion.fecCreProd}
                   </Text>
                 </View>
               </View>
             </View>
 
-            {<DetalleOrden data={data} />}
+            {<DetalleOrden result={result} />}
           </View>
         </Page>
       </Document>

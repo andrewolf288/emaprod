@@ -2,10 +2,10 @@ import React from "react";
 import { Text, View } from "@react-pdf/renderer";
 import { stylesPDF } from "./stylePDF";
 import { _parseInt } from "../../../utils/functions/ParseInt";
+const styles = stylesPDF;
 
-export const DetalleOrden = ({ data }) => {
+export const DetalleOrden = ({ result }) => {
   // importamos los estilos
-  const styles = stylesPDF;
   return (
     <>
       <View>
@@ -15,7 +15,7 @@ export const DetalleOrden = ({ data }) => {
             fontWeight: "bold",
             fontSize: 7,
             marginLeft: -450,
-            marginTop: -2,
+            marginTop: -2
           }}
         >
           Producto Final
@@ -30,7 +30,7 @@ export const DetalleOrden = ({ data }) => {
                 style={{
                   ...styles.gridTitle,
                   flex: 4,
-                  textAlign: "center",
+                  textAlign: "center"
                 }}
               >
                 Descripción de Item
@@ -38,12 +38,12 @@ export const DetalleOrden = ({ data }) => {
               <Text style={styles.gridTitle}>U.M</Text>
               <Text style={styles.gridTitle}>Cantidad</Text>
             </View>
-            {data.result.productos_finales?.map((producto, index) => (
+            {result.productos_finales?.map((producto, index) => (
               <View
                 key={index}
                 style={[
                   styles.gridRow,
-                  index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {},
+                  index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {}
                 ]}
               >
                 <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
@@ -59,7 +59,7 @@ export const DetalleOrden = ({ data }) => {
                   style={{
                     ...styles.gridContent_p,
                     flex: 4,
-                    textAlign: "left",
+                    textAlign: "left"
                   }}
                 >
                   {producto.nomProd}
@@ -80,7 +80,7 @@ export const DetalleOrden = ({ data }) => {
             fontWeight: "bold",
             fontSize: 7,
             marginLeft: -440,
-            marginTop: -12,
+            marginTop: -12
           }}
         >
           Detalle Envasado
@@ -97,7 +97,7 @@ export const DetalleOrden = ({ data }) => {
                   textAlign: "center",
                   fontSize: 7,
                   //border: "1px solid black",
-                  maxWidth: "40px",
+                  maxWidth: "40px"
                 }}
               >
                 Código
@@ -106,7 +106,7 @@ export const DetalleOrden = ({ data }) => {
                 style={{
                   ...styles.gridTitle,
                   flex: 4,
-                  textAlign: "center",
+                  textAlign: "center"
                   //border: "1px solid black",
                 }}
               >
@@ -117,7 +117,7 @@ export const DetalleOrden = ({ data }) => {
                   flex: 1,
                   textAlign: "center",
                   fontSize: 7,
-                  maxWidth: "30px",
+                  maxWidth: "30px"
                   //border: "1px solid black",
                 }}
               >
@@ -130,7 +130,7 @@ export const DetalleOrden = ({ data }) => {
                   textAlign: "center",
                   fontSize: 7,
                   //border: "1px solid black",
-                  maxWidth: "40px",
+                  maxWidth: "40px"
                 }}
               >
                 Cantidad
@@ -142,20 +142,20 @@ export const DetalleOrden = ({ data }) => {
                   textAlign: "center",
                   fontSize: 7,
                   //border: "1px solid black",
-                  maxWidth: "40px",
+                  maxWidth: "40px"
                 }}
               >
                 Total
               </Text>
             </View>
-            {data.result?.requisiciones
+            {result?.requisiciones
               ?.find((req) => req.desAre === "Envasado")
               ?.detalles?.map((detalle, index) => (
                 <View
                   key={index}
                   style={[
                     styles.gridRow,
-                    index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {},
+                    index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {}
                   ]}
                 >
                   <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
@@ -170,7 +170,7 @@ export const DetalleOrden = ({ data }) => {
                       textAlign: "center",
                       fontSize: 5.5,
                       //border: "1px solid black",
-                      maxWidth: "40px",
+                      maxWidth: "40px"
                     }}
                   >
                     {detalle.codProd2}
@@ -179,7 +179,7 @@ export const DetalleOrden = ({ data }) => {
                     style={{
                       ...styles.gridContent_p,
                       flex: 4,
-                      textAlign: "left",
+                      textAlign: "left"
                       //border: "1px solid black",
                     }}
                   >
@@ -190,7 +190,7 @@ export const DetalleOrden = ({ data }) => {
                       flex: 1,
                       textAlign: "center",
                       fontSize: 5.5,
-                      maxWidth: "25px",
+                      maxWidth: "25px"
                       //border: "1px solid black",
                     }}
                   >
@@ -202,7 +202,7 @@ export const DetalleOrden = ({ data }) => {
                       flex: 1,
                       textAlign: "center",
                       fontSize: 6.5,
-                      maxWidth: "40px",
+                      maxWidth: "40px"
                       //border: "1px solid black",
                     }}
                   >
@@ -213,7 +213,7 @@ export const DetalleOrden = ({ data }) => {
                       flex: 1,
                       textAlign: "center",
                       fontSize: 6.5,
-                      maxWidth: "40px",
+                      maxWidth: "40px"
                       //border: "1px solid black",
                     }}
                   >
@@ -224,7 +224,7 @@ export const DetalleOrden = ({ data }) => {
           </View>
         </View>
 
-        {data.result?.requisiciones?.find((req) => req.desAre === "Envasado")
+        {result?.requisiciones?.find((req) => req.desAre === "Envasado")
           ?.resumenProductos?.length && (
           <>
             <Text
@@ -233,7 +233,7 @@ export const DetalleOrden = ({ data }) => {
                 fontWeight: "bold",
                 fontSize: 7,
                 marginLeft: -410,
-                marginTop: -12,
+                marginTop: -12
               }}
             >
               Acumulacion de envasado
@@ -246,7 +246,7 @@ export const DetalleOrden = ({ data }) => {
                     style={{
                       ...styles.gridTitle,
                       flex: 4,
-                      textAlign: "left",
+                      textAlign: "left"
                     }}
                   >
                     Descripción de Item
@@ -254,14 +254,14 @@ export const DetalleOrden = ({ data }) => {
                   <Text style={styles.gridTitle}>U.M</Text>
                   <Text style={styles.gridTitle}>Total</Text>
                 </View>
-                {data.result?.requisiciones
+                {result?.requisiciones
                   ?.find((req) => req.desAre === "Envasado")
                   ?.resumenProductos.map((detalle, index) => (
                     <View
                       key={index}
                       style={[
                         styles.gridRow,
-                        ...[{ backgroundColor: "#a4a8b0" }],
+                        ...[{ backgroundColor: "#a4a8b0" }]
                       ]}
                     >
                       <Text style={styles.gridContent_p}>
@@ -271,7 +271,7 @@ export const DetalleOrden = ({ data }) => {
                         style={{
                           ...styles.gridContent_p,
                           flex: 4,
-                          textAlign: "left",
+                          textAlign: "left"
                         }}
                       >
                         {detalle.nomProd}
@@ -293,7 +293,7 @@ export const DetalleOrden = ({ data }) => {
             fontWeight: "bold",
             fontSize: 7,
             marginLeft: -440,
-            marginTop: -12,
+            marginTop: -12
           }}
         >
           Detalle Encajado
@@ -310,7 +310,7 @@ export const DetalleOrden = ({ data }) => {
                   textAlign: "center",
                   fontSize: 7,
                   // border: "1px solid black",
-                  maxWidth: "40px",
+                  maxWidth: "40px"
                 }}
               >
                 Código
@@ -319,7 +319,7 @@ export const DetalleOrden = ({ data }) => {
                 style={{
                   ...styles.gridTitle,
                   flex: 4,
-                  textAlign: "center",
+                  textAlign: "center"
                   //border: "1px solid black",
                 }}
               >
@@ -330,7 +330,7 @@ export const DetalleOrden = ({ data }) => {
                   flex: 1,
                   textAlign: "center",
                   fontSize: 7,
-                  maxWidth: "30px",
+                  maxWidth: "30px"
                   //border: "1px solid black",
                 }}
               >
@@ -343,7 +343,7 @@ export const DetalleOrden = ({ data }) => {
                   textAlign: "center",
                   fontSize: 7,
                   //border: "1px solid black",
-                  maxWidth: "40px",
+                  maxWidth: "40px"
                 }}
               >
                 Cantidad
@@ -355,20 +355,20 @@ export const DetalleOrden = ({ data }) => {
                   textAlign: "center",
                   fontSize: 7,
                   //border: "1px solid black",
-                  maxWidth: "40px",
+                  maxWidth: "40px"
                 }}
               >
                 Total
               </Text>
             </View>
-            {data.result.requisiciones
+            {result.requisiciones
               .find((req) => req.desAre === "Encajado")
               ?.detalles?.map((detalle, index) => (
                 <View
                   key={index}
                   style={[
                     styles.gridRow,
-                    index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {},
+                    index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {}
                   ]}
                 >
                   <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
@@ -383,7 +383,7 @@ export const DetalleOrden = ({ data }) => {
                       textAlign: "center",
                       fontSize: 5.5,
                       //border: "1px solid black",
-                      maxWidth: "40px",
+                      maxWidth: "40px"
                     }}
                   >
                     {detalle.codProd2}
@@ -392,7 +392,7 @@ export const DetalleOrden = ({ data }) => {
                     style={{
                       ...styles.gridContent_p,
                       flex: 4,
-                      textAlign: "left",
+                      textAlign: "left"
                       //border: "1px solid black",
                     }}
                   >
@@ -403,7 +403,7 @@ export const DetalleOrden = ({ data }) => {
                       flex: 1,
                       textAlign: "center",
                       fontSize: 5.5,
-                      maxWidth: "25px",
+                      maxWidth: "25px"
                       //border: "1px solid black",
                     }}
                   >
@@ -415,7 +415,7 @@ export const DetalleOrden = ({ data }) => {
                       flex: 1,
                       textAlign: "center",
                       fontSize: 6.5,
-                      maxWidth: "40px",
+                      maxWidth: "40px"
                       //border: "1px solid black",
                     }}
                   >
@@ -426,7 +426,7 @@ export const DetalleOrden = ({ data }) => {
                       flex: 1,
                       textAlign: "center",
                       fontSize: 6.5,
-                      maxWidth: "40px",
+                      maxWidth: "40px"
                       //border: "1px solid black",
                     }}
                   >
@@ -437,7 +437,7 @@ export const DetalleOrden = ({ data }) => {
           </View>
         </View>
 
-        {data.result?.requisiciones?.find((req) => req.desAre === "Encajado")
+        {result?.requisiciones?.find((req) => req.desAre === "Encajado")
           ?.resumenProductos?.length && (
           <>
             <Text
@@ -446,7 +446,7 @@ export const DetalleOrden = ({ data }) => {
                 fontWeight: "bold",
                 fontSize: 7,
                 marginLeft: -410,
-                marginTop: -12,
+                marginTop: -12
               }}
             >
               Acumulacion de Encajado
@@ -459,7 +459,7 @@ export const DetalleOrden = ({ data }) => {
                     style={{
                       ...styles.gridTitle,
                       flex: 4,
-                      textAlign: "center",
+                      textAlign: "center"
                     }}
                   >
                     Descripción de Item
@@ -467,14 +467,14 @@ export const DetalleOrden = ({ data }) => {
                   <Text style={styles.gridTitle}>U.M</Text>
                   <Text style={styles.gridTitle}>Total</Text>
                 </View>
-                {data.result?.requisiciones
+                {result?.requisiciones
                   ?.find((req) => req.desAre === "Encajado")
                   ?.resumenProductos.map((detalle, index) => (
                     <View
                       key={index}
                       style={[
                         styles.gridRow,
-                        ...[{ backgroundColor: "#a4a8b0" }],
+                        ...[{ backgroundColor: "#a4a8b0" }]
                       ]}
                     >
                       <Text style={styles.gridContent_p}>
@@ -484,7 +484,7 @@ export const DetalleOrden = ({ data }) => {
                         style={{
                           ...styles.gridContent_p,
                           flex: 4,
-                          textAlign: "left",
+                          textAlign: "left"
                         }}
                       >
                         {detalle.nomProd}
