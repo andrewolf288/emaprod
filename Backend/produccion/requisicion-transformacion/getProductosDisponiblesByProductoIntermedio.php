@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         "SELECT 
     fptd.idForProdFin,
     fpt.idProdFin,
+    fptd.canForProDet as canForProdInt,
     p.nomProd
     FROM formula_producto_terminado_detalle AS fptd
     JOIN formula_producto_terminado AS fpt ON fpt.id = fptd.idForProdFin
@@ -37,10 +38,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         fptd.id,
         fptd.idForProdFin,
         fptd.idProd,
+        fptd.idAre,
         p.nomProd,
+        me.simMed,
         fptd.canForProDet
         FROM formula_producto_terminado_detalle AS fptd
         JOIN producto AS p ON p.id = fptd.idProd
+        JOIN medida AS me ON p.idMed = me.id
         WHERE fptd.idForProdFin = ?";
         $stmt_select_formula_detalle = $pdo->prepare($sql_select_formula_detalle);
         $stmt_select_formula_detalle->bindParam(1, $idForProdFin, PDO::PARAM_INT);

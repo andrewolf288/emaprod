@@ -1,6 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FilterProductoProduccionDynamic } from "../../../components/ReferencialesFilters/Producto/FilterProductoProduccionDynamic";
-import { Snackbar, Typography } from "@mui/material";
+import {
+  Paper,
+  Snackbar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { ComponentSearchLotesDisponibles } from "../../components/componentes-transdormacion/ComponentSearchLotesDisponibles";
 import { getProductosDisponiblesByLote } from "../../helpers/requisicion-transformacion/getProductosDisponiblesByLote";
@@ -10,11 +20,53 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
+import { RowDevolucionLoteProduccionEdit } from "../../../almacen/pages/devoluciones/RowDevolucionLoteProduccionEdit";
+import { RowEditDetalleRequisicionProduccion } from "../../components/componentes-lote-produccion/RowEditDetalleRequisicionProduccion";
+import { useNavigate } from "react-router-dom";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
+// para parsear las cantidades de las devoluciones
+function parseIntCantidad(str, property) {
+  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(2);
+  let index = str.canReqProdLot.toString().indexOf(".");
+  let result = str.canReqProdLot.toString().substring(index + 1);
+  let val =
+    parseInt(result) >= 1 && str.simMed !== "KGM"
+      ? Math.trunc(str.canReqProdLot) + 1
+      : str.canReqProdLot;
+  return val;
+}
+
+// se encarga de redondear los valores de las requisiciones
+function _parseInt(str) {
+  if (str.canReqProdLot) {
+    str.canReqDet = str.canReqProdLot;
+  }
+
+  if (str.canTotProgProdFin) {
+    str.canReqDet = str.canTotProgProdFin;
+  }
+  str.canReqDet = parseFloat(str.canReqDet).toFixed(2);
+  let index = str.canReqDet.toString().indexOf(".");
+  let result = str.canReqDet.toString().substring(index + 1);
+  //console.log("index: ",index, "result: ", result)
+  let val =
+    parseInt(result) >= 1 && str.simMed !== "KGM"
+      ? Math.trunc(str.canReqDet) + 1
+      : str.canReqDet;
+  return val;
+}
+
+// para poder validar las requisicion
+function onValidate(e) {
+  var t = e.value;
+  e.value = t.indexOf(".") >= 0 ? t.slice(0, t.indexOf(".") + 3) : t;
+  return e.value;
+}
 
 export const CreateRequisicionTransformacion = () => {
   // data productos finales por lote
@@ -55,6 +107,38 @@ export const CreateRequisicionTransformacion = () => {
     canPesProdtDes
   } = requisicionTransformacion;
 
+  // salida de producto transformado
+  const [salidaProductoTransformado, setSalidaProductoTransformado] = useState({
+    idProdt: 0,
+    canSalTran: 0
+  });
+  // requisicion de devolucion
+  const [
+    requisicionDevolucionTransformacion,
+    setRequisicionDevolucionTransformacion
+  ] = useState({
+    idProdt: 0,
+    canDevUnd: 0,
+    canDevPes: 0,
+    detDev: []
+  });
+  // requisicion de materiales
+  const [
+    requisicionMaterialesTransformacion,
+    setRequisicionMaterialesTransformacion
+  ] = useState({
+    idProdt: 0,
+    canReqUnd: 0,
+    canReqPes: 0,
+    detReq: []
+  });
+
+  // ESTADOS PARA LA NAVEGACION
+  const navigate = useNavigate();
+  const onNavigateBack = () => {
+    navigate(-1);
+  };
+
   // ESTADO PARA CONTROLAR EL FEEDBACK
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
@@ -86,16 +170,29 @@ export const CreateRequisicionTransformacion = () => {
   // cambiar producto origen
   const onAddProductoFinalOrigen = (event) => {
     const { target } = event;
-    console.log(target.value);
-    setRequisicionTransformacion({
-      ...requisicionTransformacion,
-      idProdtOri: target.value
-    });
     // buscamos el elemento de origen
     const valueFind = productosFinalesDisponiblesLote.find(
-      (element) => element.idProd === target.value
+      (element) => element.idProd == target.value
     );
     setValueProductoOrigenSeleccionado(valueFind);
+    // debemos colocar su valor de cantidad unidades y cantidad de peso
+    // cantidad en unidades
+    const cantidadUnidades = valueFind["canTotDis"];
+    const { detFor } = valueFind;
+    const valueFindProductoIntermedio = detFor.find(
+      (element) => element.idAre != 6 && element.idAre != 5
+    );
+    const pesoPorUnidad = parseFloat(
+      valueFindProductoIntermedio["canForProDet"]
+    );
+    const pesoTotal = cantidadUnidades * pesoPorUnidad;
+    console.log(cantidadUnidades, pesoPorUnidad);
+    setRequisicionTransformacion({
+      ...requisicionTransformacion,
+      canUndProdtOri: cantidadUnidades,
+      canPesProdtOri: pesoTotal,
+      idProdtOri: target.value
+    });
   };
 
   // cambiar producto destino
@@ -104,22 +201,19 @@ export const CreateRequisicionTransformacion = () => {
     console.log(target.value);
     setRequisicionTransformacion({
       ...requisicionTransformacion,
-      idProdtDes: target.value
+      idProdtDes: target.value,
+      canUndProdtDes: 0,
+      canPesProdtDes: 0
     });
     // buscamos el elemento de origen
     const valueFind = productosFinalesDisponiblesProductoIntermedio.find(
-      (element) => element.idProdFin === target.value
+      (element) => element.idProdFin == target.value
     );
     setValueProductoDestinoSeleccionado(valueFind);
   };
+
   // funcion que selecciona un lote de produccion y trae sus productos finales disponibles
-  const onAddLoteProduccion = async (idProdc) => {
-    console.log(idProdc);
-    // primero seteamos el valor
-    setRequisicionTransformacion({
-      ...requisicionTransformacion,
-      idProdc: idProdc
-    });
+  const onAddLoteProduccion = async (idProdc, lote) => {
     // ahora debemos consultar los productos finales por lote
     const resultPeticionA = await getProductosDisponiblesByLote(idProdc);
     const {
@@ -128,7 +222,6 @@ export const CreateRequisicionTransformacion = () => {
       description_error: description_errorA
     } = resultPeticionA;
     if (message_errorA.length === 0) {
-      console.log(resultA);
       setProductosFinalesDisponiblesLote(resultA);
       // reset producto destino
       resetProductoOrigen();
@@ -140,7 +233,6 @@ export const CreateRequisicionTransformacion = () => {
       handleClickFeeback();
     }
 
-    console.log(idProdtInt);
     // ahora debemos consultar los posibles productos finales por producto intermedio
     const resultPeticionB = await getProductosDisponiblesByProductoIntermedio(
       idProdtInt
@@ -162,29 +254,333 @@ export const CreateRequisicionTransformacion = () => {
       });
       handleClickFeeback();
     }
+
+    // seteamos los valores
+    setRequisicionTransformacion({
+      ...requisicionTransformacion,
+      idProdc: idProdc,
+      codLotProd: lote,
+      idProdtOri: 0,
+      idProdtDes: 0,
+      canPesProdtDes: 0,
+      canPesProdtOri: 0,
+      canUndProdtDes: 0,
+      canUndProdtOri: 0
+    });
   };
 
   // reset producto origen
   const resetProductoOrigen = () => {
-    // reseteamos el valor del producto
-    setRequisicionTransformacion({
-      ...requisicionTransformacion,
-      idProdtOri: 0
-    });
-
     // reseteamos el elemento seleccionado
     setValueProductoOrigenSeleccionado(null);
   };
 
   // reset producto destino
   const resetProductoDestino = () => {
-    // reseteamos el valor del producto
-    setRequisicionTransformacion({
-      ...requisicionTransformacion,
-      idProdtDes: 0
-    });
     // reseteamos el elemento seleccionado
     setValueProductoDestinoSeleccionado(null);
+  };
+
+  // funcion para manejar la cantidad de klg requerida
+  const handleChangePesoTotalProductoDestino = ({ target }) => {
+    var { value } = target;
+    // cantidad requerida de klg de lote para presentacion final
+    try {
+      const cantidadTotalPesoKlg = value;
+
+      if (valueProductoDestinoSeleccionado !== null) {
+        // cantidad de klg de producto intermedio por unidad de presentacion final
+        const canKlgProdIntByUni =
+          valueProductoDestinoSeleccionado.canForProdInt;
+        // cantidad de unidades obtenidas segun klg requerido ingresado
+        const cantidadUniRequerida = parseInt(
+          parseFloat(cantidadTotalPesoKlg) / parseFloat(canKlgProdIntByUni)
+        );
+        setRequisicionTransformacion({
+          ...requisicionTransformacion,
+          canPesProdtDes: cantidadTotalPesoKlg,
+          canUndProdtDes: cantidadUniRequerida
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // funcion para manejar la cantidad de unidades requeridas
+  const handleChangeUnidadesTotalProductoDestino = ({ target }) => {
+    var { value } = target;
+    // cantidad requerida de klg de lote para presentacion final
+    try {
+      const cantidadUniRequerida = value;
+      let cantidadTotalPesoKlg = 0;
+
+      if (valueProductoDestinoSeleccionado !== null) {
+        // cantidad de klg de producto intermedio por unidad de presentacion final
+        const canKlgProdIntByUni =
+          valueProductoDestinoSeleccionado.canForProdInt;
+        // cantidad de unidades obtenidas segun klg requerido ingresado
+        cantidadTotalPesoKlg =
+          parseInt(cantidadUniRequerida) * parseFloat(canKlgProdIntByUni);
+        cantidadTotalPesoKlg = cantidadTotalPesoKlg.toFixed(3);
+        setRequisicionTransformacion({
+          ...requisicionTransformacion,
+          canUndProdtDes: cantidadUniRequerida,
+          canPesProdtDes: cantidadTotalPesoKlg
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // calcular requisicion de devolucion y de materiales
+  const calcularDetallesTransformacion = () => {
+    // condicional
+    if (
+      canPesProdtDes > 0 &&
+      canUndProdtDes > 0 &&
+      canPesProdtOri > 0 &&
+      canUndProdtOri > 0 &&
+      idProdtOri !== idProdtDes
+    ) {
+      // buscamos el peso por unidad del producto de origen
+      const { detFor } = valueProductoOrigenSeleccionado;
+      const valueFindProductoIntermedio = detFor.find(
+        (element) => element.idAre != 6 && element.idAre != 5
+      );
+      const pesoPorUnidad = parseFloat(
+        valueFindProductoIntermedio["canForProDet"]
+      );
+      console.log(pesoPorUnidad);
+      const totalUnidades = canPesProdtDes / pesoPorUnidad;
+      const formatFloatUnidadesTotales = parseFloat(totalUnidades.toFixed(3));
+      let formatEnteroUnidadesTotales = 0;
+
+      // debemos hacer que si contiene decimales, se redondee hacia arriba el entero ya que hablamos de unidades fisicas
+      if (formatFloatUnidadesTotales % 1 === 0) {
+        formatEnteroUnidadesTotales = formatFloatUnidadesTotales; // Si el número es entero, no se hace ningún cambio
+      } else {
+        formatEnteroUnidadesTotales = Math.ceil(formatFloatUnidadesTotales); // Si hay decimales, se redondea hacia arriba
+      }
+
+      console.log(formatEnteroUnidadesTotales);
+      // ahora que ya se tiene el valor entero, se calcula la requisicion de devolucion
+      let detalleRequisicionDevolucion = [];
+      detFor.forEach((detalle) => {
+        if (detalle.idAre == 5 || detalle.idAre == 6) {
+          const cantidadRequisicionDevuelta = parseFloat(
+            detalle.canForProDet * formatEnteroUnidadesTotales
+          ).toFixed(5);
+          detalleRequisicionDevolucion.push({
+            ...detalle,
+            canReqProdLot: cantidadRequisicionDevuelta
+          });
+        }
+      });
+
+      // colocar motivos de devolucion
+      const detalleRequisicionMotivos = detalleRequisicionDevolucion.map(
+        (obj) => {
+          const cantidadParser = parseIntCantidad(obj);
+          return {
+            ...obj,
+            canReqProdLot: cantidadParser,
+            motivos: [
+              {
+                idProdDevMot: 2,
+                nomDevMot: "Desmedro",
+                canProdDev: cantidadParser
+              },
+              {
+                idProdDevMot: 5,
+                nomDevMot: "Transformación",
+                canProdDev: 0
+              }
+            ]
+          };
+        }
+      );
+
+      setRequisicionDevolucionTransformacion({
+        ...requisicionDevolucionTransformacion,
+        idProdt: idProdtOri,
+        detDev: detalleRequisicionMotivos,
+        canDevUnd: formatEnteroUnidadesTotales,
+        canDevPes: canPesProdtDes
+      });
+
+      // calculamos la requisicion de materiales
+      const { detFor: detForReq } = valueProductoDestinoSeleccionado;
+      let detalleRequisicionMateriales = [];
+      detForReq.forEach((detalle) => {
+        if (detalle.idAre == 5 || detalle.idAre == 6) {
+          const cantidadRequisicionMateriales = parseFloat(
+            canUndProdtDes * detalle.canForProDet
+          ).toFixed(5);
+          detalleRequisicionMateriales.push({
+            ...detalle,
+            indexProdFin: 1,
+            canReqProdLot: cantidadRequisicionMateriales
+          });
+        }
+      });
+
+      detalleRequisicionMateriales.map((obj) => {
+        obj.canReqProdLot = _parseInt(obj);
+      });
+
+      setRequisicionMaterialesTransformacion({
+        ...requisicionMaterialesTransformacion,
+        idProdt: idProdtDes,
+        detReq: detalleRequisicionMateriales,
+        canReqUnd: canUndProdtDes,
+        canReqPes: canPesProdtDes
+      });
+
+      console.log(detalleRequisicionMateriales);
+    } else {
+      if (idProdtOri === idProdtDes) {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error:
+            "Los productos de origen y destino son iguales"
+        });
+        handleClickFeeback();
+      } else {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error:
+            "No se han indicado cantidades mayores a cero. Revise el detalle de transformación"
+        });
+        handleClickFeeback();
+      }
+    }
+  };
+
+  // --------------- OPERACIONES EDIT Y DELETE DE DEVOLUCION ----------------------
+
+  // operación de edicion
+  const handleChangeInputProductoDevuelto = (
+    { target },
+    detalle,
+    indexProd
+  ) => {
+    const { value } = target;
+    // Crear una copia del arreglo de detalles
+    const editFormDetalle = requisicionDevolucionTransformacion.detDev.map(
+      (element) => {
+        // Si el idProdt coincide con el detalle proporcionado, actualiza los motivos
+        if (detalle.idProd === element.idProd) {
+          // Crear una copia del arreglo de motivos
+          const nuevosMotivos = [...element.motivos];
+
+          // Si el índice coincide con el índice proporcionado, actualiza canProdDev
+          if (nuevosMotivos[indexProd]) {
+            nuevosMotivos[indexProd].canProdDev = value;
+          }
+
+          // Actualiza los motivos en el detalle
+          element.motivos = nuevosMotivos;
+        }
+
+        return element;
+      }
+    );
+
+    setRequisicionDevolucionTransformacion({
+      ...requisicionDevolucionTransformacion,
+      detDev: editFormDetalle
+    });
+  };
+
+  // Manejador de eliminacion de un detalle de devolucion
+  const handleDeleteProductoDevuelto = (idItem) => {
+    const dataDetalleProductosDevueltos =
+      requisicionDevolucionTransformacion.detDev.filter((element) => {
+        if (element.idProd !== idItem) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+    setRequisicionDevolucionTransformacion({
+      ...requisicionDevolucionTransformacion,
+      detDev: dataDetalleProductosDevueltos
+    });
+  };
+
+  // --------------- OPERACIONES EDIT Y DELETE DE REQUISICION ----------------------
+  // operación de eliminacion
+  const handleDeleteItemRequisicionTransformacion = (idItem, index) => {
+    const dataDetalleRequisicionMateriales =
+      requisicionMaterialesTransformacion.detReq.filter((element) => {
+        if (element.idProd === idItem && element.indexProdFin === index) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+
+    setRequisicionMaterialesTransformacion({
+      ...requisicionMaterialesTransformacion,
+      detReq: dataDetalleRequisicionMateriales
+    });
+  };
+
+  // operación de edicion
+  const handleEditItemRequisicionTransformacion = (
+    { target },
+    idItem,
+    index
+  ) => {
+    const { value } = target;
+    const editFormDetalle = requisicionMaterialesTransformacion.detReq.map(
+      (element) => {
+        if (element.idProd === idItem && element.indexProdFin === index) {
+          return {
+            ...element,
+            canReqProdLot: value
+          };
+        } else {
+          return element;
+        }
+      }
+    );
+    setRequisicionMaterialesTransformacion({
+      ...requisicionMaterialesTransformacion,
+      detReq: editFormDetalle
+    });
+  };
+
+  // creamos la orden de transformacion
+  const handleCrearOrdenTransformacion = () => {
+    if (
+      requisicionDevolucionTransformacion.detDev.length !== 0 &&
+      requisicionMaterialesTransformacion.detReq.length !== 0
+    ) {
+      const formatData = {
+        ordenTransformacion: requisicionTransformacion,
+        requisicionMateriales: requisicionMaterialesTransformacion,
+        requisicionDevolucion: requisicionDevolucionTransformacion
+      };
+      console.log(formatData);
+    } else {
+      let handleErrors = "";
+      if (requisicionDevolucionTransformacion.detDev.length == 0) {
+        handleErrors += "No hay detalle de devolucion\n";
+      }
+      if (requisicionMaterialesTransformacion.detReq.length == 0) {
+        handleErrors += "No hay detalle de requisicion de materiales\n";
+      }
+      // mostramos el mensaje de advertencia
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: handleErrors
+      });
+      handleClickFeeback();
+    }
   };
 
   return (
@@ -249,17 +645,27 @@ export const CreateRequisicionTransformacion = () => {
                         <input
                           type="number"
                           value={canUndProdtOri}
-                          disabled={idProdtOri === 0}
+                          disabled={true}
+                          className={
+                            canPesProdtOri < canPesProdtDes
+                              ? "text-danger"
+                              : "text-success"
+                          }
                         />
                       </div>
                       <div className="col">
                         <label htmlFor="nombre" className="form-label">
-                          <b>Can. peso</b>
+                          <b>Can. peso (Kg)</b>
                         </label>
                         <input
                           type="number"
                           value={canPesProdtOri}
-                          disabled={idProdtOri === 0}
+                          disabled={true}
+                          className={
+                            canPesProdtOri < canPesProdtDes
+                              ? "text-danger"
+                              : "text-success"
+                          }
                         />
                       </div>
                     </div>
@@ -279,7 +685,7 @@ export const CreateRequisicionTransformacion = () => {
                             key={element.idProd}
                             value={element.idProd}
                             control={<Radio />}
-                            label={`${element.nomProd} / can: ${element.canTotDis}`}
+                            label={`${element.nomProd}`}
                           />
                         ))}
                       </RadioGroup>
@@ -301,16 +707,18 @@ export const CreateRequisicionTransformacion = () => {
                           type="number"
                           value={canUndProdtDes}
                           disabled={idProdtDes === 0}
+                          onChange={handleChangeUnidadesTotalProductoDestino}
                         />
                       </div>
                       <div className="col">
                         <label htmlFor="nombre" className="form-label">
-                          <b>Can. peso</b>
+                          <b>Can. peso (Kg)</b>
                         </label>
                         <input
                           type="number"
                           value={canPesProdtDes}
                           disabled={idProdtDes === 0}
+                          onChange={handleChangePesoTotalProductoDestino}
                         />
                       </div>
                     </div>
@@ -342,7 +750,259 @@ export const CreateRequisicionTransformacion = () => {
               </div>
             </div>
             {/* BOTON DE GENERACION */}
+            <button
+              type="button"
+              className="btn btn-primary mb-2"
+              onClick={calcularDetallesTransformacion}
+            >
+              Generar
+            </button>
           </div>
+        </div>
+        <div className="row mt-4 mx-4">
+          <div className="card d-flex">
+            <h6 className="card-header">Detalle de devolucion</h6>
+            <div className="card-body">
+              <div className="mb-3 row">
+                <div className="col-3 me-4">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>Cantidad unidades</b>
+                  </label>
+                  <input
+                    type="number"
+                    value={requisicionDevolucionTransformacion.canDevUnd}
+                    disabled={true}
+                  />
+                </div>
+                <div className="col-3 me-4">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>Cantidad peso (Kg)</b>
+                  </label>
+                  <input
+                    type="number"
+                    value={requisicionDevolucionTransformacion.canDevPes}
+                    disabled={true}
+                  />
+                </div>
+              </div>
+              <Paper>
+                <TableContainer>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow
+                        sx={{
+                          "& th": {
+                            color: "rgba(96, 96, 96)",
+                            backgroundColor: "#f5f5f5"
+                          }
+                        }}
+                      >
+                        <TableCell align="left" width={200}>
+                          <b>Presentación final</b>
+                        </TableCell>
+                        <TableCell align="left" width={50}>
+                          <b>Medida</b>
+                        </TableCell>
+                        <TableCell align="left" width={100}>
+                          <b>Recomendado</b>
+                        </TableCell>
+                        <TableCell align="left" width={120}>
+                          <b>Total</b>
+                        </TableCell>
+                        <TableCell align="left" width={120}>
+                          <b>Acciones</b>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {requisicionDevolucionTransformacion.detDev.map(
+                        (detalle, index) => (
+                          <RowDevolucionLoteProduccionEdit
+                            key={index}
+                            detalle={detalle}
+                            onChangeInputDetalle={
+                              handleChangeInputProductoDevuelto
+                            }
+                            onDeleteItemDetalle={handleDeleteProductoDevuelto}
+                          />
+                        )
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            </div>
+          </div>
+        </div>
+        <div className="row mt-4 mx-4">
+          <div className="card d-flex">
+            <h6 className="card-header">Detalle de requisicion</h6>
+            <div className="card-body">
+              <div className="mb-3 row">
+                <div className="col-3 me-4">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>Cantidad unidades</b>
+                  </label>
+                  <input
+                    type="number"
+                    value={requisicionMaterialesTransformacion.canReqUnd}
+                    disabled={true}
+                  />
+                </div>
+                <div className="col-3 me-4">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>Cantidad peso (Kg)</b>
+                  </label>
+                  <input
+                    type="number"
+                    value={requisicionMaterialesTransformacion.canReqPes}
+                    disabled={true}
+                  />
+                </div>
+              </div>
+              {/* DETALLE DE ENVASADO */}
+              <div className="card text-bg-success d-flex mt-3">
+                <h6 className="card-header">Detalle Envasado</h6>
+                <div className="card-body">
+                  <Paper>
+                    <TableContainer>
+                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow
+                            sx={{
+                              "& th": {
+                                color: "rgba(96, 96, 96)",
+                                backgroundColor: "#f5f5f5"
+                              }
+                            }}
+                          >
+                            <TableCell align="left" width={20}>
+                              <b>Prod-Asociado</b>
+                            </TableCell>
+                            <TableCell align="left" width={230}>
+                              <b>Nombre</b>
+                            </TableCell>
+                            <TableCell align="left" width={20}>
+                              <b>U.M</b>
+                            </TableCell>
+                            <TableCell align="left" width={20}>
+                              <b>Unidad</b>
+                            </TableCell>
+                            <TableCell align="left" width={120}>
+                              <b>Total</b>
+                            </TableCell>
+                            <TableCell align="left" width={150}>
+                              <b>Acciones</b>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {requisicionMaterialesTransformacion.detReq.map(
+                            (row, i) => {
+                              if (row.idAre == 5) {
+                                return (
+                                  <RowEditDetalleRequisicionProduccion
+                                    key={`${row.idProd}-${i}`}
+                                    detalle={row}
+                                    onChangeItemDetalle={
+                                      handleEditItemRequisicionTransformacion
+                                    }
+                                    onDeleteItemRequisicion={
+                                      handleDeleteItemRequisicionTransformacion
+                                    }
+                                    onValidate={onValidate}
+                                  />
+                                );
+                              }
+                            }
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Paper>
+                </div>
+              </div>
+              {/* DETALLE DE ENCAJONADO */}
+              <div className="card text-bg-warning d-flex mt-3">
+                <h6 className="card-header">Detalle Encajado</h6>
+                <div className="card-body">
+                  <Paper>
+                    <TableContainer>
+                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow
+                            sx={{
+                              "& th": {
+                                color: "rgba(96, 96, 96)",
+                                backgroundColor: "#f5f5f5"
+                              }
+                            }}
+                          >
+                            <TableCell align="left" width={20}>
+                              <b>Prod-Asociado</b>
+                            </TableCell>
+                            <TableCell align="left" width={230}>
+                              <b>Nombre</b>
+                            </TableCell>
+                            <TableCell align="left" width={20}>
+                              <b>U.M</b>
+                            </TableCell>
+                            <TableCell align="left" width={20}>
+                              <b>Unidad</b>
+                            </TableCell>
+                            <TableCell align="left" width={120}>
+                              <b>Total</b>
+                            </TableCell>
+                            <TableCell align="left" width={150}>
+                              <b>Acciones</b>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {requisicionMaterialesTransformacion.detReq.map(
+                            (row, i) => {
+                              if (row.idAre == 6) {
+                                return (
+                                  <RowEditDetalleRequisicionProduccion
+                                    key={`${row.idProd}-${i}`}
+                                    detalle={row}
+                                    onChangeItemDetalle={
+                                      handleEditItemRequisicionTransformacion
+                                    }
+                                    onDeleteItemRequisicion={
+                                      handleDeleteItemRequisicionTransformacion
+                                    }
+                                    onValidate={onValidate}
+                                  />
+                                );
+                              }
+                            }
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Paper>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* BOTONES DE CANCELAR Y GUARDAR */}
+        <div className="btn-toolbar mt-4 ms-4">
+          <button
+            type="button"
+            onClick={onNavigateBack}
+            className="btn btn-secondary me-2"
+          >
+            Volver
+          </button>
+          <button
+            type="submit"
+            onClick={handleCrearOrdenTransformacion}
+            className="btn btn-primary"
+          >
+            Guardar
+          </button>
         </div>
       </div>
 

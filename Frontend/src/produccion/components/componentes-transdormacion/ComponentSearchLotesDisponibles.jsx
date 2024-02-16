@@ -29,7 +29,11 @@ export const ComponentSearchLotesDisponibles = ({
   handleClickFeeback
 }) => {
   const [dataLotesDisponibles, setDataLotesDisponibles] = useState([]);
-  const [idProdc, setIdProdc] = useState(0);
+  const [dataLote, setdataLote] = useState({
+    idProdc: 0,
+    codLotProd: ""
+  });
+  const { idProdc, codLotProd } = dataLote;
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -55,8 +59,7 @@ export const ComponentSearchLotesDisponibles = ({
       } else {
         setfeedbackMessages({
           style_message: "error",
-          feedback_description_error:
-            "No hay lotes creados para este producto intermedio"
+          feedback_description_error: description_error
         });
         handleClickFeeback();
       }
@@ -70,8 +73,11 @@ export const ComponentSearchLotesDisponibles = ({
   };
 
   // SELECCIONAR LOTE DISPONIBLE
-  const handleChangeLoteDisponible = ({ id }) => {
-    setIdProdc(id);
+  const handleChangeLoteDisponible = ({ id, lote }) => {
+    setdataLote({
+      idProdc: id,
+      lote: lote
+    });
   };
 
   return (
@@ -97,7 +103,7 @@ export const ComponentSearchLotesDisponibles = ({
           {dataLotesDisponibles.length !== 0 && (
             <FilterLotesDisponibles
               lotesDisponibles={dataLotesDisponibles}
-              defaultValue={idProdc}
+              defaultValue={dataLote}
               onNewInput={handleChangeLoteDisponible}
             />
           )}
@@ -111,7 +117,7 @@ export const ComponentSearchLotesDisponibles = ({
             autoFocus
             onClick={() => {
               // terminamos de procesar la salida parcial
-              onConfirmOperation(idProdc);
+              onConfirmOperation(dataLote["idProdc"], dataLote["lote"]);
               // cerramos el cuadro de dialogo
               handleClose();
             }}

@@ -66,14 +66,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $sql_select_formula_detalle =
                 "SELECT 
-                fptf.id, 
-                fptf.idForProdFin, 
-                fptf.idProd, 
+                fptd.id, 
+                fptd.idForProdFin, 
+                fptd.idProd, 
                 p.nomProd,
-                fptf.idAre, 
-                fptf.canForProDet
-            FROM formula_producto_terminado_detalle AS fptf
+                me.simMed,
+                fptd.idAre, 
+                fptd.canForProDet
+            FROM formula_producto_terminado_detalle AS fptd
             JOIN producto AS p ON p.id = idProd
+            JOIN medida AS me ON p.idMed = me.id
             WHERE idForProdFin = ?";
 
             $stmt_select_formula_detalle = $pdo->prepare($sql_select_formula_detalle);

@@ -39,33 +39,33 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
+function onValidate(e) {
+  var t = e.value;
+  e.value = t.indexOf(".") >= 0 ? t.slice(0, t.indexOf(".") + 3) : t;
+  return e.value;
+}
+
+// se encarga de redondear los valores de las requisiciones
+function _parseInt(str) {
+  if (str.canReqProdLot) {
+    str.canReqDet = str.canReqProdLot;
+  }
+
+  if (str.canTotProgProdFin) {
+    str.canReqDet = str.canTotProgProdFin;
+  }
+  str.canReqDet = parseFloat(str.canReqDet).toFixed(2);
+  let index = str.canReqDet.toString().indexOf(".");
+  let result = str.canReqDet.toString().substring(index + 1);
+  //console.log("index: ",index, "result: ", result)
+  let val =
+    parseInt(result) >= 1 && str.simMed !== "KGM"
+      ? Math.trunc(str.canReqDet) + 1
+      : str.canReqDet;
+  return val;
+}
+
 export const CrearProduccionLote2 = () => {
-  function onValidate(e) {
-    var t = e.value;
-    e.value = t.indexOf(".") >= 0 ? t.slice(0, t.indexOf(".") + 3) : t;
-    return e.value;
-  }
-
-  // se encarga de redondear los valores de las requisiciones
-  function _parseInt(str) {
-    if (str.canReqProdLot) {
-      str.canReqDet = str.canReqProdLot;
-    }
-
-    if (str.canTotProgProdFin) {
-      str.canReqDet = str.canTotProgProdFin;
-    }
-    str.canReqDet = parseFloat(str.canReqDet).toFixed(2);
-    let index = str.canReqDet.toString().indexOf(".");
-    let result = str.canReqDet.toString().substring(index + 1);
-    //console.log("index: ",index, "result: ", result)
-    let val =
-      parseInt(result) >= 1 && str.simMed !== "KGM"
-        ? Math.trunc(str.canReqDet) + 1
-        : str.canReqDet;
-    return val;
-  }
-
   // ESTADO PARA LINEA DE PROGRESO
   const [showLinearProgress, setshowLinearProgress] = useState(false);
   const [_klgLotProd, setKlgLotProd] = useState(0);

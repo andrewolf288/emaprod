@@ -18,13 +18,14 @@ export const FilterLotesDisponibles = ({
   const formatDataLotesDisponibles = async () => {
     const formatSelect = [
       defaultOption,
-      ...lotesDisponibles.map((element) => {
+      ...lotesDisponibles.map((element, index) => {
         return {
           value: element.id,
-          label: `Lote: ${element.codLotProd} - Fecha vencimiento: ${
-            element.fecVenLotProd.split(" ")[0]
-          }`,
-          id: element.id
+          label: `${index + 1}. Lote: ${
+            element.codLotProd
+          } - Fecha vencimiento: ${element.fecVenLotProd.split(" ")[0]}`,
+          id: element.id,
+          lote: element.codLotProd
         };
       })
     ];
