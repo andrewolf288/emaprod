@@ -38,6 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idProdtDes = $ordenTransformacion["idProdtDes"];
         $canUndProdtDes = $ordenTransformacion["canUndProdtDes"];
         $canPesProdtDes = $ordenTransformacion["canPesProdtDes"];
+        $canDevUnd = $requisicionDevolucion["canDevUnd"]; // cantidad a sacar de salida
+        $canDevPes = $requisicionDevolucion["canDevPes"];
 
         $idLastCreationOrdenTransformacion = 0;
 
@@ -52,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         idProdtDes, 
         canUndProdtDes, 
         canPesProdtDes)
-        VALUES(?, ?, ?, ?, $canUndProdtOri, $canPesProdtOri, ?, $canUndProdtDes, $canPesProdtDes)";
+        VALUES(?, ?, ?, ?, $canDevUnd, $canDevPes, ?, $canUndProdtDes, $canPesProdtDes)";
 
         $stmt_create_orden_transformacion = $pdo->prepare($sql_create_orden_transformacion);
         $stmt_create_orden_transformacion->bindParam(1, $idProdtInt, PDO::PARAM_INT);
@@ -272,7 +274,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql_create_requisicion_devolucion =
             "INSERT INTO requisicion_devolucion
         (idProdc, correlativo, idProdFin, idProdt, idReqEst, canTotUndReqDev)
-        VALUES(?, ?, ?, ?, ?, $canUndProdtOri)";
+        VALUES(?, ?, ?, ?, ?, $canDevUnd)";
         $stmt_create_requisicion_devolucion = $pdo->prepare($sql_create_requisicion_devolucion);
         $stmt_create_requisicion_devolucion->bindParam(1, $idProdc, PDO::PARAM_INT);
         $stmt_create_requisicion_devolucion->bindParam(2, $correlativo, PDO::PARAM_STR);
@@ -345,7 +347,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (!empty($array_entradas_disponibles)) {
             $entradasUtilizadas = []; // entradas utilizadas
-            $cantidad_faltante = $canUndProdtOri; // cantidad total faltante
+            $cantidad_faltante = $canDevUnd; // cantidad total faltante
 
             foreach ($array_entradas_disponibles as $row_entrada_disponible) {
                 if ($cantidad_faltante > 0) {
