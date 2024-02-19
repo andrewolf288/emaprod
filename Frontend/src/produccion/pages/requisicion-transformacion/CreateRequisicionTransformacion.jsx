@@ -23,6 +23,7 @@ import FormLabel from "@mui/material/FormLabel";
 import { RowDevolucionLoteProduccionEdit } from "../../../almacen/pages/devoluciones/RowDevolucionLoteProduccionEdit";
 import { RowEditDetalleRequisicionProduccion } from "../../components/componentes-lote-produccion/RowEditDetalleRequisicionProduccion";
 import { useNavigate } from "react-router-dom";
+import { createOrdenTransformacion } from "../../helpers/requisicion-transformacion/createOrdenTransformacion";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -555,7 +556,7 @@ export const CreateRequisicionTransformacion = () => {
   };
 
   // creamos la orden de transformacion
-  const handleCrearOrdenTransformacion = () => {
+  const handleCrearOrdenTransformacion = async () => {
     if (
       requisicionDevolucionTransformacion.detDev.length !== 0 &&
       requisicionMaterialesTransformacion.detReq.length !== 0
@@ -565,7 +566,27 @@ export const CreateRequisicionTransformacion = () => {
         requisicionMateriales: requisicionMaterialesTransformacion,
         requisicionDevolucion: requisicionDevolucionTransformacion
       };
-      console.log(formatData);
+
+      const resultPeticion = await createOrdenTransformacion(formatData);
+      const { message_error, description_error } = resultPeticion;
+      if (message_error.length === 0) {
+        setfeedbackMessages({
+          style_message: "success",
+          feedback_description_error: "Guardado con exito"
+        });
+        handleClickFeeback();
+        // cerramos la ventana
+        setTimeout(() => {
+          onNavigateBack();
+        }, "1000");
+      } else {
+        // mostramos el mensaje de advertencia
+        setfeedbackMessages({
+          style_message: "error",
+          feedback_description_error: description_error
+        });
+        handleClickFeeback();
+      }
     } else {
       let handleErrors = "";
       if (requisicionDevolucionTransformacion.detDev.length == 0) {
