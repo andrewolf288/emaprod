@@ -111,3 +111,37 @@ function obtenerDiaJulianoDynamic($fecha = "")
     $numeroDelDia = date('z', $timestamp) + 1;  // 'z' devuelve el día del año (0-365), sumamos 1 porque queremos que sea 1-366.
     return $numeroDelDia;
 }
+
+// obtener dia juliano de la fecha actual
+function obtenerDiaJulianoActual()
+{
+    // Obtener el día del año (de 0 a 365) para la fecha actual
+    $dia_del_anio = date('z');
+    // Agregar ceros a la izquierda si es necesario
+    $dia_juliano = sprintf('%03d', $dia_del_anio + 1); // Sumar 1 porque el conteo empieza desde 0
+    return $dia_juliano;
+}
+
+// obtener letra correspondiente al año actual
+function obtenerLetraCorrespondiente()
+{
+    // Obtener el último dígito del año actual
+    $ultimo_digito = substr(date('Y'), -1);
+    // Definir el mapeo de dígitos a letras
+    $mapeo = [
+        '1' => 'A',
+        '2' => 'B',
+        '3' => 'C',
+        '4' => 'D',
+        '5' => 'E',
+        '6' => 'F',
+        '7' => 'G',
+        '8' => 'H',
+        '9' => 'I',
+        '0' => 'J'
+    ];
+
+    // Obtener la letra correspondiente al último dígito del año actual
+    $letra_correspondiente = $mapeo[$ultimo_digito];
+    return $letra_correspondiente;
+}

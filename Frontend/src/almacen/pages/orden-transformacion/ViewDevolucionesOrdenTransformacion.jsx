@@ -40,6 +40,7 @@ export const ViewDevolucionesOrdenTransformacion = () => {
     });
 
   const {
+    idProdc,
     idProdtOri,
     nomProd1,
     canUndProdtOri,
@@ -136,14 +137,14 @@ export const ViewDevolucionesOrdenTransformacion = () => {
 
   // funcion para cumplir la requisicion de agregacion
   const onCheckDetalleRequisicionDevolucion = async (detalle, requisicion) => {
-    // const { idProdFin } = requisicion;
-    // const formatData = {
-    //   ...detalle,
-    //   idProdc: idLotProdc,
-    //   idProdFin
-    // };
-    // console.log(formatData);
-    // // abrimos el loader
+    const { idProdFin } = requisicion;
+    const formatData = {
+      ...detalle,
+      idProdc,
+      idProdFin
+    };
+    console.log(formatData);
+    // abrimos el loader
     // openLoader();
     // const { message_error, description_error, result } =
     //   await createEntradasStockRequisicionDevolucionDetalle(formatData);
