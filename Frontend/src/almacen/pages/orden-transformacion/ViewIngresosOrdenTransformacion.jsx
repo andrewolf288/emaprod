@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import queryString from "query-string";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   CircularProgress,
   Dialog,
@@ -12,12 +11,13 @@ import {
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { Typography } from "@mui/material";
-import { getRequisicionIngresosProductosByProduccion } from "../../helpers/producto-produccion/getRequisicionIngresosProductosByProduccion";
 import { CardRequisicionIngresoProductos } from "../../components/componentes-productos-lote/CardRequisicionIngresoProductos";
 import { deleteRequisicionIngresoProductoDetalleById } from "../../helpers/producto-produccion/deleteRequisicionIngresoProductoDetalleById";
 import { updateRequisicionIngresoProductoDetalleById } from "../../helpers/producto-produccion/updateRequisicionIngresoProductoDetalleById";
 import { createEntradaRequisicionIngresoProducto } from "../../helpers/producto-produccion/createEntradaRequisicionIngresoProducto";
 import { DiaJuliano, letraAnio } from "../../../utils/functions/FormatDate";
+import { getIngresosOrdenTransformacion } from "../../helpers/orden-transformacion/getIngresosOrdenTransformacion";
+import { createIngresoOrdenTransformacion } from "../../helpers/orden-transformacion/createIngresoOrdenTransformacion";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -25,38 +25,36 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 // esta interfaz esta hecha para atender las requisiciones de agregaciones de un proceso de produccion
-export const RequisicionIngresoProductos = () => {
-  const location = useLocation();
-  const { idLotProdc = "" } = queryString.parse(location.search);
+export const ViewIngresosOrdenTransformacion = () => {
+  const { id } = useParams();
 
   // ESTADOS PARA LA DATA DE DEVOLUCIONES
-  const [agregacionesProduccionLote, setagregacionesProduccionLote] = useState({
-    id: 0,
-    canLotProd: 0,
-    codLotProd: "",
-    desEstPro: "",
-    desProdTip: "",
-    fecVenLotProd: "",
-    idProdEst: 0,
-    idProdTip: 0,
-    idProdt: 0,
-    klgLotProd: "",
-    nomProd: "",
-    prodDetIng: []
-  });
+  const [ordenTransformacionIngresos, setordenTransformacionIngresos] =
+    useState({
+      idProdtInt: 0,
+      idProdc: 0,
+      codLotProd: "",
+      idProdtOri: 0,
+      nomProd1: "",
+      canUndProdtOri: 0,
+      idProdtDes: 0,
+      nomProd2: "",
+      canUndProdtDes: 0,
+      fecCreOrdTrans: "",
+      prodDetIng: []
+    });
 
   const {
-    id,
-    idProdt,
-    canLotProd,
-    codLotProd,
-    desEstPro,
-    desProdTip,
-    fecVenLotProd,
-    klgLotProd,
-    nomProd,
+    idProdtOri,
+    nomProd1,
+    canUndProdtOri,
+    canPesProdtOri,
+    idProdtDes,
+    nomProd2,
+    canUndProdtDes,
+    canPesProdtDes,
     prodDetIng
-  } = agregacionesProduccionLote;
+  } = ordenTransformacionIngresos;
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
   const [loading, setLoading] = useState(false);
@@ -143,18 +141,15 @@ export const RequisicionIngresoProductos = () => {
 
   // funcion para cumplir la requisicion de agregacion
   const onCheckDetalleRequisicionIngresoProducto = async (detalle) => {
-    const letAniEntSto = letraAnio(detalle.fecProdIng);
-    const diaJulEntSto = DiaJuliano(detalle.fecProdIng);
     const formatData = {
       ...detalle,
-      letAniEntSto,
-      diaJulEntSto
+      idOrdTrans: id
     };
     console.log(formatData);
     // abrimos el loader
     openLoader();
     const { message_error, description_error, result } =
-      await createEntradaRequisicionIngresoProducto(formatData);
+      await createIngresoOrdenTransformacion(formatData);
     if (message_error.length === 0) {
       // llamamos a la data
       traerDatosProduccionLoteWithIngresosProducto();
@@ -165,23 +160,20 @@ export const RequisicionIngresoProductos = () => {
       });
       handleClickFeeback();
     }
-
     // cerramos el loader
     closeLoader();
   };
 
   // FUNCION PARA TRAES DATOS DE PRODUCCION LOTE
   const traerDatosProduccionLoteWithIngresosProducto = async () => {
-    if (idLotProdc.length !== 0) {
-      const resultPeticion = await getRequisicionIngresosProductosByProduccion(
-        idLotProdc
-      );
+    if (id.length !== 0) {
+      const resultPeticion = await getIngresosOrdenTransformacion(id);
       const { message_error, description_error, result } = resultPeticion;
       console.log(result);
 
       if (message_error.length === 0) {
         // seteamos la informacion de produccion de lote
-        setagregacionesProduccionLote(result[0]);
+        setordenTransformacionIngresos(result[0]);
       } else {
         setfeedbackMessages({
           style_message: "error",
@@ -206,92 +198,82 @@ export const RequisicionIngresoProductos = () => {
         <div className="row mt-4 mx-4">
           {/* Datos de produccion */}
           <div className="card d-flex">
-            <h6 className="card-header">Datos de produccion</h6>
+            <h6 className="card-header">Datos de orden de transformación</h6>
             <div className="card-body">
               <div className="mb-3 row">
-                {/* NUMERO DE LOTE */}
-                <div className="col-md-2">
-                  <label htmlFor="nombre" className="form-label">
-                    <b>Numero de Lote</b>
-                  </label>
-                  <input
-                    type="text"
-                    disabled={true}
-                    value={codLotProd}
-                    className="form-control"
-                  />
-                </div>
-                {/* PRODUCTO */}
+                {/* PRODUCTO ORIGEN */}
                 <div className="col-md-4 me-4">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Producto</b>
+                    <b>Producto origen</b>
                   </label>
                   <input
                     disabled={true}
                     type="text"
-                    value={nomProd}
+                    value={nomProd1}
                     className="form-control"
                   />
                 </div>
-                {/* KILOGRAMOS DE LOTE */}
+
+                {/* CANTIDAD UNIDADES ORIGEN */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Peso de Lote</b>
+                    <b>Cantidad origen</b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     disabled={true}
-                    value={klgLotProd}
+                    value={`${canUndProdtOri} UND`}
                     className="form-control"
                   />
                 </div>
-                {/* CANTIDAD DE LOTE */}
+                {/* CANTIDAD DE PESO ORIGEN */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Cantidad</b>
+                    <b>Peso origen</b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     disabled={true}
-                    value={canLotProd}
+                    value={`${canPesProdtOri} KG`}
                     className="form-control"
                   />
                 </div>
               </div>
               <div className="mb-3 row d-flex align-items-center">
-                {/* TIPO DE PRODUCCION */}
-                <div className="col-md-3">
+                {/* PRODUCTO DESTINO */}
+                <div className="col-md-4 me-4">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Tipo de produccion</b>
+                    <b>Producto destino</b>
                   </label>
                   <input
-                    type="text"
                     disabled={true}
-                    value={desProdTip}
+                    type="text"
+                    value={nomProd2}
                     className="form-control"
                   />
                 </div>
-                {/* ESTADO DE PRODUCCION */}
-                <div className="col-md-4">
+
+                {/* CANTIDAD UNIDADES DESTINO*/}
+                <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Estado de produccion</b>
+                    <b>Cantidad destino</b>
                   </label>
                   <input
                     type="text"
                     disabled={true}
-                    value={desEstPro}
+                    value={`${canUndProdtDes} UND`}
                     className="form-control"
                   />
                 </div>
-                {/* FECHA DE VENCIMIENTO */}
-                <div className="col-md-4">
+                {/* CANTIDAD DE PESO DESTINO*/}
+                <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Fecha vencimiento lote</b>
+                    <b>Peso destino</b>
                   </label>
                   <input
                     type="text"
                     disabled={true}
-                    value={fecVenLotProd}
+                    value={`${canPesProdtDes} KG`}
                     className="form-control"
                   />
                 </div>

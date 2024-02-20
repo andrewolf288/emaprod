@@ -1,14 +1,13 @@
 import axios from "axios";
 import config from "../.././../config";
 
-export const createSalidasStockAutomaticas = async (body) => {
+export const getOrdenTransformacionById = async (idOrdTrans) => {
   const domain = config.API_URL;
-  const path =
-    "/almacen/salidas_stock/createSalidasStockAutomaticasByReqMolDet.php";
+  const path = "/almacen/operacion-transformacion/viewOrdenTransformacion.php";
   const url = domain + path;
 
   const { data } = await axios.post(url, {
-    ...body
+    idOrdTrans
   });
   return data;
 };

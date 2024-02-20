@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import queryString from "query-string";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   CircularProgress,
   Dialog,
@@ -8,55 +7,49 @@ import {
   DialogContentText,
   DialogTitle
 } from "@mui/material";
-
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { Typography } from "@mui/material";
-import { getRequisicionIngresosProductosByProduccion } from "../../helpers/producto-produccion/getRequisicionIngresosProductosByProduccion";
-import { CardRequisicionIngresoProductos } from "../../components/componentes-productos-lote/CardRequisicionIngresoProductos";
-import { deleteRequisicionIngresoProductoDetalleById } from "../../helpers/producto-produccion/deleteRequisicionIngresoProductoDetalleById";
-import { updateRequisicionIngresoProductoDetalleById } from "../../helpers/producto-produccion/updateRequisicionIngresoProductoDetalleById";
-import { createEntradaRequisicionIngresoProducto } from "../../helpers/producto-produccion/createEntradaRequisicionIngresoProducto";
-import { DiaJuliano, letraAnio } from "../../../utils/functions/FormatDate";
+import { CardRequisicionDevolucion } from "../../components/componentes-devoluciones/CardRequisicionDevolucion";
+import { deleteRequisicionDevolucionDetalleById } from "../../helpers/devoluciones-lote-produccion/deleteRequisicionDevolucionDetalleById";
+import { updateRequisicionDevolucionDetalleById } from "../../helpers/devoluciones-lote-produccion/updateRequisicionDevolucionDetalleById";
+import { createEntradasStockRequisicionDevolucionDetalle } from "../../helpers/devoluciones-lote-produccion/createEntradasStockRequisicionDevolucionDetalle";
+import { getDevolucionOrdenTransformacion } from "../../helpers/orden-transformacion/getDevolucionOrdenTransformacion";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-// esta interfaz esta hecha para atender las requisiciones de agregaciones de un proceso de produccion
-export const RequisicionIngresoProductos = () => {
-  const location = useLocation();
-  const { idLotProdc = "" } = queryString.parse(location.search);
-
+export const ViewDevolucionesOrdenTransformacion = () => {
+  const { id } = useParams();
   // ESTADOS PARA LA DATA DE DEVOLUCIONES
-  const [agregacionesProduccionLote, setagregacionesProduccionLote] = useState({
-    id: 0,
-    canLotProd: 0,
-    codLotProd: "",
-    desEstPro: "",
-    desProdTip: "",
-    fecVenLotProd: "",
-    idProdEst: 0,
-    idProdTip: 0,
-    idProdt: 0,
-    klgLotProd: "",
-    nomProd: "",
-    prodDetIng: []
-  });
+  const [ordenTransformacionDevolucion, setordenTransformacionDevolucion] =
+    useState({
+      idProdtInt: 0,
+      idProdc: 0,
+      codLotProd: "",
+      idProdtOri: 0,
+      nomProd1: "",
+      canUndProdtOri: 0,
+      idProdtDes: 0,
+      nomProd2: "",
+      canUndProdtDes: 0,
+      fecCreOrdTrans: "",
+      prodDetDev: []
+    });
 
   const {
-    id,
-    idProdt,
-    canLotProd,
-    codLotProd,
-    desEstPro,
-    desProdTip,
-    fecVenLotProd,
-    klgLotProd,
-    nomProd,
-    prodDetIng
-  } = agregacionesProduccionLote;
+    idProdtOri,
+    nomProd1,
+    canUndProdtOri,
+    canPesProdtOri,
+    idProdtDes,
+    nomProd2,
+    canUndProdtDes,
+    canPesProdtDes,
+    prodDetDev
+  } = ordenTransformacionDevolucion;
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
   const [loading, setLoading] = useState(false);
@@ -99,15 +92,15 @@ export const RequisicionIngresoProductos = () => {
   };
 
   // funcion para editar la requisicion de agregacion
-  const onDeleteDetalleRequisicionAgregacion = async (detalle) => {
+  const onDeleteDetalleRequisicionDevolucion = async (detalle) => {
     console.log(detalle);
     // abrimos el loader
     openLoader();
     const { message_error, description_error, result } =
-      await deleteRequisicionIngresoProductoDetalleById(detalle);
+      await deleteRequisicionDevolucionDetalleById(detalle);
     if (message_error.length === 0) {
       // llamamos a la data
-      traerDatosProduccionLoteWithIngresosProducto();
+      traerDatosProduccionLoteWithDevoluciones();
     } else {
       setfeedbackMessages({
         style_message: "error",
@@ -120,16 +113,16 @@ export const RequisicionIngresoProductos = () => {
   };
 
   // funcion para eliminar la requisicion de agregacion
-  const onUpdateDetalleRequisicionAgregacion = async (detalle, inputValue) => {
+  const onUpdateDetalleRequisicionDevolucion = async (detalle, inputValue) => {
     console.log(detalle, inputValue);
     // abrimos el loader
     openLoader();
     // canReqAgrDetNew
     const { message_error, description_error, result } =
-      await updateRequisicionIngresoProductoDetalleById(detalle, inputValue);
+      await updateRequisicionDevolucionDetalleById(detalle, inputValue);
     if (message_error.length === 0) {
       // llamamos a la data
-      traerDatosProduccionLoteWithIngresosProducto();
+      traerDatosProduccionLoteWithDevoluciones();
     } else {
       setfeedbackMessages({
         style_message: "error",
@@ -142,46 +135,41 @@ export const RequisicionIngresoProductos = () => {
   };
 
   // funcion para cumplir la requisicion de agregacion
-  const onCheckDetalleRequisicionIngresoProducto = async (detalle) => {
-    const letAniEntSto = letraAnio(detalle.fecProdIng);
-    const diaJulEntSto = DiaJuliano(detalle.fecProdIng);
-    const formatData = {
-      ...detalle,
-      letAniEntSto,
-      diaJulEntSto
-    };
-    console.log(formatData);
-    // abrimos el loader
-    openLoader();
-    const { message_error, description_error, result } =
-      await createEntradaRequisicionIngresoProducto(formatData);
-    if (message_error.length === 0) {
-      // llamamos a la data
-      traerDatosProduccionLoteWithIngresosProducto();
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
-    }
-
-    // cerramos el loader
-    closeLoader();
+  const onCheckDetalleRequisicionDevolucion = async (detalle, requisicion) => {
+    // const { idProdFin } = requisicion;
+    // const formatData = {
+    //   ...detalle,
+    //   idProdc: idLotProdc,
+    //   idProdFin
+    // };
+    // console.log(formatData);
+    // // abrimos el loader
+    // openLoader();
+    // const { message_error, description_error, result } =
+    //   await createEntradasStockRequisicionDevolucionDetalle(formatData);
+    // if (message_error.length === 0) {
+    //   // llamamos a la data
+    //   traerDatosProduccionLoteWithDevoluciones();
+    // } else {
+    //   setfeedbackMessages({
+    //     style_message: "error",
+    //     feedback_description_error: description_error
+    //   });
+    //   handleClickFeeback();
+    // }
+    // // cerramos el loader
+    // closeLoader();
   };
 
   // FUNCION PARA TRAES DATOS DE PRODUCCION LOTE
-  const traerDatosProduccionLoteWithIngresosProducto = async () => {
-    if (idLotProdc.length !== 0) {
-      const resultPeticion = await getRequisicionIngresosProductosByProduccion(
-        idLotProdc
-      );
+  const traerDatosProduccionLoteWithDevoluciones = async () => {
+    if (id.length !== 0) {
+      const resultPeticion = await getDevolucionOrdenTransformacion(id);
       const { message_error, description_error, result } = resultPeticion;
-      console.log(result);
 
       if (message_error.length === 0) {
         // seteamos la informacion de produccion de lote
-        setagregacionesProduccionLote(result[0]);
+        setordenTransformacionDevolucion(result[0]);
       } else {
         setfeedbackMessages({
           style_message: "error",
@@ -194,104 +182,92 @@ export const RequisicionIngresoProductos = () => {
 
   useEffect(() => {
     // TRAEMOS LA DATA DE REQUSICION DETALLE
-    traerDatosProduccionLoteWithIngresosProducto();
+    traerDatosProduccionLoteWithDevoluciones();
   }, []);
 
   return (
     <>
       <div className="container-fluid px-4">
-        <h1 className="mt-4 text-center">
-          Atender requisiciones ingreso productos
-        </h1>
+        <h1 className="mt-4 text-center">Atender requisiciones devolución</h1>
         <div className="row mt-4 mx-4">
           {/* Datos de produccion */}
           <div className="card d-flex">
-            <h6 className="card-header">Datos de produccion</h6>
+            <h6 className="card-header">Datos de orden de transformación</h6>
             <div className="card-body">
               <div className="mb-3 row">
-                {/* NUMERO DE LOTE */}
-                <div className="col-md-2">
-                  <label htmlFor="nombre" className="form-label">
-                    <b>Numero de Lote</b>
-                  </label>
-                  <input
-                    type="text"
-                    disabled={true}
-                    value={codLotProd}
-                    className="form-control"
-                  />
-                </div>
-                {/* PRODUCTO */}
+                {/* PRODUCTO ORIGEN */}
                 <div className="col-md-4 me-4">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Producto</b>
+                    <b>Producto origen</b>
                   </label>
                   <input
                     disabled={true}
                     type="text"
-                    value={nomProd}
+                    value={nomProd1}
                     className="form-control"
                   />
                 </div>
-                {/* KILOGRAMOS DE LOTE */}
+
+                {/* CANTIDAD UNIDADES ORIGEN */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Peso de Lote</b>
+                    <b>Cantidad origen</b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     disabled={true}
-                    value={klgLotProd}
+                    value={`${canUndProdtOri} UND`}
                     className="form-control"
                   />
                 </div>
-                {/* CANTIDAD DE LOTE */}
+                {/* CANTIDAD DE PESO ORIGEN */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Cantidad</b>
+                    <b>Peso origen</b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     disabled={true}
-                    value={canLotProd}
+                    value={`${canPesProdtOri} KG`}
                     className="form-control"
                   />
                 </div>
               </div>
               <div className="mb-3 row d-flex align-items-center">
-                {/* TIPO DE PRODUCCION */}
-                <div className="col-md-3">
+                {/* PRODUCTO DESTINO */}
+                <div className="col-md-4 me-4">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Tipo de produccion</b>
+                    <b>Producto destino</b>
                   </label>
                   <input
-                    type="text"
                     disabled={true}
-                    value={desProdTip}
+                    type="text"
+                    value={nomProd2}
                     className="form-control"
                   />
                 </div>
-                {/* ESTADO DE PRODUCCION */}
-                <div className="col-md-4">
+
+                {/* CANTIDAD UNIDADES DESTINO*/}
+                <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Estado de produccion</b>
+                    <b>Cantidad destino</b>
                   </label>
                   <input
                     type="text"
                     disabled={true}
-                    value={desEstPro}
+                    value={`${canUndProdtDes} UND`}
                     className="form-control"
                   />
                 </div>
-                {/* FECHA DE VENCIMIENTO */}
-                <div className="col-md-4">
+                {/* CANTIDAD DE PESO DESTINO*/}
+                <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
-                    <b>Fecha vencimiento lote</b>
+                    <b>Peso destino</b>
                   </label>
                   <input
                     type="text"
                     disabled={true}
-                    value={fecVenLotProd}
+                    value={`${canPesProdtDes} KG`}
                     className="form-control"
                   />
                 </div>
@@ -301,18 +277,19 @@ export const RequisicionIngresoProductos = () => {
           {/* REQUISICIONES DE AGREGACION REGISTRADAS */}
           <div className="card d-flex mt-4">
             <h6 className="card-header">Requisiciones</h6>
-            {prodDetIng.map((requisicion) => (
-              <CardRequisicionIngresoProductos
+            {prodDetDev.map((requisicion, index) => (
+              <CardRequisicionDevolucion
                 key={requisicion.id}
+                correlativo={requisicion["correlativo"]}
                 requisicion={requisicion}
-                onDeleteRequisicionAgregacionDetalle={
-                  onDeleteDetalleRequisicionAgregacion
+                onDeleteRequisicionDevolucionDetalle={
+                  onDeleteDetalleRequisicionDevolucion
                 }
-                onUpdateRequisicionAgregacionDetalle={
-                  onUpdateDetalleRequisicionAgregacion
+                onUpdateRequisicionDevolucionDetalle={
+                  onUpdateDetalleRequisicionDevolucion
                 }
-                onCheckRequisicionAgrgeacionDetalle={
-                  onCheckDetalleRequisicionIngresoProducto
+                onCheckRequisicionDevolucionDetalle={
+                  onCheckDetalleRequisicionDevolucion
                 }
               />
             ))}
