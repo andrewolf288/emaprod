@@ -134,77 +134,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             b. Crear requisicion detalle
             c. Referencias por medio de la trazabilidad
         */
-
-        $requisicion_envasado = array();
-        $requisicion_encajado = array();
-
         $detReq = $requisicionMateriales["detReq"];
-
-        // separamos los distintas requisicion (envasado, encajado)
-        foreach ($detReq as $detalle) {
-            // area envasado
-            if ($detalle["idAre"] == 5) {
-                array_push($requisicion_envasado, $detalle);
-            }
-            // area encajado
-            if ($detalle["idAre"] == 6) {
-                array_push($requisicion_encajado, $detalle);
-            }
-        }
 
         $idReqTip = 4; // requisicion de transformacion
         $idReqEst = 1; // requisicion requerida
 
-        // si no esta vacia la requisicion de envasado
-        if (!empty($requisicion_envasado)) {
-            $idAre = 5;
-            $idLastCreationRequisicionEnvase = 0;
-
-            // a. primero creamos la requisicion de envasado
-            $sql_create_requisicion_envase =
-                "INSERT INTO requisicion 
-            (idReqEst, idAre, idReqTip)
-            VALUES (?, ?, ?)";
-
-            $stmt_create_requisicion_envase = $pdo->prepare($sql_create_requisicion_envase);
-            $stmt_create_requisicion_envase->bindParam(1, $idReqEst, PDO::PARAM_INT);
-            $stmt_create_requisicion_envase->bindParam(2, $idAre, PDO::PARAM_INT);
-            $stmt_create_requisicion_envase->bindParam(3, $idReqTip, PDO::PARAM_INT);
-            $stmt_create_requisicion_envase->execute();
-            $idLastCreationRequisicionEnvase = $pdo->lastInsertId();
-
-            // b. luego creamos el detalle de la requisicion de envasado
-            foreach ($requisicion_envasado as $reqEnv) {
-                $idProdReqEnv = $reqEnv["idProd"];
-                $canReqProdLotEnv = $reqEnv["canReqProdLot"];
-
-                $sql_create_requisicion_detalle_envase =
-                    "INSERT INTO requisicion_detalle
-                (idProdt, idReq, idReqDetEst, canReqDet, idProdFin)
-                VALUES (?, ?, ?, $canReqProdLotEnv, ?)";
-                $stmt_create_requisicion_detalle_envase = $pdo->prepare($sql_create_requisicion_detalle_envase);
-                $stmt_create_requisicion_detalle_envase->bindParam(1, $idProdReqEnv, PDO::PARAM_INT);
-                $stmt_create_requisicion_detalle_envase->bindParam(2, $idLastCreationRequisicionEnvase, PDO::PARAM_INT);
-                $stmt_create_requisicion_detalle_envase->bindParam(3, $idReqEst, PDO::PARAM_INT);
-                $stmt_create_requisicion_detalle_envase->bindParam(4, $idLastCreationProduccionProductoFinal, PDO::PARAM_INT);
-                $stmt_create_requisicion_detalle_envase->execute();
-            }
-
-            // c. finalmente anotamos la trazabilidad
-            $sql_create_trazabilidad_transformacion_requisicion_envase =
-                "INSERT INTO trazabilidad_transformacion_requisicion 
-            (idOrdTrans, 
-            idReq)
-            VALUES(?, ?)";
-            $stmt_create_trazabilidad_transformacion_requisicion_envase = $pdo->prepare($sql_create_trazabilidad_transformacion_requisicion_envase);
-            $stmt_create_trazabilidad_transformacion_requisicion_envase->bindParam(1, $idLastCreationOrdenTransformacion, PDO::PARAM_INT);
-            $stmt_create_trazabilidad_transformacion_requisicion_envase->bindParam(2, $idLastCreationRequisicionEnvase, PDO::PARAM_INT);
-            $stmt_create_trazabilidad_transformacion_requisicion_envase->execute();
-        }
-
         // si no esta vacia la requiscion de encajado
-        if (!empty($requisicion_encajado)) {
-            $idAre = 6;
+        if (!empty($detReq)) {
+            $idAre = 6; // area de encajado
             $idLastCreationRequisicionEncaje = 0;
 
             // a. primero creamos la requisicion de encajado
@@ -221,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idLastCreationRequisicionEncaje = $pdo->lastInsertId();
 
             // b. luego creamos el detalle de la requisicion de encajado
-            foreach ($requisicion_encajado as $reqEnc) {
+            foreach ($detReq as $reqEnc) {
                 $idProdReqEnc = $reqEnc["idProd"];
                 $canReqProdLotEnc = $reqEnc["canReqProdLot"];
 
