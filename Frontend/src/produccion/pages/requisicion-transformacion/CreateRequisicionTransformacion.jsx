@@ -54,7 +54,6 @@ function _parseInt(str) {
   str.canReqDet = parseFloat(str.canReqDet).toFixed(2);
   let index = str.canReqDet.toString().indexOf(".");
   let result = str.canReqDet.toString().substring(index + 1);
-  //console.log("index: ",index, "result: ", result)
   let val =
     parseInt(result) >= 1 && str.simMed !== "KGM"
       ? Math.trunc(str.canReqDet) + 1
@@ -108,11 +107,6 @@ export const CreateRequisicionTransformacion = () => {
     canPesProdtDes
   } = requisicionTransformacion;
 
-  // salida de producto transformado
-  const [salidaProductoTransformado, setSalidaProductoTransformado] = useState({
-    idProdt: 0,
-    canSalTran: 0
-  });
   // requisicion de devolucion
   const [
     requisicionDevolucionTransformacion,
@@ -187,7 +181,6 @@ export const CreateRequisicionTransformacion = () => {
       valueFindProductoIntermedio["canForProDet"]
     );
     const pesoTotal = cantidadUnidades * pesoPorUnidad;
-    console.log(cantidadUnidades, pesoPorUnidad);
     setRequisicionTransformacion({
       ...requisicionTransformacion,
       canUndProdtOri: cantidadUnidades,
@@ -199,7 +192,6 @@ export const CreateRequisicionTransformacion = () => {
   // cambiar producto destino
   const onAddProductoFinalDestino = (event) => {
     const { target } = event;
-    console.log(target.value);
     setRequisicionTransformacion({
       ...requisicionTransformacion,
       idProdtDes: target.value,
@@ -222,41 +214,73 @@ export const CreateRequisicionTransformacion = () => {
       message_error: message_errorA,
       description_error: description_errorA
     } = resultPeticionA;
+
     if (message_errorA.length === 0) {
-      setProductosFinalesDisponiblesLote(resultA);
-      // reset producto destino
-      resetProductoOrigen();
+      if (resultA.length === 0) {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error: "Este lote no tiene stock"
+        });
+        handleClickFeeback();
+        // reset
+        resetContenedores();
+      } else {
+        // ahora debemos consultar los posibles productos finales por producto intermedio
+        const resultPeticionB =
+          await getProductosDisponiblesByProductoIntermedio(idProdtInt);
+        const {
+          result: resultB,
+          message_error: message_errorB,
+          description_error: description_errorB
+        } = resultPeticionB;
+
+        if (message_errorB.length === 0) {
+          if (resultB.length === 0) {
+            setfeedbackMessages({
+              style_message: "warning",
+              feedback_description_error:
+                "No hay formulaciones para este producto intermedio"
+            });
+            handleClickFeeback();
+            // reset
+            resetContenedores();
+          } else {
+            setProductosFinalesDisponiblesLote(resultA);
+            // reset producto origen
+            resetProductoOrigen();
+
+            setProductosFinalesDisponiblesProductoIntermedio(resultB);
+            // reset producto origen
+            resetProductoDestino();
+          }
+        } else {
+          setfeedbackMessages({
+            style_message: "error",
+            feedback_description_error: description_errorB
+          });
+          handleClickFeeback();
+          // reset
+          resetContenedores();
+        }
+      }
     } else {
       setfeedbackMessages({
         style_message: "error",
         feedback_description_error: description_errorA
       });
       handleClickFeeback();
-    }
-
-    // ahora debemos consultar los posibles productos finales por producto intermedio
-    const resultPeticionB = await getProductosDisponiblesByProductoIntermedio(
-      idProdtInt
-    );
-    const {
-      result: resultB,
-      message_error: message_errorB,
-      description_error: description_errorB
-    } = resultPeticionB;
-    if (message_errorB.length === 0) {
-      console.log(resultB);
-      setProductosFinalesDisponiblesProductoIntermedio(resultB);
-      // reseteamos el producto
-      resetProductoDestino();
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_errorB
-      });
-      handleClickFeeback();
+      // reset
+      resetContenedores();
     }
 
     // seteamos los valores
+    resetDataOrdenTransformacion(idProdc, lote);
+    resetDetalleDevoluciones();
+    resetDetalleMateriales();
+  };
+
+  // reset orden de transformacion
+  const resetDataOrdenTransformacion = (idProdc, lote) => {
     setRequisicionTransformacion({
       ...requisicionTransformacion,
       idProdc: idProdc,
@@ -268,6 +292,33 @@ export const CreateRequisicionTransformacion = () => {
       canUndProdtDes: 0,
       canUndProdtOri: 0
     });
+  };
+
+  // reset detalle devoluciones
+  const resetDetalleDevoluciones = () => {
+    setRequisicionDevolucionTransformacion({
+      idProdt: 0,
+      canDevUnd: 0,
+      canDevPes: 0,
+      detDev: []
+    });
+  };
+
+  // reset detalle materiales de transformacion
+  const resetDetalleMateriales = () => {
+    setRequisicionMaterialesTransformacion({
+      idProdt: 0,
+      canReqUnd: 0,
+      canReqPes: 0,
+      detReq: []
+    });
+  };
+
+  // reset contenedores
+  const resetContenedores = () => {
+    // resetamos los contenedores
+    setProductosFinalesDisponiblesLote([]);
+    setProductosFinalesDisponiblesProductoIntermedio([]);
   };
 
   // reset producto origen
@@ -353,7 +404,6 @@ export const CreateRequisicionTransformacion = () => {
       const pesoPorUnidad = parseFloat(
         valueFindProductoIntermedio["canForProDet"]
       );
-      console.log(pesoPorUnidad);
       const totalUnidades = canPesProdtDes / pesoPorUnidad;
       const formatFloatUnidadesTotales = parseFloat(totalUnidades.toFixed(3));
       let formatEnteroUnidadesTotales = 0;
@@ -365,7 +415,6 @@ export const CreateRequisicionTransformacion = () => {
         formatEnteroUnidadesTotales = Math.ceil(formatFloatUnidadesTotales); // Si hay decimales, se redondea hacia arriba
       }
 
-      console.log(formatEnteroUnidadesTotales);
       // ahora que ya se tiene el valor entero, se calcula la requisicion de devolucion
       let detalleRequisicionDevolucion = [];
       detFor.forEach((detalle) => {
@@ -438,8 +487,6 @@ export const CreateRequisicionTransformacion = () => {
         canReqUnd: canUndProdtDes,
         canReqPes: canPesProdtDes
       });
-
-      console.log(detalleRequisicionMateriales);
     } else {
       if (idProdtOri === idProdtDes) {
         setfeedbackMessages({
@@ -567,6 +614,8 @@ export const CreateRequisicionTransformacion = () => {
         requisicionDevolucion: requisicionDevolucionTransformacion
       };
 
+      console.log(formatData);
+
       const resultPeticion = await createOrdenTransformacion(formatData);
       const { message_error, description_error } = resultPeticion;
       if (message_error.length === 0) {
@@ -652,129 +701,140 @@ export const CreateRequisicionTransformacion = () => {
         <div className="row mt-4 mx-4">
           <div className="card d-flex">
             <h6 className="card-header">Detalle de transformacion</h6>
-            <div className="card-body row">
-              <div className="col">
-                <div className="card d-flex">
-                  <h6 className="card-header">Producto origen</h6>
-                  <div className="card-body">
-                    {/* MANEJADORES DE CANTIDADES EN PRODUCTOS DE ORIGEN */}
-                    <div className="row mb-4">
-                      <div className="col">
-                        <label htmlFor="nombre" className="form-label">
-                          <b>Can. unidades</b>
-                        </label>
-                        <input
-                          type="number"
-                          value={canUndProdtOri}
-                          disabled={true}
-                          className={
-                            canPesProdtOri < canPesProdtDes
-                              ? "text-danger"
-                              : "text-success"
-                          }
-                        />
-                      </div>
-                      <div className="col">
-                        <label htmlFor="nombre" className="form-label">
-                          <b>Can. peso (Kg)</b>
-                        </label>
-                        <input
-                          type="number"
-                          value={canPesProdtOri}
-                          disabled={true}
-                          className={
-                            canPesProdtOri < canPesProdtDes
-                              ? "text-danger"
-                              : "text-success"
-                          }
-                        />
-                      </div>
-                    </div>
-                    {/* PRODUCTOS */}
-                    <FormControl>
-                      <FormLabel id="demo-radio-buttons-group-label">
-                        Productos
-                      </FormLabel>
-                      <RadioGroup
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        name="radio-buttons-group"
-                        value={idProdtOri}
-                        onChange={onAddProductoFinalOrigen}
-                      >
-                        {productosFinalesDisponiblesLote.map((element) => (
-                          <FormControlLabel
-                            key={element.idProd}
-                            value={element.idProd}
-                            control={<Radio />}
-                            label={`${element.nomProd}`}
+            {productosFinalesDisponiblesLote.length === 0 ||
+            productosFinalesDisponiblesProductoIntermedio.length === 0 ? (
+              <p className="text-center mt-2 fs-4">
+                No hay información disponible
+              </p>
+            ) : (
+              <div className="card-body row">
+                <div className="col">
+                  <div className="card d-flex">
+                    <h6 className="card-header">Producto origen</h6>
+                    <div className="card-body">
+                      {/* MANEJADORES DE CANTIDADES EN PRODUCTOS DE ORIGEN */}
+                      <div className="row mb-4">
+                        <div className="col">
+                          <label htmlFor="nombre" className="form-label">
+                            <b>Can. unidades</b>
+                          </label>
+                          <input
+                            type="number"
+                            value={canUndProdtOri}
+                            disabled={true}
+                            className={
+                              canPesProdtOri < canPesProdtDes
+                                ? "text-danger"
+                                : "text-success"
+                            }
                           />
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                  </div>
-                </div>
-              </div>
-              <div className="col">
-                <div className="card d-flex">
-                  <h6 className="card-header">Productos destino</h6>
-                  <div className="card-body">
-                    {/* MANEJADORES DE CANTIDADES EN PRODUCTOS DE DESTINO */}
-                    <div className="row mb-4">
-                      <div className="col">
-                        <label htmlFor="nombre" className="form-label">
-                          <b>Can. unidades</b>
-                        </label>
-                        <input
-                          type="number"
-                          value={canUndProdtDes}
-                          disabled={idProdtDes === 0}
-                          onChange={handleChangeUnidadesTotalProductoDestino}
-                        />
+                        </div>
+                        <div className="col">
+                          <label htmlFor="nombre" className="form-label">
+                            <b>Can. peso (Kg)</b>
+                          </label>
+                          <input
+                            type="number"
+                            value={canPesProdtOri}
+                            disabled={true}
+                            className={
+                              canPesProdtOri < canPesProdtDes
+                                ? "text-danger"
+                                : "text-success"
+                            }
+                          />
+                        </div>
                       </div>
-                      <div className="col">
-                        <label htmlFor="nombre" className="form-label">
-                          <b>Can. peso (Kg)</b>
-                        </label>
-                        <input
-                          type="number"
-                          value={canPesProdtDes}
-                          disabled={idProdtDes === 0}
-                          onChange={handleChangePesoTotalProductoDestino}
-                        />
-                      </div>
-                    </div>
-                    {/* PRODUCTOS */}
-                    <FormControl>
-                      <FormLabel id="demo-radio-buttons-group-label">
-                        Productos
-                      </FormLabel>
-                      <RadioGroup
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        name="radio-buttons-group"
-                        value={idProdtDes}
-                        onChange={onAddProductoFinalDestino}
-                      >
-                        {productosFinalesDisponiblesProductoIntermedio.map(
-                          (element) => (
+                      {/* PRODUCTOS */}
+                      <FormControl>
+                        <FormLabel id="demo-radio-buttons-group-label">
+                          Productos
+                        </FormLabel>
+                        <RadioGroup
+                          aria-labelledby="demo-radio-buttons-group-label"
+                          name="radio-buttons-group"
+                          value={idProdtOri}
+                          onChange={onAddProductoFinalOrigen}
+                        >
+                          {productosFinalesDisponiblesLote.map((element) => (
                             <FormControlLabel
-                              key={element.idProdFin}
-                              value={element.idProdFin}
+                              key={element.idProd}
+                              value={element.idProd}
                               control={<Radio />}
-                              label={element.nomProd}
+                              label={`${element.nomProd}`}
                             />
-                          )
-                        )}
-                      </RadioGroup>
-                    </FormControl>
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                    </div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div className="card d-flex">
+                    <h6 className="card-header">Productos destino</h6>
+                    <div className="card-body">
+                      {/* MANEJADORES DE CANTIDADES EN PRODUCTOS DE DESTINO */}
+                      <div className="row mb-4">
+                        <div className="col">
+                          <label htmlFor="nombre" className="form-label">
+                            <b>Can. unidades</b>
+                          </label>
+                          <input
+                            type="number"
+                            value={canUndProdtDes}
+                            disabled={idProdtDes === 0}
+                            onChange={handleChangeUnidadesTotalProductoDestino}
+                          />
+                        </div>
+                        <div className="col">
+                          <label htmlFor="nombre" className="form-label">
+                            <b>Can. peso (Kg)</b>
+                          </label>
+                          <input
+                            type="number"
+                            value={canPesProdtDes}
+                            disabled={idProdtDes === 0}
+                            onChange={handleChangePesoTotalProductoDestino}
+                          />
+                        </div>
+                      </div>
+                      {/* PRODUCTOS */}
+                      <FormControl>
+                        <FormLabel id="demo-radio-buttons-group-label">
+                          Productos
+                        </FormLabel>
+                        <RadioGroup
+                          aria-labelledby="demo-radio-buttons-group-label"
+                          name="radio-buttons-group"
+                          value={idProdtDes}
+                          onChange={onAddProductoFinalDestino}
+                        >
+                          {productosFinalesDisponiblesProductoIntermedio.map(
+                            (element) => (
+                              <FormControlLabel
+                                key={element.idProdFin}
+                                value={element.idProdFin}
+                                control={<Radio />}
+                                label={element.nomProd}
+                              />
+                            )
+                          )}
+                        </RadioGroup>
+                      </FormControl>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
             {/* BOTON DE GENERACION */}
             <button
               type="button"
               className="btn btn-primary mb-2"
               onClick={calcularDetallesTransformacion}
+              disabled={
+                productosFinalesDisponiblesLote.length === 0 ||
+                productosFinalesDisponiblesProductoIntermedio.length === 0
+              }
             >
               Generar
             </button>

@@ -147,8 +147,11 @@ export const ViewDevolucionesOrdenTransformacion = () => {
     console.log(formatData);
     // abrimos el loader
     openLoader();
-    const { message_error, description_error, result } =
-      await createDevolucionOrdenTransformacion(formatData);
+    const resultPeticion = await createDevolucionOrdenTransformacion(
+      formatData
+    );
+    console.log(resultPeticion);
+    const { message_error, description_error, result } = resultPeticion;
     if (message_error.length === 0) {
       // llamamos a la data
       traerDatosProduccionLoteWithDevoluciones();

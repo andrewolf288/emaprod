@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // 1. buscamos de que salida salio el producto para transformar
             $sql_consult_orden_transformacion_salida =
                 "SELECT * FROM salida_orden_transformacion
-            WHERE idOrdTrans = ?";
+            WHERE idOrdTrans = ? LIMIT 1";
             $stmt_consult_orden_transformacion_salida = $pdo->prepare($sql_consult_orden_transformacion_salida);
             $stmt_consult_orden_transformacion_salida->bindParam(1, $idOrdTrans, PDO::PARAM_INT);
             $stmt_consult_orden_transformacion_salida->execute();

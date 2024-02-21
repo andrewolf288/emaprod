@@ -35,8 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $sql_select_presentacion_final =
                 "SELECT esProdcProdtProg 
-        FROM produccion_producto_final
-        WHERE id = ?";
+            FROM produccion_producto_final
+            WHERE id = ?";
             $stmt_select_presentacion_final = $pdo->prepare($sql_select_presentacion_final);
             $stmt_select_presentacion_final->bindParam(1, $idProdFin, PDO::PARAM_INT);
             $stmt_select_presentacion_final->execute();
@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // primero debemos averiguar cual fue su requisicion
                 $sql_select_requisicion_detalle =
                     "SELECT * FROM requisicion_detalle
-            WHERE idProdFin = ? AND idProdt = ?";
+                WHERE idProdFin = ? AND idProdt = ?";
                 $stmt_select_requisicion_detalle = $pdo->prepare($sql_select_requisicion_detalle);
                 $stmt_select_requisicion_detalle->bindParam(1, $idProdFin, PDO::PARAM_INT);
                 $stmt_select_requisicion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
@@ -71,8 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // AHORA BUSCAMOS LAS SALIDAS CORRESPONDIENTE AL DETALLE
                 $sql_salidas_empleadas_requisicion_detalle =
                     "SELECT st.id, st.idEntSto, st.canSalStoReq, et.idAlm FROM salida_stock st
-            JOIN entrada_stock AS et ON et.id = st.idEntSto
-            WHERE st.idReqDet = ? ORDER BY st.id DESC";
+                JOIN entrada_stock AS et ON et.id = st.idEntSto
+                WHERE st.idReqDet = ? ORDER BY st.id DESC";
                 $stmt_salidas_empleadas_requisicion_detalle = $pdo->prepare($sql_salidas_empleadas_requisicion_detalle);
                 $stmt_salidas_empleadas_requisicion_detalle->bindParam(1, $row_requisicion_detalle["id"], PDO::PARAM_INT);
                 $stmt_salidas_empleadas_requisicion_detalle->execute();
@@ -86,8 +86,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // primero debemos averiguar cual fue su requisicion
                 $sql_select_requisicion_agregacion_detalle =
                     "SELECT rad.id FROM requisicion_agregacion_detalle AS rad
-            JOIN requisicion_agregacion AS ra ON ra.id = rad.idReqAgr
-            WHERE ra.idProdFin = ? AND rad.idProdt = ?";
+                JOIN requisicion_agregacion AS ra ON ra.id = rad.idReqAgr
+                WHERE ra.idProdFin = ? AND rad.idProdt = ?";
                 $stmt_select_requisicion_agregacion_detalle = $pdo->prepare($sql_select_requisicion_agregacion_detalle);
                 $stmt_select_requisicion_agregacion_detalle->bindParam(1, $idProdFin, PDO::PARAM_INT);
                 $stmt_select_requisicion_agregacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
@@ -97,8 +97,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // AHORA BUSCAMOS LAS SALIDAS CORRESPONDIENTE AL DETALLE
                 $sql_salidas_empleadas_requisicion_agregacion_detalle =
                     "SELECT st.id, st.idEntSto, st.canSalStoReq, et.idAlm FROM salida_stock st
-            JOIN entrada_stock AS et ON et.id = st.idEntSto
-            WHERE st.idAgreDet = ? ORDER BY st.id DESC";
+                JOIN entrada_stock AS et ON et.id = st.idEntSto
+                WHERE st.idAgreDet = ? ORDER BY st.id DESC";
                 $stmt_salidas_empleadas_requisicion_agregacion_detalle = $pdo->prepare($sql_salidas_empleadas_requisicion_agregacion_detalle);
                 $stmt_salidas_empleadas_requisicion_agregacion_detalle->bindParam(1, $row_requisicion_agregacion_detalle["id"], PDO::PARAM_INT);
                 $stmt_salidas_empleadas_requisicion_agregacion_detalle->execute();
@@ -214,21 +214,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_numero_entrada->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_numero_entrada->bindParam(2, $anio_actual, PDO::PARAM_STR);
             $stmt_numero_entrada->execute();
-
-            // Recorremos los resultados
-            $result_numero_entrada = [];
-            while ($row = $stmt_numero_entrada->fetch(PDO::FETCH_ASSOC)) {
-                if (isset($row["refNumIngEntSto"])) {
-                    array_push($result_numero_entrada, $row);
-                }
-            }
+            $row_numero_entrada = $stmt_numero_entrada->fetch(PDO::FETCH_ASSOC);
 
             // COMPROBAMOS SI NO HUBO ENTRADAS DE ESE PRODUCTO
-            if (empty($result_numero_entrada)) {
+            if (!$row_numero_entrada) {
                 // SERA LA PRIMERA INSERCION DEL AÑO
                 $refNumIngEntSto = 1;
             } else {
-                $refNumIngEntSto = intval($result_numero_entrada[0]["refNumIngEntSto"]) + 1;
+                $refNumIngEntSto = intval($row_numero_entrada["refNumIngEntSto"]) + 1;
             }
 
             // EL CODIGO DE INGRESO ES DE 
@@ -248,7 +241,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // ***** FORMAMOS EL CODIGO DE ENTRADA ******
             $sql_select_codigo_producto =
-                "SELECT codProd2 FROM producto WHERE id= ?";
+                "SELECT codProd2 
+            FROM producto 
+            WHERE id= ?";
             $stmt_select_codigo_producto = $pdo->prepare($sql_select_codigo_producto);
             $stmt_select_codigo_producto->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_select_codigo_producto->execute();

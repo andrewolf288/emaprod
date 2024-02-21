@@ -17,7 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql_select_producto_intermedio =
         "SELECT id, idProdt, codLotProd, fecProdIni, fecVenLotProd
     FROM produccion
-    WHERE idProdt = ?";
+    WHERE idProdt = ?
+    ORDER BY fecProdIni DESC";
     try {
         $stmt_select_producto_intermedio = $pdo->prepare($sql_select_producto_intermedio);
         $stmt_select_producto_intermedio->bindParam(1, $idProdtInt, PDO::PARAM_INT);
