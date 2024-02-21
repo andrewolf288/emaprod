@@ -381,7 +381,8 @@ const DialogConfirmSalidaTotal = ({
                   detalleSalidaAlmacen: [
                     {
                       idAlm: 1,
-                      canSalAlm: parseFloat(canReqDet)
+                      canSalAlm: parseFloat(canReqDet),
+                      nomAlm: "Almacen principal"
                     }
                   ]
                 };

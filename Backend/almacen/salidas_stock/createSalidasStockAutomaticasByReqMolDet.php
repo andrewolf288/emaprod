@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idAlmDes = 0; // almacen destino
     $canReqDet = floatval($data["canReqDet"]); // cantidad de requisicion detalle
     $idEstSalSto = 1; // estado de completado
-    $numop = $data["numop"]; // area
+    $numop = $data["numop"] ?? null; // area
     $detalleSalidaAlmacen = $data["detalleSalidaAlmacen"];
     // tolerancia de error de punto flotante
     $tolerancia = 0.000001;

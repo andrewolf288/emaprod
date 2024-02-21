@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $idRefGui = intVal($data["idRefGui"]); // id de la guia de remision
     $idCredNot = $data["idCredNot"]; // id de la nota decredito
-    $idMot = intVal($data["idMotivo"]); // motivo
+    $idMot = intVal($data["idMot"]); // motivo
     $invoice_serie = $data["invoice_serie"]; // serie
     $invoice_number = $data["invoice_number"]; // numero
     $items = $data["items"]; // items

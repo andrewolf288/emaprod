@@ -375,6 +375,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // actualizamos los estados
+    if (empty($message_error)) {
+        try {
+            // Iniciamos una transaccion
+            $pdo->beginTransaction();
+            // ACTUALIZAMOS EL ESTADO DE LA REQUISICION
+            $esComReqDevDet = 1; // ESTADO DE COMPLETADO
+            $total_requisiciones_detalle_no_completadas = 0;
+            $sql_consulta_requisicion_detalle =
+                "SELECT * FROM requisicion_devolucion_detalle
+                WHERE idReqDev = ? AND esComReqDevDet <> ?";
+            $stmt_consulta_requisicion_detalle = $pdo->prepare($sql_consulta_requisicion_detalle);
+            $stmt_consulta_requisicion_detalle->bindParam(1, $idReqDev, PDO::PARAM_INT);
+            $stmt_consulta_requisicion_detalle->bindParam(2, $esComReqDevDet, PDO::PARAM_BOOL);
+            $stmt_consulta_requisicion_detalle->execute();
+
+            $total_requisiciones_detalle_no_completadas = $stmt_consulta_requisicion_detalle->rowCount();
+
+            $idReqEst = 0; // inicializacion
+
+            if ($total_requisiciones_detalle_no_completadas === 1) { // si no hay requisiciones detalle pendientes
+                $idReqEst = 3; // COMPLETADO
+            } else {
+                $idReqEst = 2; // EN PROCESO
+            }
+
+            // PRIMERO ACTUALIZAMOS EL DETALLE
+            $sql_update_requisicion_detalle =
+                "UPDATE requisicion_devolucion_detalle
+                SET esComReqDevDet = ?
+                WHERE id = ?";
+            $stmt_update_requisicion_detalle = $pdo->prepare($sql_update_requisicion_detalle);
+            $stmt_update_requisicion_detalle->bindParam(1, $esComReqDevDet, PDO::PARAM_BOOL);
+            $stmt_update_requisicion_detalle->bindParam(2, $idReqDevDet, PDO::PARAM_INT);
+            $stmt_update_requisicion_detalle->execute();
+
+            // LUEGO ACTUALIZAMOS EL MAESTRO
+            if ($idReqEst == 3) {
+                // obtenemos la fecha actual
+                $fecComReqDev = date('Y-m-d H:i:s');
+                $sql_update_requisicion_completo =
+                    "UPDATE requisicion_devolucion
+                SET idReqEst = ?, fecComReqDev = ?
+                WHERE id = ?";
+                $stmt_update_requisicion_completo = $pdo->prepare($sql_update_requisicion_completo);
+                $stmt_update_requisicion_completo->bindParam(1, $idReqEst, PDO::PARAM_INT);
+                $stmt_update_requisicion_completo->bindParam(2, $fecComReqDev);
+                $stmt_update_requisicion_completo->bindParam(3, $idReqDev, PDO::PARAM_INT);
+                $stmt_update_requisicion_completo->execute();
+            } else {
+                $sql_update_requisicion =
+                    "UPDATE requisicion_devolucion
+                SET idReqEst = ?
+                WHERE id = ?";
+                $stmt_update_requisicion = $pdo->prepare($sql_update_requisicion);
+                $stmt_update_requisicion->bindParam(1, $idReqEst, PDO::PARAM_INT);
+                $stmt_update_requisicion->bindParam(2, $idReqDev, PDO::PARAM_INT);
+                $stmt_update_requisicion->execute();
+            }
+
+            // TERMINAMOS LA TRANSACCION
+            $pdo->commit();
+        } catch (PDOException $e) {
+            $pdo->rollback();
+            $message_error = "ERROR INTERNO SERVER: fallo en la actualización de los estados";
+            $description_error = $e->getMessage();
+        }
+    }
+
     // Retornamos el resultado
     $return['message_error'] = $message_error;
     $return['description_error'] = $description_error;

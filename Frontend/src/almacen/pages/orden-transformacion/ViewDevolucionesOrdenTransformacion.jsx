@@ -15,6 +15,7 @@ import { deleteRequisicionDevolucionDetalleById } from "../../helpers/devolucion
 import { updateRequisicionDevolucionDetalleById } from "../../helpers/devoluciones-lote-produccion/updateRequisicionDevolucionDetalleById";
 import { createEntradasStockRequisicionDevolucionDetalle } from "../../helpers/devoluciones-lote-produccion/createEntradasStockRequisicionDevolucionDetalle";
 import { getDevolucionOrdenTransformacion } from "../../helpers/orden-transformacion/getDevolucionOrdenTransformacion";
+import { createDevolucionOrdenTransformacion } from "../../helpers/orden-transformacion/createDevolucionOrdenTransformacion";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -145,21 +146,21 @@ export const ViewDevolucionesOrdenTransformacion = () => {
     };
     console.log(formatData);
     // abrimos el loader
-    // openLoader();
-    // const { message_error, description_error, result } =
-    //   await createEntradasStockRequisicionDevolucionDetalle(formatData);
-    // if (message_error.length === 0) {
-    //   // llamamos a la data
-    //   traerDatosProduccionLoteWithDevoluciones();
-    // } else {
-    //   setfeedbackMessages({
-    //     style_message: "error",
-    //     feedback_description_error: description_error
-    //   });
-    //   handleClickFeeback();
-    // }
+    openLoader();
+    const { message_error, description_error, result } =
+      await createDevolucionOrdenTransformacion(formatData);
+    if (message_error.length === 0) {
+      // llamamos a la data
+      traerDatosProduccionLoteWithDevoluciones();
+    } else {
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error
+      });
+      handleClickFeeback();
+    }
     // // cerramos el loader
-    // closeLoader();
+    closeLoader();
   };
 
   // FUNCION PARA TRAES DATOS DE PRODUCCION LOTE

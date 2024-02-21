@@ -106,9 +106,10 @@ export const ViewOrdenTransformacion = () => {
       requisicion_detalle
     );
 
+    console.log(resultPeticion);
     const { message_error, description_error, result } = resultPeticion;
 
-    if (message_error?.length === 0) {
+    if (message_error.length === 0) {
       // volvemos a consultar la data
       obtenerDataProduccionRequisicionesDetalle();
       // cerramos modal

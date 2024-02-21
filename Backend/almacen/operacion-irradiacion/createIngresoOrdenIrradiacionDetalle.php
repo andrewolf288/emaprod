@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $refProdt = $data["refProdt"]; // referencia del producto
     $detSal = $data["detSal"]; // detalle de salida
     $idAlmacenPrincipal = 1; // almacen principal
+    
 
     try {
         // Iniciamos una transaccion
