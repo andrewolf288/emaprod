@@ -16,6 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fechaToday = getTodayDateNow();
     $fechaInicio = $fechaToday[0]; // inicio del mes
     $fechaFin = $fechaToday[1]; // fin del mes
+    $idAreEnv = 5; // area de envasado
+    $idAreEnc = 6; // srea de encajonado
 
     if (isset($data)) {
         if (!empty($data["fechaInicio"])) {
@@ -46,14 +48,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         WHERE DATE(ot.fecCreOrdTrans) BETWEEN '$fechaInicio' AND '$fechaFin'
         ORDER BY ot.fecCreOrdTrans DESC";
 
+        // d
         $stmt_select_ordenes_transformacion = $pdo->prepare($sql_select_ordenes_transformacion);
         $stmt_select_ordenes_transformacion->execute();
         // $result = $stmt_select_ordenes_transformacion->fetchAll(PDO::FETCH_ASSOC);
         while ($row_orden_transformacion = $stmt_select_ordenes_transformacion->fetch(PDO::FETCH_ASSOC)) {
             $idOrdTrans = $row_orden_transformacion["id"];
-            $row_orden_transformacion["trazabilidadRequisicion"] = array();
-            $row_orden_transformacion["trazabilidadDevolucion"] = array();
-            $row_orden_transformacion["trazabilidadProduccionProductoFinal"] = array();
+            $trazabilidadRequisicion = array();
+            $trazabilidadDevolucion = array();
+            $trazabilidadProduccionProductoFinal = array();
 
             // consultamos trazabilidad de requisicion
             $sql_consult_trazabilidad_requisicion =
@@ -62,7 +65,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_consult_trazabilidad_requisicion = $pdo->prepare($sql_consult_trazabilidad_requisicion);
             $stmt_consult_trazabilidad_requisicion->bindParam(1, $idOrdTrans, PDO::PARAM_INT);
             $stmt_consult_trazabilidad_requisicion->execute();
-            $row_orden_transformacion["trazabilidadRequisicion"] = $stmt_consult_trazabilidad_requisicion->fetch(PDO::FETCH_ASSOC);
+            $trazabilidadRequisicion = $stmt_consult_trazabilidad_requisicion->fetchAll(PDO::FETCH_ASSOC);
+
+            // verificamos el estado de la requisicion
+            foreach ($trazabilidadRequisicion as $traReq) {
+                $idReq = $traReq["idReq"];
+                $sql_select_requisicion_encaje_envase =
+                    "SELECT
+                COALESCE(SUM(CASE WHEN r.idReqEst = 1 THEN 1 ELSE 0 END), 0) AS requerido,
+                COALESCE(SUM(CASE WHEN r.idReqEst = 2 THEN 1 ELSE 0 END), 0) AS en_proceso,
+                COALESCE(SUM(CASE WHEN r.idReqEst = 3 THEN 1 ELSE 0 END), 0) AS terminado
+                FROM requisicion AS r
+                WHERE r.id = ? AND (r.idAre = ? OR r.idAre = ?)";
+                $stmt_select_requisicion_encaje_envase = $pdo->prepare($sql_select_requisicion_encaje_envase);
+                $stmt_select_requisicion_encaje_envase->bindParam(1, $idReq, PDO::PARAM_INT);
+                $stmt_select_requisicion_encaje_envase->bindParam(2, $idAreEnv, PDO::PARAM_INT);
+                $stmt_select_requisicion_encaje_envase->bindParam(3, $idAreEnc, PDO::PARAM_INT);
+                $stmt_select_requisicion_encaje_envase->execute();
+                $row_orden_transformacion["req_env_enc"] = $stmt_select_requisicion_encaje_envase->fetchAll(PDO::FETCH_ASSOC);
+            }
 
             // consultamos trazabilidad de devolucion
             $sql_consult_trazabilidad_devolucion =
@@ -71,7 +92,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_consult_trazabilidad_devolucion = $pdo->prepare($sql_consult_trazabilidad_devolucion);
             $stmt_consult_trazabilidad_devolucion->bindParam(1, $idOrdTrans, PDO::PARAM_INT);
             $stmt_consult_trazabilidad_devolucion->execute();
-            $row_orden_transformacion["trazabilidadDevolucion"] = $stmt_consult_trazabilidad_devolucion->fetch(PDO::FETCH_ASSOC);
+            $trazabilidadDevolucion = $stmt_consult_trazabilidad_devolucion->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($trazabilidadDevolucion as $traDev) {
+                $idReqDev = $traDev["idReqDev"];
+                $sql_select_requisicion_devolucion =
+                    "SELECT
+                 COALESCE(SUM(CASE WHEN r.idReqEst = 1 THEN 1 ELSE 0 END), 0) AS requerido,
+                 COALESCE(SUM(CASE WHEN r.idReqEst = 2 THEN 1 ELSE 0 END), 0) AS en_proceso,
+                 COALESCE(SUM(CASE WHEN r.idReqEst = 3 THEN 1 ELSE 0 END), 0) AS terminado
+                FROM requisicion_devolucion AS r
+                WHERE r.id = ?";
+                $stmt_select_requisicion_devolucion = $pdo->prepare($sql_select_requisicion_devolucion);
+                $stmt_select_requisicion_devolucion->bindParam(1, $idReqDev, PDO::PARAM_INT);
+                $stmt_select_requisicion_devolucion->execute();
+                $row_orden_transformacion["req_dev"] = $stmt_select_requisicion_devolucion->fetchAll(PDO::FETCH_ASSOC);
+            }
 
             // consultamos trazabilidad de producto final
             $sql_consult_trazabilidad_produccion_producto_final =
@@ -80,7 +116,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_consult_trazabilidad_produccion_producto_final = $pdo->prepare($sql_consult_trazabilidad_produccion_producto_final);
             $stmt_consult_trazabilidad_produccion_producto_final->bindParam(1, $idOrdTrans, PDO::PARAM_INT);
             $stmt_consult_trazabilidad_produccion_producto_final->execute();
-            $row_orden_transformacion["trazabilidadProduccionProductoFinal"] = $stmt_consult_trazabilidad_produccion_producto_final->fetch(PDO::FETCH_ASSOC);
+            $trazabilidadProduccionProductoFinal = $stmt_consult_trazabilidad_produccion_producto_final->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($trazabilidadProduccionProductoFinal as $traProdProdtFin) {
+                $idProdProdtFin = $traProdProdtFin["idProdProdtFin"];
+                $sql_select_requisicion_ingreso_producto =
+                    "SELECT
+                COALESCE(SUM(CASE WHEN pip.esComProdIng = 0 THEN 1 ELSE 0 END), 0) AS requerido,
+                COALESCE(SUM(CASE WHEN pip.esComProdIng = 1 THEN 1 ELSE 0 END), 0) AS terminado
+                FROM produccion_ingreso_producto AS pip
+                WHERE pip.refProdtProg = ?";
+                $stmt_select_requisicion_ingreso_producto = $pdo->prepare($sql_select_requisicion_ingreso_producto);
+                $stmt_select_requisicion_ingreso_producto->bindParam(1, $idProdProdtFin, PDO::PARAM_INT);
+                $stmt_select_requisicion_ingreso_producto->execute();
+                $row_orden_transformacion["req_ing_prod"] = $stmt_select_requisicion_ingreso_producto->fetchAll(PDO::FETCH_ASSOC);
+            }
 
             array_push($result, $row_orden_transformacion);
         }

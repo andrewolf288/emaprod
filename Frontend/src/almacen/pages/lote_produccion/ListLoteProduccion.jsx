@@ -245,7 +245,7 @@ export const ListLoteProduccion = () => {
                 />
               </div>
 
-              <div className="col-2 d-flex align-items-end">
+              {/* <div className="col-2 d-flex align-items-end">
                 <button onClick={resetData} className="btn btn-success">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -262,10 +262,10 @@ export const ListLoteProduccion = () => {
                     <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
                   </svg>
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
-          <div className="col-6 d-flex justify-content-end align-items-center">
+          {/* <div className="col-6 d-flex justify-content-end align-items-center">
             <div className="row">
               <div className="col-6">
                 <button className="btn btn-success me-2">
@@ -300,7 +300,7 @@ export const ListLoteProduccion = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         {/* TABLA DE RESULTADOS */}
         <div className="mt-4">
@@ -432,8 +432,8 @@ export const ListLoteProduccion = () => {
                                 {`Completo: ${row["req_ing_prod"][0]["terminado"]}`}
                               </span>
                             )}
-                          {row["req_agr"][0]["requerido"] == 0 &&
-                            row["req_agr"][0]["terminado"] == 0 && (
+                          {row["req_ing_prod"][0]["requerido"] == 0 &&
+                            row["req_ing_prod"][0]["terminado"] == 0 && (
                               <p>No hay requisiciones</p>
                             )}
                         </TableCell>

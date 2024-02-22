@@ -86,6 +86,7 @@ export const ListOrdenesTransformacion = () => {
   const obtenerdataOrdenTransformacion = async (formState) => {
     const resultPeticion = await getOrdenesTransformacionAlmacen(formState);
     const { message_error, description_error, result } = resultPeticion;
+    console.log(result);
     if (message_error.length === 0) {
       setdataOrdenTransformacion(result);
       setdataOrdenTransformacionTemp(result);
@@ -153,8 +154,14 @@ export const ListOrdenesTransformacion = () => {
                     <TableCell align="center" width={70}>
                       <strong>Cantidad transformada</strong>
                     </TableCell>
-                    <TableCell align="left" width={140}>
-                      <strong>Fecha creación</strong>
+                    <TableCell align="left" width={100}>
+                      <b>Env. y Enc.</b>
+                    </TableCell>
+                    <TableCell align="left" width={100}>
+                      <b>Ingresos</b>
+                    </TableCell>
+                    <TableCell align="left" width={100}>
+                      <b>Devolucion</b>
                     </TableCell>
                     <TableCell align="left" width={70}>
                       <strong>Acciones</strong>
@@ -180,7 +187,69 @@ export const ListOrdenesTransformacion = () => {
                         <TableCell align="center">
                           {row.canUndProdtDes}
                         </TableCell>
-                        <TableCell align="left">{row.fecCreOrdTrans}</TableCell>
+                        <TableCell align="center">
+                          {row["req_env_enc"][0]["requerido"] != 0 && (
+                            <span className="d-block mb-2 badge text-bg-danger p-2">
+                              {`Requerido: ${row["req_env_enc"][0]["requerido"]}`}
+                            </span>
+                          )}
+                          {row["req_env_enc"][0]["en_proceso"] != 0 && (
+                            <span className="d-block badge text-bg-warning p-2">
+                              {`En proceso: ${row["req_env_enc"][0]["en_proceso"]}`}
+                            </span>
+                          )}
+
+                          {row["req_env_enc"][0]["terminado"] != 0 && (
+                            <span className="d-block badge text-bg-success p-2">
+                              {`Completo: ${row["req_env_enc"][0]["terminado"]}`}
+                            </span>
+                          )}
+                          {row["req_env_enc"][0]["requerido"] == 0 &&
+                            row["req_env_enc"][0]["en_proceso"] == 0 &&
+                            row["req_env_enc"][0]["terminado"] == 0 && (
+                              <p>No hay requisiciones</p>
+                            )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {row["req_ing_prod"][0]["requerido"] != 0 && (
+                            <span className="d-block mb-2 badge text-bg-danger p-2">
+                              {`Requerido: ${row["req_ing_prod"][0]["requerido"]}`}
+                            </span>
+                          )}
+                          {row["req_ing_prod"][0]["requerido"] == 0 &&
+                            row["req_ing_prod"][0]["terminado"] != 0 && (
+                              <span className="d-block badge text-bg-success p-2">
+                                {`Completo: ${row["req_ing_prod"][0]["terminado"]}`}
+                              </span>
+                            )}
+                          {row["req_ing_prod"][0]["requerido"] == 0 &&
+                            row["req_ing_prod"][0]["terminado"] == 0 && (
+                              <p>No hay requisiciones</p>
+                            )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {row["req_dev"][0]["requerido"] != 0 && (
+                            <span className="d-block mb-2 badge text-bg-danger p-2">
+                              {`Requerido: ${row["req_dev"][0]["requerido"]}`}
+                            </span>
+                          )}
+                          {row["req_dev"][0]["en_proceso"] != 0 && (
+                            <span className="d-block badge text-bg-warning p-2">
+                              {`En proceso: ${row["req_dev"][0]["en_proceso"]}`}
+                            </span>
+                          )}
+
+                          {row["req_dev"][0]["terminado"] != 0 && (
+                            <span className="d-block badge text-bg-success p-2">
+                              {`Completo: ${row["req_dev"][0]["terminado"]}`}
+                            </span>
+                          )}
+                          {row["req_dev"][0]["requerido"] == 0 &&
+                            row["req_dev"][0]["en_proceso"] == 0 &&
+                            row["req_dev"][0]["terminado"] == 0 && (
+                              <p>No hay requisiciones</p>
+                            )}
+                        </TableCell>
                         <TableCell align="left">
                           <div className="btn-toolbar">
                             <div

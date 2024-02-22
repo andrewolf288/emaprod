@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $refProdt = $data["refProdt"]; // referencia del producto
     $detSal = $data["detSal"]; // detalle de salida
     $idAlmacenPrincipal = 1; // almacen principal
-    
+
 
     try {
         // Iniciamos una transaccion
@@ -48,12 +48,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // los productos que regresan son irradiados, debemos buscar la referencia de estos
             $sql_select_producto_irradiado =
-                "SELECT id FROM producto WHERE proRef = ?";
+                "SELECT id, codProd2 FROM producto WHERE proRef = ?";
             $stmt_select_producto_irradiado = $pdo->prepare($sql_select_producto_irradiado);
             $stmt_select_producto_irradiado->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_select_producto_irradiado->execute();
             $row_producto_irradiado = $stmt_select_producto_irradiado->fetch(PDO::FETCH_ASSOC);
             $idProdtIrra = intval($row_producto_irradiado["id"]);
+            $codProd2 = $row_producto_irradiado["codProd2"];
             // print_r($idProdtIrra);
 
             // por cada movimiento diferente realizado debemos replicar un movimiento de ingreso
@@ -82,9 +83,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_select_entrada_stock_movimiento_salida->execute();
             $row_entrada_stock = $stmt_select_entrada_stock_movimiento_salida->fetch(PDO::FETCH_ASSOC);
 
+            // 3. Debemos definir los datos de entrada
+            $anio_actual = date('Y'); // obtenemos año actual
             $idEntStoEst = 1; // disponible
             $idEntStoTip = 5; // ENTRADA DE IRRADIACION
             $docEntSto = "ENTRADA DE IRRADIACION";
+            $refNumIngEntSto = 0; // numero de referencia de ingreso
+            $codEntSto = ""; // codigo de entrada de stock
+
+            $sql_numero_entrada =
+                "SELECT 
+            max(CAST(refNumIngEntSto AS UNSIGNED)) as refNumIngEntSto
+            FROM entrada_stock
+            WHERE idProd = ? AND YEAR(fecEntSto) = ?
+            ORDER BY refNumIngEntSto DESC LIMIT 1";
+
+            // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
+            $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
+            $stmt_numero_entrada->bindParam(1, $idProdtIrra, PDO::PARAM_INT);
+            $stmt_numero_entrada->bindParam(2, $anio_actual, PDO::PARAM_STR);
+            $stmt_numero_entrada->execute();
+            $row_numero_entrada = $stmt_numero_entrada->fetch(PDO::FETCH_ASSOC);
+
+            // COMPROBAMOS SI NO HUBO ENTRADAS DE ESE PRODUCTO
+            if (!$row_numero_entrada) {
+                // SERA LA PRIMERA INSERCION DEL AÑO
+                $refNumIngEntSto = 1;
+            } else {
+                $refNumIngEntSto = intval($row_numero_entrada["refNumIngEntSto"]) + 1;
+            }
+
+            // EL CODIGO DE INGRESO ES DE 
+            $refNumIngEntSto = str_pad(strval($refNumIngEntSto), 3, "0", STR_PAD_LEFT);
+            $letAniEntSto = $row_entrada_stock["letAniEntSto"];
+            $diaJulEntSto = $row_entrada_stock["diaJulEntSto"];
+
+            $codEntSto = "$codProd2" . "00" . "$letAniEntSto" . "$diaJulEntSto" . "$refNumIngEntSto";
 
             // 2. Debemos replicar el ingreso de una entrada haciendo una replica exacta
             $sql_create_entrada_stock_ingreso_irradiacion =
@@ -113,10 +147,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(3, $idEntStoEst, PDO::PARAM_INT);
             $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(4, $row_entrada_stock["idAlm"], PDO::PARAM_INT);
             $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(5, $idEntStoTip, PDO::PARAM_INT);
-            $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(6, $row_entrada_stock["codEntSto"], PDO::PARAM_STR);
-            $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(7, $row_entrada_stock["letAniEntSto"], PDO::PARAM_STR);
-            $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(8, $row_entrada_stock["diaJulEntSto"], PDO::PARAM_STR);
-            $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(9, $row_entrada_stock["refNumIngEntSto"], PDO::PARAM_STR);
+            $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(6, $codEntSto, PDO::PARAM_STR);
+            $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(7, $letAniEntSto, PDO::PARAM_STR);
+            $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(8, $diaJulEntSto, PDO::PARAM_STR);
+            $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(9, $refNumIngEntSto, PDO::PARAM_STR);
             $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(10, $docEntSto, PDO::PARAM_STR);
             $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(11, $row_entrada_stock["fecVenEntSto"], PDO::PARAM_STR);
             $stmt_create_entrada_stock_ingreso_irradiacion->bindParam(12, $row_entrada_stock["fecEntSto"], PDO::PARAM_STR);
