@@ -42,34 +42,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "Producto", "Medida", "Lote", "Documento de operacion", "Fecha Vencimiento", "Fecha Ingreso",
             "Fecha Salida", "Motivo", "Ingreso", "Salida", "Disponible"
         ];
-    $result["columnWidths"] = [22, 22, 17.88, 20, 12, 12, 80, 8, 7, 24, 19, 19, 19, 25, 12, 12, 12];
+    $result["columnWidths"] = [22, 22, 17.88, 20, 12, 12, 80, 8, 7, 24, 19, 19, 19, 30, 12, 12, 12];
     $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto", "numero", "numero", "numero"];
     $result["data"] = [];
 
     // vamos a recibir información del producto y de las fechas que se quiere el reporte
     $sql_entradas =
         "SELECT
-        es.id,
-		es.docEntSto,
-        es.guiRem,
-        al.nomAlm,
-        es.codEntSto,
-        es.idProd,
-        p.codProd,
-        p.codProd2,
-        p.nomProd,
-        me.simMed,
-        DATE(es.fecEntSto) AS fecEntSto,
-        DATE(es.fecVenEntSto) AS fecVenEntSto,
-        es.canTotEnt,
-        es.canTotDis
-        FROM entrada_stock AS es
-        JOIN producto AS p ON p.id = es.idProd
-        JOIN medida AS me ON me.id = p.idMed
-        JOIN almacen AS al on al.id = es.idAlm
-        WHERE es.idProd = ? AND es.idAlm = ? AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'";
-
-
+    es.id,
+    es.docEntSto,
+    est.desEntStoTip,
+    es.guiRem,
+    al.nomAlm,
+    es.codEntSto,
+    es.idProd,
+    p.codProd,
+    p.codProd2,
+    p.nomProd,
+    me.simMed,
+    DATE(es.fecEntSto) AS fecEntSto,
+    DATE(es.fecVenEntSto) AS fecVenEntSto,
+    es.canTotEnt,
+    es.canTotDis
+    FROM entrada_stock AS es
+    JOIN producto AS p ON p.id = es.idProd
+    JOIN medida AS me ON me.id = p.idMed
+    JOIN almacen AS al ON al.id = es.idAlm
+    JOIN entrada_stock_tipo AS est ON est.id = es.idEntStoTip
+    WHERE es.idProd = ? AND es.idAlm = ? AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'";
 
     $stmt_entradas = $pdo->prepare($sql_entradas);
     $stmt_entradas->bindParam(1, $producto, PDO::PARAM_INT);
@@ -91,6 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $fecVenEntSto = $row_entrada["fecVenEntSto"]; // fecha de vencimiento
         $canTotEnt = $row_entrada["canTotEnt"]; // cantidad ingresada
         $canTotDis = $row_entrada["canTotDis"]; // cantidad disponible
+        $desEntStoTip = $row_entrada["desEntStoTip"]; // tipo de entrada
 
         // $auxEnt = [$docEntSto, $guiRem, $codEntSto, $nomAlm, $codProd, $codProd2, $nomProd, $simMed, "", "", $fecVenEntSto, $fecEntSto, "", "Entrada", $canTotEnt, "", $canTotDis];
         $auxEnt = array(
@@ -107,7 +108,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "fecVenEntSto" => $fecVenEntSto,
             "fecEntSto" => $fecEntSto,
             "fecSalSto" => "",
-            "motOpe" => "Entrada",
+            "motOpe" => "ET-" . $desEntStoTip,
             "canTotEnt" => $canTotEnt,
             "canSalSto" => "",
             "canTotDis" => $canTotDis
@@ -119,11 +120,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "SELECT 
         ss.idReq,
         r.codLotProd,
+        rt.desReqTip,
         ss.canSalStoReq,
         p.numop,
         DATE(ss.fecSalStoReq) AS fecSalStoReq
         FROM salida_stock ss
         LEFT JOIN requisicion AS r ON r.id = ss.idReq
+        JOIN requisicion_tipo AS rt ON rt.id = r.idReqTip
         LEFT JOIN produccion AS p ON p.id = r.idProdc
         WHERE ss.idEntSto = $idEntSto AND ss.idAgre IS NULL";
         $stmt_salida = $pdo->prepare($sql_salida);
@@ -133,6 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $canSalStoReq = $row_salida["canSalStoReq"]; // cantidad salida
             $fecSalStoReq = $row_salida["fecSalStoReq"];  // fecha de salida de requisicion
             $numop = $row_salida["numop"]; // numero de operacion
+            $desReqTip = $row_salida["desReqTip"];
 
             // $aux_salida = [$docEntSto, $guiRem, $codEntSto, $nomAlm, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $numop, $fecVenEntSto, "", $fecSalStoReq, "Salida", "", $canSalStoReq, ""];
             $aux_salida = array(
@@ -149,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "fecVenEntSto" => $fecVenEntSto,
                 "fecEntSto" => "",
                 "fecSalSto" => $fecSalStoReq,
-                "motOpe" => "Salida",
+                "motOpe" => "SL-" . $desReqTip,
                 "canTotEnt" => "",
                 "canSalSto" => $canSalStoReq,
                 "canTotDis" => ""
@@ -196,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "fecVenEntSto" => $fecVenEntSto,
                 "fecEntSto" => "",
                 "fecSalSto" => $fecSalStoReq,
-                "motOpe" => "AG - " . $desProdAgrMot,
+                "motOpe" => "AG-" . $desProdAgrMot,
                 "canTotEnt" => "",
                 "canSalSto" => $canSalStoReq,
                 "canTotDis" => ""
@@ -245,7 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "fecVenEntSto" => "",
                 "fecEntSto" => $fechaEntradaDevolucion,
                 "fecSalSto" => "",
-                "motOpe" => "DE - " . $motivo_devolucion,
+                "motOpe" => "DV-" . $motivo_devolucion,
                 "canTotEnt" => $canReqDevDet,
                 "canSalSto" => "",
                 "canTotDis" => ""
@@ -297,15 +301,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Obtener el valor en el key "motOpe"
-        $motOpeValue = $rowData["motOpe"];
+        $partes = explode("-",  $rowData["motOpe"]);
+        $indice = $partes[0];
+        $description = $partes[1];
 
         // Aplicar estilos condicionales
-        if (strpos($motOpeValue, "Entrada") !== false) {
-            $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('FFFF00'); // Amarillo
-        } elseif (strpos($motOpeValue, "Salida") !== false || substr($motOpeValue, 0, 2) == "AG") {
-            $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('e39f9f'); // Rojo
-        } elseif (substr($motOpeValue, 0, 2) == "DE") {
-            $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('93d98d'); // Verde
+        if ($indice == "ET") {
+            if ($description == "Devolucion de transformacion") {
+                $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('F5E772'); // Amarillo opaco
+            } else {
+                $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('FFFF00'); // Amarillo
+            }
+        } elseif ($indice == "SL") {
+            if ($description == "Transformacion") {
+                $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('D3665E'); // Rojo
+            } else {
+                $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('e39f9f'); // Rojo
+            }
+        } elseif ($indice == "AG") {
+            $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('ffad95'); // Rojo Opaco
+        } elseif ($indice == "DV") {
+            if ($description == "Transformacion") {
+                $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('f3c57a'); // Verde
+            } else {
+                $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('93d98d'); // Verde
+            }
         }
 
         $row++;

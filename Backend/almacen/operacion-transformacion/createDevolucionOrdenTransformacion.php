@@ -285,14 +285,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idLastCreationEntradaStock = $pdo->lastInsertId();
 
             // tenemos que registrar la trazabilidad de la devolucion
-            $sql_insert_trazabilidad_devolucion_entrada =
-                "INSERT INTO trazabilidad_devolucion_entrada
-            (idReqDevDet, idEntSto, canReqDevDet)
-            VALUES(?, ?, $canProdDev)";
-            $stmt_insert_trazabilidad_devolucion_entrada = $pdo->prepare($sql_insert_trazabilidad_devolucion_entrada);
-            $stmt_insert_trazabilidad_devolucion_entrada->bindParam(1, $idReqDevDet, PDO::PARAM_INT);
-            $stmt_insert_trazabilidad_devolucion_entrada->bindParam(2, $idLastCreationEntradaStock, PDO::PARAM_INT);
-            $stmt_insert_trazabilidad_devolucion_entrada->execute();
+            // $sql_insert_trazabilidad_devolucion_entrada =
+            //     "INSERT INTO trazabilidad_devolucion_entrada
+            // (idReqDevDet, idEntSto, canReqDevDet)
+            // VALUES(?, ?, $canProdDev)";
+            // $stmt_insert_trazabilidad_devolucion_entrada = $pdo->prepare($sql_insert_trazabilidad_devolucion_entrada);
+            // $stmt_insert_trazabilidad_devolucion_entrada->bindParam(1, $idReqDevDet, PDO::PARAM_INT);
+            // $stmt_insert_trazabilidad_devolucion_entrada->bindParam(2, $idLastCreationEntradaStock, PDO::PARAM_INT);
+            // $stmt_insert_trazabilidad_devolucion_entrada->execute();
 
             // debemos actualizar el stock almacen
             $sql_consult_almacen_stock =

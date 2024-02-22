@@ -608,15 +608,55 @@ export const CreateRequisicionTransformacion = () => {
       requisicionDevolucionTransformacion.detDev.length !== 0 &&
       requisicionMaterialesTransformacion.detReq.length !== 0
     ) {
+      // eliminar requisiciones en cero de devoluciones
+      let detDevParser = [];
+      requisicionDevolucionTransformacion.detDev.forEach((element) => {
+        element.motivos.forEach((motivo) => {
+          const canProdDevMot = parseFloat(motivo.canProdDev);
+          const idMotivo = motivo.idProdDevMot;
+          if (!isNaN(canProdDevMot) && canProdDevMot !== 0) {
+            const nuevoObjeto = {
+              ...element,
+              canProdDev: canProdDevMot,
+              idProdDevMot: idMotivo
+            };
+            delete nuevoObjeto.motivos;
+            detDevParser.push(nuevoObjeto);
+          }
+        });
+      });
+
+      const requisicionDevolucionTransformacionParser = {
+        ...requisicionDevolucionTransformacion,
+        detDev: detDevParser
+      };
+
+      // eliminar requisiciones en cero de materiales
+      const { detReq } = requisicionMaterialesTransformacion;
+      const detReqParser = detReq.filter((element) => {
+        const parserCantidad = parseFloat(element.canReqProdLot);
+        if (!isNaN(parserCantidad) && parserCantidad !== 0) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      const requisicionMaterialesTransformacionParser = {
+        ...requisicionMaterialesTransformacion,
+        detReq: detReqParser
+      };
+
+      // formamos la data para enviar al backend
       const formatData = {
         ordenTransformacion: requisicionTransformacion,
-        requisicionMateriales: requisicionMaterialesTransformacion,
-        requisicionDevolucion: requisicionDevolucionTransformacion
+        requisicionMateriales: requisicionMaterialesTransformacionParser,
+        requisicionDevolucion: requisicionDevolucionTransformacionParser
       };
 
       console.log(formatData);
-
       const resultPeticion = await createOrdenTransformacion(formatData);
+      console.log(resultPeticion);
       const { message_error, description_error } = resultPeticion;
       if (message_error.length === 0) {
         setfeedbackMessages({

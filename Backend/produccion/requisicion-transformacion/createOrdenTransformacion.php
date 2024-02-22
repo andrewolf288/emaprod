@@ -287,22 +287,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // b. creamos el detalle de requisicion devolucion
         foreach ($detDev as $detalleDevolucion) {
             $idProdDev = $detalleDevolucion["idProd"];
-            $motivos = $detalleDevolucion["motivos"];
+            $idProdDevMot = $detalleDevolucion["idProdDevMot"];
+            $canProdDev = $detalleDevolucion["canProdDev"];
 
-            foreach ($motivos as $detalleDevolucion) {
-                $idProdDevMot = $detalleDevolucion["idProdDevMot"];
-                $canProdDev = $detalleDevolucion["canProdDev"];
-
-                $sql_create_requisicion_devolucion_detalle =
-                    "INSERT INTO requisicion_devolucion_detalle
-                    (idReqDev, idProdt, idMotDev, canReqDevDet)
-                    VALUES (?, ?, ?, $canProdDev)";
-                $stmt_create_requisicion_devolucion_detalle = $pdo->prepare($sql_create_requisicion_devolucion_detalle);
-                $stmt_create_requisicion_devolucion_detalle->bindParam(1, $idLastCreationRequisicionDevolucion, PDO::PARAM_INT);
-                $stmt_create_requisicion_devolucion_detalle->bindParam(2, $idProdDev, PDO::PARAM_INT);
-                $stmt_create_requisicion_devolucion_detalle->bindParam(3, $idProdDevMot, PDO::PARAM_INT);
-                $stmt_create_requisicion_devolucion_detalle->execute();
-            }
+            $sql_create_requisicion_devolucion_detalle =
+                "INSERT INTO requisicion_devolucion_detalle
+            (idReqDev, idProdt, idMotDev, canReqDevDet)
+            VALUES (?, ?, ?, $canProdDev)";
+            $stmt_create_requisicion_devolucion_detalle = $pdo->prepare($sql_create_requisicion_devolucion_detalle);
+            $stmt_create_requisicion_devolucion_detalle->bindParam(1, $idLastCreationRequisicionDevolucion, PDO::PARAM_INT);
+            $stmt_create_requisicion_devolucion_detalle->bindParam(2, $idProdDev, PDO::PARAM_INT);
+            $stmt_create_requisicion_devolucion_detalle->bindParam(3, $idProdDevMot, PDO::PARAM_INT);
+            $stmt_create_requisicion_devolucion_detalle->execute();
         }
 
         // c. Realizamos la trazabilidad de devolucion
