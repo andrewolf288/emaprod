@@ -604,49 +604,46 @@ export const CreateRequisicionTransformacion = () => {
 
   // creamos la orden de transformacion
   const handleCrearOrdenTransformacion = async () => {
-    if (
-      requisicionDevolucionTransformacion.detDev.length !== 0 &&
-      requisicionMaterialesTransformacion.detReq.length !== 0
-    ) {
-      // eliminar requisiciones en cero de devoluciones
-      let detDevParser = [];
-      requisicionDevolucionTransformacion.detDev.forEach((element) => {
-        element.motivos.forEach((motivo) => {
-          const canProdDevMot = parseFloat(motivo.canProdDev);
-          const idMotivo = motivo.idProdDevMot;
-          if (!isNaN(canProdDevMot) && canProdDevMot !== 0) {
-            const nuevoObjeto = {
-              ...element,
-              canProdDev: canProdDevMot,
-              idProdDevMot: idMotivo
-            };
-            delete nuevoObjeto.motivos;
-            detDevParser.push(nuevoObjeto);
-          }
-        });
-      });
-
-      const requisicionDevolucionTransformacionParser = {
-        ...requisicionDevolucionTransformacion,
-        detDev: detDevParser
-      };
-
-      // eliminar requisiciones en cero de materiales
-      const { detReq } = requisicionMaterialesTransformacion;
-      const detReqParser = detReq.filter((element) => {
-        const parserCantidad = parseFloat(element.canReqProdLot);
-        if (!isNaN(parserCantidad) && parserCantidad !== 0) {
-          return true;
-        } else {
-          return false;
+    // eliminar requisiciones en cero de devoluciones
+    let detDevParser = [];
+    requisicionDevolucionTransformacion.detDev.forEach((element) => {
+      element.motivos.forEach((motivo) => {
+        const canProdDevMot = parseFloat(motivo.canProdDev);
+        const idMotivo = motivo.idProdDevMot;
+        if (!isNaN(canProdDevMot) && canProdDevMot !== 0) {
+          const nuevoObjeto = {
+            ...element,
+            canProdDev: canProdDevMot,
+            idProdDevMot: idMotivo
+          };
+          delete nuevoObjeto.motivos;
+          detDevParser.push(nuevoObjeto);
         }
       });
+    });
 
-      const requisicionMaterialesTransformacionParser = {
-        ...requisicionMaterialesTransformacion,
-        detReq: detReqParser
-      };
+    const requisicionDevolucionTransformacionParser = {
+      ...requisicionDevolucionTransformacion,
+      detDev: detDevParser
+    };
 
+    // eliminar requisiciones en cero de materiales
+    const { detReq } = requisicionMaterialesTransformacion;
+    const detReqParser = detReq.filter((element) => {
+      const parserCantidad = parseFloat(element.canReqProdLot);
+      if (!isNaN(parserCantidad) && parserCantidad !== 0) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    const requisicionMaterialesTransformacionParser = {
+      ...requisicionMaterialesTransformacion,
+      detReq: detReqParser
+    };
+
+    if (detReqParser.length !== 0) {
       // formamos la data para enviar al backend
       const formatData = {
         ordenTransformacion: requisicionTransformacion,

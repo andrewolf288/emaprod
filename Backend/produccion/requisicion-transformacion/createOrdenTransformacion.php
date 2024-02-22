@@ -259,56 +259,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idLastCreationRequisicionDevolucion = 0;
         $detDev = $requisicionDevolucion["detDev"];
 
-        // primero consultamos la referencia del producto a devolver sus materiales
-        $sql_consult_produccion_producto_final_origen =
-            "SELECT id FROM produccion_producto_final
-        WHERE idProdc = ? AND idProdt = ?";
-        $stmt_consult_produccion_producto_final_origen = $pdo->prepare($sql_consult_produccion_producto_final_origen);
-        $stmt_consult_produccion_producto_final_origen->bindParam(1, $idProdc, PDO::PARAM_INT);
-        $stmt_consult_produccion_producto_final_origen->bindParam(2, $idProdtOri, PDO::PARAM_INT);
-        $stmt_consult_produccion_producto_final_origen->execute();
+        // primero debemos comprobar que la requisicion no este vacia
+        if (!empty($detDev)) {
+            // primero consultamos la referencia del producto a devolver sus materiales
+            $sql_consult_produccion_producto_final_origen =
+                "SELECT id FROM produccion_producto_final
+            WHERE idProdc = ? AND idProdt = ?";
+            $stmt_consult_produccion_producto_final_origen = $pdo->prepare($sql_consult_produccion_producto_final_origen);
+            $stmt_consult_produccion_producto_final_origen->bindParam(1, $idProdc, PDO::PARAM_INT);
+            $stmt_consult_produccion_producto_final_origen->bindParam(2, $idProdtOri, PDO::PARAM_INT);
+            $stmt_consult_produccion_producto_final_origen->execute();
 
-        $row_produccion_producto_final_origen = $stmt_consult_produccion_producto_final_origen->fetch(PDO::FETCH_ASSOC);
+            $row_produccion_producto_final_origen = $stmt_consult_produccion_producto_final_origen->fetch(PDO::FETCH_ASSOC);
 
-        // a. creamos la requisicion
-        $sql_create_requisicion_devolucion =
-            "INSERT INTO requisicion_devolucion
-        (idProdc, correlativo, idProdFin, idProdt, idReqEst, canTotUndReqDev)
-        VALUES(?, ?, ?, ?, ?, $canDevUnd)";
-        $stmt_create_requisicion_devolucion = $pdo->prepare($sql_create_requisicion_devolucion);
-        $stmt_create_requisicion_devolucion->bindParam(1, $idProdc, PDO::PARAM_INT);
-        $stmt_create_requisicion_devolucion->bindParam(2, $correlativo, PDO::PARAM_STR);
-        $stmt_create_requisicion_devolucion->bindParam(3, $row_produccion_producto_final_origen["id"]);
-        $stmt_create_requisicion_devolucion->bindParam(4, $idProdtOri, PDO::PARAM_INT);
-        $stmt_create_requisicion_devolucion->bindParam(5, $idReqEst, PDO::PARAM_INT);
-        $stmt_create_requisicion_devolucion->execute();
-        $idLastCreationRequisicionDevolucion = $pdo->lastInsertId();
+            // a. creamos la requisicion
+            $sql_create_requisicion_devolucion =
+                "INSERT INTO requisicion_devolucion
+            (idProdc, correlativo, idProdFin, idProdt, idReqEst, canTotUndReqDev)
+            VALUES(?, ?, ?, ?, ?, $canDevUnd)";
+            $stmt_create_requisicion_devolucion = $pdo->prepare($sql_create_requisicion_devolucion);
+            $stmt_create_requisicion_devolucion->bindParam(1, $idProdc, PDO::PARAM_INT);
+            $stmt_create_requisicion_devolucion->bindParam(2, $correlativo, PDO::PARAM_STR);
+            $stmt_create_requisicion_devolucion->bindParam(3, $row_produccion_producto_final_origen["id"]);
+            $stmt_create_requisicion_devolucion->bindParam(4, $idProdtOri, PDO::PARAM_INT);
+            $stmt_create_requisicion_devolucion->bindParam(5, $idReqEst, PDO::PARAM_INT);
+            $stmt_create_requisicion_devolucion->execute();
+            $idLastCreationRequisicionDevolucion = $pdo->lastInsertId();
 
-        // b. creamos el detalle de requisicion devolucion
-        foreach ($detDev as $detalleDevolucion) {
-            $idProdDev = $detalleDevolucion["idProd"];
-            $idProdDevMot = $detalleDevolucion["idProdDevMot"];
-            $canProdDev = $detalleDevolucion["canProdDev"];
+            // b. creamos el detalle de requisicion devolucion
+            foreach ($detDev as $detalleDevolucion) {
+                $idProdDev = $detalleDevolucion["idProd"];
+                $idProdDevMot = $detalleDevolucion["idProdDevMot"];
+                $canProdDev = $detalleDevolucion["canProdDev"];
 
-            $sql_create_requisicion_devolucion_detalle =
-                "INSERT INTO requisicion_devolucion_detalle
-            (idReqDev, idProdt, idMotDev, canReqDevDet)
-            VALUES (?, ?, ?, $canProdDev)";
-            $stmt_create_requisicion_devolucion_detalle = $pdo->prepare($sql_create_requisicion_devolucion_detalle);
-            $stmt_create_requisicion_devolucion_detalle->bindParam(1, $idLastCreationRequisicionDevolucion, PDO::PARAM_INT);
-            $stmt_create_requisicion_devolucion_detalle->bindParam(2, $idProdDev, PDO::PARAM_INT);
-            $stmt_create_requisicion_devolucion_detalle->bindParam(3, $idProdDevMot, PDO::PARAM_INT);
-            $stmt_create_requisicion_devolucion_detalle->execute();
+                $sql_create_requisicion_devolucion_detalle =
+                    "INSERT INTO requisicion_devolucion_detalle
+                (idReqDev, idProdt, idMotDev, canReqDevDet)
+                VALUES (?, ?, ?, $canProdDev)";
+                $stmt_create_requisicion_devolucion_detalle = $pdo->prepare($sql_create_requisicion_devolucion_detalle);
+                $stmt_create_requisicion_devolucion_detalle->bindParam(1, $idLastCreationRequisicionDevolucion, PDO::PARAM_INT);
+                $stmt_create_requisicion_devolucion_detalle->bindParam(2, $idProdDev, PDO::PARAM_INT);
+                $stmt_create_requisicion_devolucion_detalle->bindParam(3, $idProdDevMot, PDO::PARAM_INT);
+                $stmt_create_requisicion_devolucion_detalle->execute();
+            }
+
+            // c. Realizamos la trazabilidad de devolucion
+            $sql_create_trazabilidad_transformacion_devolucion =
+                "INSERT INTO trazabilidad_transformacion_devolucion (idOrdTrans, idReqDev)
+            VALUES (?, ?)";
+            $stmt_create_trazabilidad_transformacion_devolucion = $pdo->prepare($sql_create_trazabilidad_transformacion_devolucion);
+            $stmt_create_trazabilidad_transformacion_devolucion->bindParam(1, $idLastCreationOrdenTransformacion, PDO::PARAM_INT);
+            $stmt_create_trazabilidad_transformacion_devolucion->bindParam(2, $idLastCreationRequisicionDevolucion, PDO::PARAM_INT);
+            $stmt_create_trazabilidad_transformacion_devolucion->execute();
         }
-
-        // c. Realizamos la trazabilidad de devolucion
-        $sql_create_trazabilidad_transformacion_devolucion =
-            "INSERT INTO trazabilidad_transformacion_devolucion (idOrdTrans, idReqDev)
-        VALUES (?, ?)";
-        $stmt_create_trazabilidad_transformacion_devolucion = $pdo->prepare($sql_create_trazabilidad_transformacion_devolucion);
-        $stmt_create_trazabilidad_transformacion_devolucion->bindParam(1, $idLastCreationOrdenTransformacion, PDO::PARAM_INT);
-        $stmt_create_trazabilidad_transformacion_devolucion->bindParam(2, $idLastCreationRequisicionDevolucion, PDO::PARAM_INT);
-        $stmt_create_trazabilidad_transformacion_devolucion->execute();
 
         // 5. Salida de almacen de producto transformado
         /* 

@@ -48,7 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         WHERE DATE(ot.fecCreOrdTrans) BETWEEN '$fechaInicio' AND '$fechaFin'
         ORDER BY ot.fecCreOrdTrans DESC";
 
-        // d
         $stmt_select_ordenes_transformacion = $pdo->prepare($sql_select_ordenes_transformacion);
         $stmt_select_ordenes_transformacion->execute();
         // $result = $stmt_select_ordenes_transformacion->fetchAll(PDO::FETCH_ASSOC);
