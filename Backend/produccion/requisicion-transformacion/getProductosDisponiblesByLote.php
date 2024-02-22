@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = json_decode($json, true);
 
     $idProdc = $data["idProdc"];
+    $idAlmacenPrincipal = 1; // Almacen principal
 
     try {
         // primero buscamos las entradas por lote
@@ -25,9 +26,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.codLot 
         FROM entrada_stock AS es
         JOIN producto AS p ON p.id = es.idProd
-        WHERE refProdc = ? AND canTotDis > 0";
+        WHERE refProdc = ? AND canTotDis > 0 AND idAlm = ?";
         $stmt_select_productos_disponibles = $pdo->prepare($sql_select_productos_disponibles);
         $stmt_select_productos_disponibles->bindParam(1, $idProdc, PDO::PARAM_INT);
+        $stmt_select_productos_disponibles->bindParam(2, $idAlmacenPrincipal, PDO::PARAM_INT);
         $stmt_select_productos_disponibles->execute();
         $rows_entradas_lote_produccion = $stmt_select_productos_disponibles->fetchAll(PDO::FETCH_ASSOC);
 

@@ -19,6 +19,7 @@ import { RouterSalidaVenta } from "../pages/salida_venta/RouterSalidaVenta";
 import { RouterRetornoVenta } from "../pages/retorno_venta/RouterRetornoVenta";
 import { RouterOrdenIrradiacion } from "../pages/orden_irradiacion/RouterOrdenIrradiacion";
 import { RouterOrdenTransformacion } from "../pages/orden-transformacion/RouterOrdenTransformacion";
+import { RouterOrdenReproceso } from "../pages/orden-reproceso/RouterOrdenReproceso";
 
 export const RouterAlmacen = [
   {
@@ -114,5 +115,10 @@ export const RouterAlmacen = [
     path: "orden-transformacion",
     element: <LayoutModulo />,
     children: RouterOrdenTransformacion
+  },
+  {
+    path: "orden-reproceso",
+    element: <LayoutModulo />,
+    children: RouterOrdenReproceso
   }
 ];

@@ -5,6 +5,7 @@ import { RouterProduccionLote } from "./../pages/produccion_lote/RouterProduccio
 import { RouterFormulaPorProducto } from "./../pages/formulas_por_productos/RouterFormulaPorProducto";
 import { RouterRequisicionMateriales } from "../pages/requisicion-materiales/RouterRequisicionMateriales";
 import { RouterRequisicionTransformacion } from "../pages/requisicion-transformacion/RouterRequisicionTransformacion";
+import { RouterRequisicionReproceso } from "../pages/requisicion-reproceso/RouterRequisicionReproceso";
 
 export const RouterProduccion = [
   {
@@ -35,5 +36,10 @@ export const RouterProduccion = [
     path: "requisicion-transformacion",
     element: <LayoutModulo />,
     children: RouterRequisicionTransformacion
+  },
+  {
+    path: "requisicion-reproceso",
+    element: <LayoutModulo />,
+    children: RouterRequisicionReproceso
   }
 ];
