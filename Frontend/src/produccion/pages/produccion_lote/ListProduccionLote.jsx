@@ -30,6 +30,8 @@ import iconProductosFinales from "../../../../src/assets/icons/productos-finales
 import iconAgregaciones from "../../../../src/assets/icons/agregaciones.png";
 import iconDevoluciones from "../../../../src/assets/icons/devoluciones.png";
 // import { DialogProduccionSumary } from "../../components/componentes-produccion/DialogProduccionSumary";
+import config from "../../../config";
+import axios from "axios";
 
 const generatePDF = (data) => {
   const windowName = data.produccion.numop;
@@ -209,6 +211,31 @@ export const ListProduccionLote = () => {
       });
       handleClickFeeback();
     }
+  };
+
+  // funcion para descargar
+  const exportarReporte = (idLotProd) => {
+    console.log(idLotProd);
+    const domain = config.API_URL;
+    const path = "/produccion/produccion-lote/generate_reporte_produccion.php";
+    axios({
+      url: domain + path,
+      data: { idLotProd },
+      method: "POST",
+      responseType: "blob" // Importante para recibir datos binarios (Blob)
+    })
+      .then((response) => {
+        // Crear un enlace temporal para descargar el archivo
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `reporte-produccion-${idLotProd}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => alert("Error al descargar el archivo", error));
   };
 
   // MANEJO DE FILTROS
@@ -483,7 +510,12 @@ export const ListProduccionLote = () => {
                               </svg>
                             </button>
                             {/* BOTON DE EXPORTACION EN EXCEL */}
-                            <button className="btn btn-success me-2 btn">
+                            <button
+                              className="btn btn-success me-2 btn"
+                              onClick={() => {
+                                exportarReporte(row.id);
+                              }}
+                            >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
