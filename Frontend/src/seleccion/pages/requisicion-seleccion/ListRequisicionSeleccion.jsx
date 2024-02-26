@@ -7,25 +7,17 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
-import { Link } from "react-router-dom";
-//IMPORTACIONES PARA DIALOG DELETE
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 // IMPORTACIONES PARA EL FEEDBACK
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { getRequisicionSeleccionWithDetalle } from "./../../helpers/requisicion/getRequisicionSeleccionWithDetalle";
 import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
 import { useForm } from "./../../../hooks/useForm";
-import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
-import { TextField } from "@mui/material";
+import { TablePagination, TextField } from "@mui/material";
 import { FilterEstadoRequisicionSeleccion } from "../../../components/ReferencialesFilters/EstadoRequisicionSeleccion/FilterEstadoRequisicionSeleccion";
 import { RequisicionSeleccionDetalle } from "./../../components/RequisicionSeleccionDetalle";
+import config from "../../../config";
+import axios from "axios";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -45,7 +37,7 @@ export const ListRequisicionSeleccion = () => {
   const { fecReqMolIni, fecReqMolFin, formState, setFormState, onInputChange } =
     useForm({
       fecReqMolIni: "",
-      fecReqMolFin: "",
+      fecReqMolFin: ""
     });
 
   // ESTADOS PARA LA PAGINACIÓN
@@ -56,7 +48,7 @@ export const ListRequisicionSeleccion = () => {
   const [feedbackDelete, setfeedbackDelete] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -91,17 +83,6 @@ export const ListRequisicionSeleccion = () => {
     filter(label, "filterEstado");
   };
 
-  const onChangeDateFechaPedido = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    console.log(dateFilter);
-    filter(dateFilter[0], "filterFechaRequerido");
-  };
-
-  const onChangeDateFechaTerminado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaTerminado");
-  };
-
   // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
     let dateFormat = newDate.split(" ")[0];
@@ -109,7 +90,7 @@ export const ListRequisicionSeleccion = () => {
     // realizamos una promesa
     let body = {
       ...formState,
-      fecReqMolIni: dateFormat,
+      fecReqMolIni: dateFormat
     };
     obtenerDataRequisicionSeleccion(body);
   };
@@ -120,7 +101,7 @@ export const ListRequisicionSeleccion = () => {
     // realizamos una promesa
     let body = {
       ...formState,
-      fecReqMolFin: dateFormat,
+      fecReqMolFin: dateFormat
     };
     obtenerDataRequisicionSeleccion(body);
   };
@@ -210,7 +191,7 @@ export const ListRequisicionSeleccion = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -238,6 +219,37 @@ export const ListRequisicionSeleccion = () => {
 
     setDetalleSeleccionado(requisicionSeleccionDetalle);
     setMostrarDetalle(true);
+  };
+
+  // export excel
+  const exportExcel = () => {
+    const domain = config.API_URL;
+    const path = "/almacen/reportes/reporte-requisicion-seleccion.php";
+    console.log({
+      fecReqIni: fecReqMolIni,
+      fecReqFin: fecReqMolFin
+    });
+    axios({
+      url: domain + path,
+      data: {
+        fecReqIni: fecReqMolIni,
+        fecReqFin: fecReqMolFin
+      },
+      method: "POST",
+      responseType: "blob" // Importante para recibir datos binarios (Blob)
+    })
+      .then((response) => {
+        // Crear un enlace temporal para descargar el archivo
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "archivo_excel.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => alert("Error al descargar el archivo", error));
   };
 
   // RESET FILTER
@@ -288,7 +300,7 @@ export const ListRequisicionSeleccion = () => {
           <div className="col-6 d-flex justify-content-end align-items-center">
             <div className="row">
               <div className="col-6">
-                <button className="btn btn-success">
+                <button className="btn btn-success" onClick={exportExcel}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -332,8 +344,8 @@ export const ListRequisicionSeleccion = () => {
                     sx={{
                       "& th": {
                         color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                        backgroundColor: "#f5f5f5"
+                      }
                     }}
                   >
                     <TableCell align="left" width={70}>
@@ -347,8 +359,8 @@ export const ListRequisicionSeleccion = () => {
                         InputProps={{
                           style: {
                             color: "black",
-                            background: "white",
-                          },
+                            background: "white"
+                          }
                         }}
                       />
                     </TableCell>
@@ -394,7 +406,7 @@ export const ListRequisicionSeleccion = () => {
                       <TableRow
                         key={row.idReqDet}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          "&:last-child td, &:last-child th": { border: 0 }
                         }}
                       >
                         <TableCell align="center">{row.codLotSel}</TableCell>
