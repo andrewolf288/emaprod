@@ -189,11 +189,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // // Establecer tipos de datos
+    $SIZE_DATA = sizeof($result["data"]) + 1;
     foreach ($result["tipoDato"] as $columnIndex => $tipoDato) {
         $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
-        $sheet->getStyle("{$columnLetter}2:{$columnLetter}1000")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+        $sheet->getStyle("{$columnLetter}2:{$columnLetter}{$SIZE_DATA}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
         if ($tipoDato === "numero") {
-            $sheet->getStyle("{$columnLetter}2:{$columnLetter}1000")->getNumberFormat()->setFormatCode('0.000');
+            $sheet->getStyle("{$columnLetter}2:{$columnLetter}{$SIZE_DATA}")->getNumberFormat()->setFormatCode('0.000');
         }
     }
 
@@ -219,9 +220,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $row++;
     }
-
-
-
 
     // Guardar el archivo Excel
     $writer = new Xlsx($spreadsheet);
