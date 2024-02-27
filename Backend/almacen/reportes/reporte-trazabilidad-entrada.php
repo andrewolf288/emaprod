@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $result["header"] =
         [
-            "Documento de entrada", "Guia remisión", "Código entrada", "Almacen", "SIIGO", "EMPAROD",
+            "Documento de entrada", "Guia remisión", "Código entrada", "Almacen", "SIIGO", "EMAPROD",
             "Producto", "Medida", "Lote", "Documento de operacion", "Fecha Vencimiento", "Fecha Ingreso",
             "Fecha Salida", "Motivo", "Ingreso", "Salida", "Disponible"
         ];
