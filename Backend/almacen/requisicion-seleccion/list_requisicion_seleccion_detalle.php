@@ -35,20 +35,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql =
             "SELECT
             rs.id,
+            rs.codReqSel,
             rs.idReqSelEst,
             rse.desReqSelEst,
             rs.codLotSel,
-            #rs.fecPedReqSel,
-            rsd.fecCreReqSelDet as fecPedReqSel,
-            rs.fecTerReqSel,
-            rsd.id as idReqDet,
-            rs.codReqSel
+            rs.fecPedReqSel,
+            rs.fecTerReqSel
             FROM requisicion_seleccion rs
             JOIN requisicion_seleccion_estado as rse on rse.id = rs.idReqSelEst
-            JOIN requisicion_seleccion_detalle rsd  on rs.id = rsd.idReqSel
-            WHERE DATE(rsd.fecCreReqSelDet) BETWEEN '$fechaInicio' AND '$fechaFin'
-            ORDER BY rsd.fecCreReqSelDet DESC
-            ";
+            WHERE DATE(rs.fecPedReqSel) BETWEEN '$fechaInicio' AND '$fechaFin'
+            ORDER BY rs.fecPedReqSel DESC";
 
         try {
             $stmt = $pdo->prepare($sql);
@@ -73,30 +69,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             rsd.idReqSelDetEst,
             rsde.desReqSelDetEst,
             rsd.canReqSelDet,
-            rsd.fecCreReqSelDet,
-            rsd.id as idReqDet
-            FROM producto as p
-            right JOIN requisicion_seleccion_detalle rsd  on p.id = rsd.idMatPri
-            RIGHT JOIN requisicion_seleccion_detalle_estado as rsde on rsde.id = rsd.idReqSelDetEst
-            WHERE rsd.idReqSel = ?
-            ";
-            $stmt_detalle = $pdo->prepare($sql_detalle);
-            $stmt_detalle->bindParam(1, $idReqSel, PDO::PARAM_INT);
+            rsd.fecCreReqSelDet
+            FROM requisicion_seleccion_detalle AS rsd
+            JOIN requisicion_seleccion_detalle_estado as rsde on rsde.id = rsd.idReqSelDetEst
+            JOIN producto AS p ON p.id = rsd.idMatPri
+            WHERE rsd.idReqSel = ?";
             try {
+                $stmt_detalle = $pdo->prepare($sql_detalle);
+                $stmt_detalle->bindParam(1, $idReqSel, PDO::PARAM_INT);
                 $stmt_detalle->execute();
+                $row["reqSelDet"] = $stmt_detalle->fetchAll(PDO::FETCH_ASSOC);
+                //AÑADIMOS TODA LA DATA FORMATEADA
             } catch (Exception $e) {
                 $message_error = "ERROR INTERNO SERVER";
                 $description_error = $e->getMessage();
             }
-            while ($row_detalle = $stmt_detalle->fetch(PDO::FETCH_ASSOC)) {
-                array_push($row["reqSelDet"], $row_detalle);
-            }
-            //AÑADIMOS TODA LA DATA FORMATEADA
             array_push($data_requisicion_seleccion, $row);
         }
         // DESCOMENTAR PARA VER LA DATA
-        //print_r($data_requisicion_seleccion);
-
         $result = $data_requisicion_seleccion;
     } else {
         $message_error = "Error con la conexion a la base de datos";

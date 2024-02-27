@@ -48,8 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         rs.fecPedReqSel,
         rs.fecTerReqSel
         FROM requisicion_seleccion AS rs
-        JOIN requisicion_seleccion_estado AS rse
-        WHERE rs.fecPedReqSel BETWEEN '$fechaInicio' AND '$fechaFin'";
+        WHERE DATE(rs.fecCreReqSel) BETWEEN '$fechaInicio' AND '$fechaFin'";
         $stmt_select_requisicion_seleccion = $pdo->prepare($sql_select_requisicion_seleccion);
         $stmt_select_requisicion_seleccion->execute();
 
@@ -77,7 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_select_requisicion_seleccion_detalle = $pdo->prepare($sql_select_requisicion_seleccion_detalle);
             $stmt_select_requisicion_seleccion_detalle->bindParam(1, $idReqSel, PDO::PARAM_INT);
             $stmt_select_requisicion_seleccion_detalle->execute();
-            array_push($result["data"], $stmt_select_requisicion_seleccion_detalle->fetch(PDO::FETCH_ASSOC));
+            $row_select_requisicion_seleccion_detalle = $stmt_select_requisicion_seleccion_detalle->fetch(PDO::FETCH_ASSOC);
+
+            array_push($result["data"], $row_select_requisicion_seleccion_detalle);
         }
 
         // Crear el libro de trabajo

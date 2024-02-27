@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FilterProductosDynamic } from "../../../components/ReferencialesFilters/Producto/FilterProductosDynamic";
 import config from "../../../config";
 import axios from "axios";
 import FechaPickerMonthDynamic from "../../../components/Fechas/FechaPickerMonthDynamic";
