@@ -1,13 +1,15 @@
 import React from "react";
 import { Text, View } from "@react-pdf/renderer";
-import { stylesPDF } from "../pdf-components/stylePDF";
 import { _parseInt } from "../../../utils/functions/ParseInt";
 
-const styles = stylesPDF;
-
-export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
-  const { detReqDev } = requisicion;
-
+export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
+  const requisicionEnvasado = requisicion.find(
+    (element) => element.desAre === "Envasado"
+  );
+  const requisicionEncajado = requisicion.find(
+    (element) => element.desAre === "Encajado"
+  );
+  console.log(requisicionEncajado);
   return (
     <View>
       <Text
@@ -15,83 +17,35 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
           ...styles.title,
           fontWeight: "bold",
           fontSize: 7,
-          marginLeft: -450,
-          marginTop: 10
+          marginLeft: -380,
+          marginTop: 10,
+          fontWeight: "bold"
         }}
       >
-        Presentación Final
+        DETALLE REQUISICION DE MATERIALES
       </Text>
-      <View style={{ ...styles.section, marginTop: -25 }}>
-        <View style={styles.gridContainer}>
-          <View style={[styles.gridHeader, styles.greenBackground]}>
-            <Text style={{ ...styles.gridTitle, flex: 0.7 }}> N°</Text>
-            <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text>
-            <Text style={{ ...styles.gridTitle, flex: 1 }}>EMAPROD</Text>
-            <Text
-              style={{
-                ...styles.gridTitle,
-                flex: 4,
-                textAlign: "center"
-              }}
-            >
-              Presentación
-            </Text>
-            <Text style={styles.gridTitle}>U.M</Text>
-            <Text style={styles.gridTitle}>Cantidad</Text>
-          </View>
-          <View
-            // key={index}
-            style={[styles.gridRow, { backgroundColor: "#a4a8b0" }]}
-          >
-            <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
-              {requisicion.idProdFin}
-            </Text>
-            <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
-              {requisicion.codProd}
-            </Text>
-            <Text style={{ ...styles.gridContent_p, flex: 1 }}>
-              {requisicion.codProd2}
-            </Text>
-            <Text
-              style={{
-                ...styles.gridContent_p,
-                flex: 4,
-                textAlign: "left"
-              }}
-            >
-              {requisicion.nomProd}
-            </Text>
-            <Text style={styles.gridContent_p}>{requisicion.simMed}</Text>
-            <Text style={styles.gridContent_num}>
-              {requisicion.canTotUndReqDev}
-            </Text>
-          </View>
-        </View>
-      </View>
-
+      {/* detalle de envasado */}
       <Text
         style={{
           ...styles.title,
           fontWeight: "bold",
           fontSize: 7,
-          marginLeft: -440,
-          marginTop: -12
+          marginLeft: -450,
+          marginTop: 5
         }}
       >
-        Detalle de requisición
+        Detalle Envasado
       </Text>
       <View style={{ ...styles.section, marginTop: -25 }}>
         <View style={styles.gridContainer}>
-          <View style={[styles.gridHeader, styles.green_]}>
-            <Text style={{ ...styles.gridTitle, flex: 0.7 }}> Cód Aso</Text>
-            {/* <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text> */}
+          <View style={[styles.gridHeader, styles.yellow_]}>
+            <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text>
             <Text
               style={{
                 flex: 1,
                 fontWeight: "bold",
                 textAlign: "center",
                 fontSize: 7,
-                //border: "1px solid black",
                 maxWidth: "40px"
               }}
             >
@@ -99,21 +53,9 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
             </Text>
             <Text
               style={{
-                flex: 3,
-                fontWeight: "bold",
-                textAlign: "center",
-                fontSize: 7,
-                maxWidth: "40px"
-              }}
-            >
-              Motivo
-            </Text>
-            <Text
-              style={{
                 ...styles.gridTitle,
                 flex: 4,
                 textAlign: "center"
-                //border: "1px solid black",
               }}
             >
               Descripción de Item
@@ -124,7 +66,6 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                 textAlign: "center",
                 fontSize: 7,
                 maxWidth: "30px"
-                //border: "1px solid black",
               }}
             >
               U.M
@@ -135,14 +76,13 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                 fontWeight: "bold",
                 textAlign: "center",
                 fontSize: 7,
-                //border: "1px solid black",
                 maxWidth: "40px"
               }}
             >
               Cantidad
             </Text>
           </View>
-          {detReqDev.map((detalle, index) => (
+          {requisicionEnvasado?.reqDet.map((item, index) => (
             <View
               key={index}
               style={[
@@ -151,40 +91,25 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               ]}
             >
               <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
-                {requisicion.idProdFin}
-              </Text>
-              {/* <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
-                {detalle.codProd}
-              </Text> */}
-              <Text
-                style={{
-                  flex: 1,
-                  textAlign: "center",
-                  fontSize: 5.5,
-                  maxWidth: "40px"
-                }}
-              >
-                {detalle.codProd2}
+                {item.codProd}
               </Text>
               <Text
                 style={{
-                  flex: 3,
-                  textAlign: "center",
-                  fontSize: 5.5,
-                  maxWidth: "40px"
+                  ...styles.gridContent_p,
+                  flex: 0.7,
+                  textAlign: "center"
                 }}
               >
-                {detalle.desProdDevMot}
+                {item.codProd2}
               </Text>
               <Text
                 style={{
                   ...styles.gridContent_p,
                   flex: 4,
                   textAlign: "left"
-                  //border: "1px solid black",
                 }}
               >
-                {detalle.nomProd}
+                {item.nomProd}
               </Text>
               <Text
                 style={{
@@ -192,53 +117,46 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                   textAlign: "center",
                   fontSize: 5.5,
                   maxWidth: "25px"
-                  //border: "1px solid black",
                 }}
               >
-                {detalle.simMed}
+                {item.simMed}
               </Text>
-              {/** <Text style={styles.gridContent_num}>{detalle.canReqDet}</Text> */}
               <Text
                 style={{
                   flex: 1,
                   textAlign: "center",
                   fontSize: 6.5,
                   maxWidth: "40px"
-                  //border: "1px solid black",
                 }}
               >
-                {/* {_parseInt(detalle, "canReqDet")} */}
-                {detalle.canReqDevDet}
+                {_parseInt(item, "canReqDet")}
               </Text>
             </View>
           ))}
         </View>
       </View>
-
+      {/* detalle de encajado */}
       <Text
         style={{
           ...styles.title,
           fontWeight: "bold",
           fontSize: 7,
-          marginLeft: -440,
-          marginTop: -12
+          marginLeft: -450,
+          marginTop: 5
         }}
       >
-        Detalle acumulado
+        Detalle Encajado
       </Text>
-
       <View style={{ ...styles.section, marginTop: -25 }}>
         <View style={styles.gridContainer}>
-          <View style={[styles.gridHeader, styles.green_]}>
-            <Text style={{ ...styles.gridTitle, flex: 0.7 }}> Cód Aso</Text>
-            {/* <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text> */}
+          <View style={[styles.gridHeader, styles.yellow_]}>
+            <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text>
             <Text
               style={{
                 flex: 1,
                 fontWeight: "bold",
                 textAlign: "center",
                 fontSize: 7,
-                //border: "1px solid black",
                 maxWidth: "40px"
               }}
             >
@@ -249,7 +167,6 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                 ...styles.gridTitle,
                 flex: 4,
                 textAlign: "center"
-                //border: "1px solid black",
               }}
             >
               Descripción de Item
@@ -260,7 +177,6 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                 textAlign: "center",
                 fontSize: 7,
                 maxWidth: "30px"
-                //border: "1px solid black",
               }}
             >
               U.M
@@ -271,14 +187,13 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                 fontWeight: "bold",
                 textAlign: "center",
                 fontSize: 7,
-                //border: "1px solid black",
                 maxWidth: "40px"
               }}
             >
-              Cantidad total
+              Cantidad
             </Text>
           </View>
-          {acumulado.map((detalle, index) => (
+          {requisicionEncajado?.reqDet.map((item, index) => (
             <View
               key={index}
               style={[
@@ -287,30 +202,25 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               ]}
             >
               <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
-                {requisicion.idProdFin}
+                {item.codProd}
               </Text>
-              {/* <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
-                {detalle.codProd}
-              </Text> */}
               <Text
                 style={{
-                  flex: 1,
-                  textAlign: "center",
-                  fontSize: 5.5,
-                  maxWidth: "40px"
+                  ...styles.gridContent_p,
+                  flex: 0.7,
+                  textAlign: "center"
                 }}
               >
-                {detalle.codProd2}
+                {item.codProd2}
               </Text>
               <Text
                 style={{
                   ...styles.gridContent_p,
                   flex: 4,
                   textAlign: "left"
-                  //border: "1px solid black",
                 }}
               >
-                {detalle.nomProd}
+                {item.nomProd}
               </Text>
               <Text
                 style={{
@@ -318,23 +228,19 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                   textAlign: "center",
                   fontSize: 5.5,
                   maxWidth: "25px"
-                  //border: "1px solid black",
                 }}
               >
-                {detalle.simMed}
+                {item.simMed}
               </Text>
-              {/** <Text style={styles.gridContent_num}>{detalle.canReqDet}</Text> */}
               <Text
                 style={{
                   flex: 1,
                   textAlign: "center",
                   fontSize: 6.5,
                   maxWidth: "40px"
-                  //border: "1px solid black",
                 }}
               >
-                {/* {_parseInt(detalle, "canReqDet")} */}
-                {detalle.acu}
+                {_parseInt(item, "canReqDet")}
               </Text>
             </View>
           ))}

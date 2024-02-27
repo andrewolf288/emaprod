@@ -9,13 +9,13 @@ import {
 } from "@react-pdf/renderer";
 import logo from "../emaran.png";
 import { stylesPDF } from "../pdf-components/stylePDF";
-import { PDFRequisicionDevolucion } from "./PDFRequisicionDevolucion";
+import { PDFTransformacionRequisicion } from "./PDFTransformacionRequisicion";
+import { PDFTransformacionDevolucion } from "./PDFTransformacionDevolucion";
 
 const styles = stylesPDF;
 
-export const PDFDevoluciones = ({ data }) => {
-  const { produccion, requisicion, acumulado } = data;
-
+export const PDFTransformacion = ({ data }) => {
+  const { requisicion, requisicionDevolucion, requisicionMateriales } = data;
   return (
     <PDFViewer width="100%" height="100%">
       <Document>
@@ -36,9 +36,9 @@ export const PDFDevoluciones = ({ data }) => {
                 style={{ ...styles.logo, marginTop: -105, marginLeft: 20 }}
               />
             </View>
-
+            {/* DATOS DE OPERACION */}
             <View style={{ ...styles.row, marginTop: -10 }}>
-              {/* DETALLE DE LA REQUISICION DE LA AGREGACIÓN */}
+              {/* DETALLE DE PRODUCTOS TRANSFORMADOS */}
               <View style={styles.column}>
                 <Text
                   style={{
@@ -50,7 +50,7 @@ export const PDFDevoluciones = ({ data }) => {
                     marginLeft: 20
                   }}
                 >
-                  Presentación intermedio: {produccion.nomProd}
+                  Presentación a transfomar: {requisicion.nomProd1}
                 </Text>
                 <Text
                   style={{
@@ -62,7 +62,7 @@ export const PDFDevoluciones = ({ data }) => {
                     marginLeft: 20
                   }}
                 >
-                  Fecha de Inicio Programado: {produccion.fecProdIniProg}
+                  Cantidad a transformar: {requisicion.canUndProdtOri}
                 </Text>
                 ,
                 <Text
@@ -75,7 +75,7 @@ export const PDFDevoluciones = ({ data }) => {
                     marginLeft: 20
                   }}
                 >
-                  Fecha de Fin Programado: {produccion.fecProdFinProg}
+                  Presentación transformada: {requisicion.nomProd2}
                 </Text>
                 <Text
                   style={{
@@ -87,52 +87,10 @@ export const PDFDevoluciones = ({ data }) => {
                     marginLeft: 20
                   }}
                 >
-                  Fecha de Vencimiento Lt: {produccion.fecVenLotProd}
+                  Cantidad transformada: {requisicion.canUndProdtDes}
                 </Text>
-                <Text
-                  style={{
-                    ...styles.content,
-                    fontSize: 9,
-                    maxWidth: "50%",
-                    marginBottom: 2,
-                    marginTop: 2,
-                    marginLeft: 20
-                  }}
-                >
-                  Observaciones
-                </Text>
-                <View
-                  style={{
-                    padding: 1,
-                    fontWeight: "bold",
-                    maxWidth: "90%",
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: "#000",
-                    height: 25,
-                    marginTop: 2,
-                    marginLeft: 20
-                  }}
-                >
-                  <Text
-                    style={{
-                      ...styles.content,
-                      fontSize: 9,
-                      marginLeft: 10,
-                      marginRight: 0,
-                      paddingRight: 0,
-                      inlineSize: "50px",
-                      overflowWrap: "break-word",
-                      maxWidth: 275,
-                      maxHeight: 275
-                    }}
-                  >
-                    {produccion.obsProd}
-                  </Text>
-                </View>
               </View>
-
-              {/* DETALLE DE LA PRODUCCIÓN */}
+              {/* DETALLE DE LOTE */}
               <View style={{ ...styles.row, marginTop: -40 }}>
                 <View style={styles.column}>
                   <Text
@@ -147,23 +105,11 @@ export const PDFDevoluciones = ({ data }) => {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      paddingLeft: 70
+                      paddingLeft: 48
                     }}
                   >
-                    DEVOLUCIÓN
+                    TRANSFORMACIÓN
                   </Text>
-                  <Text
-                    style={{
-                      ...styles.gridContent,
-                      flexDirection: "row",
-                      marginLeft: 30,
-                      marginTop: 10,
-                      textAlign: "center"
-                    }}
-                  >
-                    {requisicion["correlativo"]}
-                  </Text>
-
                   <View
                     style={{
                       ...styles.sectionWithBorder,
@@ -183,7 +129,7 @@ export const PDFDevoluciones = ({ data }) => {
                         maxWidth: "100%"
                       }}
                     >
-                      Tipo de Producción: {produccion.desProdTip}
+                      Tipo de Producción: Envasado y Encajado
                     </Text>
 
                     <Text
@@ -194,32 +140,7 @@ export const PDFDevoluciones = ({ data }) => {
                         maxWidth: "100%"
                       }}
                     >
-                      Número de Lote: {produccion.codLotProd}
-                    </Text>
-                    <Text
-                      style={{
-                        ...styles.content,
-                        marginLeft: 10,
-                        marginTop: 4
-                      }}
-                    >
-                      Cantidad total de unidades:{" "}
-                      {parseInt(produccion.totalUnidadesLoteProduccion) +
-                        " UND"}
-                    </Text>
-
-                    <Text
-                      style={{
-                        ...styles.content,
-                        marginLeft: 10,
-                        marginTop: 4,
-                        maxWidth: "100%"
-                      }}
-                    >
-                      Peso Programado:{" "}
-                      {parseFloat(produccion.klgTotalLoteProduccion).toFixed(
-                        2
-                      ) + " KG"}
+                      Número de Lote: {requisicion.codLotProd}
                     </Text>
                   </View>
 
@@ -232,16 +153,20 @@ export const PDFDevoluciones = ({ data }) => {
                       fontSize: 8
                     }}
                   >
-                    Fecha de Creación: {requisicion.fecCreReqDev}
+                    Fecha de Creación: {requisicion.fecCreOrdTrans}
                   </Text>
                 </View>
               </View>
             </View>
-
-            {/* DETALLE DE REQUISICION DE AGREGACION */}
-            <PDFRequisicionDevolucion
-              requisicion={requisicion}
-              acumulado={acumulado}
+            {/* REQUISICION DE MAERIALES */}
+            <PDFTransformacionRequisicion
+              requisicion={requisicionMateriales}
+              styles={styles}
+            />
+            {/* REQUISICION DE DEVOLUCION */}
+            <PDFTransformacionDevolucion
+              requisicion={requisicionDevolucion}
+              styles={styles}
             />
           </View>
         </Page>
