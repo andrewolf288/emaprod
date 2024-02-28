@@ -21,13 +21,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Ejecutar la consulta preparada para la inserción con los valores específicos
     $atributos_calidad = [
-        ['% MADUROS', 1, '', 1, 'ANALISIS POSTCOSECHA'],
-        ['% VERDES', 1, '', 1, 'ANALISIS POSTCOSECHA'],
-        ['% PUNTA VERDE', 1, '', 1, 'ANALISIS POSTCOSECHA'],
-        ['% APLASTADOS O PODRIDOS', 1, '', 1, 'ANALISIS POSTCOSECHA'],
-        ['PICOR', 4, '1 (poco picante),2,3,4,5 (muy picante),No corresponte', 2, "ANALISIS FISICOQUIMICOS"],
-        ['TAMAÑO MIN 7 CM', 4, 'C,LI,I', 2, 'ANALISIS FISICOQUIMICOS'],
-        ['ST (°Brix)', 1, '', 2, 'ANALISIS FISICOQUIMICOS'],
+        ['% LIMPIOS', 1, '', 1, 'ANALISIS POSTCOSECHA'],
+        ['% HONGOS', 1, '', 1, 'ANALISIS POSTCOSECHA'],
+        ['% PICADO DE GUSANO', 1, '', 1, 'ANALISIS POSTCOSECHA'],
+        ['% HUMEDAD', 1, '', 2, 'ANALISIS FQO'],
         ['V°B PROD.', 4, 'Vilma,Carlos', NULL, NULL]
     ];
 

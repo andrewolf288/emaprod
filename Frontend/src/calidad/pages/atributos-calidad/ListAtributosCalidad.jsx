@@ -9,18 +9,12 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TablePagination from "@mui/material/TablePagination";
 // IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from "@mui/material/Alert";
 import { TextField } from "@mui/material";
 import { Link } from "react-router-dom";
 import { getProductoWithAtributosCalidad } from "../../helpers/atributos-calidad/getProductoWithAtributosCalidad";
 import { FilterSubClase } from "../../../components/ReferencialesFilters/SubClase/FilterSubClase";
 import { AtributoCalidadDetalle } from "../../components/atributos-calidad/AtributoCalidadDetalle";
 import { FilterMateriaPrimaDynamic2 } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic2";
-
-// CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 export const ListAtributosCalidad = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
@@ -34,26 +28,6 @@ export const ListAtributosCalidad = () => {
   // ESTADOS PARA LA PAGINACIÓN
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
-
-  const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setfeedbackDelete(false);
-  };
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
@@ -76,10 +50,6 @@ export const ListAtributosCalidad = () => {
 
   const onChangeSubClase = ({ label }) => {
     filter(label, "filterSubClase");
-  };
-  const onChangeDateFechaActualizado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaActualizado");
   };
 
   // funcion para filtrar la data
@@ -131,24 +101,6 @@ export const ListAtributosCalidad = () => {
         });
         setdataAtributosTemp(resultSearch);
         break;
-      case "filterFechaActualizado":
-        resultSearch = dataAtributos.filter((element) => {
-          if (element.fecActForProTer !== null) {
-            let aux = element.fecActForProTer.split(" ");
-            if (
-              aux[0]
-                .toString()
-                .toLowerCase()
-                .includes(terminoBusqueda.toLowerCase())
-            ) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        });
-        setdataAtributosTemp(resultSearch);
-        break;
       default:
         break;
     }
@@ -162,11 +114,7 @@ export const ListAtributosCalidad = () => {
       setdataAtributos(result);
       setdataAtributosTemp(result);
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      alert(description_error);
     }
   };
 
