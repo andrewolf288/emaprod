@@ -125,9 +125,8 @@ export const ListAtributosCalidad = () => {
     setDetalleSeleccionado(null);
   };
 
-  // MOSTRAR Y OCULTAR DETALLE DE REQUISICION MOLIENDA
-  const showAtributosDetalle = (idPosElement) => {
-    const atributosDetalle = dataAtributosTemp[idPosElement]["detAtrCal"];
+  // MOSTRAR Y OCULTAR DETALLE DE atributosDetalle MOLIENDA
+  const showAtributosDetalle = (atributosDetalle) => {
     // seteamos la data de la requisicion seleccionada
     setDetalleSeleccionado(atributosDetalle);
     // mostramos el modal
@@ -260,7 +259,7 @@ export const ListAtributosCalidad = () => {
                           <div className="btn-toolbar">
                             <button
                               onClick={() => {
-                                showAtributosDetalle(i);
+                                showAtributosDetalle(row["detAtrCal"]);
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"

@@ -12,7 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $idCla = 1; // clase materia prima
+    $idClaMatPri = 2;
+    $idClaEnvEnc = 5;
     $sql_select_producto_with_atributos =
         "SELECT 
     p.id,
@@ -24,17 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     p.codProd2
     FROM producto as p
     JOIN medida as me on me.id = p.idMed
-    JOIN sub_clase as sc on sc.id = p.idSubCla
-    WHERE p.idCla = ?";
+    JOIN sub_clase as sc on sc.id = p.idSubCla";
     $stmt_selet_producto_with_atributos = $pdo->prepare($sql_select_producto_with_atributos);
-    $stmt_selet_producto_with_atributos->bindParam(1, $idCla, PDO::PARAM_INT);
     $stmt_selet_producto_with_atributos->execute();
 
-    $productos = $stmt_selet_producto_with_atributos->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($productos as $producto) {
-        $idProdt = $producto["id"];
-        $producto["detAtrCal"] = array();
+    while ($row_atributos_producto = $stmt_selet_producto_with_atributos->fetch(PDO::FETCH_ASSOC)) {
+        $idProdt = $row_atributos_producto["id"];
 
         $sql_select_atributos_calidad =
             "SELECT * FROM producto_atributo_calidad
@@ -43,9 +39,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_select_atributos_calidad->bindParam(1, $idProdt, PDO::PARAM_INT);
         $stmt_select_atributos_calidad->execute();
 
-        $producto["detAtrCal"] = $stmt_select_atributos_calidad->fetchAll(PDO::FETCH_ASSOC);
+        $row_atributos_producto["detAtrCal"] = $stmt_select_atributos_calidad->fetchAll(PDO::FETCH_ASSOC);
 
-        array_push($result, $producto);
+        array_push($result, $row_atributos_producto);
     }
 
     // Retornamos el resultado

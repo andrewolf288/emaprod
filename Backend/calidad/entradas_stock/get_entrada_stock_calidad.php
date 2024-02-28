@@ -53,14 +53,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.ordCom,
             es.guiRem,
             ec.id AS idEntCal,
+            ec.idEntCalEst,
+            ece.desEntCalEst,
             ec.idResEntCal,
-            ec.esAprEnt,
             ec.fecActEntCal
             FROM entrada_stock es
             JOIN producto AS p ON p.id = es.idProd
             JOIN proveedor AS pv ON pv.id = es.idProv
             JOIN entrada_stock_estado AS ese ON ese.id = es.idEntStoEst
             JOIN entrada_calidad AS ec ON ec.idEnt = es.id
+            LEFT JOIN entrada_calidad_estado AS ece ON ece.id = ec.idEntCalEst
             WHERE DATE(es.fecEntSto) BETWEEN ? AND ? ORDER BY es.fecEntSto DESC";
 
         try {

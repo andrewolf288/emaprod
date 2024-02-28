@@ -32,7 +32,6 @@ import { getEntradasStockCalidad } from "../../helpers/entradas-stock/getEntrada
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { FilterAllProductosFilters } from "../../../components/ReferencialesFilters/Producto/FilterAllProductosFilters";
 import PreviewIcon from "@mui/icons-material/Preview";
-import { verifyEntradaCalidad } from "../../helpers/entradas-stock/verifyEntradaCalidad";
 
 // CONFIGURACIONES DE ESTILOS
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -123,37 +122,38 @@ export const ListEntradaStockCalidad = () => {
 
   const obtenerDataEntradaStockCalidad = async (body = null) => {
     const resultPeticion = await getEntradasStockCalidad(body);
-    const { result } = resultPeticion;
+    const { result, message_error, description_error } = resultPeticion;
+    console.log(result, message_error, description_error);
     setdataEntSto(result);
     setdataEntStoTemp(result);
   };
 
-  const handledChangeEstadoVerificacion = async (estado, item) => {
-    const { id, idEntCal } = item;
+  // const handledChangeEstadoVerificacion = async (estado, item) => {
+  //   const { id, idEntCal } = item;
 
-    const body = {
-      id: id,
-      idEntCal: idEntCal,
-      esAprEnt: estado
-    };
+  //   const body = {
+  //     id: id,
+  //     idEntCal: idEntCal,
+  //     esAprEnt: estado
+  //   };
 
-    const resultPeticion = await verifyEntradaCalidad(body);
-    const { message_error, description_error } = resultPeticion;
-    if (message_error.length === 0) {
-      setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se verifico exitosamente"
-      });
-      handleClickFeeback();
-      obtenerDataEntradaStockCalidad();
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
-    }
-  };
+  //   const resultPeticion = await verifyEntradaCalidad(body);
+  //   const { message_error, description_error } = resultPeticion;
+  //   if (message_error.length === 0) {
+  //     setfeedbackMessages({
+  //       style_message: "success",
+  //       feedback_description_error: "Se verifico exitosamente"
+  //     });
+  //     handleClickFeeback();
+  //     obtenerDataEntradaStockCalidad();
+  //   } else {
+  //     setfeedbackMessages({
+  //       style_message: "error",
+  //       feedback_description_error: description_error
+  //     });
+  //     handleClickFeeback();
+  //   }
+  // };
 
   useEffect(() => {
     obtenerDataEntradaStockCalidad();
@@ -302,7 +302,7 @@ export const ListEntradaStockCalidad = () => {
                 >
                   <TableCell align="center">{row.fecEntSto}</TableCell>
                   <TableCell align="center">
-                    {row.esAprEnt !== null ? (
+                    {row.idEntCalEst !== null ? (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="30"
@@ -329,12 +329,16 @@ export const ListEntradaStockCalidad = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    {row.esAprEnt === null ? (
+                    {row.idEntCalEst === null ? (
                       <span className="badge bg-secondary">No evaluado</span>
-                    ) : row.esAprEnt === 1 ? (
-                      <span className="badge bg-success">Aprobado</span>
+                    ) : row.idEntCalEst === 1 ? (
+                      <span className="badge bg-success">
+                        {row.desEntCalEst}
+                      </span>
                     ) : (
-                      <span className="badge bg-danger">No aprobado</span>
+                      <span className="badge bg-danger">
+                        {row.desEntCalEst}
+                      </span>
                     )}
                   </TableCell>
                   <TableCell>{row.nomProd}</TableCell>
@@ -381,10 +385,10 @@ export const ListEntradaStockCalidad = () => {
                       >
                         <VisibilityIcon fontSize="large" color="primary" />
                       </IconButton>
-                      <DialogAprobarSalidaFIFO
+                      {/* <DialogAprobarSalidaFIFO
                         handleProcess={handledChangeEstadoVerificacion}
                         element={row}
-                      />
+                      /> */}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -413,59 +417,59 @@ export const ListEntradaStockCalidad = () => {
   );
 };
 
-const DialogAprobarSalidaFIFO = ({ handleProcess, element }) => {
-  const [open, setOpen] = React.useState(false);
+// const DialogAprobarSalidaFIFO = ({ handleProcess, element }) => {
+//   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-  return (
-    <div>
-      <IconButton onClick={handleClickOpen}>
-        <PreviewIcon fontSize="large" color="warning" />
-      </IconButton>
-      <BootstrapDialog
-        maxWidth={"l"}
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-      >
-        <DialogTitle id="alert-dialog-title">Evaluacion de calidad</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            ¿Quiere permitir que esta entrada sea utilizada para el FIFO?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button color="inherit" variant="contained" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button
-            color="error"
-            variant="contained"
-            onClick={() => {
-              handleProcess(false, element);
-              handleClose();
-            }}
-          >
-            Restringir
-          </Button>
-          <Button
-            color="primary"
-            variant="contained"
-            autoFocus
-            onClick={() => {
-              handleProcess(true, element);
-              handleClose();
-            }}
-          >
-            Permitir
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
-    </div>
-  );
-};
+//   const handleClickOpen = () => {
+//     setOpen(true);
+//   };
+//   const handleClose = () => {
+//     setOpen(false);
+//   };
+//   return (
+//     <div>
+//       <IconButton onClick={handleClickOpen}>
+//         <PreviewIcon fontSize="large" color="warning" />
+//       </IconButton>
+//       <BootstrapDialog
+//         maxWidth={"l"}
+//         onClose={handleClose}
+//         aria-labelledby="customized-dialog-title"
+//         open={open}
+//       >
+//         <DialogTitle id="alert-dialog-title">Evaluacion de calidad</DialogTitle>
+//         <DialogContent>
+//           <DialogContentText id="alert-dialog-description">
+//             ¿Quiere permitir que esta entrada sea utilizada para el FIFO?
+//           </DialogContentText>
+//         </DialogContent>
+//         <DialogActions>
+//           <Button color="inherit" variant="contained" onClick={handleClose}>
+//             Cancelar
+//           </Button>
+//           <Button
+//             color="error"
+//             variant="contained"
+//             onClick={() => {
+//               handleProcess(false, element);
+//               handleClose();
+//             }}
+//           >
+//             Restringir
+//           </Button>
+//           <Button
+//             color="primary"
+//             variant="contained"
+//             autoFocus
+//             onClick={() => {
+//               handleProcess(true, element);
+//               handleClose();
+//             }}
+//           >
+//             Permitir
+//           </Button>
+//         </DialogActions>
+//       </BootstrapDialog>
+//     </div>
+//   );
+// };
