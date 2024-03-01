@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import { getProductoWithAtributosCalidad } from "../../helpers/atributos-calidad/getProductoWithAtributosCalidad";
 import { FilterSubClase } from "../../../components/ReferencialesFilters/SubClase/FilterSubClase";
 import { AtributoCalidadDetalle } from "../../components/atributos-calidad/AtributoCalidadDetalle";
-import { FilterMateriaPrimaDynamic2 } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic2";
+import { FilterAllProductosFilters } from "../../../components/ReferencialesFilters/Producto/FilterAllProductosFilters";
 
 export const ListAtributosCalidad = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
@@ -213,7 +213,7 @@ export const ListAtributosCalidad = () => {
                   >
                     <TableCell align="left" width={220}>
                       <b>Producto</b>
-                      <FilterMateriaPrimaDynamic2
+                      <FilterAllProductosFilters
                         onNewInput={onChangeProducto}
                       />
                     </TableCell>

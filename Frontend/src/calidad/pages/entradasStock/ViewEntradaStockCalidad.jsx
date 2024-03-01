@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 // IMPORTACIONES PARA EL FEEDBACK
 import Snackbar from "@mui/material/Snackbar";
@@ -7,16 +7,9 @@ import MuiAlert from "@mui/material/Alert";
 import { getEntradaStockCalidadById } from "../../helpers/entradas-stock/getEntradaStockCalidadById";
 import { CardAtributosCalidadEntrada } from "../../components/entrada-stock/CardAtributosCalidadEntrada";
 import { FilterEncargadoCalidad } from "../../../components/ReferencialesFilters/EncargadoCalidad/FilterEncargadoCalidad";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Typography
-} from "@mui/material";
 import { createEntradaAtributosCalidad } from "../../helpers/entradas-stock/createEntradaAtributosCalidad";
+import { FilterEstadoCalidad } from "../../../components/ReferencialesFilters/EstadoCalidad/FilterEstadoCalidad";
+import { Typography } from "@mui/material";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -58,9 +51,9 @@ export const ViewEntradaStockCalidad = () => {
     informacion_valores_atributos: [],
     informacion_calidad: {
       idResEntCal: null,
+      idEntCalEst: null,
       obsAccEntCal: ""
-    },
-    informacion_calidad: {}
+    }
   });
   const {
     nomProd,
@@ -89,13 +82,25 @@ export const ViewEntradaStockCalidad = () => {
     informacion_calidad
   } = dataEntradaStockCalidad;
 
-  const { idResEntCal, obsAccEntCal } = informacion_calidad;
+  const { idResEntCal, idEntCalEst, obsAccEntCal } = informacion_calidad;
 
   const onChangeEncargadoEvaluacionCaidad = (value) => {
     const { id } = value;
     const formatDataCalidad = {
       ...informacion_calidad,
       idResEntCal: id
+    };
+    setDataEntradaStockCalidad({
+      ...dataEntradaStockCalidad,
+      informacion_calidad: formatDataCalidad
+    });
+  };
+
+  const onChangeEstadoEvaluacionCaidad = (value) => {
+    const { id } = value;
+    const formatDataCalidad = {
+      ...informacion_calidad,
+      idEntCalEst: id
     };
     setDataEntradaStockCalidad({
       ...dataEntradaStockCalidad,
@@ -114,12 +119,6 @@ export const ViewEntradaStockCalidad = () => {
       ...dataEntradaStockCalidad,
       informacion_calidad: formatDataCalidad
     });
-  };
-
-  // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
-  const onNavigateBack = () => {
-    navigate(-1);
   };
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
@@ -145,24 +144,6 @@ export const ViewEntradaStockCalidad = () => {
   // ESTADO PARA BOTON CREAR
   const [disableButton, setdisableButton] = useState(false);
 
-  // controlador para dialog de confirmacion de entrada parcial
-  const [openDialogAprobarEntradaFIFO, setopenDialogAprobarEntradaFIFO] =
-    useState(false);
-
-  const handleOpenDialogAprobarEntradaFIFO = () => {
-    setopenDialogAprobarEntradaFIFO(true);
-  };
-
-  const handleCloseDialogAprobarEntradaFIFO = () => {
-    setopenDialogAprobarEntradaFIFO(false);
-    setdisableButton(false);
-  };
-
-  const handleProcessRespondeDialogAprobarEntradaFIFO = (aprobado) => {
-    // llamamos a la api
-    guardarDatosAtributosCalidad(aprobado);
-  };
-
   // funcion para cambiar valor de texto y numero
   const onChangeValoresAlfanumericos = ({ target }, element) => {
     const { value } = target;
@@ -186,27 +167,28 @@ export const ViewEntradaStockCalidad = () => {
 
   // manejador de errores de atributos de calidad
   const handleGuardarAtributos = () => {
+    let handledError = "";
+
     if (idResEntCal === null) {
+      handledError += "Debe agregar información del encargado de evaluación\n";
+    }
+    if (idEntCalEst === null) {
+      handledError += "Debe agregar información del estado de calidad\n";
+    }
+
+    if (handledError.length !== 0) {
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error:
-          "Debe agregar información del encargado de evaluación"
+        feedback_description_error: handledError
       });
       handleClickFeeback();
     } else {
-      setdisableButton(true);
-      // guardarDatosAtributosCalidad();
-      // si recien se ingreso a la vista para completar datos de calidad
-      if (informacion_valores_atributos.length === 0) {
-        handleOpenDialogAprobarEntradaFIFO();
-      } else {
-        guardarDatosAtributosCalidad();
-      }
+      guardarDatosAtributosCalidad();
     }
   };
 
   // funcion para guardar atributos de calidad asociados a entrada
-  const guardarDatosAtributosCalidad = async (estado = null) => {
+  const guardarDatosAtributosCalidad = async () => {
     // primero debemos mostrar un dialog que pregunte si quiere habilitarlo para FIFO
     // guardamos informacion de calidad
     // 1. debemos verificar que atributos son para insertar y cuales son para actualizar
@@ -217,6 +199,7 @@ export const ViewEntradaStockCalidad = () => {
     // - si ya fue registrado, entonces hablamos de una actualizacion
     // - si no fue registrado; entonces hablamos de una nueva insercion
 
+    setdisableButton(true);
     const dataAtributos = dataAtributosEntradaCalidad.map((itemData) => {
       const valueAtributo = itemData["valEntCalAtr"].trim();
       // buscamos
@@ -269,16 +252,6 @@ export const ViewEntradaStockCalidad = () => {
       dataAtributosEntradaCalidad: filterDatosDelete
     };
 
-    if (estado !== null) {
-      formatData = {
-        ...formatData,
-        informacion_calidad: {
-          ...informacion_calidad,
-          esAprEnt: estado
-        }
-      };
-    }
-
     console.log(formatData);
     const resultPeticion = await createEntradaAtributosCalidad(formatData);
     console.log(resultPeticion);
@@ -290,11 +263,7 @@ export const ViewEntradaStockCalidad = () => {
         feedback_description_error: description_error
       });
       handleClickFeeback();
-      // cerramos el dialog
-      handleCloseDialogAprobarEntradaFIFO();
     } else {
-      // cerramos dialog
-      handleCloseDialogAprobarEntradaFIFO();
       // mostrar exito
       setfeedbackMessages({
         style_message: "success",
@@ -306,6 +275,7 @@ export const ViewEntradaStockCalidad = () => {
         window.close();
       }, "1000");
     }
+    setdisableButton(false);
   };
 
   useEffect(() => {
@@ -333,7 +303,7 @@ export const ViewEntradaStockCalidad = () => {
         if (element.labGruAtr === null) {
           labelGenerales = true;
         }
-        // buscamos si se ha registrado un valor del atrbiuto de calidad
+        // buscamos si se ha registrado un valor del atributo de calidad
         const findElement = informacion_valores_atributos.find(
           (atributo) => element.id === atributo.idProdtAtrCal
         );
@@ -680,7 +650,8 @@ export const ViewEntradaStockCalidad = () => {
                 </h6>
                 <div className="card-body">
                   <div className="mb-2 row">
-                    <div className="col-md-4">
+                    <div className="col-md-3">
+                      {/* ENCARGADO DE CALIDAD */}
                       <label htmlFor="nombre" className="form-label">
                         <b>Encargado calidad</b>
                       </label>
@@ -689,7 +660,20 @@ export const ViewEntradaStockCalidad = () => {
                         defaultValue={idResEntCal}
                       />
                     </div>
-                    <div className="col-md-8">
+                    {/* ESTADO DE CALIDAD */}
+                    <div className="col-md-3">
+                      {/* ENCARGADO DE CALIDAD */}
+                      <label htmlFor="nombre" className="form-label">
+                        <b>Estado revisión</b>
+                      </label>
+                      <FilterEstadoCalidad
+                        onNewInput={onChangeEstadoEvaluacionCaidad}
+                        defaultValue={idEntCalEst}
+                      />
+                    </div>
+
+                    {/* OBSERVACIONES */}
+                    <div className="col-md-6">
                       <label htmlFor="nombre" className="form-label">
                         <b>Observaciones/Acciones correctivas</b>
                       </label>
@@ -719,10 +703,12 @@ export const ViewEntradaStockCalidad = () => {
               <div className="btn-toolbar mt-4 mb-4">
                 <button
                   type="button"
-                  onClick={onNavigateBack}
+                  onClick={() => {
+                    window.close();
+                  }}
                   className="btn btn-secondary me-2"
                 >
-                  Volver
+                  Cerrar
                 </button>
                 <button
                   type="submit"
@@ -738,13 +724,6 @@ export const ViewEntradaStockCalidad = () => {
         </>
       )}
       {loading && <div>Cargando...</div>}
-      {openDialogAprobarEntradaFIFO && (
-        <DialogAprobarSalidaFIFO
-          open={openDialogAprobarEntradaFIFO}
-          handleClose={handleCloseDialogAprobarEntradaFIFO}
-          handleProcess={handleProcessRespondeDialogAprobarEntradaFIFO}
-        />
-      )}
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
@@ -763,49 +742,5 @@ export const ViewEntradaStockCalidad = () => {
         </Alert>
       </Snackbar>
     </>
-  );
-};
-
-const DialogAprobarSalidaFIFO = ({ open, handleClose, handleProcess }) => {
-  return (
-    <React.Fragment>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Evaluacion de calidad</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            ¿Quiere permitir que esta entrada sea utilizada para el FIFO?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button color="inherit" variant="contained" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button
-            color="error"
-            variant="contained"
-            onClick={() => {
-              handleProcess(false);
-            }}
-          >
-            Restringir
-          </Button>
-          <Button
-            color="primary"
-            variant="contained"
-            autoFocus
-            onClick={() => {
-              handleProcess(true);
-            }}
-          >
-            Permitir
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
   );
 };

@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $refProdtProg = $data["refProdtProg"]; // referencia producto programado
     $canProdIng = $data["canProdIng"]; // cantidad ingresada
     $fecProdIngAlm = date('Y-m-d H:i:s'); // fecha ingreso almacen
+    $idAlmacenPrincipal = 1;
 
     //regProFin
     if ($pdo) {
@@ -54,13 +55,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "SELECT 
             max(CAST(refNumIngEntSto AS UNSIGNED)) as refNumIngEntSto
             FROM entrada_stock
-            WHERE idProd = ? AND YEAR(fecEntSto) = ?
+            WHERE idProd = ? AND YEAR(fecEntSto) = ? AND idAlm = ?
             ORDER BY refNumIngEntSto DESC LIMIT 1";
 
             // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
             $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
             $stmt_numero_entrada->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_numero_entrada->bindParam(2, $anio_actual, PDO::PARAM_STR);
+            $stmt_numero_entrada->bindParam(3, $idAlmacenPrincipal, PDO::PARAM_INT);
             $stmt_numero_entrada->execute();
             $row_numero_entrada = $stmt_numero_entrada->fetch(PDO::FETCH_ASSOC);
 

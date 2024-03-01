@@ -40,12 +40,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Ejecutar la consulta preparada para la inserción con los valores específicos
         $atributos_calidad = [
-            ['Certificado de calidad', 3, 'C,F', NULL, NULL],
+            ['Certificado de calidad', 3, 'C,F', 1, 'DATOS DEL PRODUCTO'],
             ['Lote', 2, '', 1, 'DATOS DEL PRODUCTO'],
             ['Fecha de producción', 5, '', 1, 'DATOS DEL PRODUCTO'],
             ['Fecha de vencimiento', 5, '', 1, 'DATOS DEL PRODUCTO'],
-            ['% Humedad', 1, '', NULL, NULL],
-            ['Conformidad', 3, 'C,I', NULL, NULL]
+            ['% Humedad', 1, '', 2, 'EVALUACIÓN FÍSICO QUÍMICO'],
         ];
 
         foreach ($atributos_calidad as $atributo) {

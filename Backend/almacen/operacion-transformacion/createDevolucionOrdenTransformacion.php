@@ -201,18 +201,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $anio_actual = date('Y'); // obtenemos año actual
             $refNumIngEntSto = 0; // numero de referencia de ingreso
             $codEntSto = ""; // codigo de entrada de stock
+            $idAlmacenPrincipal = 1;
 
             $sql_numero_entrada =
                 "SELECT 
             max(CAST(refNumIngEntSto AS UNSIGNED)) as refNumIngEntSto
             FROM entrada_stock
-            WHERE idProd = ? AND YEAR(fecEntSto) = ?
+            WHERE idProd = ? AND YEAR(fecEntSto) = ? AND idAlm = ?
             ORDER BY refNumIngEntSto DESC LIMIT 1";
 
             // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
             $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
             $stmt_numero_entrada->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_numero_entrada->bindParam(2, $anio_actual, PDO::PARAM_STR);
+            $stmt_numero_entrada->bindParam(3, $idAlmacenPrincipal, PDO::PARAM_INT);
             $stmt_numero_entrada->execute();
             $row_numero_entrada = $stmt_numero_entrada->fetch(PDO::FETCH_ASSOC);
 
@@ -231,7 +233,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idLastCreationEntradaStock = 0;
             $idProv = 1;
             $codProv = "00";
-            $idAlmacenPrincipal = 1;
             $idEntStoEst = 1;
             $letAniEntSto = obtenerLetraCorrespondiente();
             $diaJulEntSto = obtenerDiaJulianoActual();

@@ -15,9 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $json = file_get_contents('php://input');
         $data = json_decode($json, true);
 
-        $idEntradaStock = $data["id"]; // entrada stock
         $idEntradaCalidad = $data["informacion_calidad"]["id"]; // entrada calidad
-        $esAprEnt = $data["informacion_calidad"]["esAprEnt"]; // aprobacion de calidad
+        $idEntCalEst = $data["informacion_calidad"]["idEntCalEst"]; // aprobacion de calidad
         $idResEntCal = $data["informacion_calidad"]["idResEntCal"]; // responsable de evaluacion
         $obsAccEntCal = $data["informacion_calidad"]["obsAccEntCal"]; //observacion de evaluacion
         $dataAtributosEntradaCalidad = $data["dataAtributosEntradaCalidad"]; // data a procesar
@@ -27,12 +26,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $fecActEntCal = date('Y-m-d H:i:s');;
             // primero debemos actualizar los datos de calidad
             $sql_update_entrada_calidad =
-                "UPDATE entrada_calidad SET idResEntCal = ?, obsAccEntCal = ?, esAprEnt = ?, fecActEntCal = ?
+                "UPDATE entrada_calidad SET idResEntCal = ?, obsAccEntCal = ?, idEntCalEst = ?, fecActEntCal = ?
             WHERE id = ?";
             $stmt_update_entrada_calidad = $pdo->prepare($sql_update_entrada_calidad);
             $stmt_update_entrada_calidad->bindParam(1, $idResEntCal, PDO::PARAM_INT);
             $stmt_update_entrada_calidad->bindParam(2, $obsAccEntCal, PDO::PARAM_STR);
-            $stmt_update_entrada_calidad->bindParam(3, $esAprEnt, PDO::PARAM_BOOL);
+            $stmt_update_entrada_calidad->bindParam(3, $idEntCalEst, PDO::PARAM_BOOL);
             $stmt_update_entrada_calidad->bindParam(4, $fecActEntCal, PDO::PARAM_STR);
             $stmt_update_entrada_calidad->bindParam(5, $idEntradaCalidad, PDO::PARAM_INT);
             $stmt_update_entrada_calidad->execute();
@@ -65,15 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt_update_atributo_calidad_entrada->execute();
                 }
             }
-            // FINALMENTE DEBEMOS VERIFICAR EL VALOR DE APROBACION
-            $idEntStoEst = $esAprEnt === true ? 1 : 2;
-            $sql_update_entrada_stock =
-                "UPDATE entrada_stock SET idEntStoEst = ?
-            WHERE id = ?";
-            $stmt_update_entrada_stock = $pdo->prepare($sql_update_entrada_stock);
-            $stmt_update_entrada_stock->bindParam(1, $idEntStoEst, PDO::PARAM_INT);
-            $stmt_update_entrada_stock->bindParam(2, $idEntradaStock, PDO::PARAM_INT);
-            $stmt_update_entrada_stock->execute();
 
             $pdo->commit();
         } catch (PDOException $e) {

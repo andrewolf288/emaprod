@@ -31,6 +31,10 @@ const ComponentCard = ({ etiqueta, data, onChangeValoresAlfanumericos }) => {
   const chunkedData = [];
   const chunkSize = 3;
 
+  if (data.length === 0) {
+    return;
+  }
+
   // Dividir data en grupos de 3 elementos
   for (let i = 0; i < data.length; i += chunkSize) {
     chunkedData.push(data.slice(i, i + chunkSize));

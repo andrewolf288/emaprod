@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 // HOOKS
-import { useForm } from "../../../hooks/useForm";
 import { FilterAlmacen } from "./../../../components/ReferencialesFilters/Almacen/FilterAlmacen";
 // IMPORTACIONES PARA TABLE MUI
 import Table from "@mui/material/Table";
@@ -12,10 +11,6 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TablePagination from "@mui/material/TablePagination";
 import { TextField } from "@mui/material";
-import { Link } from "react-router-dom";
-// IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
 import { RowStockAlmacen } from "../../components/componentes-almacen/RowStockAlmacen";
 import { FilterAllProductos } from "../../../components/ReferencialesFilters/Producto/FilterAllProductos";
 import { getStockAlmacenByAlmacen } from "./../../helpers/stock-almacen/getStockAlmacenByAlmacen";
@@ -35,7 +30,7 @@ export const ListAlmacenStockProductos = () => {
   const [feedbackDelete, setfeedbackDelete] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -63,7 +58,7 @@ export const ListAlmacenStockProductos = () => {
   // ***** MANEJADORES DE FILTROS GENERALES *****
   const onChangeFilterAlmacenGeneral = (value) => {
     let body = {
-      idAlm: value.id,
+      idAlm: value.id
     };
 
     obtenerDataStockAlmacen(body);
@@ -209,6 +204,8 @@ export const ListAlmacenStockProductos = () => {
         });
         setdataStockAlmacenTmp(resultSearch);
         break;
+      default:
+        return;
     }
   };
 
@@ -225,7 +222,7 @@ export const ListAlmacenStockProductos = () => {
     } else {
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -250,21 +247,21 @@ export const ListAlmacenStockProductos = () => {
             //border: "1px solid black",
             display: "flex",
             justifyContent: "start",
-            alignItems: "center",
+            alignItems: "center"
           }}
         >
           <div
             className="col-8"
             style={{
               //border: "1px solid black",
-              width: "100%",
+              width: "100%"
             }}
           >
             <div
               className="row ms-3"
               style={{
                 //border: "1px solid black",
-                width: "100%",
+                width: "100%"
               }}
             >
               <div
@@ -311,7 +308,7 @@ export const ListAlmacenStockProductos = () => {
                   display: "flex",
                   //width:"50%",
                   justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 <ExportExcel exelData={dataStockAlmacenTmp} />
@@ -330,8 +327,8 @@ export const ListAlmacenStockProductos = () => {
                     sx={{
                       "& th": {
                         color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                        backgroundColor: "#f5f5f5"
+                      }
                     }}
                   >
                     <TableCell align="left" width={20}>

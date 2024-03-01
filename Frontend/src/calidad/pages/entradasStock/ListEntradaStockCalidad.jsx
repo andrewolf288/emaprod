@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 // HOOKS
-import { useForm } from "../../../hooks/useForm";
 // IMPORTACIONES PARA TABLE MUI
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -8,47 +7,23 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  TextField
-} from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
+import { IconButton, TextField } from "@mui/material";
 // IMPORTACIONES PARA EL FEEDBACK
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { FilterProveedor } from "./../../../components/ReferencialesFilters/Proveedor/FilterProveedor";
-import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
 import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
 import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
 import { getEntradasStockCalidad } from "../../helpers/entradas-stock/getEntradasStockCalidad";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { FilterAllProductosFilters } from "../../../components/ReferencialesFilters/Producto/FilterAllProductosFilters";
-import PreviewIcon from "@mui/icons-material/Preview";
 
 // CONFIGURACIONES DE ESTILOS
-const label = { inputProps: { "aria-label": "Checkbox demo" } };
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-
-const ITEM_HEIGHT = 48;
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2)
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(1)
-  }
-}));
 
 export const ListEntradaStockCalidad = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
@@ -56,11 +31,41 @@ export const ListEntradaStockCalidad = () => {
   const [dataEntStoTemp, setdataEntStoTemp] = useState([]);
 
   // ESTADOS PARA FILTROS GENERALES DE FECHA
-  const { fecEntIniSto, fecEntFinSto, formState, setFormState, onInputChange } =
-    useForm({
-      fecEntIniSto: FormatDateMYSQL(),
-      fecEntFinSto: FormatDateMYSQL()
+  // filtros
+  const [formState, setformState] = useState({
+    fechaInicio: FormatDateMYSQL(),
+    fechaFin: FormatDateMYSQL()
+  });
+  // Filtros generales que hacen nuevas consultas
+  const handleFechaInicioChange = (newfecEntSto) => {
+    let dateFormat = newfecEntSto.split(" ")[0];
+    setformState({
+      ...formState,
+      fechaInicio: dateFormat
     });
+
+    // armamos el body
+    let body = {
+      ...formState,
+      fechaInicio: dateFormat
+    };
+    obtenerDataEntradaStockCalidad(body);
+  };
+
+  const handleFechaFinChange = (newfecEntSto) => {
+    let dateFormat = newfecEntSto.split(" ")[0];
+    setformState({
+      ...formState,
+      fechaFin: dateFormat
+    });
+
+    // armamos el body
+    let body = {
+      ...formState,
+      fechaFin: dateFormat
+    };
+    obtenerDataEntradaStockCalidad(body);
+  };
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
   const [feedbackDelete, setfeedbackDelete] = useState(false);
@@ -69,11 +74,6 @@ export const ListEntradaStockCalidad = () => {
     feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
 
   const handleCloseFeedback = (event, reason) => {
     if (reason === "clickaway") {
@@ -85,75 +85,110 @@ export const ListEntradaStockCalidad = () => {
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
     const { name, value } = target;
+    filter(value, name);
   };
 
-  const onChangeProducto = (obj) => {};
-
-  const onChangeProveedor = (obj) => {};
-  const onChangeDate = (newDate) => {
-    const dateFilter = newDate.split(" ");
+  // Manejador de cambio de producto
+  const onChangeProducto = ({ label }) => {
+    filter(label, "filterProducto");
   };
 
-  const onChangeSeleccionado = (event, value) => {
-    const valueFilter = value ? "1" : "0";
+  const onChangeProveedor = ({ label }) => {
+    filter(label, "filterProveedor");
   };
 
-  // Filtros generales que hacen nuevas consultas
-  const onChangeDateStartData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecEntIniSto: dateFormat });
-    let body = {
-      ...formState,
-      fecEntIniSto: dateFormat
-    };
-    obtenerDataEntradaStockCalidad(body);
+  // funcion para filtrar
+  const filter = (terminoBusqueda, name) => {
+    let resultSearch = [];
+    switch (name) {
+      case "filterProducto":
+        resultSearch = dataEntSto.filter((element) => {
+          if (
+            element.nomProd
+              .toString()
+              .toLowerCase()
+              .includes(terminoBusqueda.toLowerCase())
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+        setdataEntStoTemp(resultSearch);
+        break;
+
+      case "filterProveedor":
+        resultSearch = dataEntSto.filter((element) => {
+          if (
+            element.nomProv
+              .toString()
+              .toLowerCase()
+              .includes(terminoBusqueda.toLowerCase())
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+        setdataEntStoTemp(resultSearch);
+        break;
+
+      case "filterCodigoEntrada":
+        resultSearch = dataEntSto.filter((element) => {
+          if (
+            element.codEntSto
+              .toString()
+              .toLowerCase()
+              .includes(terminoBusqueda.toLowerCase())
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+        setdataEntStoTemp(resultSearch);
+        break;
+
+      case "filterIngreso":
+        resultSearch = dataEntSto.filter((element) => {
+          if (
+            element.canTotEnt
+              .toString()
+              .toLowerCase()
+              .includes(terminoBusqueda.toLowerCase())
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+        setdataEntStoTemp(resultSearch);
+        break;
+
+      default:
+        return;
+    }
   };
 
-  const onChangeDateEndData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecEntFinSto: dateFormat });
-    // realizamos una promesa
-    let body = {
-      ...formState,
-      fecEntFinSto: dateFormat
-    };
-    obtenerDataEntradaStockCalidad(body);
+  // reset filters
+  const resetFilters = () => {
+    setdataEntStoTemp(dataEntSto);
   };
 
   const obtenerDataEntradaStockCalidad = async (body = null) => {
     const resultPeticion = await getEntradasStockCalidad(body);
     const { result, message_error, description_error } = resultPeticion;
-    console.log(result, message_error, description_error);
-    setdataEntSto(result);
-    setdataEntStoTemp(result);
+    console.log(resultPeticion);
+    if (message_error.length === 0) {
+      setdataEntSto(result);
+      setdataEntStoTemp(result);
+    } else {
+      setfeedbackMessages({
+        style_message: "error",
+        feedback_description_error: description_error
+      });
+    }
   };
-
-  // const handledChangeEstadoVerificacion = async (estado, item) => {
-  //   const { id, idEntCal } = item;
-
-  //   const body = {
-  //     id: id,
-  //     idEntCal: idEntCal,
-  //     esAprEnt: estado
-  //   };
-
-  //   const resultPeticion = await verifyEntradaCalidad(body);
-  //   const { message_error, description_error } = resultPeticion;
-  //   if (message_error.length === 0) {
-  //     setfeedbackMessages({
-  //       style_message: "success",
-  //       feedback_description_error: "Se verifico exitosamente"
-  //     });
-  //     handleClickFeeback();
-  //     obtenerDataEntradaStockCalidad();
-  //   } else {
-  //     setfeedbackMessages({
-  //       style_message: "error",
-  //       feedback_description_error: description_error
-  //     });
-  //     handleClickFeeback();
-  //   }
-  // };
 
   useEffect(() => {
     obtenerDataEntradaStockCalidad();
@@ -162,7 +197,7 @@ export const ListEntradaStockCalidad = () => {
   return (
     <>
       <div className="container-fluid">
-        <div className="row d-flex mt-4">
+        <div className="row d-flex mt-4 mb-4">
           <div className="col-9">
             <div className="row" style={{ border: "0px solid black" }}>
               <div
@@ -175,7 +210,7 @@ export const ListEntradaStockCalidad = () => {
                 }}
               >
                 <FechaPickerMonth
-                  onNewfecEntSto={onChangeDateStartData}
+                  onNewfecEntSto={handleFechaInicioChange}
                   label="Desde"
                 />
               </div>
@@ -188,16 +223,13 @@ export const ListEntradaStockCalidad = () => {
                 }}
               >
                 <FechaPickerMonth
-                  onNewfecEntSto={onChangeDateEndData}
+                  onNewfecEntSto={handleFechaFinChange}
                   label="Hasta"
                 />
               </div>
-            </div>
-          </div>
-          <div className="col-3 d-flex justify-content-end align-items-center">
-            <div className="row">
-              <div className="col-3"></div>
-              <div className="col-3"></div>
+              <button className="btn btn-success col-1" onClick={resetFilters}>
+                Reset
+              </button>
             </div>
           </div>
         </div>
@@ -215,7 +247,6 @@ export const ListEntradaStockCalidad = () => {
               >
                 <TableCell align="left" width={180}>
                   <b>Fecha entrada</b>
-                  <FechaPickerDay onNewfecEntSto={onChangeDate} />
                 </TableCell>
                 <TableCell align="left" width={70}>
                   ¿Evaluado?
@@ -234,7 +265,7 @@ export const ListEntradaStockCalidad = () => {
                 <TableCell align="left" width={100}>
                   <b>Codigo</b>
                   <TextField
-                    name="codigo"
+                    name="filterCodigoEntrada"
                     onChange={handleFormFilter}
                     size="small"
                     autoComplete="off"
@@ -245,40 +276,14 @@ export const ListEntradaStockCalidad = () => {
                       }
                     }}
                   />
-                </TableCell>
-                <TableCell align="left" width={70}>
-                  <b>Documento entrada</b>
-                  <TextField
-                    name="documento"
-                    onChange={handleFormFilter}
-                    size="small"
-                    autoComplete="off"
-                    InputProps={{
-                      style: {
-                        color: "black",
-                        background: "white"
-                      }
-                    }}
-                  />
-                </TableCell>
-                <TableCell align="left" width={20}>
-                  <b>¿De seleccion?</b>
-                  <div className="d-flex justify-content-center">
-                    <Checkbox
-                      {...label}
-                      name="seleccion"
-                      defaultChecked={false}
-                      onChange={onChangeSeleccionado}
-                    />
-                  </div>
                 </TableCell>
                 <TableCell align="left" width={50}>
-                  <b>Total ingreso</b>
+                  <b>Ingreso</b>
                   <TextField
+                    name="filterIngreso"
                     onChange={handleFormFilter}
                     type="number"
                     size="small"
-                    name="ingresado"
                     InputProps={{
                       style: {
                         color: "black",
@@ -344,34 +349,6 @@ export const ListEntradaStockCalidad = () => {
                   <TableCell>{row.nomProd}</TableCell>
                   <TableCell>{row.nomProv}</TableCell>
                   <TableCell>{row.codEntSto}</TableCell>
-                  <TableCell>{row.docEntSto}</TableCell>
-                  <TableCell align="center">
-                    {row.esSel === 1 ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        color="green"
-                        className="bi bi-check-circle-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        color="red"
-                        fill="currentColor"
-                        className="bi bi-x-circle-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                      </svg>
-                    )}
-                  </TableCell>
                   <TableCell>{row.canTotEnt}</TableCell>
                   <TableCell align="center">
                     <div style={{ display: "flex", alignItems: "center" }}>
@@ -385,10 +362,6 @@ export const ListEntradaStockCalidad = () => {
                       >
                         <VisibilityIcon fontSize="large" color="primary" />
                       </IconButton>
-                      {/* <DialogAprobarSalidaFIFO
-                        handleProcess={handledChangeEstadoVerificacion}
-                        element={row}
-                      /> */}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -416,60 +389,3 @@ export const ListEntradaStockCalidad = () => {
     </>
   );
 };
-
-// const DialogAprobarSalidaFIFO = ({ handleProcess, element }) => {
-//   const [open, setOpen] = React.useState(false);
-
-//   const handleClickOpen = () => {
-//     setOpen(true);
-//   };
-//   const handleClose = () => {
-//     setOpen(false);
-//   };
-//   return (
-//     <div>
-//       <IconButton onClick={handleClickOpen}>
-//         <PreviewIcon fontSize="large" color="warning" />
-//       </IconButton>
-//       <BootstrapDialog
-//         maxWidth={"l"}
-//         onClose={handleClose}
-//         aria-labelledby="customized-dialog-title"
-//         open={open}
-//       >
-//         <DialogTitle id="alert-dialog-title">Evaluacion de calidad</DialogTitle>
-//         <DialogContent>
-//           <DialogContentText id="alert-dialog-description">
-//             ¿Quiere permitir que esta entrada sea utilizada para el FIFO?
-//           </DialogContentText>
-//         </DialogContent>
-//         <DialogActions>
-//           <Button color="inherit" variant="contained" onClick={handleClose}>
-//             Cancelar
-//           </Button>
-//           <Button
-//             color="error"
-//             variant="contained"
-//             onClick={() => {
-//               handleProcess(false, element);
-//               handleClose();
-//             }}
-//           >
-//             Restringir
-//           </Button>
-//           <Button
-//             color="primary"
-//             variant="contained"
-//             autoFocus
-//             onClick={() => {
-//               handleProcess(true, element);
-//               handleClose();
-//             }}
-//           >
-//             Permitir
-//           </Button>
-//         </DialogActions>
-//       </BootstrapDialog>
-//     </div>
-//   );
-// };

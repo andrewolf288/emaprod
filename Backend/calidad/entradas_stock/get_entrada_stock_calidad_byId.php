@@ -67,14 +67,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "SELECT 
                 ec.id,
                 ec.idEnt,
+                ec.idEntCalEst,
                 ec.idResEntCal,
-                COALESCE(enc.nomEncCal, 'Sin encargado') AS nomEncCal,
                 ec.obsAccEntCal,
-                ec.esAprEnt,
                 ec.fecCreEntCal,
                 ec.fecActEntCal
             FROM entrada_calidad AS ec
-            LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
             WHERE ec.idEnt = ?";
             $stmt_entrada_stock_calidad = $pdo->prepare($select_entrada_stock_calidad);
             $stmt_entrada_stock_calidad->bindParam(1, $idEntSto, PDO::PARAM_INT);

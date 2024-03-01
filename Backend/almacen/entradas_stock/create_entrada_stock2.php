@@ -43,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pdo) {
         $codEntSto = ""; // codigo de entrada
         $refNumIngEntSto = 0; // numero de referencia de ingreso
+        $idAlm = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 8 : 1;
 
         // si se proporciona informacion de las entradas parciales
         if (isset($entradasParciales)) {
@@ -79,13 +80,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "SELECT 
             max(CAST(refNumIngEntSto AS UNSIGNED)) as refNumIngEntSto
             FROM entrada_stock
-            WHERE idProd = ? AND YEAR(fecEntSto) = ?
+            WHERE idProd = ? AND YEAR(fecEntSto) = ? AND idAlm = ?
             ORDER BY refNumIngEntSto DESC LIMIT 1";
 
             // ***** OBTENEMOS EN NUMERO DE REFERENCIA DE INGRESO ******
             $stmt_numero_entrada = $pdo->prepare($sql_numero_entrada);
             $stmt_numero_entrada->bindParam(1, $idProd, PDO::PARAM_INT);
             $stmt_numero_entrada->bindParam(2, $anio_actual, PDO::PARAM_STR);
+            $stmt_numero_entrada->bindParam(3, $idAlm, PDO::PARAM_INT);
             $stmt_numero_entrada->execute();
 
             // Recorremos los resultados
@@ -143,7 +145,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // si es un producto de auxiliar
             // $idEntStoEst = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 1 : 2;
             $idEntStoEst = 1;
-            $idAlm = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 8 : 1;
 
             // ahora iniciamos un proceso de insercion y actualizacion que debe estar envuelto en un rollback
             $pdo->beginTransaction(); // EMPEZAMOS UNA TRANSACCION
@@ -201,8 +202,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $lastInsertionEntradaStock = $pdo->lastInsertId();
 
                 // ahora debemos crear su informacion de calidad
-                // solo si no es producto de auxiliar
-                if ($idProd != 167 && $idProd != 168 && $idProd != 169 && $idProd != 170) {
+                // solo si no es producto de auxiliar y no es a almacen auxiliar
+                if ($idProd != 167 && $idProd != 168 && $idProd != 169 && $idProd != 170 && $idAlm != 8) {
                     $sql_create_entrada_calidad =
                         "INSERT INTO entrada_calidad(idEnt)
                     VALUES(?)";

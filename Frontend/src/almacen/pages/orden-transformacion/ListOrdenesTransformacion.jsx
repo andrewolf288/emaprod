@@ -11,7 +11,6 @@ import {
   TablePagination,
   TableRow
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import { getOrdenesTransformacionAlmacen } from "../../helpers/orden-transformacion/getOrdenesTransformacionAlmacen";
 
 export const ListOrdenesTransformacion = () => {
@@ -188,74 +187,85 @@ export const ListOrdenesTransformacion = () => {
                           {row.canUndProdtDes}
                         </TableCell>
                         <TableCell align="center">
-                          {row["req_env_enc"][0]["requerido"] != 0 && (
-                            <span className="d-block mb-2 badge text-bg-danger p-2">
-                              {`Requerido: ${row["req_env_enc"][0]["requerido"]}`}
-                            </span>
+                          {row["req_env_enc"] ? (
+                            <React.Fragment>
+                              {row["req_env_enc"][0]["requerido"] != 0 && (
+                                <span className="d-block mb-2 badge text-bg-danger p-2">
+                                  {`Requerido: ${row["req_env_enc"][0]["requerido"]}`}
+                                </span>
+                              )}
+                              {row["req_env_enc"][0]["en_proceso"] != 0 && (
+                                <span className="d-block badge text-bg-warning p-2">
+                                  {`En proceso: ${row["req_env_enc"][0]["en_proceso"]}`}
+                                </span>
+                              )}
+                              {row["req_env_enc"][0]["terminado"] != 0 && (
+                                <span className="d-block badge text-bg-success p-2">
+                                  {`Completo: ${row["req_env_enc"][0]["terminado"]}`}
+                                </span>
+                              )}
+                              {row["req_env_enc"][0]["requerido"] == 0 &&
+                                row["req_env_enc"][0]["en_proceso"] == 0 &&
+                                row["req_env_enc"][0]["terminado"] == 0 && (
+                                  <p>No hay requisiciones</p>
+                                )}
+                            </React.Fragment>
+                          ) : (
+                            <p>No hay requisiciones</p>
                           )}
-                          {row["req_env_enc"][0]["en_proceso"] != 0 && (
-                            <span className="d-block badge text-bg-warning p-2">
-                              {`En proceso: ${row["req_env_enc"][0]["en_proceso"]}`}
-                            </span>
-                          )}
-
-                          {row["req_env_enc"][0]["terminado"] != 0 && (
-                            <span className="d-block badge text-bg-success p-2">
-                              {`Completo: ${row["req_env_enc"][0]["terminado"]}`}
-                            </span>
-                          )}
-                          {row["req_env_enc"][0]["requerido"] == 0 &&
-                            row["req_env_enc"][0]["en_proceso"] == 0 &&
-                            row["req_env_enc"][0]["terminado"] == 0 && (
-                              <p>No hay requisiciones</p>
-                            )}
                         </TableCell>
                         <TableCell align="center">
-                          {row["req_ing_prod"][0]["requerido"] != 0 && (
-                            <span className="d-block mb-2 badge text-bg-danger p-2">
-                              {`Requerido: ${row["req_ing_prod"][0]["requerido"]}`}
-                            </span>
+                          {row["req_ing_prod"] ? (
+                            <React.Fragment>
+                              {row["req_ing_prod"][0]["requerido"] != 0 && (
+                                <span className="d-block mb-2 badge text-bg-danger p-2">
+                                  {`Requerido: ${row["req_ing_prod"][0]["requerido"]}`}
+                                </span>
+                              )}
+                              {row["req_ing_prod"][0]["requerido"] == 0 &&
+                                row["req_ing_prod"][0]["terminado"] != 0 && (
+                                  <span className="d-block badge text-bg-success p-2">
+                                    {`Completo: ${row["req_ing_prod"][0]["terminado"]}`}
+                                  </span>
+                                )}
+                              {row["req_ing_prod"][0]["requerido"] == 0 &&
+                                row["req_ing_prod"][0]["terminado"] == 0 && (
+                                  <p>No hay requisiciones</p>
+                                )}
+                            </React.Fragment>
+                          ) : (
+                            <p>No hay requisiciones</p>
                           )}
-                          {row["req_ing_prod"][0]["requerido"] == 0 &&
-                            row["req_ing_prod"][0]["terminado"] != 0 && (
-                              <span className="d-block badge text-bg-success p-2">
-                                {`Completo: ${row["req_ing_prod"][0]["terminado"]}`}
-                              </span>
-                            )}
-                          {row["req_ing_prod"][0]["requerido"] == 0 &&
-                            row["req_ing_prod"][0]["terminado"] == 0 && (
-                              <p>No hay requisiciones</p>
-                            )}
                         </TableCell>
                         <TableCell align="center">
-                          {row["req_dev"][0]["requerido"] != 0 && (
-                            <span className="d-block mb-2 badge text-bg-danger p-2">
-                              {`Requerido: ${row["req_dev"][0]["requerido"]}`}
-                            </span>
-                          )}
-                          {row["req_dev"][0]["en_proceso"] != 0 && (
-                            <span className="d-block badge text-bg-warning p-2">
-                              {`En proceso: ${row["req_dev"][0]["en_proceso"]}`}
-                            </span>
-                          )}
+                          {row["req_dev"] ? (
+                            <React.Fragment>
+                              {row["req_dev"][0]["requerido"] != 0 && (
+                                <span className="d-block mb-2 badge text-bg-danger p-2">
+                                  {`Requerido: ${row["req_dev"][0]["requerido"]}`}
+                                </span>
+                              )}
+                              {row["req_dev"][0]["en_proceso"] != 0 && (
+                                <span className="d-block badge text-bg-warning p-2">
+                                  {`En proceso: ${row["req_dev"][0]["en_proceso"]}`}
+                                </span>
+                              )}
 
-                          {row["req_dev"][0]["terminado"] != 0 && (
-                            <span className="d-block badge text-bg-success p-2">
-                              {`Completo: ${row["req_dev"][0]["terminado"]}`}
-                            </span>
+                              {row["req_dev"][0]["terminado"] != 0 && (
+                                <span className="d-block badge text-bg-success p-2">
+                                  {`Completo: ${row["req_dev"][0]["terminado"]}`}
+                                </span>
+                              )}
+                            </React.Fragment>
+                          ) : (
+                            <p>No hay requisiciones</p>
                           )}
-                          {row["req_dev"][0]["requerido"] == 0 &&
-                            row["req_dev"][0]["en_proceso"] == 0 &&
-                            row["req_dev"][0]["terminado"] == 0 && (
-                              <p>No hay requisiciones</p>
-                            )}
                         </TableCell>
                         <TableCell align="left">
                           <div className="btn-toolbar">
                             <div
                               className="btn-toolbar btn btn-primary me-2 btn"
                               onClick={() => {
-                                //console.log(row)
                                 window.open(
                                   `/almacen/orden-transformacion/view/${row.id}`,
                                   "_blank"
