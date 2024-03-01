@@ -10,6 +10,8 @@ import { FilterEncargadoCalidad } from "../../../components/ReferencialesFilters
 import { createEntradaAtributosCalidad } from "../../helpers/entradas-stock/createEntradaAtributosCalidad";
 import { FilterEstadoCalidad } from "../../../components/ReferencialesFilters/EstadoCalidad/FilterEstadoCalidad";
 import { Typography } from "@mui/material";
+import FechaPickerYear from "../../../components/Fechas/FechaPickerYear";
+import { updateFechaVencimientoEntradaStock } from "../../helpers/entradas-stock/updateFechaVencimientoEntradaStock";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -121,6 +123,14 @@ export const ViewEntradaStockCalidad = () => {
     });
   };
 
+  // cambiar fecha de vencimiento
+  const onChangeDateVencimiento = (newfecEntSto) => {
+    setDataEntradaStockCalidad({
+      ...dataEntradaStockCalidad,
+      fecVenEntSto: newfecEntSto
+    });
+  };
+
   // ESTADO PARA CONTROLAR EL FEEDBACK
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
@@ -184,6 +194,39 @@ export const ViewEntradaStockCalidad = () => {
       handleClickFeeback();
     } else {
       guardarDatosAtributosCalidad();
+    }
+  };
+
+  // guardar fecha de vencimiento
+  const guardarFechaVencimiento = async () => {
+    if (fecVenEntSto) {
+      const body = {
+        idEntSto: dataEntradaStockCalidad["id"],
+        fecVenEntSto
+      };
+      console.log(body);
+      const resultPeticion = await updateFechaVencimientoEntradaStock(body);
+      const { message_error, description_error } = resultPeticion;
+      if (message_error.length === 0) {
+        setfeedbackMessages({
+          style_message: "success",
+          feedback_description_error:
+            "La fecha de vencimiento se actualizó con éxtio"
+        });
+        handleClickFeeback();
+      } else {
+        setfeedbackMessages({
+          style_message: "error",
+          feedback_description_error: description_error
+        });
+        handleClickFeeback();
+      }
+    } else {
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: "Selecciona una fecha de vencimiento"
+      });
+      handleClickFeeback();
     }
   };
 
@@ -488,18 +531,18 @@ export const ViewEntradaStockCalidad = () => {
                         className="form-control"
                       />
                     </div>
-                    {/* FECHA DE VENCIMIENTO */}
+                    {/* FECHA DE TERMINO */}
                     <div className="col-md-3">
                       <label htmlFor="nombre" className="form-label">
-                        <b>Fecha vencimiento</b>
+                        <b>Fecha termino</b>
                       </label>
                       <input
                         type="text"
                         disabled={true}
                         value={
-                          fecVenEntSto === null
+                          fecFinSto === null
                             ? "Entrada no terminada"
-                            : fecVenEntSto
+                            : fecFinSto
                         }
                         className="form-control"
                       />
@@ -594,21 +637,37 @@ export const ViewEntradaStockCalidad = () => {
                         className="form-control"
                       />
                     </div>
-                    {/* FECHA DE TERMINO */}
+                    {/* FECHA DE VENCIMIENTO */}
                     <div className="col-md-3">
                       <label htmlFor="nombre" className="form-label">
-                        <b>Fecha termino</b>
+                        <b
+                          className={`text-${
+                            fecVenEntSto ? "success" : "danger"
+                          }`}
+                        >
+                          Fecha vencimiento
+                        </b>
                       </label>
-                      <input
-                        type="text"
-                        disabled={true}
-                        value={
-                          fecFinSto === null
-                            ? "Entrada no terminada"
-                            : fecFinSto
-                        }
-                        className="form-control"
+                      <FechaPickerYear
+                        date={fecVenEntSto}
+                        onNewfecEntSto={onChangeDateVencimiento}
                       />
+                      <button
+                        className="btn btn-success ms-2"
+                        onClick={guardarFechaVencimiento}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="bi bi-floppy-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z" />
+                          <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                   <div className="mb-4 row">
@@ -624,7 +683,7 @@ export const ViewEntradaStockCalidad = () => {
                         className="form-control"
                       />
                     </div>
-                    {/* MERMA TOTAL */}
+                    {/* CANTIDAD VARIACION */}
                     <div className="col-md-3">
                       <label htmlFor="nombre" className="form-label">
                         <b>Cantidad variacion</b>

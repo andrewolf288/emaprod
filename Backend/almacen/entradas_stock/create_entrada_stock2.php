@@ -23,7 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $esEntPar = $data["esEntPar"]; // es entrada parcial
     $esSel = $data["esSel"]; // es para seleccionar
     $fecEntSto = $data["fecEntSto"]; // fecha de entrada stock
-    $fecVenEntSto = $data["fecVenEntSto"]; // fecha de vencimiento
     $guiRem = $data["guiRem"]; // guia de remision
     $idAlm = $data["idAlm"]; // almacen dirigido
     $idProd = $data["idProd"]; // producto
@@ -170,12 +169,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     canVar,
                     docEntSto,
                     esEntPar,
-                    fecVenEntSto,
                     fecEntSto,
                     ordCom,
                     guiRem,
                     idEntStoTip)
-                    VALUES (?,?,?,?,?,?,?,?,?,$canSel, $canPorSel, $merTot, $canTotCom, $canTotEnt, $canTotDis, $canVar, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?,?,?,?,?,?,?,?,?,$canSel, $canPorSel, $merTot, $canTotCom, $canTotEnt, $canTotDis, $canVar, ?, ?, ?, ?, ?, ?)
                     ";
 
             try {
@@ -192,11 +190,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bindParam(9, $esSel, PDO::PARAM_BOOL); // es seleccion
                 $stmt->bindParam(10, $docEntSto, PDO::PARAM_STR); // documento
                 $stmt->bindParam(11, $esEntPar, PDO::PARAM_BOOL); // es entrada parcial
-                $stmt->bindParam(12, $fecVenEntSto); // fecha de vencimiento
-                $stmt->bindParam(13, $fecEntSto); // fecha de entrada
-                $stmt->bindParam(14, $ordCom, PDO::PARAM_STR); // fecha de vencimiento
-                $stmt->bindParam(15, $guiRem, PDO::PARAM_STR); // fecha de entrada
-                $stmt->bindParam(16, $idEntStoTip, PDO::PARAM_INT); // tipo de entrada (compra)
+                $stmt->bindParam(12, $fecEntSto); // fecha de entrada
+                $stmt->bindParam(13, $ordCom, PDO::PARAM_STR); // fecha de vencimiento
+                $stmt->bindParam(14, $guiRem, PDO::PARAM_STR); // fecha de entrada
+                $stmt->bindParam(15, $idEntStoTip, PDO::PARAM_INT); // tipo de entrada (compra)
 
                 $stmt->execute(); // ejecutamos
                 $lastInsertionEntradaStock = $pdo->lastInsertId();

@@ -4,7 +4,6 @@ import FechaPicker from "./../../../components/Fechas/FechaPicker";
 // FUNCIONES UTILES
 import {
   DiaJuliano,
-  FormatDateMYSQLNative,
   FormatDateTimeMYSQLNow,
   FormatDateTimeMYSQLNowPlusYears,
   letraAnio
@@ -37,7 +36,6 @@ export const AgregarEntradaStockV2 = () => {
     canTotEnt: 0,
     canVar: 0,
     docEntSto: "",
-    fecVenEntSto: "",
     fecEntSto: "",
     esEntPar: false,
     codProd: "",
@@ -55,13 +53,11 @@ export const AgregarEntradaStockV2 = () => {
     canTotEnt,
     canVar,
     docEntSto,
-    fecVenEntSto,
     fecEntSto,
     esEntPar,
     codProd,
     codProv,
     codAlm,
-    obsEnt,
     ordCom,
     guiRem
   } = formState;
@@ -197,12 +193,9 @@ export const AgregarEntradaStockV2 = () => {
 
   // SET VALOR DE FECHA DE formState
   const onAddFecEntSto = (newfecEntSto) => {
-    const year = 4;
-    const newfecVenEnt = FormatDateTimeMYSQLNowPlusYears(year, newfecEntSto);
     setFormState({
       ...formState,
-      fecEntSto: newfecEntSto,
-      fecVenEntSto: newfecVenEnt
+      fecEntSto: newfecEntSto
     });
   };
 
@@ -214,8 +207,7 @@ export const AgregarEntradaStockV2 = () => {
     if (fecEntSto.length === 0) {
       requestJSON = {
         ...requestJSON,
-        fecEntSto: FormatDateTimeMYSQLNow(),
-        fecVenEntSto: FormatDateTimeMYSQLNowPlusYears(4) // se puede poner automaticamente el dato
+        fecEntSto: FormatDateTimeMYSQLNow()
       };
     }
 
