@@ -64,7 +64,7 @@ const NavCalidad = () => {
                   </li>
                 </ul>
               </li>
-              <li className="nav-item dropdown">
+              {/* <li className="nav-item dropdown">
                 <button
                   className="btn btn-lg dropdown-toggle"
                   role="button"
@@ -80,8 +80,8 @@ const NavCalidad = () => {
                     </Link>
                   </li>
                 </ul>
-              </li>
-              <li className="nav-item dropdown">
+              </li> */}
+              {/* <li className="nav-item dropdown">
                 <button
                   className="btn btn-lg dropdown-toggle"
                   role="button"
@@ -108,7 +108,7 @@ const NavCalidad = () => {
                     </Link>
                   </li>
                 </ul>
-              </li>
+              </li> */}
               {/* ATRIBUTOS CALIDAD */}
               {/* <li className="nav-item dropdown">
                 <button

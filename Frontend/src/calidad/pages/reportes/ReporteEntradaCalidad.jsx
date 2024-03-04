@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { FilterProductosDynamic } from "../../../components/ReferencialesFilters/Producto/FilterProductosDynamic";
-import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic";
 import config from "../../../config";
 import axios from "axios";
 import FechaPickerMonthDynamic from "../../../components/Fechas/FechaPickerMonthDynamic";
+import { FilterProductosDynamic } from "../../../components/ReferencialesFilters/Producto/FilterProductosDynamic";
 
-export const ReporteEntradaSalidaStock = () => {
+export const ReporteEntradaCalidad = () => {
   const [filterData, setFilterData] = useState({
     producto: 0,
     almacen: 0,
@@ -13,21 +12,13 @@ export const ReporteEntradaSalidaStock = () => {
     fechaHasta: ""
   });
 
-  const { producto, almacen, fechaDesde, fechaHasta } = filterData;
+  const { producto, fechaDesde, fechaHasta } = filterData;
 
   // controlador de producto
   const handleProducto = ({ id }) => {
     setFilterData({
       ...filterData,
       producto: id
-    });
-  };
-
-  // controlador de almacne
-  const handleAlmacen = ({ id }) => {
-    setFilterData({
-      ...filterData,
-      almacen: id
     });
   };
 
@@ -49,10 +40,6 @@ export const ReporteEntradaSalidaStock = () => {
     if (producto === 0) {
       errors.push("Debes seleccionar un producto");
     }
-    // seleccion de almacen
-    if (almacen === 0) {
-      errors.push("Debes seleccionar un almacen");
-    }
 
     if (errors.length === 0) {
       // hacemos una peticion
@@ -67,7 +54,7 @@ export const ReporteEntradaSalidaStock = () => {
   // funcion para descargar
   const exportarReporte = () => {
     const domain = config.API_URL;
-    const path = "/almacen/reportes/reporte-trazabilidad-entrada.php";
+    const path = "/calidad/reportes/reporte-entrada-calidad.php";
     axios({
       url: domain + path,
       data: filterData,
@@ -114,14 +101,6 @@ export const ReporteEntradaSalidaStock = () => {
           <FilterProductosDynamic
             onNewInput={handleProducto}
             defaultValue={producto}
-          />
-        </div>
-        <div className="col-3">
-          {/* filter */}
-          <label className="form-label">Almacen</label>
-          <FilterAlmacenDynamic
-            onNewInput={handleAlmacen}
-            defaultValue={almacen}
           />
         </div>
       </div>

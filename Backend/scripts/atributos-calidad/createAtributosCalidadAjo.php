@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ['% APLASTADOS, PICADOS O PODRIDOS', 1, '', 1, 'ANALISIS POSTCOSECHA'],
         ['% IMPUREZAS (CASCARA)', 1, '', 1, 'ANALISIS POSTCOSECHA'],
         ['ST (°Brix)', 1, '', 2, 'ANALISIS FISICOQUIMICOS'],
-        ['PRUEBA DE ESCALDADO', 4, 'C,I,No corresponde', NULL, NULL],
+        ['PRUEBA DE ESCALDADO', 4, 'C,I,No corresponde', 2, 'ANALISIS FISICOQUIMICOS'],
         ['V°B PROD.', 4, 'Vilma,Carlos', NULL, NULL]
     ];
 

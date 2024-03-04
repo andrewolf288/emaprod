@@ -1,5 +1,6 @@
 import { RouterAlmacenCalidad } from "../pages/almacen-calidad/RouterAlmacenCalidad";
 import { RouterAtributoCalidad } from "../pages/atributos-calidad/RouterAtributoCalidad";
+import { RouterReportesCalidad } from "../pages/reportes/RouterReportesCalidad";
 import { RouterRequirimientoSalidaCalidad } from "../pages/requerimiento-salida/RouterRequirimientoSalidaCalidad";
 import LayoutModulo from "./../../layout/LayoutModulo";
 import HomeCalidad from "./../pages/HomeCalidad";
@@ -29,5 +30,10 @@ export const RouterCalidad = [
     path: "salida-requerimiento",
     element: <LayoutModulo />,
     children: RouterRequirimientoSalidaCalidad
+  },
+  {
+    path: "reportes-calidad",
+    element: <LayoutModulo />,
+    children: RouterReportesCalidad
   }
 ];
