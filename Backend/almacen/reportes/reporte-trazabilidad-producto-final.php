@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($fechaDesde)) {
         // inicio de año
-        $fechaDesde = date('Y-01-01');
+        $fechaDesde = date('Y-01-01', strtotime('-4 years'));
     }
     if (empty($fechaHasta)) {
         // fin de año
@@ -74,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     JOIN entrada_stock_tipo AS est ON est.id = es.idEntStoTip
     WHERE (es.idEntStoTip = ? OR es.idEntStoTip = ? OR es.idEntStoTip = ?) 
     AND (DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta') 
-    AND es.idProd = ? AND es.idAlm = ?";
+    AND es.idProd = ? AND es.idAlm = ? ORDER BY fecEntSto ASC";
     $stmt_select_entradas_producto_final = $pdo->prepare($sql_select_entradas_producto_final);
     $stmt_select_entradas_producto_final->bindParam(1, $idEntStoTipProdFin, PDO::PARAM_INT);
     $stmt_select_entradas_producto_final->bindParam(2, $idEntStoTipOrdTran, PDO::PARAM_INT);
@@ -121,6 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //----SALIDA POR VENTAS----
         $esSal = 1;
+        $fueAfePorDev = 0;
         $sql_salida_venta =
             "SELECT 
         mof.idOpeFac,
@@ -129,10 +130,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mof.fecCreMovOpeFac
         FROM movimiento_operacion_facturacion AS mof
         JOIN operacion_facturacion AS of ON of.id = mof.idOpeFac
-        WHERE mof.idEntSto = ? AND mof.esSal = ?";
+        WHERE mof.idEntSto = ? AND mof.esSal = ? AND of.fueAfePorDev = ?";
         $stmt_salida_venta = $pdo->prepare($sql_salida_venta);
         $stmt_salida_venta->bindParam(1, $idEntSto, PDO::PARAM_INT);
         $stmt_salida_venta->bindParam(2, $esSal, PDO::PARAM_INT);
+        $stmt_salida_venta->bindParam(3, $fueAfePorDev, PDO::PARAM_BOOL);
         $stmt_salida_venta->execute();
 
         while ($row_salida_venta = $stmt_salida_venta->fetch(PDO::FETCH_ASSOC)) {
