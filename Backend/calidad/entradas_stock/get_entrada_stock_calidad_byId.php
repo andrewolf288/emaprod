@@ -22,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.id,
             es.idProd,
             p.nomProd,
+            p.idCla,
             p.codProd2,
             p.codProd3,
             es.idProv,
@@ -70,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ec.idEntCalEst,
                 ec.idResEntCal,
                 ec.obsAccEntCal,
+                ec.conHigTrans,
                 ec.fecCreEntCal,
                 ec.fecActEntCal
             FROM entrada_calidad AS ec

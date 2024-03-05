@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idEntCalEst = $data["informacion_calidad"]["idEntCalEst"]; // aprobacion de calidad
         $idResEntCal = $data["informacion_calidad"]["idResEntCal"]; // responsable de evaluacion
         $obsAccEntCal = $data["informacion_calidad"]["obsAccEntCal"]; //observacion de evaluacion
+        $conHigTrans = $data["informacion_calidad"]["conHigTrans"]; // condiciones de higiene
         $dataAtributosEntradaCalidad = $data["dataAtributosEntradaCalidad"]; // data a procesar
 
         try {
@@ -26,14 +27,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $fecActEntCal = date('Y-m-d H:i:s');;
             // primero debemos actualizar los datos de calidad
             $sql_update_entrada_calidad =
-                "UPDATE entrada_calidad SET idResEntCal = ?, obsAccEntCal = ?, idEntCalEst = ?, fecActEntCal = ?
+                "UPDATE entrada_calidad 
+                SET idResEntCal = ?, 
+                obsAccEntCal = ?, 
+                idEntCalEst = ?, 
+                conHigTrans = ?, 
+                fecActEntCal = ?
             WHERE id = ?";
             $stmt_update_entrada_calidad = $pdo->prepare($sql_update_entrada_calidad);
             $stmt_update_entrada_calidad->bindParam(1, $idResEntCal, PDO::PARAM_INT);
             $stmt_update_entrada_calidad->bindParam(2, $obsAccEntCal, PDO::PARAM_STR);
             $stmt_update_entrada_calidad->bindParam(3, $idEntCalEst, PDO::PARAM_BOOL);
-            $stmt_update_entrada_calidad->bindParam(4, $fecActEntCal, PDO::PARAM_STR);
-            $stmt_update_entrada_calidad->bindParam(5, $idEntradaCalidad, PDO::PARAM_INT);
+            $stmt_update_entrada_calidad->bindParam(4, $conHigTrans, PDO::PARAM_STR);
+            $stmt_update_entrada_calidad->bindParam(5, $fecActEntCal, PDO::PARAM_STR);
+            $stmt_update_entrada_calidad->bindParam(6, $idEntradaCalidad, PDO::PARAM_INT);
             $stmt_update_entrada_calidad->execute();
 
             // ahora debemos procesar la data

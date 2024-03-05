@@ -26,6 +26,7 @@ export const ViewEntradaStockCalidad = () => {
     idProd: 0,
     nomProd: "",
     codProd: "",
+    idCla: 0,
     codProd2: "",
     codProd3: "",
     desCla: "",
@@ -54,13 +55,15 @@ export const ViewEntradaStockCalidad = () => {
     informacion_calidad: {
       idResEntCal: null,
       idEntCalEst: null,
-      obsAccEntCal: ""
+      obsAccEntCal: "",
+      conHigTrans: null
     }
   });
   const {
     nomProd,
     codProd,
     codProd2,
+    idCla,
     codProd3,
     nomProv,
     apeProv,
@@ -84,7 +87,8 @@ export const ViewEntradaStockCalidad = () => {
     informacion_calidad
   } = dataEntradaStockCalidad;
 
-  const { idResEntCal, idEntCalEst, obsAccEntCal } = informacion_calidad;
+  const { idResEntCal, idEntCalEst, obsAccEntCal, conHigTrans } =
+    informacion_calidad;
 
   const onChangeEncargadoEvaluacionCaidad = (value) => {
     const { id } = value;
@@ -116,6 +120,19 @@ export const ViewEntradaStockCalidad = () => {
     const formatDataCalidad = {
       ...informacion_calidad,
       obsAccEntCal: value
+    };
+    setDataEntradaStockCalidad({
+      ...dataEntradaStockCalidad,
+      informacion_calidad: formatDataCalidad
+    });
+  };
+
+  const onChangeCondicionesHigieneTransporte = ({ target }) => {
+    const { value } = target;
+
+    const formatDataCalidad = {
+      ...informacion_calidad,
+      conHigTrans: value
     };
     setDataEntradaStockCalidad({
       ...dataEntradaStockCalidad,
@@ -744,6 +761,21 @@ export const ViewEntradaStockCalidad = () => {
                       ></textarea>
                     </div>
                   </div>
+                  {idCla === 1 && (
+                    <div className="mb-2 row">
+                      <div className="col-md-12">
+                        <label htmlFor="nombre" className="form-label">
+                          <b>Condiciones de higiene del transporte</b>
+                        </label>
+                        <textarea
+                          className="form-control"
+                          placeholder="Escribe aqui"
+                          value={conHigTrans}
+                          onChange={onChangeCondicionesHigieneTransporte}
+                        ></textarea>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
