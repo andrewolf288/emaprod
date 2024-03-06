@@ -37,12 +37,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fechaHasta = $data["fechaHasta"];
 
     if (empty($fechaDesde)) {
-        // inicio de año
-        $fechaDesde = date('Y-01-01');
+        // inicio de mes
+        $fechaDesde = date('Y-m-01');
     }
     if (empty($fechaHasta)) {
-        // fin de año
-        $fechaHasta = date('Y-12-31');
+        // fin de mes
+        $fechaHasta = date('Y-m-t');
     }
 
     // Crear el libro de trabajo
