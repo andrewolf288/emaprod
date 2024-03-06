@@ -20,7 +20,7 @@ export const Login = () => {
 
   const [user, setuser] = useState({
     useUsu: "",
-    pasUsu: "",
+    pasUsu: ""
   });
 
   const { useUsu, pasUsu } = user;
@@ -30,7 +30,7 @@ export const Login = () => {
     const { name, value } = target;
     setuser({
       ...user,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -38,7 +38,7 @@ export const Login = () => {
   const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
-    feedback_description_error: "",
+    feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
@@ -69,7 +69,7 @@ export const Login = () => {
       console.log("No se pudo logear al usuario");
       setfeedbackMessages({
         style_message: "error",
-        feedback_description_error: description_error,
+        feedback_description_error: description_error
       });
       handleClickFeeback();
     }
@@ -84,7 +84,7 @@ export const Login = () => {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
         style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
+        feedback_description_error: "Asegurese de llenar los datos requeridos"
       });
       handleClickFeeback();
     } else {
@@ -117,6 +117,7 @@ export const Login = () => {
                         value={useUsu}
                         name="useUsu"
                         onChange={handledForm}
+                        autoComplete="off"
                       />
                     </div>
                     <div className="mb-3">
@@ -129,6 +130,7 @@ export const Login = () => {
                         value={pasUsu}
                         name="pasUsu"
                         onChange={handledForm}
+                        autoComplete="off"
                       />
                     </div>
                     <div className="d-grid">
