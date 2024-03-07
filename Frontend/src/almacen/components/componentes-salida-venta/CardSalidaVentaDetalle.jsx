@@ -46,7 +46,7 @@ export const CardSalidaVentaDetalle = ({
     <div className="card mt-4">
       <div className="card-header d-flex justify-content-between align-items-center">
         <h6>{`Detalle #${index + 1}`}</h6>
-        {detalle.esProFin === 1 && (
+        {detalle.esProFin === 1 && detalle.fueAnulDet !== 1 && (
           <button
             className="btn btn-link ms-auto" // Utiliza ms-auto para alinear a la derecha
             onClick={toggleDetalle}
@@ -124,7 +124,9 @@ export const CardSalidaVentaDetalle = ({
                   </TableCell>
                 )}
                 <TableCell align="center">
-                  {detalle.fueComDet == 0 ? (
+                  {detalle.fueAnulDet === 1 ? (
+                    <span className={"badge text-bg-secondary"}>Anulado</span>
+                  ) : detalle.fueComDet === 0 ? (
                     <span className={"badge text-bg-danger"}>Requerido</span>
                   ) : (
                     <span className={"badge text-bg-success"}>Completo</span>

@@ -29,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             re.desReqEst,
             ofm.desOpeFacMot,
             of.fueAfePorDev,
+            of.fueAfePorAnul,
             of.fecCreOpeFac
             FROM operacion_facturacion AS of
             JOIN operacion_facturacion_motivo AS ofm ON ofm.id = of.idOpeFacMot
@@ -52,6 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ofd.esMerProm,
                 ofd.esProFin,
                 ofd.fueComDet,
+                ofd.fueAnulDet,
                 ofd.fecComOpeFacDet,
                 ofd.fecCreOpeFacDet,
                 ofd.fecActOpeFacDet

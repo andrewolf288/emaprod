@@ -35,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 */
 
             $idOpeFacMot = 1; // motivo salida de GRE
-            $esSal = 1; // es una operaicon de saida
             $idLastInsertion = 0; // id de la utlima insercion
             $idReqEst = 1;
 
@@ -78,15 +77,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($address_destination_id != 89) {
                         // 1. primero realizamos la insercion de la operacion de factura
                         $sql_insert_operacion_facturacion =
-                            "INSERT INTO operacion_facturacion (idGuiRem, idOpeFacMot, esSal, invSerFac, invNumFac, idReqEst)
+                            "INSERT INTO operacion_facturacion (idGuiRem, idOpeFacMot, invSerFac, invNumFac, idReqEst)
                         VALUES (?, ?, ?, ?, ?, ?)";
                         $stmt_insert_operacion_facturacion = $pdo->prepare($sql_insert_operacion_facturacion);
                         $stmt_insert_operacion_facturacion->bindParam(1, $idGuiRem, PDO::PARAM_INT);
                         $stmt_insert_operacion_facturacion->bindParam(2, $idOpeFacMot, PDO::PARAM_INT);
-                        $stmt_insert_operacion_facturacion->bindParam(3, $esSal, PDO::PARAM_BOOL);
-                        $stmt_insert_operacion_facturacion->bindParam(4, $invoice_serie, PDO::PARAM_STR);
-                        $stmt_insert_operacion_facturacion->bindParam(5, $invoice_number, PDO::PARAM_STR);
-                        $stmt_insert_operacion_facturacion->bindParam(6, $idReqEst, PDO::PARAM_INT);
+                        $stmt_insert_operacion_facturacion->bindParam(3, $invoice_serie, PDO::PARAM_STR);
+                        $stmt_insert_operacion_facturacion->bindParam(4, $invoice_number, PDO::PARAM_STR);
+                        $stmt_insert_operacion_facturacion->bindParam(5, $idReqEst, PDO::PARAM_INT);
                         $stmt_insert_operacion_facturacion->execute();
 
                         // 2. Obtenemos el id de la ultima insercion

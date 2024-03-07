@@ -121,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //----SALIDA POR VENTAS----
         $esSal = 1;
-        $fueAfePorDev = 0;
+        $fueAfePorAnul = 0;
         $sql_salida_venta =
             "SELECT 
         mof.idOpeFac,
@@ -130,11 +130,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mof.fecCreMovOpeFac
         FROM movimiento_operacion_facturacion AS mof
         JOIN operacion_facturacion AS of ON of.id = mof.idOpeFac
-        WHERE mof.idEntSto = ? AND mof.esSal = ? AND of.fueAfePorDev = ?";
+        WHERE mof.idEntSto = ? AND mof.esSal = ? AND of.fueAfePorAnul = ?";
         $stmt_salida_venta = $pdo->prepare($sql_salida_venta);
         $stmt_salida_venta->bindParam(1, $idEntSto, PDO::PARAM_INT);
         $stmt_salida_venta->bindParam(2, $esSal, PDO::PARAM_INT);
-        $stmt_salida_venta->bindParam(3, $fueAfePorDev, PDO::PARAM_BOOL);
+        $stmt_salida_venta->bindParam(3, $fueAfePorAnul, PDO::PARAM_BOOL);
         $stmt_salida_venta->execute();
 
         while ($row_salida_venta = $stmt_salida_venta->fetch(PDO::FETCH_ASSOC)) {

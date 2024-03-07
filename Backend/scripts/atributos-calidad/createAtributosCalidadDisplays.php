@@ -19,15 +19,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $codSubClaA = "2604";
     $codSubClaB = "2605";
     $codSubClaC = "2606";
+    $codSubClaD = "2616";
 
     $sql_select_producto =
         "SELECT pt.id, pt.codProd2 FROM producto AS pt
         JOIN sub_clase AS sc ON sc.id = pt.idSubCla
-    WHERE sc.codSubCla = ? OR sc.codSubCla = ? OR sc.codSubCla = ?";
+    WHERE sc.codSubCla = ? OR sc.codSubCla = ? OR sc.codSubCla = ? OR sc.codSubCla = ?";
     $stmt_select_producto = $pdo->prepare($sql_select_producto);
     $stmt_select_producto->bindParam(1, $codSubClaA, PDO::PARAM_STR);
     $stmt_select_producto->bindParam(2, $codSubClaB, PDO::PARAM_STR);
     $stmt_select_producto->bindParam(3, $codSubClaC, PDO::PARAM_STR);
+    $stmt_select_producto->bindParam(4, $codSubClaD, PDO::PARAM_STR);
     $stmt_select_producto->execute();
 
     // consulta de insercion de atributo

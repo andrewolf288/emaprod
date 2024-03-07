@@ -24,18 +24,18 @@ export const ViewSalidaVenta = () => {
     id: 0,
     invSerFac: "",
     invNumFac: "",
-    idOpeFacMot: 0,
     desOpeFacMot: "",
+    fueAfePorAnul: 0,
     fueAfePorDev: 0,
     fecCreOpeFac: "",
     detOpeFac: []
   });
-  const [backupDataSalidaVenta, setBackupDataSalidaVenta] = useState(null);
 
   const {
     invSerFac,
     invNumFac,
     desOpeFacMot,
+    fueAfePorAnul,
     fueAfePorDev,
     fecCreOpeFac,
     detOpeFac
@@ -86,7 +86,6 @@ export const ViewSalidaVenta = () => {
     const resultPeticion = await getSalidaVentaDetalleById(formatData);
     const { result } = resultPeticion;
     setdataSalidaVenta(result[0]);
-    setBackupDataSalidaVenta(result[0]);
     // cerramos el loader
     closeLoader();
   };
@@ -317,6 +316,18 @@ export const ViewSalidaVenta = () => {
                     className="form-control"
                   />
                 </div>
+                <div className="col-md-2">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>Anulado</b>
+                  </label>
+                  <p>{fueAfePorAnul === 0 ? "NO" : "SI"}</p>
+                </div>
+                <div className="col-md-2">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>Afectado</b>
+                  </label>
+                  <p>{fueAfePorDev === 0 ? "NO" : "SI"}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -325,8 +336,8 @@ export const ViewSalidaVenta = () => {
             <h6 className="card-header">Detalle salida venta</h6>
             {detOpeFac.map((detalle, index) => (
               <CardSalidaVentaDetalle
-                detalle={detalle}
                 key={detalle.id}
+                detalle={detalle}
                 index={index}
                 onDeleteSalidaStock={deleteLoteSalidaVenta}
                 onUpdateSalidaStock={editLoteSalidaVenta}

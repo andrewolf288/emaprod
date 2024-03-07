@@ -29,19 +29,6 @@ export const ListSalidaVenta = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
-
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -108,7 +95,7 @@ export const ListSalidaVenta = () => {
   };
 
   const filter = (terminoBusqueda, name) => {
-    if (name == "invSerFac") {
+    if (name === "invSerFac") {
       let resultadoBusqueda = dataSalidasVenta.filter((element) => {
         if (
           element.invSerFac
@@ -121,7 +108,7 @@ export const ListSalidaVenta = () => {
       });
       setDataSalidasVentaTemp(resultadoBusqueda);
     }
-    if (name == "invNumFac") {
+    if (name === "invNumFac") {
       let resultadoBusqueda = dataSalidasVenta.filter((element) => {
         if (
           element.invNumFac
@@ -134,7 +121,7 @@ export const ListSalidaVenta = () => {
       });
       setDataSalidasVentaTemp(resultadoBusqueda);
     }
-    if (name == "idReqEst") {
+    if (name === "idReqEst") {
       let resultadoBusqueda = dataSalidasVenta.filter((element) => {
         if (
           element.desReqEst
@@ -157,11 +144,7 @@ export const ListSalidaVenta = () => {
       setDataSalidasVenta(result);
       setDataSalidasVentaTemp(result);
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      alert(description_error);
     }
   };
 
@@ -231,11 +214,11 @@ export const ListSalidaVenta = () => {
                         onNewInput={handleChangeSelectValue}
                       />
                     </TableCell>
-                    <TableCell align="center" width={120}>
-                      <b>Motivo</b>
-                    </TableCell>
                     <TableCell align="center" width={40}>
                       <b>Afectado</b>
+                    </TableCell>
+                    <TableCell align="center" width={40}>
+                      <b>Anulado</b>
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Fecha creación</b>
@@ -266,15 +249,45 @@ export const ListSalidaVenta = () => {
                             <span className={"badge text-bg-warning"}>
                               {row.desReqEst}
                             </span>
-                          ) : (
+                          ) : row.idReqEst === 3 ? (
                             <span className={"badge text-bg-success"}>
+                              {row.desReqEst}
+                            </span>
+                          ) : (
+                            <span className={"badge text-bg-secondary"}>
                               {row.desReqEst}
                             </span>
                           )}
                         </TableCell>
-                        <TableCell align="center">{row.desOpeFacMot}</TableCell>
                         <TableCell align="center">
-                          {row.fueAfePorDev == 1 ? (
+                          {row.fueAfePorDev === 1 ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              fill="currentColor"
+                              className="bi bi-check-circle-fill"
+                              viewBox="0 0 16 16"
+                              color="green"
+                            >
+                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              fill="currentColor"
+                              className="bi bi-x-circle-fill"
+                              viewBox="0 0 16 16"
+                              color="red"
+                            >
+                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
+                            </svg>
+                          )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {row.fueAfePorAnul === 1 ? (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="20"
@@ -310,6 +323,7 @@ export const ListSalidaVenta = () => {
                                   "_blank"
                                 );
                               }}
+                              disabled={row.fueAfePorAnul === 1}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
                             >
