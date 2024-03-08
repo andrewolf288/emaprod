@@ -273,6 +273,7 @@ export const ViewSalidaVenta = () => {
   useEffect(() => {
     obtenerDataDetalleVenta();
   }, []);
+
   return (
     <>
       <div className="container-fluid px-4">

@@ -34,13 +34,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idAlmacenPrincipal = 1; // almacen principal
     $idEntStoEst = 1;
     $esDev = 1;
+    $fueAfePorAnul = 1;
 
     if ($pdo) {
         $sql_search_operacion_facturacion_by_idGuiRem =
             "SELECT id FROM operacion_facturacion
-        WHERE idGuiRem = ?";
+        WHERE idGuiRem = ? AND fueAfePorAnul <> ?";
         $stmt_search_operacion_facturacion_by_idGuiRem = $pdo->prepare($sql_search_operacion_facturacion_by_idGuiRem);
         $stmt_search_operacion_facturacion_by_idGuiRem->bindParam(1, $idRefGui, PDO::PARAM_INT);
+        $stmt_search_operacion_facturacion_by_idGuiRem->bindParam(2, $fueAfePorAnul, PDO::PARAM_BOOL);
         $stmt_search_operacion_facturacion_by_idGuiRem->execute();
         $row_operacion_facturacion = $stmt_search_operacion_facturacion_by_idGuiRem->fetch(PDO::FETCH_ASSOC);
 
@@ -119,7 +121,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // actualizamos la cabecera de operacion facturacion
                 $idReqEstAnulado = 5;
-                $fueAfePorAnul = 1;
                 $sql_update_operacion_facturacion =
                     "UPDATE operacion_facturacion
                 SET idReqEst = ?, fueAfePorAnul = ?, fecAnuOpeFac = ?, fecActOpeFac = ?

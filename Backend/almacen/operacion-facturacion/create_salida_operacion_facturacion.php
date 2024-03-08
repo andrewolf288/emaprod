@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // 1. primero realizamos la insercion de la operacion de factura
                         $sql_insert_operacion_facturacion =
                             "INSERT INTO operacion_facturacion (idGuiRem, idOpeFacMot, invSerFac, invNumFac, idReqEst)
-                        VALUES (?, ?, ?, ?, ?, ?)";
+                        VALUES (?, ?, ?, ?, ?)";
                         $stmt_insert_operacion_facturacion = $pdo->prepare($sql_insert_operacion_facturacion);
                         $stmt_insert_operacion_facturacion->bindParam(1, $idGuiRem, PDO::PARAM_INT);
                         $stmt_insert_operacion_facturacion->bindParam(2, $idOpeFacMot, PDO::PARAM_INT);
