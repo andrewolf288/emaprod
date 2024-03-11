@@ -41,7 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         od.invSerFac,
         od.invNumFac,
         od.idOpeFacMot,
-        od.esRetorno
+        ofm.desOpeFacMot,
+        od.fecCreOpeDev
         FROM operacion_devolucion AS od
         JOIN requisicion_estado AS re ON re.id = od.idReqEst
         JOIN operacion_facturacion_motivo AS ofm ON ofm.id = od.idOpeFacMot

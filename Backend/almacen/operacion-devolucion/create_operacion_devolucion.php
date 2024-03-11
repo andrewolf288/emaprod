@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // DEBEMOS CONSULTAR SI LA OPERACION DE SALIDA FUE REGISTRADA
         $sql_consult_operacion_facturacion_by_guia_remision =
-            "SELECT id
+            "SELECT id, fueAfePorAnul
         FROM operacion_facturacion
         WHERE idGuiRem = ?";
         $stmt_consult_operacion_facturacion_by_guia_remision = $pdo->prepare($sql_consult_operacion_facturacion_by_guia_remision);
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $pdo->beginTransaction();
                     $sql_insert_operacion_devolucion =
                         "INSERT INTO
-                    operacion_devolucion (idGuiRem, idNotCre, invSerFav, invNumFac, idReqEst, idOpeFacMot)
+                    operacion_devolucion (idGuiRem, idNotCre, invSerFac, invNumFac, idReqEst, idOpeFacMot)
                     VALUES(?, ?, ?, ?, ?, ?)";
                     $stmt_insert_operacion_devolucion = $pdo->prepare($sql_insert_operacion_devolucion);
                     $stmt_insert_operacion_devolucion->bindParam(1, $idRefGui, PDO::PARAM_INT);
@@ -97,28 +97,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $stmt_select_salida_producto->bindParam(2, $reference, PDO::PARAM_STR);
                             $stmt_select_salida_producto->execute();
 
-                            $salidas_producto = $stmt_select_salida_producto->fetchAll(PDO::FETCH_ASSOC);
+                            $row_salidas_operacion = $stmt_select_salida_producto->fetch(PDO::FETCH_ASSOC);
 
                             // si las salidas de productos no esta vacia
-                            if (!empty($salidas_producto)) {
-                                foreach ($salidas_producto as $row_salidas_operacion) {
-                                    $idProdt = $row_salidas_operacion["idProdt"]; // producto
-                                    $refProdt = $row_salidas_operacion["refProdt"]; // referencia
-                                    $esMerProm = $row_salidas_operacion["esMerProm"];
-                                    $esProdFin = $row_salidas_operacion["esProFin"];
+                            if ($row_salidas_operacion) {
+                                $idProdt = $row_salidas_operacion["idProdt"]; // producto
+                                $refProdt = $row_salidas_operacion["refProdt"]; // referencia
+                                $esMerProm = $row_salidas_operacion["esMerProm"];
+                                $esProdFin = $row_salidas_operacion["esProFin"];
 
-                                    $sql_create_operacion_facturacion_detalle =
-                                        "INSERT INTO operacion_devolucion_detalle
+                                $sql_create_operacion_facturacion_detalle =
+                                    "INSERT INTO operacion_devolucion_detalle
                                     (idOpeDev, idProdt, refProdt, canOpeDevDet, esMerProm, esProFin)
                                     VALUES(?, ?, ?, $quantity , ?, ?)";
-                                    $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
-                                    $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
-                                    $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
-                                    $stmt_create_operacion_facturacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
-                                    $stmt_create_operacion_facturacion_detalle->bindParam(4, $esMerProm, PDO::PARAM_BOOL);
-                                    $stmt_create_operacion_facturacion_detalle->bindParam(5, $esProdFin, PDO::PARAM_BOOL);
-                                    $stmt_create_operacion_facturacion_detalle->execute();
-                                }
+                                $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
+                                $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
+                                $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
+                                $stmt_create_operacion_facturacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
+                                $stmt_create_operacion_facturacion_detalle->bindParam(4, $esMerProm, PDO::PARAM_BOOL);
+                                $stmt_create_operacion_facturacion_detalle->bindParam(5, $esProdFin, PDO::PARAM_BOOL);
+                                $stmt_create_operacion_facturacion_detalle->execute();
                             }
                         }
                     }
@@ -134,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         while ($row_salidas_operacion = $stmt_select_salidas_operacion->fetch(PDO::FETCH_ASSOC)) {
                             $refProdt = $row_salidas_operacion["refProdt"]; // referencia
                             $idProdt = $row_salidas_operacion["idProdt"]; // producto
-                            $canOpeDevDet = $row_salidas_operacion["canOpeDevDet"]; // cantidad salida
+                            $canOpeDevDet = $row_salidas_operacion["canOpeFacDet"]; // cantidad salida
                             $esMerProm = $row_salidas_operacion["esMerProm"];
                             $esProdFin = $row_salidas_operacion["esProFin"];
 
@@ -182,34 +180,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         // si no existe un registro, estamos hablando de operaciones anteriores
         else {
-            $sql_insert_operacion_devolucion_sin_trazabilidad =
-                "INSERT INTO
-            operacion_devolucion (idNotCre, invSerFav, invNumFac, idReqEst, idOpeFacMot)
-            VALUES(?, ?, ?, ?, ?)";
-            $stmt_insert_operacion_devolucion_sin_trazabilidad = $pdo->prepare($sql_insert_operacion_devolucion_sin_trazabilidad);
-            $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(1, $idCredNot, PDO::PARAM_INT);
-            $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(2, $invoice_serie, PDO::PARAM_STR);
-            $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(3, $invoice_number, PDO::PARAM_STR);
-            $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(4, $idReqEst, PDO::PARAM_INT);
-            $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(5, $idOpeFacMot, PDO::PARAM_INT);
-            $stmt_insert_operacion_devolucion_sin_trazabilidad->execute();
+            $errorsValidation = stockSuficiente($items, $pdo);
+            if (empty($errorsValidation)) {
+                try {
+                    $pdo->beginTransaction();
+                    $sql_insert_operacion_devolucion_sin_trazabilidad =
+                        "INSERT INTO
+                    operacion_devolucion (idNotCre, invSerFac, invNumFac, idReqEst, idOpeFacMot)
+                    VALUES(?, ?, ?, ?, ?)";
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad = $pdo->prepare($sql_insert_operacion_devolucion_sin_trazabilidad);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(1, $idCredNot, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(2, $invoice_serie, PDO::PARAM_STR);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(3, $invoice_number, PDO::PARAM_STR);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(4, $idReqEst, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(5, $idOpeFacMot, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->execute();
 
-            $idLastInsertion = $pdo->lastInsertId();
+                    $idLastInsertion = $pdo->lastInsertId();
 
-            // recorremos cada item de la devolucion
-            foreach ($items as $item) {
-                $reference = $item["product_reference"];
-                $quantity = intval($item["quantity"]);
-                // como no hay referencia, tenemos que consultar directamente la informacion del producto
-                $sql_consult_producto =
-                    "SELECT 
-                id
-                FROM producto
-                WHERE codProd = ?";
-                $stmt_consult_producto = $pdo->prepare($sql_consult_producto);
-                $stmt_consult_producto->bindParam(1, $reference, PDO::PARAM_STR);
-                $stmt_consult_producto->execute();
-                // creamos el detalle de devolucion
+                    // recorremos cada item de la devolucion
+                    foreach ($items as $item) {
+                        $idProdt = $item["idProdt"]; // obtenemos informacion del producto
+                        $refProdt = $item["product_reference"]; // referencia del produto
+                        $cantidad = $item["quantity"]; // cantidad requerida
+                        $esMerProm = $item["esMerProm"]; // es merma promocional
+                        $esProFin = $item["esProFin"]; // es producto final
+
+                        $sql_create_operacion_facturacion_detalle =
+                            "INSERT INTO operacion_devolucion_detalle
+                        (idOpeDev, idProdt, refProdt, canOpeDevDet, esMerProm, esProFin)
+                        VALUES(?, ?, ?, $cantidad, ?, ?)";
+                        $stmt_create_operacion_facturacion_detalle = $pdo->prepare($sql_create_operacion_facturacion_detalle);
+                        $stmt_create_operacion_facturacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
+                        $stmt_create_operacion_facturacion_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
+                        $stmt_create_operacion_facturacion_detalle->bindParam(3, $refProdt, PDO::PARAM_STR);
+                        $stmt_create_operacion_facturacion_detalle->bindParam(4, $esMerProm, PDO::PARAM_BOOL);
+                        $stmt_create_operacion_facturacion_detalle->bindParam(5, $esProFin, PDO::PARAM_BOOL);
+                        $stmt_create_operacion_facturacion_detalle->execute();
+                    }
+
+                    $pdo->commit();
+                } catch (PDOException $e) {
+                    $pdo->rollBack();
+                    $message_error = "ERROR EN LA OPERACION";
+                    $description_error = $e->getMessage();
+                }
+            }
+
+            // si se han encontrado errores en la validacion
+            else {
+                // formamos la data de string de errores de validacion
+                $stringErrorsValidation = implode("\n", $errorsValidation);
+                // enviamos el mensaje al cliente
+                $message_error = "Error en la validacion";
+                $description_error = $stringErrorsValidation;
+                // terminamos la ejecucion del programa
+                exit;
             }
         }
     }
@@ -218,4 +244,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $return['message_error'] = $message_error;
     $return['description_error'] = $description_error;
     echo json_encode($return);
+}
+
+function stockSuficiente(&$items, $pdo)
+{
+    $errors = []; // arreglo de errores
+
+    foreach ($items as &$item) {
+        $reference = $item["product_reference"]; // referencia del producto
+
+        // consulta de producto stock en almacen
+        $sql_consult_product =
+            "SELECT p.id,
+            p.esMerProm,
+            p.esProFin
+        FROM producto AS p
+        WHERE p.codProd = ?";
+
+        try {
+            $stmt_consult_product = $pdo->prepare($sql_consult_product);
+            $stmt_consult_product->bindParam(1, $reference, PDO::PARAM_STR);
+            $stmt_consult_product->execute();
+
+            $row = $stmt_consult_product->fetch(PDO::FETCH_ASSOC);
+
+            // verificamos si se encontro el producto en almacen
+            if ($row) {
+                // le agregamos el idProdt a la informacion de cada item
+                $item["idProdt"] = $row["id"];
+                $item["esMerProm"] = $row["esMerProm"];
+                $item["esProFin"] = $row["esProFin"];
+            }
+            // en caso no se encuentre el producto en almacen
+            else {
+                $message_error_producto_inexistente = "No se ha encontrado el producto $reference en la base de datos";
+                array_push($errors, $message_error_producto_inexistente);
+            }
+        }
+        // si hubo un problema en la consulta del producto en almacen
+        catch (PDOException $e) {
+            $message_error_database = "Hubo un problema al consultar el item $reference";
+            array_push($errors, $message_error_database);
+        }
+    }
+    return $errors;
 }
