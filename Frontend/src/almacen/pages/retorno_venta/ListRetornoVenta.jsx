@@ -14,7 +14,6 @@ import {
 import { getRetornosVenta } from "../../helpers/retorno-venta/getRetornosVenta";
 
 export const ListRetornoVenta = () => {
-  const [dataRetornosVenta, setdataRetornosVenta] = useState([]);
   const [dataRetornosVentaTemp, setdataRetornosVentaTemp] = useState([]);
 
   // filtros
@@ -26,19 +25,6 @@ export const ListRetornoVenta = () => {
   // ESTADOS PARA LA PAGINACIÓN
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
@@ -86,14 +72,9 @@ export const ListRetornoVenta = () => {
     console.log(resultPeticion);
     const { message_error, description_error, result } = resultPeticion;
     if (message_error.length === 0) {
-      setdataRetornosVenta(result);
       setdataRetornosVentaTemp(result);
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      alert(description_error);
     }
   };
 

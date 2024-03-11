@@ -5,10 +5,10 @@ import { ViewRetornoVenta } from "./ViewRetornoVenta";
 export const RouterRetornoVenta = [
   {
     path: "",
-    element: <ListRetornoVenta />,
+    element: <ListRetornoVenta />
   },
   {
-    path: "view/:idRetornoVenta",
-    element: <ViewRetornoVenta />,
-  },
+    path: "view/:idDevolucionVenta",
+    element: <ViewRetornoVenta />
+  }
 ];

@@ -65,11 +65,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($fueAfePorAnul == 0) {
                 // insertamos la operacion devolucion
                 try {
+                    $esOpeFacExi = 1;
                     $pdo->beginTransaction();
                     $sql_insert_operacion_devolucion =
                         "INSERT INTO
-                    operacion_devolucion (idGuiRem, idNotCre, invSerFac, invNumFac, idReqEst, idOpeFacMot)
-                    VALUES(?, ?, ?, ?, ?, ?)";
+                    operacion_devolucion (idGuiRem, idNotCre, invSerFac, invNumFac, idReqEst, idOpeFacMot, esOpeFacExi)
+                    VALUES(?, ?, ?, ?, ?, ?, ?)";
                     $stmt_insert_operacion_devolucion = $pdo->prepare($sql_insert_operacion_devolucion);
                     $stmt_insert_operacion_devolucion->bindParam(1, $idRefGui, PDO::PARAM_INT);
                     $stmt_insert_operacion_devolucion->bindParam(2, $idCredNot, PDO::PARAM_INT);
@@ -77,6 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt_insert_operacion_devolucion->bindParam(4, $invoice_number, PDO::PARAM_STR);
                     $stmt_insert_operacion_devolucion->bindParam(5, $idReqEst, PDO::PARAM_INT);
                     $stmt_insert_operacion_devolucion->bindParam(6, $idOpeFacMot, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion->bindParam(7, $esOpeFacExi, PDO::PARAM_INT);
                     $stmt_insert_operacion_devolucion->execute();
 
                     $idLastInsertion = $pdo->lastInsertId();
@@ -184,16 +186,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (empty($errorsValidation)) {
                 try {
                     $pdo->beginTransaction();
+                    $esOpeFacExi = 0;
                     $sql_insert_operacion_devolucion_sin_trazabilidad =
                         "INSERT INTO
-                    operacion_devolucion (idNotCre, invSerFac, invNumFac, idReqEst, idOpeFacMot)
-                    VALUES(?, ?, ?, ?, ?)";
+                    operacion_devolucion (idGuiRem, idNotCre, invSerFac, invNumFac, idReqEst, idOpeFacMot, esOpeFacExi)
+                    VALUES(?, ?, ?, ?, ?, ?, ?)";
                     $stmt_insert_operacion_devolucion_sin_trazabilidad = $pdo->prepare($sql_insert_operacion_devolucion_sin_trazabilidad);
-                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(1, $idCredNot, PDO::PARAM_INT);
-                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(2, $invoice_serie, PDO::PARAM_STR);
-                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(3, $invoice_number, PDO::PARAM_STR);
-                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(4, $idReqEst, PDO::PARAM_INT);
-                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(5, $idOpeFacMot, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(1, $idRefGui, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(2, $idCredNot, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(3, $invoice_serie, PDO::PARAM_STR);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(4, $invoice_number, PDO::PARAM_STR);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(5, $idReqEst, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(6, $idOpeFacMot, PDO::PARAM_INT);
+                    $stmt_insert_operacion_devolucion_sin_trazabilidad->bindParam(7, $esOpeFacExi, PDO::PARAM_BOOL);
                     $stmt_insert_operacion_devolucion_sin_trazabilidad->execute();
 
                     $idLastInsertion = $pdo->lastInsertId();

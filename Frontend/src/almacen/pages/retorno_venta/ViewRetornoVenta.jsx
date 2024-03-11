@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { CardSalidaVentaDetalle } from "../../components/componentes-salida-venta/CardSalidaVentaDetalle";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import { createSalidaLoteStockByDetalle } from "../../helpers/salida-venta/createSalidaLoteStockByDetalle";
 import {
   CircularProgress,
   Dialog,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { getRetornoVentaDetalleById } from "../../helpers/retorno-venta/getRetornoVentaDetalleById";
@@ -21,26 +24,27 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 export const ViewRetornoVenta = () => {
-  const { idRetornoVenta } = useParams();
+  const { idDevolucionVenta } = useParams();
   const [dataSalidaVenta, setdataSalidaVenta] = useState({
     id: 0,
     invSerFac: "",
     invNumFac: "",
     idOpeFacMot: 0,
     desOpeFacMot: "",
-    fueAfePorDev: 0,
-    fecCreOpeFac: "",
-    detOpeFac: []
+    esOpeFacExi: 0,
+    esRet: 0,
+    fecCreOpeDev: "",
+    detOpeDev: []
   });
-  const [backupDataSalidaVenta, setBackupDataSalidaVenta] = useState(null);
 
   const {
     invSerFac,
     invNumFac,
     desOpeFacMot,
-    fueAfePorDev,
-    fecCreOpeFac,
-    detOpeFac
+    fecCreOpeDev,
+    esOpeFacExi,
+    esRet,
+    detOpeDev
   } = dataSalidaVenta;
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
@@ -83,135 +87,21 @@ export const ViewRetornoVenta = () => {
     // abrimos el loader
     openLoader();
     const formatData = {
-      idOpeFac: idRetornoVenta
+      idOpeDev: idDevolucionVenta
     };
     const resultPeticion = await getRetornoVentaDetalleById(formatData);
     const { result } = resultPeticion;
-    console.log(result[0]);
-    setdataSalidaVenta(result[0]);
-    setBackupDataSalidaVenta(result[0]);
+    console.log(result);
+    setdataSalidaVenta(result);
     // cerramos el loader
     closeLoader();
   };
 
-  // añadir un lote de salida
-  const addLoteSalidaVenta = (idProdt, loteRetornoStock) => {
-    // primero debemos encontrar el detalle del elemento
-    const detalleFindElement = detOpeFac.find(
-      (element) => element.idProdt === idProdt
-    );
-
-    const { detSal } = detalleFindElement;
-
-    // debemos parsear la informacion
-    const detalleSalidasAgregacion = [...detSal, loteRetornoStock];
-
-    const detalleAux = {
-      ...detalleFindElement,
-      canOpeFacDetAct:
-        parseInt(detalleFindElement.canOpeFacDetAct) +
-        parseInt(loteRetornoStock.canSalLotProd),
-      detSal: detalleSalidasAgregacion
-    };
-
-    const detalleParser = detOpeFac.map((element) => {
-      if (element.idProdt === idProdt) {
-        return {
-          ...detalleAux
-        };
-      } else {
-        return element;
-      }
-    });
-
+  // cambiar valor radio button
+  const onChangeValueRadioButtonRetorno = (event) => {
     setdataSalidaVenta({
       ...dataSalidaVenta,
-      detOpeFac: detalleParser
-    });
-  };
-
-  // editar un lote de salida de venta
-  const editLoteSalidaVenta = (idProdt, refProdc, { target }) => {
-    const { value } = target;
-    // primero debemos encontrar el detalle del elemento
-    const detalleFindElement = detOpeFac.find(
-      (element) => element.idProdt === idProdt
-    );
-
-    const { detSal } = detalleFindElement;
-    let auxTotalSalidaStock = 0;
-    const detalleSalidasUpdate = detSal.map((element) => {
-      if (element.refProdc === refProdc) {
-        auxTotalSalidaStock += parseInt(value);
-        return {
-          ...element,
-          canSalLotProd: value
-        };
-      } else {
-        auxTotalSalidaStock += parseInt(element.canSalLotProd);
-        return element;
-      }
-    });
-
-    const detalleAux = {
-      ...detalleFindElement,
-      canOpeFacDetAct: auxTotalSalidaStock,
-      detSal: detalleSalidasUpdate
-    };
-
-    const detalleParser = detOpeFac.map((element) => {
-      if (element.idProdt === idProdt) {
-        return {
-          ...detalleAux
-        };
-      } else {
-        return element;
-      }
-    });
-
-    setdataSalidaVenta({
-      ...dataSalidaVenta,
-      detOpeFac: detalleParser
-    });
-  };
-
-  // eliminar un lote de salida de venta
-  const deleteLoteSalidaVenta = (idProdt, refProdc) => {
-    // primero debemos encontrar el detalle del elemento
-    const detalleFindElement = detOpeFac.find(
-      (element) => element.idProdt === idProdt
-    );
-
-    // luego filtrar aquellos que no corresponde a la referencia proporcionada
-    const { detSal } = detalleFindElement;
-    let auxTotalSalidaStock = 0;
-    const detalleSalidasFilter = detSal.filter((element) => {
-      if (element.refProdc !== refProdc) {
-        auxTotalSalidaStock += parseInt(element.canSalLotProd);
-        return true;
-      } else {
-        return false;
-      }
-    });
-    const detalleAux = {
-      ...detalleFindElement,
-      canOpeFacDetAct: auxTotalSalidaStock,
-      detSal: detalleSalidasFilter
-    };
-
-    const detalleParser = detOpeFac.map((element) => {
-      if (element.idProdt === idProdt) {
-        return {
-          ...detalleAux
-        };
-      } else {
-        return element;
-      }
-    });
-
-    setdataSalidaVenta({
-      ...dataSalidaVenta,
-      detOpeFac: detalleParser
+      esRet: event.target.value
     });
   };
 
@@ -274,7 +164,7 @@ export const ViewRetornoVenta = () => {
                     className="form-control"
                   />
                 </div>
-                <div className="col-md-5">
+                <div className="col-md-4">
                   <label htmlFor="nombre" className="form-label">
                     <b>Motivo operación</b>
                   </label>
@@ -292,27 +182,77 @@ export const ViewRetornoVenta = () => {
                   <input
                     type="text"
                     disabled={true}
-                    value={fecCreOpeFac}
+                    value={fecCreOpeDev}
                     className="form-control"
                   />
+                </div>
+                <div className="col-md-3">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>¿Se tiene trazabilidad?</b>
+                  </label>
+                  <p
+                    className={
+                      esOpeFacExi === 0 ? "text-danger" : "text-success"
+                    }
+                  >
+                    {esOpeFacExi === 0
+                      ? "Sin trazabilidad"
+                      : "Existe trazabilidad"}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
           {/* DETALLE DE SALIDA DE VENTA */}
           <div className="card d-flex mt-4">
-            <h6 className="card-header">Detalle salida venta</h6>
-            {detOpeFac.map((detalle, index) => (
+            <h6 className="card-header">Detalle devolución venta</h6>
+
+            <div className="d-flex justify-content-center mt-4">
+              <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">
+                  Acción de stock
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={esRet}
+                  onChange={onChangeValueRadioButtonRetorno}
+                >
+                  <FormControlLabel
+                    value={1}
+                    control={
+                      <Radio
+                        sx={{
+                          "& .MuiSvgIcon-root": {
+                            fontSize: 28
+                          }
+                        }}
+                      />
+                    }
+                    label="Retornar stock"
+                  />
+                  <FormControlLabel
+                    value={0}
+                    control={
+                      <Radio
+                        sx={{
+                          "& .MuiSvgIcon-root": {
+                            fontSize: 28
+                          }
+                        }}
+                      />
+                    }
+                    label="No retornar stock"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </div>
+            {detOpeDev.map((detalle, index) => (
               <CardRetornoSalidaDetalle
                 detalle={detalle}
                 key={detalle.id}
                 index={index}
-                onDeleteSalidaStock={deleteLoteSalidaVenta}
-                onUpdateSalidaStock={editLoteSalidaVenta}
-                onAddSalidaStock={addLoteSalidaVenta}
-                setfeedbackMessages={setfeedbackMessages}
-                handleClickFeeback={handleClickFeeback}
-                generarSalidaStockDetalle={generarRetornoVentaWithLotes}
               />
             ))}
           </div>
