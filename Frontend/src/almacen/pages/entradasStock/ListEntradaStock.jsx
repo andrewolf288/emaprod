@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 // HOOKS
 import { useForm } from "../../../hooks/useForm";
 // IMPORTACIONES PARA TABLE MUI
@@ -15,35 +15,21 @@ import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
 //IMPORTACIONES PARA DIALOG DELETE
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 // IMPORTACIONES PARA EL FEEDBACK
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { getEntradasStock } from "./../../helpers/entradas-stock/getEntradasStock";
 // FILTROS
 import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { FilterMateriaPrima } from "./../../../components/ReferencialesFilters/Producto/FilterMateriaPrima";
 import { FilterProveedor } from "./../../../components/ReferencialesFilters/Proveedor/FilterProveedor";
 import { FilterAlmacen } from "./../../../components/ReferencialesFilters/Almacen/FilterAlmacen";
 // FECHA PICKER
-import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
 import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
-import ExportExcel from "../entradasStock/ExportExcel";
-import TypeEntrada from "./TypeEntrada";
-import { DetalleDevoluciones } from "./DetalleDevoluciones";
-import { DetalleSalidas } from "./DetalleSalidas";
-import { DetalleSalReqSel } from "./DetalleSalReqSel";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
-import BlockIcon from "@mui/icons-material/Block";
 import CircularProgress from "@mui/material/CircularProgress";
 import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
-import Tooltip from "@mui/material/Tooltip";
 // CONFIGURACIONES DE ESTILOS
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 // CONFIGURACION DE FEEDBACK
@@ -69,11 +55,10 @@ const ListEntradaStock = () => {
   });
 
   // ESTADOS PARA FILTROS GENERALES DE FECHA
-  const { fecEntIniSto, fecEntFinSto, formState, setFormState, onInputChange } =
-    useForm({
-      fecEntIniSto: FormatDateMYSQL(),
-      fecEntFinSto: FormatDateMYSQL()
-    });
+  const { formState, setFormState } = useForm({
+    fecEntIniSto: FormatDateMYSQL(),
+    fecEntFinSto: FormatDateMYSQL()
+  });
 
   // ESTADOS PARA LA PAGINACIÓN
   const [page, setPage] = useState(0);
@@ -108,11 +93,11 @@ const ListEntradaStock = () => {
     setfeedbackDelete(false);
   };
 
-  const obtenerDataEntradaStock = async (body = {}) => {
-    const resultPeticion = await getEntradasStock(body);
-    const { result } = resultPeticion;
-    return result;
-  };
+  // const obtenerDataEntradaStock = async (body = {}) => {
+  //   const resultPeticion = await getEntradasStock(body);
+  //   const { result } = resultPeticion;
+  //   return result;
+  // };
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
@@ -143,16 +128,16 @@ const ListEntradaStock = () => {
       almacen: obj
     });
   };
-  const onChangeTipoEntrada = (event) => {
-    setInputs({
-      ...inputs,
-      tipoEntrada: event.target.value
-    });
-  };
-  const onChangeDate = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaEntrada");
-  };
+  // const onChangeTipoEntrada = (event) => {
+  //   setInputs({
+  //     ...inputs,
+  //     tipoEntrada: event.target.value
+  //   });
+  // };
+  // const onChangeDate = (newDate) => {
+  //   const dateFilter = newDate.split(" ");
+  //   filter(dateFilter[0], "filterFechaEntrada");
+  // };
 
   const onChangeSeleccionado = (event, value) => {
     const valueFilter = value ? "1" : "0";
@@ -163,10 +148,10 @@ const ListEntradaStock = () => {
   const onChangeDateStartData = (newDate) => {
     let dateFormat = newDate.split(" ")[0];
     setFormState({ ...formState, fecEntIniSto: dateFormat });
-    let body = {
-      ...formState,
-      fecEntIniSto: dateFormat
-    };
+    // let body = {
+    //   ...formState,
+    //   fecEntIniSto: dateFormat
+    // };
     //obtenerDataEntradaStock(body);
   };
 
@@ -174,10 +159,10 @@ const ListEntradaStock = () => {
     let dateFormat = newDate.split(" ")[0];
     setFormState({ ...formState, fecEntFinSto: dateFormat });
     // realizamos una promesa
-    let body = {
-      ...formState,
-      fecEntFinSto: dateFormat
-    };
+    // let body = {
+    //   ...formState,
+    //   fecEntFinSto: dateFormat
+    // };
     //obtenerDataEntradaStock(body);
   };
 
@@ -192,32 +177,32 @@ const ListEntradaStock = () => {
           var totalMer = 0;
 
           function checkType(data) {
-            if (inputs.tipoEntrada == "TODO") {
+            if (inputs.tipoEntrada === "TODO") {
               return true;
             }
             if (
-              inputs.tipoEntrada == "COMPRAS" &&
-              data.referencia == 0 &&
-              data.esSel == 0
+              inputs.tipoEntrada === "COMPRAS" &&
+              data.referencia === 0 &&
+              data.esSel === 0
             ) {
               return true;
             }
-            if (inputs.tipoEntrada == "PRODT. FINAL" && data.referencia) {
+            if (inputs.tipoEntrada === "PRODT. FINAL" && data.referencia) {
               return true;
             }
             if (
-              inputs.tipoEntrada == "DEVOLUCIONES" &&
+              inputs.tipoEntrada === "DEVOLUCIONES" &&
               data.devoluciones?.length
             ) {
               return true;
             }
-            if (inputs.tipoEntrada == "PRODT. SELECCION" && data.esSel) {
+            if (inputs.tipoEntrada === "PRODT. SELECCION" && data.esSel) {
               return true;
             }
-            if (inputs.tipoEntrada == "PRODT. MOLIENDA" && data.esMol) {
+            if (inputs.tipoEntrada === "PRODT. MOLIENDA" && data.esMol) {
               return true;
             }
-            if (inputs.tipoEntrada == "PRODT. FRESCOS" && data.esFre) {
+            if (inputs.tipoEntrada === "PRODT. FRESCOS" && data.esFre) {
               return true;
             } else {
               return false;
@@ -229,21 +214,21 @@ const ListEntradaStock = () => {
             if (
               checkType(data) &&
               (inputs.almacen.label?.includes(data.nomAlm) ||
-                inputs.almacen.label?.length == 0) &&
+                inputs.almacen.label?.length === 0) &&
               (inputs.provedor.label?.includes(data.nomProv) ||
-                inputs.provedor.label?.length == 0) &&
-              (inputs.producto.label == data.nomProd ||
-                inputs.producto.label?.length == 0) &&
+                inputs.provedor.label?.length === 0) &&
+              (inputs.producto.label === data.nomProd ||
+                inputs.producto.label?.length === 0) &&
               (data.codEntSto?.includes(inputs.codigo) ||
-                inputs.codigo?.length == 0) &&
+                inputs.codigo?.length === 0) &&
               (data.docEntSto?.includes(inputs.documento) ||
-                inputs.documento?.length == 0) &&
+                inputs.documento?.length === 0) &&
               (data.canTotEnt?.includes(inputs.ingresado) ||
-                inputs.ingresado?.length == 0) &&
+                inputs.ingresado?.length === 0) &&
               (data.canTotDis?.includes(inputs.disponible) ||
-                inputs.disponible?.length == 0) &&
+                inputs.disponible?.length === 0) &&
               (data.merTot?.includes(inputs.merTot) ||
-                inputs.merTot?.length == 0)
+                inputs.merTot?.length === 0)
             ) {
               // no sumar el acumulado del producto agua potable
               if (data.idProd !== 418) {
@@ -406,11 +391,8 @@ const ListEntradaStock = () => {
         <div
           className="mt-4"
           style={{
-            //overflowY: "auto",
             overflow: "auto",
             float: "left"
-            //position: "relative",
-            //border: "1px solid black",
           }}
         >
           <Paper>
@@ -432,7 +414,6 @@ const ListEntradaStock = () => {
                       align="left"
                       width={360}
                       sx={{
-                        //border: "1px solid black",
                         minWidth: 300
                       }}
                     >
@@ -446,7 +427,6 @@ const ListEntradaStock = () => {
                       align="left"
                       width={160}
                       sx={{
-                        //border: "1px solid black",
                         minWidth: 200
                       }}
                     >
@@ -460,7 +440,6 @@ const ListEntradaStock = () => {
                       align="left"
                       width={140}
                       sx={{
-                        //border: "1px solid black",
                         minWidth: 200
                       }}
                     >
@@ -489,7 +468,6 @@ const ListEntradaStock = () => {
                     <TableCell
                       align="left"
                       sx={{
-                        //border: "1px solid black",
                         minWidth: 160
                       }}
                     >
@@ -512,7 +490,6 @@ const ListEntradaStock = () => {
                     <TableCell
                       align="left"
                       sx={{
-                        //border: "1px solid black",
                         minWidth: 160
                       }}
                     >
@@ -535,7 +512,6 @@ const ListEntradaStock = () => {
                     <TableCell
                       align="left"
                       sx={{
-                        //border: "1px solid black",
                         minWidth: 160
                       }}
                     >
@@ -623,15 +599,6 @@ const ListEntradaStock = () => {
                     <TableCell align="left" width={160}>
                       <b>Fecha vencimiento</b>
                     </TableCell>
-                    {/* <TableCell align="left" width={160}>
-                      <b>Fecha cre.</b>
-                    </TableCell> */}
-                    {/* <TableCell align="left" width={160}>
-                      <b>Disponible Acu.</b>
-                    </TableCell>
-                    <TableCell align="left" width={160}>
-                      <b>Merma Acu.</b>
-                    </TableCell> */}
                     <TableCell align="center" width={50}>
                       <b>Acciones</b>
                     </TableCell>
@@ -698,9 +665,6 @@ const ListEntradaStock = () => {
                         <TableCell align="left">{row.merTot}</TableCell>
                         <TableCell align="left">{row.fecEntSto}</TableCell>
                         <TableCell align="left">{row.fecVenEntSto}</TableCell>
-                        {/* <TableCell align="left">{row.fecCreEntSto}</TableCell> */}
-                        {/* <TableCell align="left">{row.disAcu}</TableCell>
-                        <TableCell align="left">{row.merAcu}</TableCell> */}
                         <TableCell align="center">
                           <IconButton
                             onClick={() => {
@@ -712,80 +676,6 @@ const ListEntradaStock = () => {
                           >
                             <VisibilityIcon fontSize="large" color="primary" />
                           </IconButton>
-                          {/* <div
-                            className="btn-toolbar"
-                            style={{
-                              backgroundColor: "#0E80E5",
-                              borderRadius: "9px",
-                            }}
-                          >
-                            {row.salidasProduccion?.length ? (
-                              <DetalleSalidas
-                                row={row}
-                                idProduccion={1}
-                                idEntStock={row.idEntStock}
-                              />
-                            ) : (
-                              <Tooltip title="No hay salidas para producción">
-                                <IconButton>
-                                  <BlockIcon
-                                    fontSize="small"
-                                    sx={{ color: "white" }}
-                                  />
-                                </IconButton>
-                              </Tooltip>
-                            )}
-                          </div>
-
-                          <div
-                            className="btn-toolbar"
-                            style={{
-                              backgroundColor: "#0E80E5",
-                              borderRadius: "9px",
-                            }}
-                          >
-                            {row.salidasSeleccion?.length ? (
-                              <DetalleSalReqSel
-                                row={row}
-                                idProduccion={1}
-                                idEntStock={row.idEntStock}
-                              />
-                            ) : (
-                              <Tooltip title="No hay salidas para seleccion">
-                                <IconButton>
-                                  <BlockIcon
-                                    fontSize="small"
-                                    sx={{ color: "white" }}
-                                  />
-                                </IconButton>
-                              </Tooltip>
-                            )}
-                          </div>
-
-                          <div
-                            className="btn-toolbar"
-                            style={{
-                              backgroundColor: "#0E80E5",
-                              borderRadius: "9px",
-                            }}
-                          >
-                            {row.devoluciones?.length ? (
-                              <DetalleDevoluciones
-                                row={row}
-                                idProduccion={1}
-                                idEntStock={row.idEntStock}
-                              />
-                            ) : (
-                              <Tooltip title="No hay devoluciones">
-                                <IconButton>
-                                  <BlockIcon
-                                    fontSize="small"
-                                    sx={{ color: "white" }}
-                                  />
-                                </IconButton>
-                              </Tooltip>
-                            )}
-                          </div> */}
                         </TableCell>
                       </TableRow>
                     ))}

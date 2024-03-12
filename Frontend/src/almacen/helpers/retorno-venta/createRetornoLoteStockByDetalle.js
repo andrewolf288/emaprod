@@ -4,7 +4,7 @@ import config from "../.././../config";
 export const createRetornoLoteStockByDetalle = async (body) => {
   const domain = config.API_URL;
   const path =
-    "/almacen/operacion-facturacion/create_entrada_operacion_facturacion_by_detalle.php";
+    "/almacen/operacion-devolucion/crear_operacion_devolucion_detalle.php";
   const url = domain + path;
 
   const { data } = await axios.post(url, {

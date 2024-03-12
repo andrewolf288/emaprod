@@ -27,7 +27,7 @@ export const CardRetornoSalidaDetalle = ({ detalle, index }) => {
                   <b>Presentacion</b>
                 </TableCell>
                 <TableCell width={30} align="center">
-                  <b>Cantidad requerida</b>
+                  <b>Cantidad devuelta</b>
                 </TableCell>
                 <TableCell width={30} align="center">
                   <b>Estado</b>
