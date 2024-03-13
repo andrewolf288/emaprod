@@ -68,18 +68,23 @@ export const ListEntradaStockCalidad = () => {
   };
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false);
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
     feedback_description_error: ""
   });
   const { style_message, feedback_description_error } = feedbackMessages;
 
+  // MANEJADORES DE FEEDBACK
+  const handleClickFeeback = () => {
+    setfeedbackCreate(true);
+  };
+
   const handleCloseFeedback = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    setfeedbackDelete(false);
+    setfeedbackCreate(false);
   };
 
   // Manejadores de cambios
@@ -187,6 +192,7 @@ export const ListEntradaStockCalidad = () => {
         style_message: "error",
         feedback_description_error: description_error
       });
+      handleClickFeeback();
     }
   };
 
@@ -374,7 +380,7 @@ export const ListEntradaStockCalidad = () => {
       {/* FEEDBACK */}
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        open={feedbackDelete}
+        open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
       >

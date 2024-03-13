@@ -17,6 +17,7 @@ function getPDO()
     );
 
     try {
+        echo "CONEXION EIXTOSA";
         $pdo = new PDO("sqlsrv:Server=$serverName", options: $connectionOptions);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);

@@ -192,12 +192,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $sql_update_operacion_devolucion =
                 "UPDATE operacion_devolucion
-            SET idReqEst = ?, fecActOpeDev = ?
+            SET idReqEst = ?, esRet = ?, fecActOpeDev = ?
             WHERE id = ?";
             $stmt_update_operacion_devolucion = $pdo->prepare($sql_update_operacion_devolucion);
             $stmt_update_operacion_devolucion->bindParam(1, $idReqEstCom, PDO::PARAM_INT);
-            $stmt_update_operacion_devolucion->bindParam(2, $fecDateNow, PDO::PARAM_STR);
-            $stmt_update_operacion_devolucion->bindParam(3, $idOpeDev, PDO::PARAM_INT);
+            $stmt_update_operacion_devolucion->bindParam(2, $esRet, PDO::PARAM_BOOL);
+            $stmt_update_operacion_devolucion->bindParam(3, $fecDateNow, PDO::PARAM_STR);
+            $stmt_update_operacion_devolucion->bindParam(4, $idOpeDev, PDO::PARAM_INT);
             $stmt_update_operacion_devolucion->execute();
 
             foreach ($detOpeDev as $detalleDevolucion) {

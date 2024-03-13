@@ -7,7 +7,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
+  IconButton
 } from "@mui/material";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { DialogUpdateDetalleRequisicionDevolucion } from "./DialogUpdateDetalleRequisicionDevolucion";
@@ -17,7 +17,7 @@ export const RowDetalleRequisicionDevolucion = ({
   requisicion,
   onUpdateDetalle,
   onDeleteDetalle,
-  onCheckDetalle,
+  onCheckDetalle
 }) => {
   const { detReqDev } = requisicion;
   return (
