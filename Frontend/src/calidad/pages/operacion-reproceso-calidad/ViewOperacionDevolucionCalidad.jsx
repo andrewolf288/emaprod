@@ -5,6 +5,7 @@ import { FilterMotivoDevolucionCalidad } from "../../../components/Referenciales
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { RowOperacionDevolucionCalidadDetalle } from "../../components/operacion-devolucion/RowOperacionDevolucionCalidadDetalle";
+import { generateDetalleCambioProductos } from "../../helpers/operacion-devolucion/generateDetalleCambioProductos";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -104,8 +105,10 @@ export const ViewOperacionDevolucionCalidad = () => {
           index: i,
           idOpeDevCal: idOpeDevCal,
           idProdc: 0,
+          idProdt: idProdt,
           codLotProd: "",
           canLotProd: 0,
+          fecVenLotProd: "",
           pH: "",
           consistencia30: "",
           consistencia60: "",
@@ -114,7 +117,8 @@ export const ViewOperacionDevolucionCalidad = () => {
           olor: "",
           observacion: "",
           esReproceso: 0,
-          esDetCamProd: 0
+          esDetCamProd: false,
+          detCamProd: []
         };
         dataAux.push(auxDetalle);
       }
@@ -124,10 +128,10 @@ export const ViewOperacionDevolucionCalidad = () => {
 
   // funcion para cambiar valor de operacion devolucion caldiad
   const handleChangeValueDetalle = (index, name, value) => {
-    console.log(index);
     const formatData = dataOperacionDevolucionCalidadDetalle.map((element) => {
       if (element.index === index) {
         return {
+          ...element,
           [name]: value
         };
       } else {
@@ -137,12 +141,121 @@ export const ViewOperacionDevolucionCalidad = () => {
     setDataOperacionDevolucionCalidadDetalle(formatData);
   };
 
+  // funcion para asociar lote al detalle
+  const handleAddLoteProduccionDetalle = (index, data) => {
+    console.log(index, data);
+    const { id, codLotProd, fecVenLotProd } = data;
+    const indexFilterData = dataOperacionDevolucionCalidadDetalle.findIndex(
+      (element) => element.index === index
+    );
+
+    let dataFormat = [...dataOperacionDevolucionCalidadDetalle];
+    dataFormat[indexFilterData] = {
+      ...dataFormat[indexFilterData],
+      idProdc: id,
+      codLotProd: codLotProd,
+      fecVenLotProd: fecVenLotProd
+    };
+    console.log(dataFormat);
+
+    setDataOperacionDevolucionCalidadDetalle(dataFormat);
+  };
+
+  // funcion para detalle de cambios
+  const handleGenerateDetalleCambio = async (index, item) => {
+    const { canLotProd } = item;
+    // primero obtenemos el valor numerico de la cantidad del detalle
+    const parserCantidad = isNaN(canLotProd) ? 0 : parseInt(canLotProd);
+    console.log(parserCantidad);
+
+    // si es mayor a 0
+    if (parserCantidad > 0) {
+      let detalleCambioProducto = [];
+      let canTotDetCal = 0;
+      // recorremos el detalle para obtener informacion de las cantidades de los otros detalles
+      dataOperacionDevolucionCalidadDetalle.forEach((element) => {
+        if (element.index !== index) {
+          detalleCambioProducto = [
+            ...detalleCambioProducto,
+            ...element["detCamProd"]
+          ];
+        }
+        canTotDetCal += isNaN(element.canLotProd)
+          ? 0
+          : parseInt(element.canLotProd);
+      });
+
+      // si la cantidad total de los detalles es menor o igual al total del detalle
+      if (canTotDetCal <= canOpeDevDet) {
+        const formatData = {
+          idProdt: idProdt,
+          canLotProd: parserCantidad,
+          detalleCambiosRegistrados: detalleCambioProducto
+        };
+        console.log(formatData);
+
+        // const resultPeticion = await generateDetalleCambioProductos(formatData);
+
+        // const { message_error, description_error, result } = resultPeticion;
+        // if (message_error.length === 0) {
+        //   const indexFilterData =
+        //     dataOperacionDevolucionCalidadDetalle.findIndex(
+        //       (element) => element.index === index
+        //     );
+
+        //   let dataFormat = [...dataOperacionDevolucionCalidadDetalle];
+        //   dataFormat[indexFilterData] = {
+        //     ...dataFormat[indexFilterData],
+        //     detCamProd: result
+        //   };
+        //   console.log(dataFormat);
+
+        //   setDataOperacionDevolucionCalidadDetalle(dataFormat);
+        // } else {
+        //   // mostramos el error recepcionado del backend
+        //   setfeedbackMessages({
+        //     style_message: "warning",
+        //     feedback_description_error: description_error
+        //   });
+        //   handleClickFeeback();
+        // }
+      } else {
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error:
+            "Para generar el detalle de cambios el total de cantidades debe ser menor o igual a la cantidad del detalle"
+        });
+        handleClickFeeback();
+      }
+    } else {
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error:
+          "Para generar el detalle de cambios debes ingresar una cantidad del total"
+      });
+      handleClickFeeback();
+    }
+  };
+
+  // handle eliminar detalle de cambio de productos
+  const handleDeleteDetalleCambio = (index) => {
+    const indexFilterData = dataOperacionDevolucionCalidadDetalle.findIndex(
+      (element) => element.index === index
+    );
+
+    let dataFormat = [...dataOperacionDevolucionCalidadDetalle];
+    dataFormat[indexFilterData] = {
+      ...dataFormat[indexFilterData],
+      detCamProd: []
+    };
+    setDataOperacionDevolucionCalidadDetalle(dataFormat);
+  };
+
   // funcion para traer informacion de la operacion devolucion calidad
   const traerInformacionOperacionDevolucionCalidad = async () => {
     const resultPeticion = await viewOperacionDevolucionCalidadById(
       idOpeDevCal
     );
-    console.log(resultPeticion);
     const { result, message_error, description_error } = resultPeticion;
 
     if (message_error.length === 0) {
@@ -259,6 +372,9 @@ export const ViewOperacionDevolucionCalidad = () => {
                 key={element.index}
                 detalle={element}
                 onChangeValueDetalle={handleChangeValueDetalle}
+                onAddLoteProduccion={handleAddLoteProduccionDetalle}
+                onAddDetalleCambioProdutos={handleGenerateDetalleCambio}
+                onDeleteDetalleCambioProductos={handleDeleteDetalleCambio}
               />
             ))}
           </div>

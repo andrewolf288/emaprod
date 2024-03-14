@@ -1,24 +1,37 @@
 import AddCircle from "@mui/icons-material/AddCircle";
 import {
+  Button,
   Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   FormControlLabel,
   FormGroup,
   FormLabel,
   IconButton,
   Radio,
-  RadioGroup
+  RadioGroup,
+  Typography
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
+import FechaPickerYearAndMonthDynamic from "../../../components/Fechas/FechaPickerYearAndMonthDynamic";
+import { searchLoteProduccion } from "../../helpers/operacion-devolucion/searchLoteProduccion";
+import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 
 export const RowOperacionDevolucionCalidadDetalle = ({
   detalle,
-  onChangeValueDetalle
+  onChangeValueDetalle,
+  onAddLoteProduccion,
+  onAddDetalleCambioProdutos,
+  onDeleteDetalleCambioProductos
 }) => {
   const {
     index,
     idOpeDevCal,
     idProdc,
+    fecVenLotProd,
     codLotProd,
     canLotProd,
     pH,
@@ -29,14 +42,19 @@ export const RowOperacionDevolucionCalidadDetalle = ({
     olor,
     observacion,
     esReproceso,
-    esDetCamProd
+    esDetCamProd,
+    detCamProd
   } = detalle;
 
-  console.log(index);
   // HANDLE CHANGE INPUT NAME
   const handleChangeInputName = ({ target }) => {
     const { name, value } = target;
     onChangeValueDetalle(index, name, value);
+  };
+
+  // HANDLE GENERAR DETALLE CAMBIO DE PRODUCTOS
+  const handleGenerarDetalleCambio = () => {
+    onAddDetalleCambioProdutos(index, detalle);
   };
 
   return (
@@ -44,7 +62,7 @@ export const RowOperacionDevolucionCalidadDetalle = ({
       <div className="card-header">
         <div className="form-group row">
           <div className="col">
-            <div className="row">
+            <div className="row d-flex align-items-center">
               <label htmlFor="lote" className="col-form-label col-2">
                 LOTE:
               </label>
@@ -56,10 +74,14 @@ export const RowOperacionDevolucionCalidadDetalle = ({
                   value={codLotProd}
                 />
               </div>
+              {codLotProd.length !== 0 && (
+                <div className="col-3">{mostrarMesYAnio(fecVenLotProd)}</div>
+              )}
               <div className="col-2">
-                <IconButton color="primary">
-                  <AddCircle />
-                </IconButton>
+                <DialogSearchCreateionLote
+                  dataDetalle={detalle}
+                  handleConfirm={onAddLoteProduccion}
+                />
               </div>
             </div>
           </div>
@@ -191,8 +213,8 @@ export const RowOperacionDevolucionCalidadDetalle = ({
             ></textarea>
           </div>
         </div>
-        <div className="row mt-3 justify-content-center">
-          <div className="col-6">
+        <div className="row mt-3">
+          <div className="col-6 d-flex align-items-center">
             <FormControl>
               <FormLabel id="demo-controlled-radio-buttons-group">
                 Acción
@@ -200,8 +222,9 @@ export const RowOperacionDevolucionCalidadDetalle = ({
               <RadioGroup
                 row
                 aria-labelledby="demo-controlled-radio-buttons-group"
-                name="controlled-radio-buttons-group"
+                name="esReproceso"
                 value={esReproceso}
+                onChange={handleChangeInputName}
               >
                 <FormControlLabel
                   value={1}
@@ -216,16 +239,253 @@ export const RowOperacionDevolucionCalidadDetalle = ({
               </RadioGroup>
             </FormControl>
           </div>
-          <div className="col-6">
+          <div className="col-6 d-flex align-items-center">
             <FormGroup>
               <FormControlLabel
-                control={<Checkbox checked={esDetCamProd} />}
+                control={
+                  <Checkbox
+                    name="esDetCamProd"
+                    checked={esDetCamProd}
+                    onChange={(e) => {
+                      const auxE = {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked
+                        }
+                      };
+                      handleChangeInputName(auxE);
+                    }}
+                  />
+                }
                 label="Detalle cambio producto"
               />
             </FormGroup>
+            {esDetCamProd && (
+              <Button
+                color="primary"
+                variant="contained"
+                startIcon={<AddCircle fontSize="small" />}
+                onClick={handleGenerarDetalleCambio}
+              >
+                Generar
+              </Button>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+// DIALOGO DE CREACION/BUSQUEDA DE LOTES DE PRODUCCION
+const DialogSearchCreateionLote = ({ dataDetalle, handleConfirm }) => {
+  // manejador de dialog
+  const [open, setOpen] = useState(false);
+  // manejador de datos
+  const [dataProduccion, setDataProduccion] = useState({
+    codLotProd: "",
+    fecProdIni: "",
+    fecVenLotProd: "",
+    creacionAutomatica: false
+  });
+
+  const { codLotProd, fecProdIni, fecVenLotProd, creacionAutomatica } =
+    dataProduccion;
+
+  const [flagDateChange, setFlagDateChange] = useState(true);
+
+  const handleFlagDateChange = () => {
+    console.log(dataProduccion);
+    // hablamos de fecha de inicio
+    setDataProduccion((prevData) => {
+      if (flagDateChange) {
+        return {
+          ...prevData,
+          fecProdIni: ""
+        };
+      } else {
+        return {
+          ...prevData,
+          fecVenLotProd: ""
+        };
+      }
+    });
+    setFlagDateChange((prevFlag) => !prevFlag);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  // handle text lote
+  const handleChangeLote = ({ target }) => {
+    const { name, value } = target;
+    setDataProduccion({
+      ...dataProduccion,
+      [name]: value
+    });
+  };
+
+  // handle fecha inicio produccion
+  const handleChangeDateInicioProduccion = (newfec) => {
+    setDataProduccion({
+      ...dataProduccion,
+      fecProdIni: newfec
+    });
+  };
+
+  // handle fecha vencimiento produccion
+  const handleChangeDateVencimientoProduccion = (newfec) => {
+    setDataProduccion({
+      ...dataProduccion,
+      fecVenLotProd: newfec
+    });
+  };
+
+  // handle check creacion automatica
+  const handleChangeCheckCreacionAutomatica = ({ target }) => {
+    const { name, checked } = target;
+    setDataProduccion({
+      ...dataProduccion,
+      [name]: checked
+    });
+  };
+
+  const handleFormSubmit = async () => {
+    let handleErrors = "";
+    if (
+      codLotProd.length === 0 ||
+      (fecProdIni.length === 0 && fecVenLotProd.length === 0) ||
+      codLotProd.length > 3
+    ) {
+      if (codLotProd.length === 0) {
+        handleErrors += "No proporcionaste un lote\n";
+      }
+
+      if (codLotProd.length > 3) {
+        handleErrors += "El lote tiene más de 3 dígitos\n";
+      }
+
+      if (fecProdIni.length === 0 && fecVenLotProd.length === 0) {
+        handleErrors +=
+          "Debes proporcionar al menos una fecha (inicio o vencimiento)\n";
+      }
+      alert(handleErrors);
+    } else {
+      const formatData = {
+        idProdt: dataDetalle["idProdt"],
+        ...dataProduccion
+      };
+      console.log(formatData);
+      const resultPeticion = await searchLoteProduccion(formatData);
+      console.log(resultPeticion);
+      const { message_error, description_error, result } = resultPeticion;
+      if (message_error.length === 0) {
+        console.log(result);
+        // llamamos al handleConfirm
+        handleConfirm(dataDetalle.index, result);
+        // cerramos el dialogo
+        handleClose();
+      } else {
+        alert(description_error);
+      }
+    }
+  };
+
+  return (
+    <>
+      <IconButton color="primary" onClick={handleClickOpen}>
+        <AddCircle fontSize="large" />
+      </IconButton>
+      <Dialog open={open} onClose={handleClose} maxWidth="xs">
+        <DialogTitle>
+          <Typography>Creación o busqueda de lotes</Typography>
+        </DialogTitle>
+        <DialogContent>
+          <div className="row">
+            <div className="d-flex">
+              <label htmlFor="lote" className="col-form-label col-2">
+                Lote:
+              </label>
+              <div className="col-3">
+                <input
+                  type="number"
+                  name="codLotProd"
+                  className="form-control"
+                  value={codLotProd}
+                  onChange={handleChangeLote}
+                />
+              </div>
+            </div>
+            <div className="col mt-3">
+              <div className="row d-flex align-items-center">
+                <div className="col-md-4">
+                  <label className="col-form-label">
+                    {flagDateChange
+                      ? "Fecha de inicio producción"
+                      : "Fecha de vencimiento producción"}
+                  </label>
+                </div>
+                {flagDateChange ? (
+                  <div className="col-md-6">
+                    <FechaPickerYearAndMonthDynamic
+                      dateValue={fecProdIni}
+                      onNewfecEntSto={handleChangeDateInicioProduccion}
+                    />
+                  </div>
+                ) : (
+                  <div className="col-md-6">
+                    <FechaPickerYearAndMonthDynamic
+                      dateValue={fecVenLotProd}
+                      onNewfecEntSto={handleChangeDateVencimientoProduccion}
+                    />
+                  </div>
+                )}
+                <div className="col-md-2">
+                  <IconButton onClick={handleFlagDateChange} color="primary">
+                    <ChangeCircleIcon />
+                  </IconButton>
+                </div>
+              </div>
+            </div>
+            <div className="d-flex justify-content-start pe-0 ps-0 mt-2">
+              <FormControlLabel
+                labelPlacement="start"
+                control={
+                  <Checkbox
+                    name="creacionAutomatica"
+                    checked={creacionAutomatica}
+                    onChange={handleChangeCheckCreacionAutomatica}
+                  />
+                }
+                label="Crear si no se encuentra"
+              />
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={handleClose} color="error">
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleFormSubmit}
+            color="primary"
+          >
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
+function mostrarMesYAnio(fechaString) {
+  const fecha = new Date(fechaString);
+  const mes = fecha.toLocaleString("default", { month: "long" });
+  const año = fecha.getFullYear();
+  return `${mes} ${año}`;
+}
