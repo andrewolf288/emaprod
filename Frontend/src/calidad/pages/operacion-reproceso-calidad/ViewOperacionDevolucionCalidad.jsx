@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { viewOperacionDevolucionCalidadById } from "../../helpers/operacion-devolucion/viewOperacionDevolucionCalidadById";
 import { FilterMotivoDevolucionCalidad } from "../../../components/ReferencialesFilters/MotivoDevolucionCalidad/FilterMotivoDevolucionCalidad";
-import { Snackbar } from "@mui/material";
+import { Snackbar, Typography } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { RowOperacionDevolucionCalidadDetalle } from "../../components/operacion-devolucion/RowOperacionDevolucionCalidadDetalle";
 import { generateDetalleCambioProductos } from "../../helpers/operacion-devolucion/generateDetalleCambioProductos";
+import { createOperacionDevolucionWithDetalle } from "../../helpers/operacion-devolucion/createOperacionDevolucionWithDetalle";
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -42,14 +43,16 @@ export const ViewOperacionDevolucionCalidad = () => {
     canOpeDevDet,
     idMotDevCal,
     numLots,
-    fecCreOpeDev,
-    fueCom
+    fecCreOpeDev
   } = dataOperacionDevolucionCalidad;
 
   const [
     dataOperacionDevolucionCalidadDetalle,
     setDataOperacionDevolucionCalidadDetalle
   ] = useState([]);
+
+  // ESTADO PARA BOTON CREAR
+  const [disableButton, setdisableButton] = useState(false);
 
   // HANDLE CHANGE MOTIVO DEVOLUCION CALIDAD
   const handleChangeMotivoDevolucionCalidad = (value) => {
@@ -194,31 +197,31 @@ export const ViewOperacionDevolucionCalidad = () => {
         };
         console.log(formatData);
 
-        // const resultPeticion = await generateDetalleCambioProductos(formatData);
+        const resultPeticion = await generateDetalleCambioProductos(formatData);
 
-        // const { message_error, description_error, result } = resultPeticion;
-        // if (message_error.length === 0) {
-        //   const indexFilterData =
-        //     dataOperacionDevolucionCalidadDetalle.findIndex(
-        //       (element) => element.index === index
-        //     );
+        const { message_error, description_error, result } = resultPeticion;
+        if (message_error.length === 0) {
+          const indexFilterData =
+            dataOperacionDevolucionCalidadDetalle.findIndex(
+              (element) => element.index === index
+            );
 
-        //   let dataFormat = [...dataOperacionDevolucionCalidadDetalle];
-        //   dataFormat[indexFilterData] = {
-        //     ...dataFormat[indexFilterData],
-        //     detCamProd: result
-        //   };
-        //   console.log(dataFormat);
+          let dataFormat = [...dataOperacionDevolucionCalidadDetalle];
+          dataFormat[indexFilterData] = {
+            ...dataFormat[indexFilterData],
+            detCamProd: result
+          };
+          console.log(dataFormat);
 
-        //   setDataOperacionDevolucionCalidadDetalle(dataFormat);
-        // } else {
-        //   // mostramos el error recepcionado del backend
-        //   setfeedbackMessages({
-        //     style_message: "warning",
-        //     feedback_description_error: description_error
-        //   });
-        //   handleClickFeeback();
-        // }
+          setDataOperacionDevolucionCalidadDetalle(dataFormat);
+        } else {
+          // mostramos el error recepcionado del backend
+          setfeedbackMessages({
+            style_message: "warning",
+            feedback_description_error: description_error
+          });
+          handleClickFeeback();
+        }
       } else {
         setfeedbackMessages({
           style_message: "warning",
@@ -238,17 +241,107 @@ export const ViewOperacionDevolucionCalidad = () => {
   };
 
   // handle eliminar detalle de cambio de productos
-  const handleDeleteDetalleCambio = (index) => {
-    const indexFilterData = dataOperacionDevolucionCalidadDetalle.findIndex(
-      (element) => element.index === index
-    );
+  const handleChangeDetalleCambioProductos = (index, target) => {
+    const { name, value } = target;
+    if (!value) {
+      const indexFilterData = dataOperacionDevolucionCalidadDetalle.findIndex(
+        (element) => element.index === index
+      );
 
-    let dataFormat = [...dataOperacionDevolucionCalidadDetalle];
-    dataFormat[indexFilterData] = {
-      ...dataFormat[indexFilterData],
-      detCamProd: []
-    };
-    setDataOperacionDevolucionCalidadDetalle(dataFormat);
+      let dataFormat = [...dataOperacionDevolucionCalidadDetalle];
+      dataFormat[indexFilterData] = {
+        ...dataFormat[indexFilterData],
+        detCamProd: [],
+        [name]: value
+      };
+      setDataOperacionDevolucionCalidadDetalle(dataFormat);
+    } else {
+      handleChangeValueDetalle(index, name, value);
+    }
+  };
+
+  // funcion para crear la operacion devolucion calidad con su detalle
+  const crearOperacionDevolucionCalidadWithDetalle = async () => {
+    setdisableButton(true);
+    let handleErrors = [];
+    if (
+      idMotDevCal === 0 ||
+      dataOperacionDevolucionCalidadDetalle.length === 0
+    ) {
+      if (idMotDevCal === 0) {
+        handleErrors +=
+          "Debes seleccionar un motivo de devolucion de calidad\n";
+      }
+      if (dataOperacionDevolucionCalidadDetalle.length === 0) {
+        handleErrors +=
+          "No se ha generado el detalle de devolucion de calidad\n";
+      }
+      setfeedbackMessages({
+        style_message: "warning",
+        feedback_description_error: handleErrors
+      });
+      handleClickFeeback();
+      setdisableButton(false);
+    } else {
+      // ningun lote debe estar vacio
+      // la suma de cantidades de cada detalle debe sumar el total de la operacion de la devolucion
+      const verificacionLote = dataOperacionDevolucionCalidadDetalle.some(
+        (element) => element.idProdc === 0
+      );
+      let sumaTotal = 0;
+      dataOperacionDevolucionCalidadDetalle.forEach((element) => {
+        sumaTotal += isNaN(element.canLotProd)
+          ? 0
+          : parseInt(element.canLotProd);
+      });
+
+      if (verificacionLote || sumaTotal !== canOpeDevDet) {
+        if (verificacionLote) {
+          handleErrors += "Hay detalles que no tienen lote de destino\n";
+        }
+
+        if (sumaTotal !== canOpeDevDet) {
+          handleErrors +=
+            "El total de las cantidades de los detalles no es igual al detalle total de la devolución\n";
+        }
+
+        setfeedbackMessages({
+          style_message: "warning",
+          feedback_description_error: handleErrors
+        });
+        handleClickFeeback();
+        setdisableButton(false);
+      } else {
+        const formatData = {
+          ...dataOperacionDevolucionCalidad,
+          detOpeDevCal: dataOperacionDevolucionCalidadDetalle
+        };
+        console.log(formatData);
+        const resultPeticion = await createOperacionDevolucionWithDetalle(
+          formatData
+        );
+        const { message_error, description_error } = resultPeticion;
+        if (message_error.length === 0) {
+          setfeedbackMessages({
+            style_message: "success",
+            feedback_description_error: "Se realizó la operación con éxtio"
+          });
+          handleClickFeeback();
+          setdisableButton(false);
+          // cerramos
+          setTimeout(() => {
+            window.close();
+          }, 1000);
+        } else {
+          setfeedbackMessages({
+            style_message: "warning",
+            feedback_description_error: description_error
+          });
+          handleClickFeeback();
+        }
+        setdisableButton(false);
+      }
+    }
   };
 
   // funcion para traer informacion de la operacion devolucion calidad
@@ -370,15 +463,38 @@ export const ViewOperacionDevolucionCalidad = () => {
             {dataOperacionDevolucionCalidadDetalle.map((element) => (
               <RowOperacionDevolucionCalidadDetalle
                 key={element.index}
+                nomProd={nomProd}
                 detalle={element}
                 onChangeValueDetalle={handleChangeValueDetalle}
                 onAddLoteProduccion={handleAddLoteProduccionDetalle}
                 onAddDetalleCambioProdutos={handleGenerateDetalleCambio}
-                onDeleteDetalleCambioProductos={handleDeleteDetalleCambio}
+                onChangeDetalleCambioProductos={
+                  handleChangeDetalleCambioProductos
+                }
               />
             ))}
           </div>
         )}
+        {/* BOTONES DE CANCELAR Y GUARDAR */}
+        <div className="btn-toolbar mt-4 mb-4">
+          <button
+            type="button"
+            onClick={() => {
+              window.close();
+            }}
+            className="btn btn-secondary me-2"
+          >
+            Cerrar
+          </button>
+          <button
+            type="submit"
+            disabled={disableButton}
+            onClick={crearOperacionDevolucionCalidadWithDetalle}
+            className="btn btn-primary"
+          >
+            Guardar
+          </button>
+        </div>
       </div>
       {/* FEEDBACK */}
       <Snackbar
@@ -392,7 +508,9 @@ export const ViewOperacionDevolucionCalidad = () => {
           severity={style_message}
           sx={{ width: "100%" }}
         >
-          {feedback_description_error}
+          <Typography whiteSpace={"pre-line"}>
+            {feedback_description_error}
+          </Typography>
         </Alert>
       </Snackbar>
     </>

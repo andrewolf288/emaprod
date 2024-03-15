@@ -21,16 +21,15 @@ import { searchLoteProduccion } from "../../helpers/operacion-devolucion/searchL
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 
 export const RowOperacionDevolucionCalidadDetalle = ({
+  nomProd,
   detalle,
   onChangeValueDetalle,
   onAddLoteProduccion,
   onAddDetalleCambioProdutos,
-  onDeleteDetalleCambioProductos
+  onChangeDetalleCambioProductos
 }) => {
   const {
     index,
-    idOpeDevCal,
-    idProdc,
     fecVenLotProd,
     codLotProd,
     canLotProd,
@@ -55,6 +54,11 @@ export const RowOperacionDevolucionCalidadDetalle = ({
   // HANDLE GENERAR DETALLE CAMBIO DE PRODUCTOS
   const handleGenerarDetalleCambio = () => {
     onAddDetalleCambioProdutos(index, detalle);
+  };
+
+  //HANDLE CHANGE DETALLE DE CAMBIO DE PRODUCTOS
+  const handleChangeCheckDetalleCambio = ({ target }) => {
+    onChangeDetalleCambioProductos(index, target);
   };
 
   return (
@@ -97,6 +101,7 @@ export const RowOperacionDevolucionCalidadDetalle = ({
                   className="form-control"
                   value={canLotProd}
                   onChange={handleChangeInputName}
+                  onWheel={(e) => e.target.blur()}
                 />
               </div>
             </div>
@@ -106,7 +111,7 @@ export const RowOperacionDevolucionCalidadDetalle = ({
       <div className="card-body">
         <div className="row">
           <div className="col">
-            <h5 className="card-title mb-4">Fisicoquímico</h5>
+            <h5 className="card-title mb-4">C. Fisicoquímicas</h5>
             <div className="form-group row mb-3">
               <label htmlFor="ph" className="col-sm-4 col-form-label">
                 pH:
@@ -157,7 +162,7 @@ export const RowOperacionDevolucionCalidadDetalle = ({
             </div>
           </div>
           <div className="col">
-            <h5 className="card-title mb-4">Orgánicos</h5>
+            <h5 className="card-title mb-4">C. Organoeléctricas</h5>
             <div className="form-group row mb-3">
               <label htmlFor="color" className="col-sm-4 col-form-label">
                 Color:
@@ -253,7 +258,7 @@ export const RowOperacionDevolucionCalidadDetalle = ({
                           value: e.target.checked
                         }
                       };
-                      handleChangeInputName(auxE);
+                      handleChangeCheckDetalleCambio(auxE);
                     }}
                   />
                 }
@@ -272,6 +277,38 @@ export const RowOperacionDevolucionCalidadDetalle = ({
             )}
           </div>
         </div>
+        {/* card de detalle de cambio */}
+        {esDetCamProd && detCamProd.length !== 0 && (
+          <div className="card mt-4">
+            <div className="card-header">
+              <h5>Detalle de cambio de producto</h5>
+            </div>
+            <div className="card-body">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Lote</th>
+                    <th scope="col">Fecha vencimiento</th>
+                    <th scope="col">Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {detCamProd.map((element, index) => (
+                    <tr key={index}>
+                      <th scope="row">{index + 1}</th>
+                      <td>{nomProd}</td>
+                      <td>{element["codLotProd"]}</td>
+                      <td>{element["fecVenLotProd"]}</td>
+                      <td>{element["canSalLotProd"]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -286,11 +323,17 @@ const DialogSearchCreateionLote = ({ dataDetalle, handleConfirm }) => {
     codLotProd: "",
     fecProdIni: "",
     fecVenLotProd: "",
-    creacionAutomatica: false
+    creacionAutomatica: false,
+    sensibleMes: false
   });
 
-  const { codLotProd, fecProdIni, fecVenLotProd, creacionAutomatica } =
-    dataProduccion;
+  const {
+    codLotProd,
+    fecProdIni,
+    fecVenLotProd,
+    creacionAutomatica,
+    sensibleMes
+  } = dataProduccion;
 
   const [flagDateChange, setFlagDateChange] = useState(true);
 
@@ -347,6 +390,15 @@ const DialogSearchCreateionLote = ({ dataDetalle, handleConfirm }) => {
 
   // handle check creacion automatica
   const handleChangeCheckCreacionAutomatica = ({ target }) => {
+    const { name, checked } = target;
+    setDataProduccion({
+      ...dataProduccion,
+      [name]: checked
+    });
+  };
+
+  // handle check sensible mes
+  const handleChangeCheckSensibleMes = ({ target }) => {
     const { name, checked } = target;
     setDataProduccion({
       ...dataProduccion,
@@ -462,6 +514,19 @@ const DialogSearchCreateionLote = ({ dataDetalle, handleConfirm }) => {
                   />
                 }
                 label="Crear si no se encuentra"
+              />
+            </div>
+            <div className="d-flex justify-content-start pe-0 ps-0 mt-2">
+              <FormControlLabel
+                labelPlacement="start"
+                control={
+                  <Checkbox
+                    name="sensibleMes"
+                    checked={sensibleMes}
+                    onChange={handleChangeCheckSensibleMes}
+                  />
+                }
+                label="Sensible al mes"
               />
             </div>
           </div>

@@ -19,18 +19,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecProdIni = $data["fecProdIni"];
     $fecVenLotProd = $data["fecVenLotProd"];
     $creacionAutomatica = $data["creacionAutomatica"];
+    $sensibleMes = $data["sensibleMes"];
     $formatCodLotProd = strlen($codLotProd) === 3 ? $codLotProd : STR_PAD($codLotProd, 3, "0", STR_PAD_LEFT);
     $year = "";
+    $month = "";
     $flagTypeDate = "";
 
     // debemos comprobar que fecha ha sido proporcionada
     if (!empty($fecProdIni)) {
         $year = date('Y', strtotime($fecProdIni));
+        $month = date('m', strtotime($fecProdIni));
         $flagTypeDate = "I";
     }
 
     if (!empty($fecVenLotProd)) {
         $year = date('Y', strtotime($fecVenLotProd));
+        $month = date('m', strtotime($fecVenLotProd));
         $flagTypeDate = "V";
     }
 
@@ -41,9 +45,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($flagTypeDate == "I") {
         $sql_consult_produccion .= " YEAR(fecProdIni) = '$year'";
+        if ($sensibleMes) {
+            $sql_consult_produccion .= " AND MONTH(fecProdIni) = '$month'";
+        }
     }
     if ($flagTypeDate == "V") {
         $sql_consult_produccion .= " YEAR(fecVenLotProd) = '$year'";
+        if ($sensibleMes) {
+            $sql_consult_produccion .= " AND MONTH(fecVenLotProd) = '$month'";
+        }
     }
 
     $stmt_consult_produccion = $pdo->prepare($sql_consult_produccion);
