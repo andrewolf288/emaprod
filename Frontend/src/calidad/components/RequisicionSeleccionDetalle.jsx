@@ -1,21 +1,21 @@
-import React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Link } from "react-router-dom";
-import "../styles/style-modal.css";
-import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
-import Tooltip from "@mui/material/Tooltip";
+import React from 'react'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import { Link } from 'react-router-dom'
+import '../styles/style-modal.css'
+import DoNotDisturbOnIcon from '@mui/icons-material/DoNotDisturbOn'
+import Tooltip from '@mui/material/Tooltip'
 
 export const RequisicionSeleccionDetalle = ({
   detalle,
   onClose,
   onCreateSalidas,
-  anular,
+  anular
 }) => {
   return (
     <div
@@ -23,7 +23,7 @@ export const RequisicionSeleccionDetalle = ({
       tabIndex="-1"
       role="dialog"
       style={{
-        display: detalle !== null ? "block" : "none",
+        display: detalle !== null ? 'block' : 'none'
       }}
     >
       <div className="modal-dialog modal-lg" role="document">
@@ -47,10 +47,10 @@ export const RequisicionSeleccionDetalle = ({
                   <TableHead>
                     <TableRow
                       sx={{
-                        "& th": {
-                          color: "rgba(96, 96, 96)",
-                          backgroundColor: "#f5f5f5",
-                        },
+                        '& th': {
+                          color: 'rgba(96, 96, 96)',
+                          backgroundColor: '#f5f5f5'
+                        }
                       }}
                     >
                       <TableCell align="left" width={50}>
@@ -72,7 +72,7 @@ export const RequisicionSeleccionDetalle = ({
                       <TableRow
                         key={detalle.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="detalle">
@@ -96,17 +96,17 @@ export const RequisicionSeleccionDetalle = ({
                           <span
                             className={
                               (detalle.idReqSelDetEstt === 1 &&
-                                " badge text-bg-warning p-2 ") +
+                                ' badge text-bg-warning p-2 ') +
                               (detalle.idReqSelDetEst === 2 &&
-                                " badge text-bg-primary p-2 ") +
+                                ' badge text-bg-primary p-2 ') +
                               // (row.reqSelDet.find(
-                              //</TableCell>   (obj) => obj.idReqDet == row.idReqDet
+                              // </TableCell>   (obj) => obj.idReqDet == row.idReqDet
                               // ).idReqSelDetEst === 3 &&
                               //   " badge text-bg-warning p-2 ") +
                               (detalle.idReqSelDetEst === 4 &&
-                                " badge text-bg-success p-2 ") +
+                                ' badge text-bg-success p-2 ') +
                               (detalle.idReqSelDetEst === 5 &&
-                                " badge text-bg-danger p-2 ")
+                                ' badge text-bg-danger p-2 ')
 
                               // "badge text-bg-success p-2"
                             }
@@ -117,17 +117,17 @@ export const RequisicionSeleccionDetalle = ({
                         <TableCell align="left">
                           <div
                             className="btn-toolbar"
-                            style={{ display: "flex", flexDirection: "row" }}
+                            style={{ display: 'flex', flexDirection: 'row' }}
                           >
                             <button
                               onClick={() => {
-                                onCreateSalidas(detalle);
+                                onCreateSalidas(detalle)
                               }}
                               disabled={detalle.idReqSelDetEst !== 1}
                               className={
                                 detalle.idReqSelDetEst !== 1
-                                  ? "btn btn-secondary me-2"
-                                  : "btn btn-success me-2"
+                                  ? 'btn btn-secondary me-2'
+                                  : 'btn btn-success me-2'
                               }
                             >
                               <svg
@@ -146,15 +146,15 @@ export const RequisicionSeleccionDetalle = ({
                                 pointerEvents:
                                   detalle.idReqSelDetEst === 4 ||
                                   detalle.idReqSelDetEst === 1
-                                    ? "none"
-                                    : "",
+                                    ? 'none'
+                                    : ''
                               }}
                               to={`/almacen/requisicion-seleccion/entrada-stock?idReqSelDet=${detalle.id}`}
                               className={
                                 detalle.idReqSelDetEst === 4 ||
                                 detalle.idReqSelDetEst === 1
-                                  ? "btn btn-secondary me-2"
-                                  : "btn btn-primary me-2"
+                                  ? 'btn btn-secondary me-2'
+                                  : 'btn btn-primary me-2'
                               }
                             >
                               <svg
@@ -171,19 +171,19 @@ export const RequisicionSeleccionDetalle = ({
 
                             <button
                               onClick={() => {
-                                let result = window.confirm(
-                                  "Estás seguro de anular este registro?"
-                                );
+                                const result = window.confirm(
+                                  'Estás seguro de anular este registro?'
+                                )
 
                                 if (result) {
-                                  anular(detalle.id);
+                                  anular(detalle.id)
                                 }
                               }}
                               disabled={detalle.idReqSelDetEst === 5}
                               className={
                                 detalle.idReqSelDetEst === 5
-                                  ? "btn btn-secondary me-2"
-                                  : "btn btn-primary me-2"
+                                  ? 'btn btn-secondary me-2'
+                                  : 'btn btn-primary me-2'
                               }
                             >
                               <Tooltip title="Anular">
@@ -212,5 +212,5 @@ export const RequisicionSeleccionDetalle = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

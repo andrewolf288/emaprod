@@ -1,14 +1,14 @@
-import React from "react";
-import { ListReportesCalidad } from "./ListReportesCalidad";
-import { ReporteEntradaCalidad } from "./ReporteEntradaCalidad";
+import React from 'react'
+import { ListReportesCalidad } from './ListReportesCalidad'
+import { ReporteEntradaCalidad } from './ReporteEntradaCalidad'
 
 export const RouterReportesCalidad = [
   {
-    path: "",
+    path: '',
     element: <ListReportesCalidad />
   },
   {
-    path: "reporte-entrada",
+    path: 'reporte-entrada',
     element: <ReporteEntradaCalidad />
   }
-];
+]

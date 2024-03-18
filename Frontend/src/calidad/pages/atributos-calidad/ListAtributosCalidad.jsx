@@ -1,142 +1,142 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import { TextField } from "@mui/material";
-import { Link } from "react-router-dom";
-import { getProductoWithAtributosCalidad } from "../../helpers/atributos-calidad/getProductoWithAtributosCalidad";
-import { FilterSubClase } from "../../../components/ReferencialesFilters/SubClase/FilterSubClase";
-import { AtributoCalidadDetalle } from "../../components/atributos-calidad/AtributoCalidadDetalle";
-import { FilterAllProductosFilters } from "../../../components/ReferencialesFilters/Producto/FilterAllProductosFilters";
+import { TextField } from '@mui/material'
+import { Link } from 'react-router-dom'
+import { getProductoWithAtributosCalidad } from '../../helpers/atributos-calidad/getProductoWithAtributosCalidad'
+import { FilterSubClase } from '../../../components/ReferencialesFilters/SubClase/FilterSubClase'
+import { AtributoCalidadDetalle } from '../../components/atributos-calidad/AtributoCalidadDetalle'
+import { FilterAllProductosFilters } from '../../../components/ReferencialesFilters/Producto/FilterAllProductosFilters'
 
 export const ListAtributosCalidad = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataAtributos, setdataAtributos] = useState([]);
-  const [dataAtributosTemp, setdataAtributosTemp] = useState([]);
+  const [dataAtributos, setdataAtributos] = useState([])
+  const [dataAtributosTemp, setdataAtributosTemp] = useState([])
 
   // ESTADOS PARA EL MODAL
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
-  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
+  const [mostrarDetalle, setMostrarDetalle] = useState(false)
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null)
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
-    filter(value, name);
-  };
+    const { name, value } = target
+    filter(value, name)
+  }
 
   const onChangeProducto = ({ label }) => {
-    filter(label, "filterProducto");
-  };
+    filter(label, 'filterProducto')
+  }
 
   const onChangeSubClase = ({ label }) => {
-    filter(label, "filterSubClase");
-  };
+    filter(label, 'filterSubClase')
+  }
 
   // funcion para filtrar la data
   const filter = (terminoBusqueda, name) => {
-    let resultSearch = [];
+    let resultSearch = []
     switch (name) {
-      case "filterProducto":
-        resultSearch = dataAtributos.filter((element) => {
-          if (
-            element.nomProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataAtributosTemp(resultSearch);
-        break;
-      case "filterSubClase":
-        resultSearch = dataAtributos.filter((element) => {
-          if (
-            element.desSubCla
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataAtributosTemp(resultSearch);
-        break;
-      case "filterUnidadMedida":
-        resultSearch = dataAtributos.filter((element) => {
-          if (
-            element.simMed
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataAtributosTemp(resultSearch);
-        break;
-      default:
-        break;
+    case 'filterProducto':
+      resultSearch = dataAtributos.filter((element) => {
+        if (
+          element.nomProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataAtributosTemp(resultSearch)
+      break
+    case 'filterSubClase':
+      resultSearch = dataAtributos.filter((element) => {
+        if (
+          element.desSubCla
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataAtributosTemp(resultSearch)
+      break
+    case 'filterUnidadMedida':
+      resultSearch = dataAtributos.filter((element) => {
+        if (
+          element.simMed
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataAtributosTemp(resultSearch)
+      break
+    default:
+      break
     }
-  };
+  }
 
   // FUNCION PARA OBTENER LA DATA
   const obtenerdataAtributosPorProducto = async () => {
-    const resultPeticion = await getProductoWithAtributosCalidad();
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getProductoWithAtributosCalidad()
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
-      setdataAtributos(result);
-      setdataAtributosTemp(result);
+      setdataAtributos(result)
+      setdataAtributosTemp(result)
     } else {
-      alert(description_error);
+      alert(description_error)
     }
-  };
+  }
 
   const closeDetalleAtributos = () => {
     // ocultamos el modal
-    setMostrarDetalle(false);
+    setMostrarDetalle(false)
     // dejamos el null la data del detalle
-    setDetalleSeleccionado(null);
-  };
+    setDetalleSeleccionado(null)
+  }
 
   // MOSTRAR Y OCULTAR DETALLE DE atributosDetalle MOLIENDA
   const showAtributosDetalle = (atributosDetalle) => {
     // seteamos la data de la requisicion seleccionada
-    setDetalleSeleccionado(atributosDetalle);
+    setDetalleSeleccionado(atributosDetalle)
     // mostramos el modal
-    setMostrarDetalle(true);
-  };
+    setMostrarDetalle(true)
+  }
 
   // ****** TRAEMOS LA DATA DE LA FORMULA ******
   useEffect(() => {
-    obtenerdataAtributosPorProducto();
-  }, []);
+    obtenerdataAtributosPorProducto()
+  }, [])
 
   return (
     <>
@@ -147,7 +147,7 @@ export const ListAtributosCalidad = () => {
               {/* BOTON AGREGAR FORMULA */}
               <div className="col-6">
                 <Link
-                  to={"/calidad/atributos-calidad/crear"}
+                  to={'/calidad/atributos-calidad/crear'}
                   className="btn btn-primary d-inline-flex justify-content-end align-items-center"
                 >
                   <svg
@@ -205,9 +205,9 @@ export const ListAtributosCalidad = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -231,8 +231,8 @@ export const ListAtributosCalidad = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white"
+                            color: 'black',
+                            background: 'white'
                           }
                         }}
                       />
@@ -249,7 +249,7 @@ export const ListAtributosCalidad = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left">{row.nomProd}</TableCell>
@@ -259,7 +259,7 @@ export const ListAtributosCalidad = () => {
                           <div className="btn-toolbar">
                             <button
                               onClick={() => {
-                                showAtributosDetalle(row["detAtrCal"]);
+                                showAtributosDetalle(row.detAtrCal)
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -318,5 +318,5 @@ export const ListAtributosCalidad = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

@@ -1,17 +1,17 @@
-import { ListOperacionDevolucionWithCalidad } from "./ListOperacionDevolucionWithCalidad";
-import { ViewOperacionDevolucionCalidad } from "./ViewOperacionDevolucionCalidad";
+import { ListOperacionDevolucionWithCalidad } from './ListOperacionDevolucionWithCalidad'
+import { ViewOperacionDevolucionCalidad } from './ViewOperacionDevolucionCalidad'
 
 export const RouterOperacionDevolucionCalidad = [
   {
-    path: "",
+    path: '',
     element: <ListOperacionDevolucionWithCalidad />
   },
   {
-    path: "view/:idEntSto",
+    path: 'view/:idEntSto',
     element: <ViewOperacionDevolucionCalidad />
   },
   {
-    path: "create/:idOpeDevCal",
+    path: 'create/:idOpeDevCal',
     element: <ViewOperacionDevolucionCalidad />
   }
-];
+]

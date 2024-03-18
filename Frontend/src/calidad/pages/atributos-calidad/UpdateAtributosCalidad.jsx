@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react'
 
 export const UpdateAtributosCalidad = () => {
-  return <div>UpdateAtributosCalidad</div>;
-};
+  return <div>UpdateAtributosCalidad</div>
+}

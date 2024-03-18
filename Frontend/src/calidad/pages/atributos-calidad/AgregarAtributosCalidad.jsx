@@ -1,232 +1,232 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FilterMateriaPrimaDynamic } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic";
-import { Snackbar, TextField, Typography } from "@mui/material";
-import MuiAlert from "@mui/material/Alert";
-import { FilterTipoAtributoDynamic } from "../../../components/ReferencialesFilters/TipoAtributo/FilterTipoAtributoDynamic";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { RowAtributoCalidad } from "../../components/atributos-calidad/RowAtributoCalidad";
-import { createAtributosCalidadProducto } from "../../helpers/atributos-calidad/createAtributosCalidadProducto";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { FilterMateriaPrimaDynamic } from '../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic'
+import { Snackbar, TextField, Typography } from '@mui/material'
+import MuiAlert from '@mui/material/Alert'
+import { FilterTipoAtributoDynamic } from '../../../components/ReferencialesFilters/TipoAtributo/FilterTipoAtributoDynamic'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import { RowAtributoCalidad } from '../../components/atributos-calidad/RowAtributoCalidad'
+import { createAtributosCalidadProducto } from '../../helpers/atributos-calidad/createAtributosCalidadProducto'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const AgregarAtributosCalidad = () => {
   // detalle de atributos de calidad
   const [dataAtributosCalidad, setDataAtributosCalidad] = useState({
     idProdt: 0,
     detAtriCal: []
-  });
+  })
 
-  const { idProdt, detAtriCal } = dataAtributosCalidad;
+  const { idProdt, detAtriCal } = dataAtributosCalidad
 
   // detalle de filtro de producto
   const [atributoDetalle, setAtributoDetalle] = useState({
-    nomAtr: "",
-    tipAtr: "",
-    desTipAtr: ""
-  });
+    nomAtr: '',
+    tipAtr: '',
+    desTipAtr: ''
+  })
 
-  const { nomAtr, tipAtr, desTipAtr } = atributoDetalle;
+  const { nomAtr, tipAtr, desTipAtr } = atributoDetalle
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ************* FEEDBACK ******************
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // añadir producto final a formula
   const onAddProducto = ({ id }) => {
     setDataAtributosCalidad({
       ...dataAtributosCalidad,
       idProdt: id
-    });
-  };
+    })
+  }
 
   // ******** MANEJADORES DE LOS FILTROS **********
   // manejador de nombre de atrbiuto
   const handleNombreAtributo = ({ target }) => {
-    const { value } = target;
+    const { value } = target
     setAtributoDetalle({
       ...atributoDetalle,
       nomAtr: value
-    });
-  };
+    })
+  }
   const handleTipoAtributo = ({ id, label }) => {
     setAtributoDetalle({
       ...atributoDetalle,
       tipAtr: id,
       desTipAtr: label
-    });
-  };
+    })
+  }
 
   // eliminar atributo de calidad
   const handleDeleteAtributoDetalle = (nombreAtributo) => {
-    const parserNombre = nombreAtributo.toLowerCase();
+    const parserNombre = nombreAtributo.toLowerCase()
     const filterItems = detAtriCal.filter(
       (element) => element.nomProdAtr.toLowerCase() !== parserNombre
-    );
+    )
     setDataAtributosCalidad({
       ...dataAtributosCalidad,
       detAtriCal: filterItems
-    });
-  };
+    })
+  }
 
   // modificar atributo de calidad
   const handleChangeAtributoDetalle = (value, nombreAtributo) => {
-    const parserNombre = nombreAtributo.toLowerCase();
+    const parserNombre = nombreAtributo.toLowerCase()
     const mapItems = detAtriCal.map((element) => {
       if (element.nomProdAtr.toLowerCase() === parserNombre) {
         return {
           ...element,
           opcProdAtr: value
-        };
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
     setDataAtributosCalidad({
       ...dataAtributosCalidad,
       detAtriCal: mapItems
-    });
-  };
+    })
+  }
 
   // añadir atributo de calidad
   const handleAddAtributoDetalle = (e) => {
-    e.preventDefault();
-    const parserNomAtr = nomAtr.trim();
+    e.preventDefault()
+    const parserNomAtr = nomAtr.trim()
 
     if (parserNomAtr.length === 0 || tipAtr.length === 0) {
-      let handleErrors = "";
+      let handleErrors = ''
       if (parserNomAtr.length === 0) {
-        handleErrors += "No se agrego un nombre al atributo de calidad\n";
+        handleErrors += 'No se agrego un nombre al atributo de calidad\n'
       }
       if (tipAtr.length === 0) {
-        handleErrors += "No se agrego un tipo al atributo de calidad\n";
+        handleErrors += 'No se agrego un tipo al atributo de calidad\n'
       }
 
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error: handleErrors
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     } else {
       // debemos comprobar que el atributo no se haya ingresado antes
-      const parserBusquedaNomAtr = parserNomAtr.toLocaleLowerCase();
+      const parserBusquedaNomAtr = parserNomAtr.toLocaleLowerCase()
       const findElement = detAtriCal.find(
         (element) =>
           element.nomProdAtr.toLocaleLowerCase() === parserBusquedaNomAtr
-      );
+      )
       if (findElement) {
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Este atributo de calidad ya fue agregado al detalle\n"
-        });
-        handleClickFeeback();
+            'Este atributo de calidad ya fue agregado al detalle\n'
+        })
+        handleClickFeeback()
       } else {
         const opciones =
-          tipAtr == 1
-            ? "Sin opciones"
-            : tipAtr == 2
-            ? "Sin opciones"
-            : tipAtr == 3
-            ? "C, I"
-            : tipAtr == 4
-            ? ""
-            : "Sin opciones";
+          tipAtr === 1
+            ? 'Sin opciones'
+            : tipAtr === 2
+              ? 'Sin opciones'
+              : tipAtr === 3
+                ? 'C, I'
+                : tipAtr === 4
+                  ? ''
+                  : 'Sin opciones'
         const formatData = {
           nomProdAtr: parserNomAtr,
           tipProdAtr: desTipAtr,
           idTipProdAtr: tipAtr,
           opcProdAtr: opciones
-        };
-        const detalleAtrbiutos = [...detAtriCal, formatData];
+        }
+        const detalleAtrbiutos = [...detAtriCal, formatData]
         setDataAtributosCalidad({
           ...dataAtributosCalidad,
           detAtriCal: detalleAtrbiutos
-        });
+        })
       }
     }
-  };
+  }
 
   // añadir atributos de calidad
   const crearAtributosCalidadMateriPrima = async () => {
-    console.log(dataAtributosCalidad);
+    console.log(dataAtributosCalidad)
     const resultPeticion = await createAtributosCalidadProducto(
       dataAtributosCalidad
-    );
-    const { message_error, description_error } = resultPeticion;
+    )
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // regresamos a la anterior vista
-      onNavigateBack();
+      onNavigateBack()
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // manjear creacion atributos calidad
   const handleSubmitAtributosCalidad = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (idProdt === 0 || detAtriCal.length === 0) {
-      let advertenciaDetalleFormulaProducto = "";
+      let advertenciaDetalleFormulaProducto = ''
 
       if (idProdt === 0) {
         advertenciaDetalleFormulaProducto +=
-          "No se proporciono una materia prima para asociar los atributos de calidad\n";
+          'No se proporciono una materia prima para asociar los atributos de calidad\n'
       }
       if (detAtriCal.length === 0) {
         advertenciaDetalleFormulaProducto +=
-          "El detalle de los atrbiutos debe tener al menos 1 item\n";
+          'El detalle de los atrbiutos debe tener al menos 1 item\n'
       }
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error: advertenciaDetalleFormulaProducto
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
+      setdisableButton(true)
       // LLAMAMOS A LA FUNCION CREAR MATERIA PRIMA
-      crearAtributosCalidadMateriPrima();
+      crearAtributosCalidadMateriPrima()
     }
-  };
+  }
 
   return (
     <>
@@ -305,9 +305,9 @@ export const AgregarAtributosCalidad = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5"
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
                               }
                             }}
                           >
@@ -370,7 +370,7 @@ export const AgregarAtributosCalidad = () => {
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -378,13 +378,13 @@ export const AgregarAtributosCalidad = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

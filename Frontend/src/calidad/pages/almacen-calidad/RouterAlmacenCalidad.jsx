@@ -1,8 +1,8 @@
-import { ViewAlmacenCalidad } from "./ViewAlmacenCalidad";
+import { ViewAlmacenCalidad } from './ViewAlmacenCalidad'
 
 export const RouterAlmacenCalidad = [
   {
-    path: "",
+    path: '',
     element: <ViewAlmacenCalidad />
   }
-];
+]

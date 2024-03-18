@@ -1,18 +1,18 @@
-import { AgregarAtributosCalidad } from "./AgregarAtributosCalidad";
-import { ListAtributosCalidad } from "./ListAtributosCalidad";
-import { UpdateAtributosCalidad } from "./UpdateAtributosCalidad";
+import { AgregarAtributosCalidad } from './AgregarAtributosCalidad'
+import { ListAtributosCalidad } from './ListAtributosCalidad'
+import { UpdateAtributosCalidad } from './UpdateAtributosCalidad'
 
 export const RouterAtributoCalidad = [
   {
-    path: "",
+    path: '',
     element: <ListAtributosCalidad />
   },
   {
-    path: "update/:idAtributoCalidad",
+    path: 'update/:idAtributoCalidad',
     element: <UpdateAtributosCalidad />
   },
   {
-    path: "crear",
+    path: 'crear',
     element: <AgregarAtributosCalidad />
   }
-];
+]

@@ -1,4 +1,4 @@
-import AddCircle from "@mui/icons-material/AddCircle";
+import AddCircle from '@mui/icons-material/AddCircle'
 import {
   Button,
   Checkbox,
@@ -14,11 +14,11 @@ import {
   Radio,
   RadioGroup,
   Typography
-} from "@mui/material";
-import React, { useState } from "react";
-import FechaPickerYearAndMonthDynamic from "../../../components/Fechas/FechaPickerYearAndMonthDynamic";
-import { searchLoteProduccion } from "../../helpers/operacion-devolucion/searchLoteProduccion";
-import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
+} from '@mui/material'
+import React, { useState } from 'react'
+import FechaPickerYearAndMonthDynamic from '../../../components/Fechas/FechaPickerYearAndMonthDynamic'
+import { searchLoteProduccion } from '../../helpers/operacion-devolucion/searchLoteProduccion'
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 
 export const RowOperacionDevolucionCalidadDetalle = ({
   nomProd,
@@ -43,23 +43,23 @@ export const RowOperacionDevolucionCalidadDetalle = ({
     esReproceso,
     esDetCamProd,
     detCamProd
-  } = detalle;
+  } = detalle
 
   // HANDLE CHANGE INPUT NAME
   const handleChangeInputName = ({ target }) => {
-    const { name, value } = target;
-    onChangeValueDetalle(index, name, value);
-  };
+    const { name, value } = target
+    onChangeValueDetalle(index, name, value)
+  }
 
   // HANDLE GENERAR DETALLE CAMBIO DE PRODUCTOS
   const handleGenerarDetalleCambio = () => {
-    onAddDetalleCambioProdutos(index, detalle);
-  };
+    onAddDetalleCambioProdutos(index, detalle)
+  }
 
-  //HANDLE CHANGE DETALLE DE CAMBIO DE PRODUCTOS
+  // HANDLE CHANGE DETALLE DE CAMBIO DE PRODUCTOS
   const handleChangeCheckDetalleCambio = ({ target }) => {
-    onChangeDetalleCambioProductos(index, target);
-  };
+    onChangeDetalleCambioProductos(index, target)
+  }
 
   return (
     <div className="card mb-5">
@@ -257,8 +257,8 @@ export const RowOperacionDevolucionCalidadDetalle = ({
                           name: e.target.name,
                           value: e.target.checked
                         }
-                      };
-                      handleChangeCheckDetalleCambio(auxE);
+                      }
+                      handleChangeCheckDetalleCambio(auxE)
                     }}
                   />
                 }
@@ -299,9 +299,9 @@ export const RowOperacionDevolucionCalidadDetalle = ({
                     <tr key={index}>
                       <th scope="row">{index + 1}</th>
                       <td>{nomProd}</td>
-                      <td>{element["codLotProd"]}</td>
-                      <td>{element["fecVenLotProd"]}</td>
-                      <td>{element["canSalLotProd"]}</td>
+                      <td>{element.codLotProd}</td>
+                      <td>{element.fecVenLotProd}</td>
+                      <td>{element.canSalLotProd}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -311,21 +311,21 @@ export const RowOperacionDevolucionCalidadDetalle = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 // DIALOGO DE CREACION/BUSQUEDA DE LOTES DE PRODUCCION
 const DialogSearchCreateionLote = ({ dataDetalle, handleConfirm }) => {
   // manejador de dialog
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   // manejador de datos
   const [dataProduccion, setDataProduccion] = useState({
-    codLotProd: "",
-    fecProdIni: "",
-    fecVenLotProd: "",
+    codLotProd: '',
+    fecProdIni: '',
+    fecVenLotProd: '',
     creacionAutomatica: false,
     sensibleMes: false
-  });
+  })
 
   const {
     codLotProd,
@@ -333,119 +333,119 @@ const DialogSearchCreateionLote = ({ dataDetalle, handleConfirm }) => {
     fecVenLotProd,
     creacionAutomatica,
     sensibleMes
-  } = dataProduccion;
+  } = dataProduccion
 
-  const [flagDateChange, setFlagDateChange] = useState(true);
+  const [flagDateChange, setFlagDateChange] = useState(true)
 
   const handleFlagDateChange = () => {
-    console.log(dataProduccion);
+    console.log(dataProduccion)
     // hablamos de fecha de inicio
     setDataProduccion((prevData) => {
       if (flagDateChange) {
         return {
           ...prevData,
-          fecProdIni: ""
-        };
+          fecProdIni: ''
+        }
       } else {
         return {
           ...prevData,
-          fecVenLotProd: ""
-        };
+          fecVenLotProd: ''
+        }
       }
-    });
-    setFlagDateChange((prevFlag) => !prevFlag);
-  };
+    })
+    setFlagDateChange((prevFlag) => !prevFlag)
+  }
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   // handle text lote
   const handleChangeLote = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setDataProduccion({
       ...dataProduccion,
       [name]: value
-    });
-  };
+    })
+  }
 
   // handle fecha inicio produccion
   const handleChangeDateInicioProduccion = (newfec) => {
     setDataProduccion({
       ...dataProduccion,
       fecProdIni: newfec
-    });
-  };
+    })
+  }
 
   // handle fecha vencimiento produccion
   const handleChangeDateVencimientoProduccion = (newfec) => {
     setDataProduccion({
       ...dataProduccion,
       fecVenLotProd: newfec
-    });
-  };
+    })
+  }
 
   // handle check creacion automatica
   const handleChangeCheckCreacionAutomatica = ({ target }) => {
-    const { name, checked } = target;
+    const { name, checked } = target
     setDataProduccion({
       ...dataProduccion,
       [name]: checked
-    });
-  };
+    })
+  }
 
   // handle check sensible mes
   const handleChangeCheckSensibleMes = ({ target }) => {
-    const { name, checked } = target;
+    const { name, checked } = target
     setDataProduccion({
       ...dataProduccion,
       [name]: checked
-    });
-  };
+    })
+  }
 
   const handleFormSubmit = async () => {
-    let handleErrors = "";
+    let handleErrors = ''
     if (
       codLotProd.length === 0 ||
       (fecProdIni.length === 0 && fecVenLotProd.length === 0) ||
       codLotProd.length > 3
     ) {
       if (codLotProd.length === 0) {
-        handleErrors += "No proporcionaste un lote\n";
+        handleErrors += 'No proporcionaste un lote\n'
       }
 
       if (codLotProd.length > 3) {
-        handleErrors += "El lote tiene más de 3 dígitos\n";
+        handleErrors += 'El lote tiene más de 3 dígitos\n'
       }
 
       if (fecProdIni.length === 0 && fecVenLotProd.length === 0) {
         handleErrors +=
-          "Debes proporcionar al menos una fecha (inicio o vencimiento)\n";
+          'Debes proporcionar al menos una fecha (inicio o vencimiento)\n'
       }
-      alert(handleErrors);
+      alert(handleErrors)
     } else {
       const formatData = {
-        idProdt: dataDetalle["idProdt"],
+        idProdt: dataDetalle.idProdt,
         ...dataProduccion
-      };
-      console.log(formatData);
-      const resultPeticion = await searchLoteProduccion(formatData);
-      console.log(resultPeticion);
-      const { message_error, description_error, result } = resultPeticion;
+      }
+      console.log(formatData)
+      const resultPeticion = await searchLoteProduccion(formatData)
+      console.log(resultPeticion)
+      const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
-        console.log(result);
+        console.log(result)
         // llamamos al handleConfirm
-        handleConfirm(dataDetalle.index, result);
+        handleConfirm(dataDetalle.index, result)
         // cerramos el dialogo
-        handleClose();
+        handleClose()
       } else {
-        alert(description_error);
+        alert(description_error)
       }
     }
-  };
+  }
 
   return (
     <>
@@ -477,25 +477,27 @@ const DialogSearchCreateionLote = ({ dataDetalle, handleConfirm }) => {
                 <div className="col-md-4">
                   <label className="col-form-label">
                     {flagDateChange
-                      ? "Fecha de inicio producción"
-                      : "Fecha de vencimiento producción"}
+                      ? 'Fecha de inicio producción'
+                      : 'Fecha de vencimiento producción'}
                   </label>
                 </div>
-                {flagDateChange ? (
-                  <div className="col-md-6">
-                    <FechaPickerYearAndMonthDynamic
-                      dateValue={fecProdIni}
-                      onNewfecEntSto={handleChangeDateInicioProduccion}
-                    />
-                  </div>
-                ) : (
-                  <div className="col-md-6">
-                    <FechaPickerYearAndMonthDynamic
-                      dateValue={fecVenLotProd}
-                      onNewfecEntSto={handleChangeDateVencimientoProduccion}
-                    />
-                  </div>
-                )}
+                {flagDateChange
+                  ? (
+                    <div className="col-md-6">
+                      <FechaPickerYearAndMonthDynamic
+                        dateValue={fecProdIni}
+                        onNewfecEntSto={handleChangeDateInicioProduccion}
+                      />
+                    </div>
+                  )
+                  : (
+                    <div className="col-md-6">
+                      <FechaPickerYearAndMonthDynamic
+                        dateValue={fecVenLotProd}
+                        onNewfecEntSto={handleChangeDateVencimientoProduccion}
+                      />
+                    </div>
+                  )}
                 <div className="col-md-2">
                   <IconButton onClick={handleFlagDateChange} color="primary">
                     <ChangeCircleIcon />
@@ -545,12 +547,12 @@ const DialogSearchCreateionLote = ({ dataDetalle, handleConfirm }) => {
         </DialogActions>
       </Dialog>
     </>
-  );
-};
+  )
+}
 
-function mostrarMesYAnio(fechaString) {
-  const fecha = new Date(fechaString);
-  const mes = fecha.toLocaleString("default", { month: "long" });
-  const año = fecha.getFullYear();
-  return `${mes} ${año}`;
+function mostrarMesYAnio (fechaString) {
+  const fecha = new Date(fechaString)
+  const mes = fecha.toLocaleString('default', { month: 'long' })
+  const año = fecha.getFullYear()
+  return `${mes} ${año}`
 }

@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { InputTypeAtributoCalidad } from "./InputTypeAtributoCalidad";
+import React from 'react'
+import { InputTypeAtributoCalidad } from './InputTypeAtributoCalidad'
 
 export const CardAtributosCalidadEntrada = ({
   dataEntradaStockCalidad,
   onChangeValoresAlfanumericos
 }) => {
   const { etiquetasCards, dataAtributosEntradaCalidad } =
-    dataEntradaStockCalidad;
+    dataEntradaStockCalidad
 
   return (
     <>
       {etiquetasCards.map((etiqueta, index) => {
         const dataEtiqueta = dataAtributosEntradaCalidad.filter(
           (element) => element.labGruAtr === etiqueta
-        );
+        )
         return (
           <ComponentCard
             key={index}
@@ -21,23 +21,23 @@ export const CardAtributosCalidadEntrada = ({
             data={dataEtiqueta}
             onChangeValoresAlfanumericos={onChangeValoresAlfanumericos}
           />
-        );
+        )
       })}
     </>
-  );
-};
+  )
+}
 
 const ComponentCard = ({ etiqueta, data, onChangeValoresAlfanumericos }) => {
-  const chunkedData = [];
-  const chunkSize = 3;
+  const chunkedData = []
+  const chunkSize = 3
 
   if (data.length === 0) {
-    return;
+    return
   }
 
   // Dividir data en grupos de 3 elementos
   for (let i = 0; i < data.length; i += chunkSize) {
-    chunkedData.push(data.slice(i, i + chunkSize));
+    chunkedData.push(data.slice(i, i + chunkSize))
   }
 
   return (
@@ -60,5 +60,5 @@ const ComponentCard = ({ etiqueta, data, onChangeValoresAlfanumericos }) => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

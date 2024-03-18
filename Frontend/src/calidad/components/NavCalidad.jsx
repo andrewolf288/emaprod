@@ -1,19 +1,19 @@
-import React from "react";
-import { NavLink, Link } from "react-router-dom";
-import logo from "../../assets/logo-oficial.png";
-import { useAuth } from "../../hooks/useAuth";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../../assets/logo-oficial.png'
+import { useAuth } from '../../hooks/useAuth'
 
 const NavCalidad = () => {
-  const { logout } = useAuth();
+  const { logout } = useAuth()
   const logoutUser = () => {
     // cerramos sesion
-    logout();
-  };
+    logout()
+  }
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={"/calidad"}>
+          <Link className="navbar-brand" to={'/calidad'}>
             <img
               src={logo}
               alt="Logo"
@@ -49,7 +49,7 @@ const NavCalidad = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/calidad/entradas-stock"}
+                      to={'/calidad/entradas-stock'}
                     >
                       Administrar
                     </Link>
@@ -57,7 +57,7 @@ const NavCalidad = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/calidad/entradas-stock/crear"}
+                      to={'/calidad/entradas-stock/crear'}
                     >
                       Crear
                     </Link>
@@ -150,7 +150,7 @@ const NavCalidad = () => {
         </div>
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default NavCalidad;
+export default NavCalidad

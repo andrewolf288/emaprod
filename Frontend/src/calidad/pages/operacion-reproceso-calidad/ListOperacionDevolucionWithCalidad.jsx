@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
-import { listOperacionesDevolucion } from "../../helpers/operacion-devolucion/listOperacionesDevolucion";
-import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
+import React, { useEffect, useState } from 'react'
+import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
+import { listOperacionesDevolucion } from '../../helpers/operacion-devolucion/listOperacionesDevolucion'
+import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
 import {
   Paper,
   Table,
@@ -10,78 +10,78 @@ import {
   TableContainer,
   TableHead,
   TableRow
-} from "@mui/material";
-import { RowOperacionDevolucionNoRetorno } from "../../components/operacion-devolucion/RowOperacionDevolucionNoRetorno";
+} from '@mui/material'
+import { RowOperacionDevolucionNoRetorno } from '../../components/operacion-devolucion/RowOperacionDevolucionNoRetorno'
 
 export const ListOperacionDevolucionWithCalidad = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataOperacionDevolucion, setdataOperacionDevolucion] = useState([]);
+  const [dataOperacionDevolucion, setdataOperacionDevolucion] = useState([])
 
   // ESTADOS PARA FILTROS GENERALES DE FECHA
   // filtros
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
     fechaFin: FormatDateMYSQL()
-  });
+  })
   // Filtros generales que hacen nuevas consultas
   const handleFechaInicioChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaInicio: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaInicio: dateFormat
-    };
-    obtenerDataOperacionDevolucion(body);
-  };
+    }
+    obtenerDataOperacionDevolucion(body)
+  }
 
   const handleFechaFinChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaFin: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaFin: dateFormat
-    };
-    obtenerDataOperacionDevolucion(body);
-  };
+    }
+    obtenerDataOperacionDevolucion(body)
+  }
 
   const obtenerDataOperacionDevolucion = async (body = null) => {
-    const resultPeticion = await listOperacionesDevolucion(body);
-    const { result, message_error, description_error } = resultPeticion;
-    console.log(resultPeticion);
+    const resultPeticion = await listOperacionesDevolucion(body)
+    const { result, message_error, description_error } = resultPeticion
+    console.log(resultPeticion)
     if (message_error.length === 0) {
-      setdataOperacionDevolucion(result);
+      setdataOperacionDevolucion(result)
     } else {
-      alert(description_error);
+      alert(description_error)
     }
-  };
+  }
 
   useEffect(() => {
-    obtenerDataOperacionDevolucion();
-  }, []);
+    obtenerDataOperacionDevolucion()
+  }, [])
 
   return (
     <>
       <div className="container-fluid">
         <div className="row d-flex mt-4 mb-4">
           <div className="col-9">
-            <div className="row" style={{ border: "0px solid black" }}>
+            <div className="row" style={{ border: '0px solid black' }}>
               <div
                 className="col-2"
                 style={{
-                  border: "0px solid black",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center"
+                  border: '0px solid black',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <FechaPickerMonth
@@ -92,9 +92,9 @@ export const ListOperacionDevolucionWithCalidad = () => {
               <div
                 className="col-2"
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center"
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <FechaPickerMonth
@@ -111,9 +111,9 @@ export const ListOperacionDevolucionWithCalidad = () => {
             <TableHead>
               <TableRow
                 sx={{
-                  "& th": {
-                    color: "rgba(96, 96, 96)",
-                    backgroundColor: "#f5f5f5"
+                  '& th': {
+                    color: 'rgba(96, 96, 96)',
+                    backgroundColor: '#f5f5f5'
                   }
                 }}
               >
@@ -149,5 +149,5 @@ export const ListOperacionDevolucionWithCalidad = () => {
         </TableContainer>
       </div>
     </>
-  );
-};
+  )
+}

@@ -1,26 +1,22 @@
-import React, { useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { TextField } from "@mui/material";
-import FechaPicker from "../../../src/components/Fechas/FechaPicker";
-import FechaPickerYear from "../../../src/components/Fechas/FechaPickerYear";
-import EditIcon from "@mui/icons-material/Edit";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { TextField } from '@mui/material'
+import FechaPicker from '../../../src/components/Fechas/FechaPicker'
+import FechaPickerYear from '../../../src/components/Fechas/FechaPickerYear'
+import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete'
 export const RowProductosDisponiblesProduccion = ({
   detalle,
   onDeleteDetalle,
   onChangeDetalle,
   showButtonDelete,
-  DetProdIntermdio,
+  DetProdIntermdio
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
-
   return (
     <TableRow
       key={detalle.id}
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell component="th" scope="detalle">
@@ -31,13 +27,13 @@ export const RowProductosDisponiblesProduccion = ({
       <TableCell align="left">
         <FechaPicker
           onNewfecEntSto={(data) => {
-            var event = {
+            const event = {
               target: {
                 value: data,
-                name: "fecEntSto",
-              },
-            };
-            onChangeDetalle(event, detalle.idProdt);
+                name: 'fecEntSto'
+              }
+            }
+            onChangeDetalle(event, detalle.idProdt)
           }}
           date={detalle.fecEntSto}
         />
@@ -45,31 +41,31 @@ export const RowProductosDisponiblesProduccion = ({
       <TableCell align="left">
         <FechaPickerYear
           onNewfecEntSto={(data) => {
-            var event = {
+            const event = {
               target: {
                 value: data,
-                name: "fecVenEntProdFin",
-              },
-            };
-            onChangeDetalle(event, detalle.idProdt);
+                name: 'fecVenEntProdFin'
+              }
+            }
+            onChangeDetalle(event, detalle.idProdt)
           }}
           date={detalle.fecVenEntProdFin}
         />
       </TableCell>
       <TableCell align="left">
         <TextField
-          //disabled={disabledInput}
+          // disabled={disabledInput}
           type="number"
           autoComplete="off"
           size="small"
           value={detalle.canProdFin}
           name="canProdFin"
           onChange={(e) => {
-            onChangeDetalle(e, detalle.idProdt);
+            onChangeDetalle(e, detalle.idProdt)
           }}
         />
       </TableCell>
-      <TableCell align="left" sx={{ display: "flex" }}>
+      <TableCell align="left" sx={{ display: 'flex' }}>
         {/**
             <IconButton
             aria-label="delete"
@@ -88,7 +84,7 @@ export const RowProductosDisponiblesProduccion = ({
             aria-label="delete"
             size="large"
             onClick={() => {
-              onDeleteDetalle(detalle.idProdt);
+              onDeleteDetalle(detalle.idProdt)
             }}
             color="primary"
           >
@@ -98,5 +94,5 @@ export const RowProductosDisponiblesProduccion = ({
         {DetProdIntermdio && <DetProdIntermdio />}
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

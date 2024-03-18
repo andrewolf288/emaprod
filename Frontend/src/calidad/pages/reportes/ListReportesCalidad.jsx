@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 export const ListReportesCalidad = () => {
   return (
@@ -28,5 +28,5 @@ export const ListReportesCalidad = () => {
         </div>
       </section>
     </div>
-  );
-};
+  )
+}

@@ -1,30 +1,30 @@
-import React, { useState } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { TextareaAutosize as BaseTextareaAutosize } from "@mui/base/TextareaAutosize";
-import { styled } from "@mui/system";
+import React, { useState } from 'react'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize'
+import { styled } from '@mui/system'
 
 const blue = {
-  100: "#DAECFF",
-  200: "#b6daff",
-  400: "#3399FF",
-  500: "#007FFF",
-  600: "#0072E5",
-  900: "#003A75"
-};
+  100: '#DAECFF',
+  200: '#b6daff',
+  400: '#3399FF',
+  500: '#007FFF',
+  600: '#0072E5',
+  900: '#003A75'
+}
 
 const grey = {
-  50: "#F3F6F9",
-  100: "#E5EAF2",
-  200: "#DAE2ED",
-  300: "#C7D0DD",
-  400: "#B0B8C4",
-  500: "#9DA8B7",
-  600: "#6B7A90",
-  700: "#434D5B",
-  800: "#303740",
-  900: "#1C2025"
-};
+  50: '#F3F6F9',
+  100: '#E5EAF2',
+  200: '#DAE2ED',
+  300: '#C7D0DD',
+  400: '#B0B8C4',
+  500: '#9DA8B7',
+  600: '#6B7A90',
+  700: '#434D5B',
+  800: '#303740',
+  900: '#1C2025'
+}
 
 const Textarea = styled(BaseTextareaAutosize)(
   ({ theme }) => `
@@ -35,12 +35,12 @@ const Textarea = styled(BaseTextareaAutosize)(
   line-height: 1.5;
   padding: 12px;
   border-radius: 12px 12px 0 12px;
-  color: ${theme.palette.mode === "dark" ? grey[300] : grey[900]};
-  background: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
-  border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
+  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
+  background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
   box-shadow: 0px 2px 2px ${
-    theme.palette.mode === "dark" ? grey[900] : grey[50]
-  };
+  theme.palette.mode === 'dark' ? grey[900] : grey[50]
+};
 
   &:hover {
     border-color: ${blue[400]};
@@ -50,8 +50,8 @@ const Textarea = styled(BaseTextareaAutosize)(
     outline: 0;
     border-color: ${blue[400]};
     box-shadow: 0 0 0 3px ${
-      theme.palette.mode === "dark" ? blue[600] : blue[200]
-    };
+  theme.palette.mode === 'dark' ? blue[600] : blue[200]
+};
   }
 
   // firefox
@@ -59,19 +59,19 @@ const Textarea = styled(BaseTextareaAutosize)(
     outline: 0;
   }
 `
-);
+)
 
 export const RowAtributoCalidad = ({
   detalle,
   onDeleteDetalleAtributo,
   onChangeDetalleAtributo
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
+  const [disabledInput, setdisabledInput] = useState(true)
 
   return (
     <TableRow
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 }
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell component="th" scope="row">
@@ -81,23 +81,25 @@ export const RowAtributoCalidad = ({
         {detalle.tipProdAtr}
       </TableCell>
       <TableCell align="left">
-        {detalle.idTipProdAtr === 1 || detalle.idTipProdAtr === 2 ? (
-          "Sin opciones"
-        ) : (
-          <Textarea
-            onChange={(e) => {
-              onChangeDetalleAtributo(e.target.value, detalle.nomProdAtr);
-            }}
-            value={detalle.opcProdAtr}
-            disabled={disabledInput}
-          ></Textarea>
-        )}
+        {detalle.idTipProdAtr === 1 || detalle.idTipProdAtr === 2
+          ? (
+            'Sin opciones'
+          )
+          : (
+            <Textarea
+              onChange={(e) => {
+                onChangeDetalleAtributo(e.target.value, detalle.nomProdAtr)
+              }}
+              value={detalle.opcProdAtr}
+              disabled={disabledInput}
+            ></Textarea>
+          )}
       </TableCell>
       <TableCell align="left">
         <div className="btn-toolbar">
           <button
             onClick={() => {
-              setdisabledInput(!disabledInput);
+              setdisabledInput(!disabledInput)
             }}
             disabled={detalle.idTipProdAtr !== 4}
             className="btn btn-success me-2"
@@ -115,7 +117,7 @@ export const RowAtributoCalidad = ({
           </button>
           <button
             onClick={() => {
-              onDeleteDetalleAtributo(detalle.nomProdAtr);
+              onDeleteDetalleAtributo(detalle.nomProdAtr)
             }}
             className="btn btn-danger"
           >
@@ -133,5 +135,5 @@ export const RowAtributoCalidad = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

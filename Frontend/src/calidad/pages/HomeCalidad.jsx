@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 const HomeCalidad = () => {
   return (
@@ -111,7 +111,7 @@ const HomeCalidad = () => {
         </section>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default HomeCalidad;
+export default HomeCalidad

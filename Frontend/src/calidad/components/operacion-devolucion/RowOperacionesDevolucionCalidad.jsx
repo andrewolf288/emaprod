@@ -1,5 +1,5 @@
-import Visibility from "@mui/icons-material/Visibility";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import Visibility from '@mui/icons-material/Visibility'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
 import {
   IconButton,
   Paper,
@@ -9,8 +9,8 @@ import {
   TableContainer,
   TableHead,
   TableRow
-} from "@mui/material";
-import React from "react";
+} from '@mui/material'
+import React from 'react'
 
 export const RowOperacionesDevolucionCalidad = ({
   detalleDevolucionesCalidad
@@ -20,7 +20,7 @@ export const RowOperacionesDevolucionCalidad = ({
       <p className="text-bold">Detalle</p>
       <TableContainer component={Paper}>
         <Table>
-          <TableHead style={{ backgroundColor: "#FEE7BC" }}>
+          <TableHead style={{ backgroundColor: '#FEE7BC' }}>
             <TableRow>
               <TableCell>
                 <b>#</b>
@@ -53,44 +53,46 @@ export const RowOperacionesDevolucionCalidad = ({
                   <span
                     className={
                       detalle.fueCom === 0
-                        ? "badge text-bg-danger"
-                        : "badge text-bg-success"
+                        ? 'badge text-bg-danger'
+                        : 'badge text-bg-success'
                     }
                   >
-                    {detalle.fueCom === 0 ? "Requerido" : "Completo"}
+                    {detalle.fueCom === 0 ? 'Requerido' : 'Completo'}
                   </span>
                 </TableCell>
                 <TableCell>
                   <div className="btn-toolbar">
-                    {detalle.fueCom === 1 ? (
-                      <IconButton
-                        aria-label="view"
-                        size="large"
-                        color="primary"
-                        onClick={() => {
-                          window.open(
-                            `/calidad/operacion-devolucion/view/${detalle.id}`,
-                            "_blank"
-                          );
-                        }}
-                      >
-                        <Visibility />
-                      </IconButton>
-                    ) : (
-                      <IconButton
-                        aria-label="view"
-                        size="large"
-                        color="success"
-                        onClick={() => {
-                          window.open(
-                            `/calidad/operacion-devolucion/create/${detalle.id}`,
-                            "_blank"
-                          );
-                        }}
-                      >
-                        <AddCircleIcon />
-                      </IconButton>
-                    )}
+                    {detalle.fueCom === 1
+                      ? (
+                        <IconButton
+                          aria-label="view"
+                          size="large"
+                          color="primary"
+                          onClick={() => {
+                            window.open(
+                              `/calidad/operacion-devolucion/view/${detalle.id}`,
+                              '_blank'
+                            )
+                          }}
+                        >
+                          <Visibility />
+                        </IconButton>
+                      )
+                      : (
+                        <IconButton
+                          aria-label="view"
+                          size="large"
+                          color="success"
+                          onClick={() => {
+                            window.open(
+                              `/calidad/operacion-devolucion/create/${detalle.id}`,
+                              '_blank'
+                            )
+                          }}
+                        >
+                          <AddCircleIcon />
+                        </IconButton>
+                      )}
                   </div>
                 </TableCell>
               </TableRow>
@@ -99,5 +101,5 @@ export const RowOperacionesDevolucionCalidad = ({
         </Table>
       </TableContainer>
     </div>
-  );
-};
+  )
+}
