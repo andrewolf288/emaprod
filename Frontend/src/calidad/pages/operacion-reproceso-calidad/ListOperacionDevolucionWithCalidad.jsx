@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import MuiAlert from "@mui/material/Alert";
 import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
 import { listOperacionesDevolucion } from "../../helpers/operacion-devolucion/listOperacionesDevolucion";
 import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
@@ -14,15 +13,9 @@ import {
 } from "@mui/material";
 import { RowOperacionDevolucionNoRetorno } from "../../components/operacion-devolucion/RowOperacionDevolucionNoRetorno";
 
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
 export const ListOperacionDevolucionWithCalidad = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
   const [dataOperacionDevolucion, setdataOperacionDevolucion] = useState([]);
-  const [dataOperacionDevolucionTemp, setdataOperacionDevolucionTemp] =
-    useState([]);
 
   // ESTADOS PARA FILTROS GENERALES DE FECHA
   // filtros
@@ -61,33 +54,14 @@ export const ListOperacionDevolucionWithCalidad = () => {
     obtenerDataOperacionDevolucion(body);
   };
 
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setfeedbackDelete(false);
-  };
-
   const obtenerDataOperacionDevolucion = async (body = null) => {
     const resultPeticion = await listOperacionesDevolucion(body);
     const { result, message_error, description_error } = resultPeticion;
     console.log(resultPeticion);
     if (message_error.length === 0) {
       setdataOperacionDevolucion(result);
-      setdataOperacionDevolucionTemp(result);
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
+      alert(description_error);
     }
   };
 

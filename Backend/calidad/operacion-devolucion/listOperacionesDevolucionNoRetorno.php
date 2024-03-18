@@ -43,7 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             od.fecCreOpeDev
         FROM operacion_devolucion AS od
         JOIN operacion_facturacion_motivo AS ofm ON ofm.id = od.idOpeFacMot
-        WHERE (od.esRet = ?) AND DATE(od.fecCreOpeDev) BETWEEN ? AND ? ORDER BY od.fecCreOpeDev DESC ";
+        WHERE (od.esRet = ?) AND DATE(od.fecCreOpeDev) BETWEEN ? AND ? 
+        ORDER BY od.fecCreOpeDev DESC ";
         $stmt_select_operacion_devolucion_no_retorno = $pdo->prepare($sql_select_operacion_devolucion_no_retorno);
         $stmt_select_operacion_devolucion_no_retorno->bindParam(1, $esRet, PDO::PARAM_BOOL);
         $stmt_select_operacion_devolucion_no_retorno->bindParam(2, $fechaInicio, PDO::PARAM_STR);

@@ -1,53 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Paper from "@mui/material/Paper"
+import TablePagination from "@mui/material/TablePagination"
 // IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from "@mui/material/Alert";
-import { Snackbar, TextField, Typography } from "@mui/material";
+import MuiAlert from "@mui/material/Alert"
+import { Snackbar, TextField, Typography } from "@mui/material"
 // IMPORTACIONES DE PETICIONES
-import { getProduccionLote } from "./../../helpers/produccion_lote/getProduccionLote";
-import { getProduccionSumaryData } from "../../helpers/produccion_lote/getProduccionSumaryData";
+import { getProduccionLote } from "./../../helpers/produccion_lote/getProduccionLote"
+import { getProduccionSumaryData } from "../../helpers/produccion_lote/getProduccionSumaryData"
 // IMPORTACIONES DE FILTROS
-import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
-import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
-import { useForm } from "./../../../hooks/useForm";
+import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion"
+import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth"
+import { useForm } from "./../../../hooks/useForm"
 // IMPORTACIONES DE NAVEGACION
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
 // COMPONENTES
-import ReactDOM from "react-dom";
-import { PDFExample } from "../../components/pdf-components/PDFExample";
+import ReactDOM from "react-dom"
+import { PDFExample } from "../../components/pdf-components/PDFExample"
 // FUNCIONES UTILES
-import { _parseInt } from "../../../utils/functions/ParseInt";
 // ICONOS
-import iconProductosFinales from "../../../../src/assets/icons/productos-finales.png";
-import iconAgregaciones from "../../../../src/assets/icons/agregaciones.png";
-import iconDevoluciones from "../../../../src/assets/icons/devoluciones.png";
-// import { DialogProduccionSumary } from "../../components/componentes-produccion/DialogProduccionSumary";
-import config from "../../../config";
-import axios from "axios";
+import iconProductosFinales from "../../../../src/assets/icons/productos-finales.png"
+import iconAgregaciones from "../../../../src/assets/icons/agregaciones.png"
+import iconDevoluciones from "../../../../src/assets/icons/devoluciones.png"
+// import { DialogProduccionSumary } from "../../components/componentes-produccion/DialogProduccionSumary"
+import config from "../../../config"
+import axios from "axios"
 
 const generatePDF = (data) => {
-  const windowName = data.produccion.numop;
-  const newWindow = window.open("", windowName, "fullscreen=yes");
-  ReactDOM.render(<PDFExample result={data} />, newWindow.document.body);
-};
+  const windowName = data.produccion.numop
+  const newWindow = window.open("", windowName, "fullscreen=yes")
+  ReactDOM.render(<PDFExample result={data} />, newWindow.document.body)
+}
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ListProduccionLote = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataProduccionLote, setdataProduccionLote] = useState([]);
-  const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([]);
+  const [dataProduccionLote, setdataProduccionLote] = useState([])
+  const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([])
 
   const [inputs, setInputs] = useState({
     producto: { label: "" },
@@ -57,167 +56,162 @@ export const ListProduccionLote = () => {
     estadoInicio: { label: "" },
     numeroOP: "",
     lotePrduccion: ""
-  });
+  })
 
-  const [open, setOpen] = useState(false);
-  const [data, setData] = useState(null);
 
   const {
-    fecProdLotIni,
-    fecProdLotFin,
     formState,
     setFormState,
-    onInputChange
   } = useForm({
     fecProdLotIni: "",
     fecProdLotFin: ""
-  });
+  })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
     style_message: "",
     feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
     if (reason === "clickaway") {
-      return;
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setInputs({
       ...inputs,
       [name]: value
-    });
-  };
+    })
+  }
 
   const onChangeProducto = (obj) => {
     setInputs({
       ...inputs,
       producto: obj
-    });
-  };
+    })
+  }
 
   // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecProdLotIni: dateFormat });
+    let dateFormat = newDate.split(" ")[0]
+    setFormState({ ...formState, fecProdLotIni: dateFormat })
     let body = {
       ...formState,
       fecProdLotIni: dateFormat
-    };
-    obtenerDataProduccionLote(body);
-  };
+    }
+    obtenerDataProduccionLote(body)
+  }
 
   const onChangeDateEndData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecProdLotFin: dateFormat });
+    let dateFormat = newDate.split(" ")[0]
+    setFormState({ ...formState, fecProdLotFin: dateFormat })
     let body = {
       ...formState,
       fecProdLotFin: dateFormat
-    };
-    obtenerDataProduccionLote(body);
-  };
+    }
+    obtenerDataProduccionLote(body)
+  }
 
   //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   // const obtenerDataSummary = async (id) => {
   //   try {
-  //     const resultPeticion = await getProduccionSumaryData(id);
-  //     setData(resultPeticion.data); // Guardar los datos en el estado
-  //     setOpen(true); // Abrir la ventana modal
+  //     const resultPeticion = await getProduccionSumaryData(id)
+  //     setData(resultPeticion.data) // Guardar los datos en el estado
+  //     setOpen(true) // Abrir la ventana modal
   //   } catch (error) {
   //     // Mostramos una alerta
   //     setfeedbackMessages({
   //       style_message: "warning",
   //       feedback_description_error: "Error al obtener los datos: " + error
-  //     });
-  //     handleClickFeeback();
+  //     })
+  //     handleClickFeeback()
   //   }
-  // };
+  // }
 
   // boton de creacion de PDF sumary
   const handleButtonPDF = async (id) => {
     try {
-      const { result } = await getProduccionSumaryData(id);
-      console.log(result);
+      const { result } = await getProduccionSumaryData(id)
+      console.log(result)
 
       // recorremos las requisiciones del proceso de produccion
       result?.requisiciones?.map((req) => {
         // esta variable guardara los totales: {idProdt: cantidad, idProdt: cantidad}
-        const totales = {};
+        const totales = {}
         // esta variable guardara los repetidos: {idProdt: {item}, idProdt: {item}}
-        const repetidos = {};
+        const repetidos = {}
 
         // recorremos el detalle de requisicion
         req.detalles.forEach((item) => {
           // obtenemos id y cantidad
-          const { idProdt, canReqDet } = item;
+          const { idProdt, canReqDet } = item
           // si aun no existe en totales, lo agregamos
           if (!totales[idProdt]) {
-            totales[idProdt] = 0;
+            totales[idProdt] = 0
           } else {
             // caso contrario chancamos repetios[idProdt] cada vez que se repita
-            repetidos[idProdt] = { ...item };
+            repetidos[idProdt] = { ...item }
           }
 
           // sumamos el total en totales[idProdt]
-          totales[idProdt] += parseFloat(canReqDet);
+          totales[idProdt] += parseFloat(canReqDet)
           // añadimos la propiedad acu (acumulado parcial) al item
-          item.acu = totales[idProdt];
-        });
+          item.acu = totales[idProdt]
+        })
 
         // aqui obtenemos todos los repetidos y le establecemos el acumulado final
         const totalesFinales = Object.keys(repetidos).map((item) => {
           return {
             ...repetidos[item],
             acu: totales[item]
-          };
-        });
+          }
+        })
 
         // agregamos el resumen de productos acumulados
-        req.resumenProductos = totalesFinales;
+        req.resumenProductos = totalesFinales
         // }
-      });
-      generatePDF(result);
+      })
+      generatePDF(result)
     } catch (error) {
       // Mostramos una alerta
       setfeedbackMessages({
         style_message: "warning",
         feedback_description_error: "Error al obtener los datos: " + error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para descargar
   const exportarReporte = (idLotProd) => {
-    console.log(idLotProd);
-    const domain = config.API_URL;
-    const path = "/produccion/produccion-lote/generate_reporte_produccion.php";
+    console.log(idLotProd)
+    const domain = config.API_URL
+    const path = "/produccion/produccion-lote/generate_reporte_produccion.php"
     axios({
       url: domain + path,
       data: { idLotProd },
@@ -226,21 +220,21 @@ export const ListProduccionLote = () => {
     })
       .then((response) => {
         // Crear un enlace temporal para descargar el archivo
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `reporte-produccion-${idLotProd}.xlsx`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `reporte-produccion-${idLotProd}.xlsx`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
       })
-      .catch((error) => alert("Error al descargar el archivo", error));
-  };
+      .catch((error) => alert("Error al descargar el archivo", error))
+  }
 
   // MANEJO DE FILTROS
   useEffect(() => {
-    let resultSearch = [];
+    let resultSearch = []
     dataProduccionLote.map((data) => {
       if (
         (inputs.estado.label.includes(data.desEstPro) ||
@@ -255,15 +249,15 @@ export const ListProduccionLote = () => {
         (data.codLotProd?.includes(inputs.lotePrduccion) ||
           inputs.lotePrduccion.length == 0)
       ) {
-        resultSearch.push({ ...data });
+        resultSearch.push({ ...data })
       }
-    });
-    setdataProduccionLoteTemp(resultSearch);
-  }, [inputs, dataProduccionLote]);
+    })
+    setdataProduccionLoteTemp(resultSearch)
+  }, [inputs, dataProduccionLote])
 
   // reset filtros
   const resetData = () => {
-    setdataProduccionLoteTemp(dataProduccionLote);
+    setdataProduccionLoteTemp(dataProduccionLote)
     setInputs({
       producto: { label: "" },
       provedor: { label: "" },
@@ -272,30 +266,30 @@ export const ListProduccionLote = () => {
       estadoInicio: { label: "" },
       numeroOP: "",
       lotePrduccion: ""
-    });
-  };
+    })
+  }
 
   //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataProduccionLote = async (body = {}) => {
-    const resultPeticion = await getProduccionLote(body);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getProduccionLote(body)
+    const { message_error, description_error, result } = resultPeticion
 
     if (message_error.length === 0) {
-      setdataProduccionLote(result);
-      setdataProduccionLoteTemp(result);
+      setdataProduccionLote(result)
+      setdataProduccionLoteTemp(result)
     } else {
       setfeedbackMessages({
         style_message: "error",
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // TRAEMOS LOS DATOS DE ORDENES DE PRODUCCION
   useEffect(() => {
-    obtenerDataProduccionLote();
-  }, []);
+    obtenerDataProduccionLote()
+  }, [])
 
   return (
     <>
@@ -470,7 +464,7 @@ export const ListProduccionLote = () => {
                             {/* <button
                               title="Resumen producción"
                               onClick={async () => {
-                                obtenerDataSummary(row.id);
+                                obtenerDataSummary(row.id)
                               }}
                               className="btn btn-primary me-2"
                             >
@@ -490,7 +484,7 @@ export const ListProduccionLote = () => {
                             <button
                               title="PDF produccion"
                               onClick={() => {
-                                handleButtonPDF(row.id, "detalleOrden");
+                                handleButtonPDF(row.id, "detalleOrden")
                               }}
                               className="btn btn-danger me-2 btn"
                             >
@@ -513,7 +507,7 @@ export const ListProduccionLote = () => {
                             <button
                               className="btn btn-success me-2 btn"
                               onClick={() => {
-                                exportarReporte(row.id);
+                                exportarReporte(row.id)
                               }}
                             >
                               <svg
@@ -535,10 +529,11 @@ export const ListProduccionLote = () => {
                                 window.open(
                                   `/almacen/productos-lote/crear?idLotProdc=${row.id}`,
                                   "_blank"
-                                );
+                                )
                               }}
                             >
                               <img
+                                alt="Boton ingreso productos"
                                 src={iconProductosFinales}
                                 height={25}
                                 width={25}
@@ -552,10 +547,11 @@ export const ListProduccionLote = () => {
                                 window.open(
                                   `/almacen/produccion-devoluciones/crear?idLotProdc=${row.id}`,
                                   "_blank"
-                                );
+                                )
                               }}
                             >
                               <img
+                                alt="Boton devoluciones"
                                 src={iconDevoluciones}
                                 height={25}
                                 width={25}
@@ -569,10 +565,11 @@ export const ListProduccionLote = () => {
                                 window.open(
                                   `/almacen/produccion-agregaciones/crear?idLotProdc=${row.id}`,
                                   "_blank"
-                                );
+                                )
                               }}
                             >
                               <img
+                                alt="boton agregaciones"
                                 src={iconAgregaciones}
                                 height={25}
                                 width={25}
@@ -619,5 +616,5 @@ export const ListProduccionLote = () => {
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

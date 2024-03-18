@@ -1,15 +1,15 @@
-import { Navigate, useOutlet } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import NavCalidad from "../calidad/components/NavCalidad";
-import NavVentas from "../ventas/components/NavVentas";
+import { Navigate, useOutlet } from "react-router-dom"
+import { useAuth } from "../hooks/useAuth"
+import NavCalidad from "../calidad/components/NavCalidad"
+import NavVentas from "../ventas/components/NavVentas"
 
 export const ProtectedLayoutCalidad = () => {
   // OBTENEMOS INFORMACION DEL LOCALSTORAGE
-  const { user } = useAuth();
-  const outlet = useOutlet();
+  const { user } = useAuth()
+  const outlet = useOutlet()
 
   if (!user) {
-    return <Navigate to={"/login"} />;
+    return <Navigate to={"/login"} />
   } else {
     return (
       <>
@@ -17,6 +17,6 @@ export const ProtectedLayoutCalidad = () => {
         <main>{outlet}</main>
         <footer></footer>
       </>
-    );
+    )
   }
-};
+}
