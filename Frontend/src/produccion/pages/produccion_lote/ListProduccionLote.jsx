@@ -1,45 +1,45 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table"
-import TableBody from "@mui/material/TableBody"
-import TableCell from "@mui/material/TableCell"
-import TableContainer from "@mui/material/TableContainer"
-import TableHead from "@mui/material/TableHead"
-import TableRow from "@mui/material/TableRow"
-import Paper from "@mui/material/Paper"
-import TablePagination from "@mui/material/TablePagination"
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from "@mui/material/Alert"
-import { Snackbar, TextField, Typography } from "@mui/material"
+import MuiAlert from '@mui/material/Alert'
+import { Snackbar, TextField, Typography } from '@mui/material'
 // IMPORTACIONES DE PETICIONES
-import { getProduccionLote } from "./../../helpers/produccion_lote/getProduccionLote"
-import { getProduccionSumaryData } from "../../helpers/produccion_lote/getProduccionSumaryData"
+import { getProduccionLote } from './../../helpers/produccion_lote/getProduccionLote'
+import { getProduccionSumaryData } from '../../helpers/produccion_lote/getProduccionSumaryData'
 // IMPORTACIONES DE FILTROS
-import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion"
-import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth"
-import { useForm } from "./../../../hooks/useForm"
+import { FilterProductoProduccion } from './../../../components/ReferencialesFilters/Producto/FilterProductoProduccion'
+import FechaPickerMonth from './../../../components/Fechas/FechaPickerMonth'
+import { useForm } from './../../../hooks/useForm'
 // IMPORTACIONES DE NAVEGACION
-import { Link } from "react-router-dom"
+import { Link } from 'react-router-dom'
 // COMPONENTES
-import ReactDOM from "react-dom"
-import { PDFExample } from "../../components/pdf-components/PDFExample"
+import ReactDOM from 'react-dom'
+import { PDFExample } from '../../components/pdf-components/PDFExample'
 // FUNCIONES UTILES
 // ICONOS
-import iconProductosFinales from "../../../../src/assets/icons/productos-finales.png"
-import iconAgregaciones from "../../../../src/assets/icons/agregaciones.png"
-import iconDevoluciones from "../../../../src/assets/icons/devoluciones.png"
+import iconProductosFinales from '../../../../src/assets/icons/productos-finales.png'
+import iconAgregaciones from '../../../../src/assets/icons/agregaciones.png'
+import iconDevoluciones from '../../../../src/assets/icons/devoluciones.png'
 // import { DialogProduccionSumary } from "../../components/componentes-produccion/DialogProduccionSumary"
-import config from "../../../config"
-import axios from "axios"
+import config from '../../../config'
+import axios from 'axios'
 
 const generatePDF = (data) => {
   const windowName = data.produccion.numop
-  const newWindow = window.open("", windowName, "fullscreen=yes")
+  const newWindow = window.open('', windowName, 'fullscreen=yes')
   ReactDOM.render(<PDFExample result={data} />, newWindow.document.body)
 }
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
+const Alert = React.forwardRef(function Alert (props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 })
 
@@ -49,22 +49,21 @@ export const ListProduccionLote = () => {
   const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([])
 
   const [inputs, setInputs] = useState({
-    producto: { label: "" },
-    provedor: { label: "" },
-    estado: { label: "" },
-    tipoProduccion: { label: "" },
-    estadoInicio: { label: "" },
-    numeroOP: "",
-    lotePrduccion: ""
+    producto: { label: '' },
+    provedor: { label: '' },
+    estado: { label: '' },
+    tipoProduccion: { label: '' },
+    estadoInicio: { label: '' },
+    numeroOP: '',
+    lotePrduccion: ''
   })
-
 
   const {
     formState,
-    setFormState,
+    setFormState
   } = useForm({
-    fecProdLotIni: "",
-    fecProdLotFin: ""
+    fecProdLotIni: '',
+    fecProdLotFin: ''
   })
 
   // ESTADOS PARA LA PAGINACIÓN
@@ -74,8 +73,8 @@ export const ListProduccionLote = () => {
   // ESTADO PARA CONTROLAR EL FEEDBACK
   const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
+    style_message: '',
+    feedback_description_error: ''
   })
   const { style_message, feedback_description_error } = feedbackMessages
 
@@ -85,7 +84,7 @@ export const ListProduccionLote = () => {
   }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return
     }
     setfeedbackCreate(false)
@@ -118,9 +117,9 @@ export const ListProduccionLote = () => {
 
   // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0]
+    const dateFormat = newDate.split(' ')[0]
     setFormState({ ...formState, fecProdLotIni: dateFormat })
-    let body = {
+    const body = {
       ...formState,
       fecProdLotIni: dateFormat
     }
@@ -128,16 +127,16 @@ export const ListProduccionLote = () => {
   }
 
   const onChangeDateEndData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0]
+    const dateFormat = newDate.split(' ')[0]
     setFormState({ ...formState, fecProdLotFin: dateFormat })
-    let body = {
+    const body = {
       ...formState,
       fecProdLotFin: dateFormat
     }
     obtenerDataProduccionLote(body)
   }
 
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   // const obtenerDataSummary = async (id) => {
   //   try {
   //     const resultPeticion = await getProduccionSumaryData(id)
@@ -160,7 +159,7 @@ export const ListProduccionLote = () => {
       console.log(result)
 
       // recorremos las requisiciones del proceso de produccion
-      result?.requisiciones?.map((req) => {
+      result?.requisiciones?.forEach((req) => {
         // esta variable guardara los totales: {idProdt: cantidad, idProdt: cantidad}
         const totales = {}
         // esta variable guardara los repetidos: {idProdt: {item}, idProdt: {item}}
@@ -200,8 +199,8 @@ export const ListProduccionLote = () => {
     } catch (error) {
       // Mostramos una alerta
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Error al obtener los datos: " + error
+        style_message: 'warning',
+        feedback_description_error: 'Error al obtener los datos: ' + error
       })
       handleClickFeeback()
     }
@@ -211,17 +210,17 @@ export const ListProduccionLote = () => {
   const exportarReporte = (idLotProd) => {
     console.log(idLotProd)
     const domain = config.API_URL
-    const path = "/produccion/produccion-lote/generate_reporte_produccion.php"
+    const path = '/produccion/produccion-lote/generate_reporte_produccion.php'
     axios({
       url: domain + path,
       data: { idLotProd },
-      method: "POST",
-      responseType: "blob" // Importante para recibir datos binarios (Blob)
+      method: 'POST',
+      responseType: 'blob' // Importante para recibir datos binarios (Blob)
     })
       .then((response) => {
         // Crear un enlace temporal para descargar el archivo
         const url = window.URL.createObjectURL(new Blob([response.data]))
-        const a = document.createElement("a")
+        const a = document.createElement('a')
         a.href = url
         a.download = `reporte-produccion-${idLotProd}.xlsx`
         document.body.appendChild(a)
@@ -229,25 +228,25 @@ export const ListProduccionLote = () => {
         document.body.removeChild(a)
         window.URL.revokeObjectURL(url)
       })
-      .catch((error) => alert("Error al descargar el archivo", error))
+      .catch((error) => alert('Error al descargar el archivo', error))
   }
 
   // MANEJO DE FILTROS
   useEffect(() => {
-    let resultSearch = []
-    dataProduccionLote.map((data) => {
+    const resultSearch = []
+    dataProduccionLote.forEach((data) => {
       if (
         (inputs.estado.label.includes(data.desEstPro) ||
-          inputs.estado.label.length == 0) &&
+          inputs.estado.label.length === 0) &&
         (inputs.tipoProduccion.label.includes(data.desProdTip) ||
-          inputs.tipoProduccion.label.length == 0) &&
+          inputs.tipoProduccion.label.length === 0) &&
         (inputs.producto.label.includes(data.nomProd) ||
-          inputs.producto.label.length == 0) &&
+          inputs.producto.label.length === 0) &&
         (inputs.estadoInicio.label.includes(data.desProdIniProgEst) ||
-          inputs.estadoInicio.label.length == 0) &&
-        (data.numop.includes(inputs.numeroOP) || inputs.numeroOP.length == 0) &&
+          inputs.estadoInicio.label.length === 0) &&
+        (data.numop.includes(inputs.numeroOP) || inputs.numeroOP.length === 0) &&
         (data.codLotProd?.includes(inputs.lotePrduccion) ||
-          inputs.lotePrduccion.length == 0)
+          inputs.lotePrduccion.length === 0)
       ) {
         resultSearch.push({ ...data })
       }
@@ -259,17 +258,17 @@ export const ListProduccionLote = () => {
   const resetData = () => {
     setdataProduccionLoteTemp(dataProduccionLote)
     setInputs({
-      producto: { label: "" },
-      provedor: { label: "" },
-      estado: { label: "" },
-      tipoProduccion: { label: "" },
-      estadoInicio: { label: "" },
-      numeroOP: "",
-      lotePrduccion: ""
+      producto: { label: '' },
+      provedor: { label: '' },
+      estado: { label: '' },
+      tipoProduccion: { label: '' },
+      estadoInicio: { label: '' },
+      numeroOP: '',
+      lotePrduccion: ''
     })
   }
 
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataProduccionLote = async (body = {}) => {
     const resultPeticion = await getProduccionLote(body)
     const { message_error, description_error, result } = resultPeticion
@@ -279,7 +278,7 @@ export const ListProduccionLote = () => {
       setdataProduccionLoteTemp(result)
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
       })
       handleClickFeeback()
@@ -331,7 +330,7 @@ export const ListProduccionLote = () => {
             <div className="row">
               <div className="col-6">
                 <Link
-                  to={"/produccion/produccion-lote/crear"}
+                  to={'/produccion/produccion-lote/crear'}
                   className="btn btn-primary d-inline-flex justify-content-end align-items-center"
                 >
                   <svg
@@ -358,9 +357,9 @@ export const ListProduccionLote = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -375,8 +374,8 @@ export const ListProduccionLote = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
+                            color: 'black',
+                            background: 'white',
                             width: 95
                           }
                         }}
@@ -393,13 +392,13 @@ export const ListProduccionLote = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            textTransform: "uppercase",
-                            color: "black",
-                            background: "white",
+                            textTransform: 'uppercase',
+                            color: 'black',
+                            background: 'white',
                             width: 180
                           },
                           inputProps: {
-                            pattern: "[A-Z0-9]*"
+                            pattern: '[A-Z0-9]*'
                           }
                         }}
                       />
@@ -436,7 +435,7 @@ export const ListProduccionLote = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -456,8 +455,8 @@ export const ListProduccionLote = () => {
                           <div
                             className="btn-toolbar"
                             style={{
-                              display: "flex",
-                              flexWrap: "nowrap"
+                              display: 'flex',
+                              flexWrap: 'nowrap'
                             }}
                           >
                             {/* RESUMEN DE PRODUCCION */}
@@ -484,7 +483,7 @@ export const ListProduccionLote = () => {
                             <button
                               title="PDF produccion"
                               onClick={() => {
-                                handleButtonPDF(row.id, "detalleOrden")
+                                handleButtonPDF(row.id, 'detalleOrden')
                               }}
                               className="btn btn-danger me-2 btn"
                             >
@@ -528,7 +527,7 @@ export const ListProduccionLote = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/productos-lote/crear?idLotProdc=${row.id}`,
-                                  "_blank"
+                                  '_blank'
                                 )
                               }}
                             >
@@ -546,7 +545,7 @@ export const ListProduccionLote = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/produccion-devoluciones/crear?idLotProdc=${row.id}`,
-                                  "_blank"
+                                  '_blank'
                                 )
                               }}
                             >
@@ -564,7 +563,7 @@ export const ListProduccionLote = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/produccion-agregaciones/crear?idLotProdc=${row.id}`,
-                                  "_blank"
+                                  '_blank'
                                 )
                               }}
                             >
@@ -600,7 +599,7 @@ export const ListProduccionLote = () => {
       {/* ALERT */}
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -608,9 +607,9 @@ export const ListProduccionLote = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>

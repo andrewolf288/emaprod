@@ -1,236 +1,207 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "./../../../hooks/useForm";
+import React, { useEffect, useState } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from "@mui/material/Alert";
-import { getFormulaDetalle } from "./../../helpers/formula/getFormulaDetalle";
-import { TextField } from "@mui/material";
-import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
-import { FormulaDetalle } from "./../../components/FormulaDetalle";
-import { Link } from "react-router-dom";
-import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
-import { FilterTipoFormula } from "../../../components/ReferencialesFilters/Formula/FilterTipoFormula";
-
-// CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { getFormulaDetalle } from './../../helpers/formula/getFormulaDetalle'
+import { TextField } from '@mui/material'
+import FechaPickerDay from './../../../components/Fechas/FechaPickerDay'
+import { FormulaDetalle } from './../../components/FormulaDetalle'
+import { Link } from 'react-router-dom'
+import { FilterProductoProduccion } from './../../../components/ReferencialesFilters/Producto/FilterProductoProduccion'
+import { FilterTipoFormula } from '../../../components/ReferencialesFilters/Formula/FilterTipoFormula'
 
 export const ListFormulas = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataFormula, setdataFormula] = useState([]);
-  const [dataFormulaTemp, setdataFormulaTemp] = useState([]);
+  const [dataFormula, setdataFormula] = useState([])
+  const [dataFormulaTemp, setdataFormulaTemp] = useState([])
 
   // ESTADOS PARA EL MODAL
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
-  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
+  const [mostrarDetalle, setMostrarDetalle] = useState(false)
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null)
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
-
-  const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setfeedbackDelete(false);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
-    filter(value, name);
-  };
+    const { name, value } = target
+    filter(value, name)
+  }
 
   const onChangeProducto = ({ label }) => {
-    filter(label, "filterProducto");
-  };
+    filter(label, 'filterProducto')
+  }
 
   const onChangeTipoFormula = ({ label }) => {
-    filter(label, "filterTipoFormula");
-  };
+    filter(label, 'filterTipoFormula')
+  }
 
   const onChangeDateFechaCreado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaCreado");
-  };
+    const dateFilter = newDate.split(' ')
+    filter(dateFilter[0], 'filterFechaCreado')
+  }
 
   const onChangeDateFechaActualizado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaActualizado");
-  };
+    const dateFilter = newDate.split(' ')
+    filter(dateFilter[0], 'filterFechaActualizado')
+  }
 
   // Funcion para filtrar la data
   const filter = (terminoBusqueda, name) => {
-    let resultSearch = [];
+    let resultSearch = []
     switch (name) {
-      case "filterProducto":
-        resultSearch = dataFormula.filter((element) => {
-          if (
-            element.nomProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      case "filterNombreFormula":
-        resultSearch = dataFormula.filter((element) => {
-          if (
-            element.nomFor
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      case "filterTipoFormula":
-        resultSearch = dataFormula.filter((element) => {
-          if (
-            element.desTipFor
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      case "filterPesoFormula":
-        resultSearch = dataFormula.filter((element) => {
-          if (
-            element.lotKgrFor
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      case "filterFechaCreado":
-        resultSearch = dataFormula.filter((element) => {
-          let aux = element.fecCreFor.split(" ");
+    case 'filterProducto':
+      resultSearch = dataFormula.filter((element) => {
+        if (
+          element.nomProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    case 'filterNombreFormula':
+      resultSearch = dataFormula.filter((element) => {
+        if (
+          element.nomFor
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    case 'filterTipoFormula':
+      resultSearch = dataFormula.filter((element) => {
+        if (
+          element.desTipFor
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    case 'filterPesoFormula':
+      resultSearch = dataFormula.filter((element) => {
+        if (
+          element.lotKgrFor
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    case 'filterFechaCreado':
+      resultSearch = dataFormula.filter((element) => {
+        const aux = element.fecCreFor.split(' ')
+        if (
+          aux[0]
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    case 'filterFechaActualizado':
+      resultSearch = dataFormula.filter((element) => {
+        if (element.fecActFor !== null) {
+          const aux = element.fecActFor.split(' ')
           if (
             aux[0]
               .toString()
               .toLowerCase()
               .includes(terminoBusqueda.toLowerCase())
           ) {
-            return true;
+            return true
           } else {
-            return false;
+            return false
           }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      case "filterFechaActualizado":
-        resultSearch = dataFormula.filter((element) => {
-          if (element.fecActFor !== null) {
-            let aux = element.fecActFor.split(" ");
-            if (
-              aux[0]
-                .toString()
-                .toLowerCase()
-                .includes(terminoBusqueda.toLowerCase())
-            ) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      default:
-        break;
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    default:
+      break
     }
-  };
+  }
 
-  //FUNCION PARA TRAER LA DATA DE FORMULA
+  // FUNCION PARA TRAER LA DATA DE FORMULA
   const obtenerDataFormula = async () => {
-    const resultPeticion = await getFormulaDetalle();
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getFormulaDetalle()
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
-      setdataFormula(result);
-      setdataFormulaTemp(result);
+      setdataFormula(result)
+      setdataFormulaTemp(result)
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+      alert(description_error)
     }
-  };
+  }
 
   // ******* REQUISICION MOLIENDA DETALLE ********
 
   const closeDetalleFormula = () => {
     // ocultamos el modal
-    setMostrarDetalle(false);
+    setMostrarDetalle(false)
     // dejamos el null la data del detalle
-    setDetalleSeleccionado(null);
-  };
+    setDetalleSeleccionado(null)
+  }
 
   // MOSTRAR Y OCULTAR DETALLE DE REQUISICION MOLIENDA
   const showFormulaDetalle = (idPosElement) => {
-    const formulaDetalle = dataFormulaTemp[idPosElement].forDet;
+    const formulaDetalle = dataFormulaTemp[idPosElement].forDet
     // seteamos la data de la requisicion seleccionada
-    setDetalleSeleccionado(formulaDetalle);
+    setDetalleSeleccionado(formulaDetalle)
     // mostramos el modal
-    setMostrarDetalle(true);
-  };
+    setMostrarDetalle(true)
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerDataFormula();
-  }, []);
+    obtenerDataFormula()
+  }, [])
 
   return (
     <>
@@ -241,7 +212,7 @@ export const ListFormulas = () => {
               {/* BOTON AGREGAR FORMULA */}
               <div className="col-6">
                 <Link
-                  to={"/produccion/formula/crear"}
+                  to={'/produccion/formula/crear'}
                   className="btn btn-primary d-inline-flex justify-content-end align-items-center"
                 >
                   <svg
@@ -299,10 +270,10 @@ export const ListFormulas = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
+                      }
                     }}
                   >
                     <TableCell align="left" width={80}>
@@ -318,9 +289,9 @@ export const ListFormulas = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            color: 'black',
+                            background: 'white'
+                          }
                         }}
                       />
                     </TableCell>
@@ -338,9 +309,9 @@ export const ListFormulas = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            color: 'black',
+                            background: 'white'
+                          }
                         }}
                       />
                     </TableCell>
@@ -368,7 +339,7 @@ export const ListFormulas = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -383,7 +354,7 @@ export const ListFormulas = () => {
                           <div className="btn-toolbar">
                             <button
                               onClick={() => {
-                                showFormulaDetalle(i);
+                                showFormulaDetalle(i)
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -442,5 +413,5 @@ export const ListFormulas = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

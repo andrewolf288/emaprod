@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   PDFViewer,
   Page,
@@ -6,12 +6,12 @@ import {
   View,
   Document,
   Image
-} from "@react-pdf/renderer";
-import logo from "../emaran.png";
-import { DetalleOrden } from "./DetalleOrden";
-import { stylesPDF } from "./stylePDF";
+} from '@react-pdf/renderer'
+import logo from '../emaran.png'
+import { DetalleOrden } from './DetalleOrden'
+import { stylesPDF } from './stylePDF'
 
-const styles = stylesPDF;
+const styles = stylesPDF
 
 export const PDFExample = ({ result }) => {
   return (
@@ -39,9 +39,9 @@ export const PDFExample = ({ result }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -51,9 +51,9 @@ export const PDFExample = ({ result }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -64,9 +64,9 @@ export const PDFExample = ({ result }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -76,9 +76,9 @@ export const PDFExample = ({ result }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -89,7 +89,7 @@ export const PDFExample = ({ result }) => {
                   style={{
                     ...styles.content,
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginTop: 2,
                     marginLeft: 20
@@ -100,11 +100,11 @@ export const PDFExample = ({ result }) => {
                 <View
                   style={{
                     padding: 1,
-                    fontWeight: "bold",
-                    maxWidth: "90%",
+                    fontWeight: 'bold',
+                    maxWidth: '90%',
                     borderRadius: 5,
                     borderWidth: 1,
-                    borderColor: "#000",
+                    borderColor: '#000',
                     height: 25,
                     marginTop: 2,
                     marginLeft: 20
@@ -117,8 +117,8 @@ export const PDFExample = ({ result }) => {
                       marginLeft: 10,
                       marginRight: 0,
                       paddingRight: 0,
-                      inlineSize: "50px",
-                      overflowWrap: "break-word",
+                      inlineSize: '50px',
+                      overflowWrap: 'break-word',
                       maxWidth: 275,
                       maxHeight: 275
                     }}
@@ -133,11 +133,11 @@ export const PDFExample = ({ result }) => {
                   <Text
                     style={{
                       ...styles.content,
-                      fontWeight: "bold",
+                      fontWeight: 'bold',
                       borderRadius: 5,
                       fontSize: 16,
                       marginBottom: 1,
-                      backgroundColor: "#d8dbe3",
+                      backgroundColor: '#d8dbe3',
                       padding: 5,
                       marginRight: 20
                     }}
@@ -147,8 +147,8 @@ export const PDFExample = ({ result }) => {
                   <View
                     style={{
                       ...styles.row,
-                      justifyContent: "center",
-                      alignItems: "center"
+                      justifyContent: 'center',
+                      alignItems: 'center'
                     }}
                   >
                     <Text
@@ -166,7 +166,7 @@ export const PDFExample = ({ result }) => {
                     style={{
                       ...styles.sectionWithBorder,
                       marginTop: 10,
-                      backgroundColor: "#d8dbe3",
+                      backgroundColor: '#d8dbe3',
                       width: 220,
                       height: 70,
                       borderRadius: 5,
@@ -178,7 +178,7 @@ export const PDFExample = ({ result }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 7,
-                        maxWidth: "100%"
+                        maxWidth: '100%'
                       }}
                     >
                       Tipo de Producción: {result.produccion.desProdTip}
@@ -189,7 +189,7 @@ export const PDFExample = ({ result }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%"
+                        maxWidth: '100%'
                       }}
                     >
                       Número de Lote: {result.produccion.codLotProd}
@@ -201,9 +201,9 @@ export const PDFExample = ({ result }) => {
                         marginTop: 4
                       }}
                     >
-                      Peso Total de Lote:{" "}
+                      Peso Total de Lote:{' '}
                       {parseFloat(result.produccion.canLotProd).toFixed(2) +
-                        " KG"}
+                        ' KG'}
                     </Text>
 
                     <Text
@@ -211,13 +211,13 @@ export const PDFExample = ({ result }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%"
+                        maxWidth: '100%'
                       }}
                     >
-                      Peso Programado:{" "}
+                      Peso Programado:{' '}
                       {parseFloat(
                         result.produccion.klgTotalLoteProduccion
-                      ).toFixed(2) + " KG"}
+                      ).toFixed(2) + ' KG'}
                     </Text>
                   </View>
 
@@ -226,7 +226,7 @@ export const PDFExample = ({ result }) => {
                       ...styles.content,
                       marginLeft: 130,
                       marginTop: -10,
-                      maxWidth: "100%",
+                      maxWidth: '100%',
                       fontSize: 5
                     }}
                   >
@@ -241,5 +241,5 @@ export const PDFExample = ({ result }) => {
         </Page>
       </Document>
     </PDFViewer>
-  );
-};
+  )
+}

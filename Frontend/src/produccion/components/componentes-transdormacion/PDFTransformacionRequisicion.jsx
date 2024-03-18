@@ -1,25 +1,24 @@
-import React from "react";
-import { Text, View } from "@react-pdf/renderer";
-import { _parseInt } from "../../../utils/functions/ParseInt";
+import React from 'react'
+import { Text, View } from '@react-pdf/renderer'
+import { _parseInt } from '../../../utils/functions/ParseInt'
 
 export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
   const requisicionEnvasado = requisicion.find(
-    (element) => element.desAre === "Envasado"
-  );
+    (element) => element.desAre === 'Envasado'
+  )
   const requisicionEncajado = requisicion.find(
-    (element) => element.desAre === "Encajado"
-  );
-  console.log(requisicionEncajado);
+    (element) => element.desAre === 'Encajado'
+  )
+  console.log(requisicionEncajado)
   return (
     <View>
       <Text
         style={{
           ...styles.title,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           fontSize: 7,
           marginLeft: -380,
-          marginTop: 10,
-          fontWeight: "bold"
+          marginTop: 10
         }}
       >
         DETALLE REQUISICION DE MATERIALES
@@ -28,7 +27,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
       <Text
         style={{
           ...styles.title,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           fontSize: 7,
           marginLeft: -450,
           marginTop: 5
@@ -43,10 +42,10 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
             <Text
               style={{
                 flex: 1,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "40px"
+                maxWidth: '40px'
               }}
             >
               EMAPROD
@@ -55,7 +54,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
               style={{
                 ...styles.gridTitle,
                 flex: 4,
-                textAlign: "center"
+                textAlign: 'center'
               }}
             >
               Descripción de Item
@@ -63,9 +62,9 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
             <Text
               style={{
                 flex: 1,
-                textAlign: "center",
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "30px"
+                maxWidth: '30px'
               }}
             >
               U.M
@@ -73,10 +72,10 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
             <Text
               style={{
                 flex: 1,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "40px"
+                maxWidth: '40px'
               }}
             >
               Cantidad
@@ -87,7 +86,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
               key={index}
               style={[
                 styles.gridRow,
-                index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {}
+                index % 2 === 0 ? { backgroundColor: '#a4a8b0' } : {}
               ]}
             >
               <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
@@ -97,7 +96,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
                 style={{
                   ...styles.gridContent_p,
                   flex: 0.7,
-                  textAlign: "center"
+                  textAlign: 'center'
                 }}
               >
                 {item.codProd2}
@@ -106,7 +105,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
                 style={{
                   ...styles.gridContent_p,
                   flex: 4,
-                  textAlign: "left"
+                  textAlign: 'left'
                 }}
               >
                 {item.nomProd}
@@ -114,9 +113,9 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 5.5,
-                  maxWidth: "25px"
+                  maxWidth: '25px'
                 }}
               >
                 {item.simMed}
@@ -124,12 +123,12 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 6.5,
-                  maxWidth: "40px"
+                  maxWidth: '40px'
                 }}
               >
-                {_parseInt(item, "canReqDet")}
+                {_parseInt(item, 'canReqDet')}
               </Text>
             </View>
           ))}
@@ -139,7 +138,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
       <Text
         style={{
           ...styles.title,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           fontSize: 7,
           marginLeft: -450,
           marginTop: 5
@@ -154,10 +153,10 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
             <Text
               style={{
                 flex: 1,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "40px"
+                maxWidth: '40px'
               }}
             >
               EMAPROD
@@ -166,7 +165,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
               style={{
                 ...styles.gridTitle,
                 flex: 4,
-                textAlign: "center"
+                textAlign: 'center'
               }}
             >
               Descripción de Item
@@ -174,9 +173,9 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
             <Text
               style={{
                 flex: 1,
-                textAlign: "center",
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "30px"
+                maxWidth: '30px'
               }}
             >
               U.M
@@ -184,10 +183,10 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
             <Text
               style={{
                 flex: 1,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "40px"
+                maxWidth: '40px'
               }}
             >
               Cantidad
@@ -198,7 +197,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
               key={index}
               style={[
                 styles.gridRow,
-                index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {}
+                index % 2 === 0 ? { backgroundColor: '#a4a8b0' } : {}
               ]}
             >
               <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
@@ -208,7 +207,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
                 style={{
                   ...styles.gridContent_p,
                   flex: 0.7,
-                  textAlign: "center"
+                  textAlign: 'center'
                 }}
               >
                 {item.codProd2}
@@ -217,7 +216,7 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
                 style={{
                   ...styles.gridContent_p,
                   flex: 4,
-                  textAlign: "left"
+                  textAlign: 'left'
                 }}
               >
                 {item.nomProd}
@@ -225,9 +224,9 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 5.5,
-                  maxWidth: "25px"
+                  maxWidth: '25px'
                 }}
               >
                 {item.simMed}
@@ -235,17 +234,17 @@ export const PDFTransformacionRequisicion = ({ requisicion, styles }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 6.5,
-                  maxWidth: "40px"
+                  maxWidth: '40px'
                 }}
               >
-                {_parseInt(item, "canReqDet")}
+                {_parseInt(item, 'canReqDet')}
               </Text>
             </View>
           ))}
         </View>
       </View>
     </View>
-  );
-};
+  )
+}

@@ -1,19 +1,19 @@
-import { Autocomplete, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Autocomplete, TextField } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona un lote",
+  label: 'Selecciona un lote',
   id: 0
-};
+}
 
 export const FilterLotesDisponibles = ({
   defaultValue = 0,
   onNewInput,
   lotesDisponibles
 }) => {
-  const [options, setOptions] = useState([defaultOption]);
-  const [value, setValue] = useState(defaultOption);
+  const [options, setOptions] = useState([defaultOption])
+  const [value, setValue] = useState(defaultOption)
 
   const formatDataLotesDisponibles = async () => {
     const formatSelect = [
@@ -23,31 +23,31 @@ export const FilterLotesDisponibles = ({
           value: element.id,
           label: `${index + 1}. Lote: ${
             element.codLotProd
-          } - Fecha vencimiento: ${element.fecVenLotProd.split(" ")[0]}`,
+          } - Fecha vencimiento: ${element.fecVenLotProd.split(' ')[0]}`,
           id: element.id,
           lote: element.codLotProd
-        };
+        }
       })
-    ];
-    setOptions(formatSelect);
+    ]
+    setOptions(formatSelect)
     // verficar si defualtvalue coincide
     const defaultValueOption = formatSelect.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  };
+  }
 
   const handleChange = (event, value) => {
-    onNewInput(value);
-    setValue(value);
-  };
+    onNewInput(value)
+    setValue(value)
+  }
 
   // funcion que se ejecuta cuando se construye el componente
   useEffect(() => {
-    formatDataLotesDisponibles();
-  }, [lotesDisponibles]);
+    formatDataLotesDisponibles()
+  }, [lotesDisponibles])
 
   return (
     <Autocomplete
@@ -56,8 +56,8 @@ export const FilterLotesDisponibles = ({
       disableClearable
       getOptionLabel={(option) => option.label}
       onChange={handleChange}
-      isOptionEqualToValue={(option, value) => option.id == value.id}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
       renderInput={(params) => <TextField {...params} size="small" />}
     />
-  );
-};
+  )
+}

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { FilterProductoProduccionDynamic } from "../../../components/ReferencialesFilters/Producto/FilterProductoProduccionDynamic";
+import React, { useState } from 'react'
+import { FilterProductoProduccionDynamic } from '../../../components/ReferencialesFilters/Producto/FilterProductoProduccionDynamic'
 import {
   Paper,
   Snackbar,
@@ -10,94 +10,93 @@ import {
   TableHead,
   TableRow,
   Typography
-} from "@mui/material";
-import MuiAlert from "@mui/material/Alert";
-import { ComponentSearchLotesDisponibles } from "../../components/componentes-transdormacion/ComponentSearchLotesDisponibles";
-import { getProductosDisponiblesByLote } from "../../helpers/requisicion-transformacion/getProductosDisponiblesByLote";
-import { getProductosDisponiblesByProductoIntermedio } from "../../helpers/requisicion-transformacion/getProductosDisponiblesByProductoIntermedio";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import { RowDevolucionLoteProduccionEdit } from "../../../almacen/pages/devoluciones/RowDevolucionLoteProduccionEdit";
-import { RowEditDetalleRequisicionProduccion } from "../../components/componentes-lote-produccion/RowEditDetalleRequisicionProduccion";
-import { useNavigate } from "react-router-dom";
-import { createOrdenTransformacion } from "../../helpers/requisicion-transformacion/createOrdenTransformacion";
+} from '@mui/material'
+import MuiAlert from '@mui/material/Alert'
+import { ComponentSearchLotesDisponibles } from '../../components/componentes-transdormacion/ComponentSearchLotesDisponibles'
+import { getProductosDisponiblesByLote } from '../../helpers/requisicion-transformacion/getProductosDisponiblesByLote'
+import { getProductosDisponiblesByProductoIntermedio } from '../../helpers/requisicion-transformacion/getProductosDisponiblesByProductoIntermedio'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import { RowDevolucionLoteProduccionEdit } from '../../../almacen/pages/devoluciones/RowDevolucionLoteProduccionEdit'
+import { RowEditDetalleRequisicionProduccion } from '../../components/componentes-lote-produccion/RowEditDetalleRequisicionProduccion'
+import { useNavigate } from 'react-router-dom'
+import { createOrdenTransformacion } from '../../helpers/requisicion-transformacion/createOrdenTransformacion'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 // para parsear las cantidades de las devoluciones
-function parseIntCantidad(str, property) {
-  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(2);
-  let index = str.canReqProdLot.toString().indexOf(".");
-  let result = str.canReqProdLot.toString().substring(index + 1);
-  let val =
-    parseInt(result) >= 1 && str.simMed !== "KGM"
+function parseIntCantidad (str, property) {
+  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(2)
+  const index = str.canReqProdLot.toString().indexOf('.')
+  const result = str.canReqProdLot.toString().substring(index + 1)
+  const val =
+    parseInt(result) >= 1 && str.simMed !== 'KGM'
       ? Math.trunc(str.canReqProdLot) + 1
-      : str.canReqProdLot;
-  return val;
+      : str.canReqProdLot
+  return val
 }
 
 // se encarga de redondear los valores de las requisiciones
-function _parseInt(str) {
+function _parseInt (str) {
   if (str.canReqProdLot) {
-    str.canReqDet = str.canReqProdLot;
+    str.canReqDet = str.canReqProdLot
   }
 
   if (str.canTotProgProdFin) {
-    str.canReqDet = str.canTotProgProdFin;
+    str.canReqDet = str.canTotProgProdFin
   }
-  str.canReqDet = parseFloat(str.canReqDet).toFixed(2);
-  let index = str.canReqDet.toString().indexOf(".");
-  let result = str.canReqDet.toString().substring(index + 1);
-  let val =
-    parseInt(result) >= 1 && str.simMed !== "KGM"
+  str.canReqDet = parseFloat(str.canReqDet).toFixed(2)
+  const index = str.canReqDet.toString().indexOf('.')
+  const result = str.canReqDet.toString().substring(index + 1)
+  const val =
+    parseInt(result) >= 1 && str.simMed !== 'KGM'
       ? Math.trunc(str.canReqDet) + 1
-      : str.canReqDet;
-  return val;
+      : str.canReqDet
+  return val
 }
 
 // para poder validar las requisicion
-function onValidate(e) {
-  var t = e.value;
-  e.value = t.indexOf(".") >= 0 ? t.slice(0, t.indexOf(".") + 3) : t;
-  return e.value;
+function onValidate (e) {
+  const t = e.value
+  e.value = t.indexOf('.') >= 0 ? t.slice(0, t.indexOf('.') + 3) : t
+  return e.value
 }
 
 export const CreateRequisicionTransformacion = () => {
   // data productos finales por lote
   const [productosFinalesDisponiblesLote, setProductosFinalesDisponiblesLote] =
-    useState([]);
+    useState([])
   const [valueProductoOrigenSeleccionado, setValueProductoOrigenSeleccionado] =
-    useState(null);
+    useState(null)
   // data productos finales por producto intermedio
   const [
     productosFinalesDisponiblesProductoIntermedio,
     setProductosFinalesDisponiblesProductoIntermedio
-  ] = useState([]);
+  ] = useState([])
   const [
     valueProductoDestinoSeleccionado,
     setValueProductoDestinoSeleccionado
-  ] = useState(null);
+  ] = useState(null)
   // data de requisicion de transformacion
   const [requisicionTransformacion, setRequisicionTransformacion] = useState({
     idProdtInt: 0,
     idProdc: 0,
-    codLotProd: "",
+    codLotProd: '',
     idProdtOri: 0,
     canUndProdtOri: 0,
     canPesProdtOri: 0,
     idProdtDes: 0,
     canUndProdtDes: 0,
     canPesProdtDes: 0
-  });
+  })
   const {
     idProdtInt,
-    idProdc,
     codLotProd,
     idProdtOri,
     canUndProdtOri,
@@ -105,7 +104,7 @@ export const CreateRequisicionTransformacion = () => {
     idProdtDes,
     canUndProdtDes,
     canPesProdtDes
-  } = requisicionTransformacion;
+  } = requisicionTransformacion
 
   // requisicion de devolucion
   const [
@@ -116,7 +115,7 @@ export const CreateRequisicionTransformacion = () => {
     canDevUnd: 0,
     canDevPes: 0,
     detDev: []
-  });
+  })
   // requisicion de materiales
   const [
     requisicionMaterialesTransformacion,
@@ -126,164 +125,164 @@ export const CreateRequisicionTransformacion = () => {
     canReqUnd: 0,
     canReqPes: 0,
     detReq: []
-  });
+  })
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // funcion para producto intermedio
   const onAddProductoProduccion = async ({ id }) => {
     setRequisicionTransformacion({
       ...requisicionTransformacion,
       idProdtInt: id
-    });
-  };
+    })
+  }
 
   // cambiar producto origen
   const onAddProductoFinalOrigen = (event) => {
-    const { target } = event;
+    const { target } = event
     // buscamos el elemento de origen
     const valueFind = productosFinalesDisponiblesLote.find(
-      (element) => element.idProd == target.value
-    );
-    setValueProductoOrigenSeleccionado(valueFind);
+      (element) => element.idProd === parseInt(target.value)
+    )
+    setValueProductoOrigenSeleccionado(valueFind)
     // debemos colocar su valor de cantidad unidades y cantidad de peso
     // cantidad en unidades
-    const cantidadUnidades = valueFind["canTotDis"];
-    const { detFor } = valueFind;
+    const cantidadUnidades = valueFind.canTotDis
+    const { detFor } = valueFind
     const valueFindProductoIntermedio = detFor.find(
-      (element) => element.idAre != 6 && element.idAre != 5
-    );
+      (element) => element.idAre !== 6 && element.idAre !== 5
+    )
     const pesoPorUnidad = parseFloat(
-      valueFindProductoIntermedio["canForProDet"]
-    );
-    const pesoTotal = cantidadUnidades * pesoPorUnidad;
+      valueFindProductoIntermedio.canForProDet
+    )
+    const pesoTotal = cantidadUnidades * pesoPorUnidad
     setRequisicionTransformacion({
       ...requisicionTransformacion,
       canUndProdtOri: cantidadUnidades,
       canPesProdtOri: pesoTotal,
       idProdtOri: target.value
-    });
-  };
+    })
+  }
 
   // cambiar producto destino
   const onAddProductoFinalDestino = (event) => {
-    const { target } = event;
+    const { target } = event
     setRequisicionTransformacion({
       ...requisicionTransformacion,
       idProdtDes: target.value,
       canUndProdtDes: 0,
       canPesProdtDes: 0
-    });
+    })
     // buscamos el elemento de origen
     const valueFind = productosFinalesDisponiblesProductoIntermedio.find(
-      (element) => element.idProdFin == target.value
-    );
-    setValueProductoDestinoSeleccionado(valueFind);
-  };
+      (element) => element.idProdFin === parseInt(target.value)
+    )
+    setValueProductoDestinoSeleccionado(valueFind)
+  }
 
   // funcion que selecciona un lote de produccion y trae sus productos finales disponibles
   const onAddLoteProduccion = async (idProdc, lote) => {
     // ahora debemos consultar los productos finales por lote
-    const resultPeticionA = await getProductosDisponiblesByLote(idProdc);
+    const resultPeticionA = await getProductosDisponiblesByLote(idProdc)
     const {
       result: resultA,
       message_error: message_errorA,
       description_error: description_errorA
-    } = resultPeticionA;
+    } = resultPeticionA
 
     if (message_errorA.length === 0) {
       if (resultA.length === 0) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Este lote no tiene stock"
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Este lote no tiene stock'
+        })
+        handleClickFeeback()
         // reset
-        resetContenedores();
+        resetContenedores()
       } else {
         // ahora debemos consultar los posibles productos finales por producto intermedio
         const resultPeticionB =
-          await getProductosDisponiblesByProductoIntermedio(idProdtInt);
+          await getProductosDisponiblesByProductoIntermedio(idProdtInt)
         const {
           result: resultB,
           message_error: message_errorB,
           description_error: description_errorB
-        } = resultPeticionB;
+        } = resultPeticionB
 
         if (message_errorB.length === 0) {
           if (resultB.length === 0) {
             setfeedbackMessages({
-              style_message: "warning",
+              style_message: 'warning',
               feedback_description_error:
-                "No hay formulaciones para este producto intermedio"
-            });
-            handleClickFeeback();
+                'No hay formulaciones para este producto intermedio'
+            })
+            handleClickFeeback()
             // reset
-            resetContenedores();
+            resetContenedores()
           } else {
-            setProductosFinalesDisponiblesLote(resultA);
+            setProductosFinalesDisponiblesLote(resultA)
             // reset producto origen
-            resetProductoOrigen();
+            resetProductoOrigen()
 
-            setProductosFinalesDisponiblesProductoIntermedio(resultB);
+            setProductosFinalesDisponiblesProductoIntermedio(resultB)
             // reset producto origen
-            resetProductoDestino();
+            resetProductoDestino()
           }
         } else {
           setfeedbackMessages({
-            style_message: "error",
+            style_message: 'error',
             feedback_description_error: description_errorB
-          });
-          handleClickFeeback();
+          })
+          handleClickFeeback()
           // reset
-          resetContenedores();
+          resetContenedores()
         }
       }
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_errorA
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
       // reset
-      resetContenedores();
+      resetContenedores()
     }
 
     // seteamos los valores
-    resetDataOrdenTransformacion(idProdc, lote);
-    resetDetalleDevoluciones();
-    resetDetalleMateriales();
-  };
+    resetDataOrdenTransformacion(idProdc, lote)
+    resetDetalleDevoluciones()
+    resetDetalleMateriales()
+  }
 
   // reset orden de transformacion
   const resetDataOrdenTransformacion = (idProdc, lote) => {
     setRequisicionTransformacion({
       ...requisicionTransformacion,
-      idProdc: idProdc,
+      idProdc,
       codLotProd: lote,
       idProdtOri: 0,
       idProdtDes: 0,
@@ -291,8 +290,8 @@ export const CreateRequisicionTransformacion = () => {
       canPesProdtOri: 0,
       canUndProdtDes: 0,
       canUndProdtOri: 0
-    });
-  };
+    })
+  }
 
   // reset detalle devoluciones
   const resetDetalleDevoluciones = () => {
@@ -301,8 +300,8 @@ export const CreateRequisicionTransformacion = () => {
       canDevUnd: 0,
       canDevPes: 0,
       detDev: []
-    });
-  };
+    })
+  }
 
   // reset detalle materiales de transformacion
   const resetDetalleMateriales = () => {
@@ -311,80 +310,80 @@ export const CreateRequisicionTransformacion = () => {
       canReqUnd: 0,
       canReqPes: 0,
       detReq: []
-    });
-  };
+    })
+  }
 
   // reset contenedores
   const resetContenedores = () => {
     // resetamos los contenedores
-    setProductosFinalesDisponiblesLote([]);
-    setProductosFinalesDisponiblesProductoIntermedio([]);
-  };
+    setProductosFinalesDisponiblesLote([])
+    setProductosFinalesDisponiblesProductoIntermedio([])
+  }
 
   // reset producto origen
   const resetProductoOrigen = () => {
     // reseteamos el elemento seleccionado
-    setValueProductoOrigenSeleccionado(null);
-  };
+    setValueProductoOrigenSeleccionado(null)
+  }
 
   // reset producto destino
   const resetProductoDestino = () => {
     // reseteamos el elemento seleccionado
-    setValueProductoDestinoSeleccionado(null);
-  };
+    setValueProductoDestinoSeleccionado(null)
+  }
 
   // funcion para manejar la cantidad de klg requerida
   const handleChangePesoTotalProductoDestino = ({ target }) => {
-    var { value } = target;
+    const { value } = target
     // cantidad requerida de klg de lote para presentacion final
     try {
-      const cantidadTotalPesoKlg = value;
+      const cantidadTotalPesoKlg = value
 
       if (valueProductoDestinoSeleccionado !== null) {
         // cantidad de klg de producto intermedio por unidad de presentacion final
         const canKlgProdIntByUni =
-          valueProductoDestinoSeleccionado.canForProdInt;
+          valueProductoDestinoSeleccionado.canForProdInt
         // cantidad de unidades obtenidas segun klg requerido ingresado
         const cantidadUniRequerida = parseInt(
           parseFloat(cantidadTotalPesoKlg) / parseFloat(canKlgProdIntByUni)
-        );
+        )
         setRequisicionTransformacion({
           ...requisicionTransformacion,
           canPesProdtDes: cantidadTotalPesoKlg,
           canUndProdtDes: cantidadUniRequerida
-        });
+        })
       }
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-  };
+  }
 
   // funcion para manejar la cantidad de unidades requeridas
   const handleChangeUnidadesTotalProductoDestino = ({ target }) => {
-    var { value } = target;
+    const { value } = target
     // cantidad requerida de klg de lote para presentacion final
     try {
-      const cantidadUniRequerida = value;
-      let cantidadTotalPesoKlg = 0;
+      const cantidadUniRequerida = value
+      let cantidadTotalPesoKlg = 0
 
       if (valueProductoDestinoSeleccionado !== null) {
         // cantidad de klg de producto intermedio por unidad de presentacion final
         const canKlgProdIntByUni =
-          valueProductoDestinoSeleccionado.canForProdInt;
+          valueProductoDestinoSeleccionado.canForProdInt
         // cantidad de unidades obtenidas segun klg requerido ingresado
         cantidadTotalPesoKlg =
-          parseInt(cantidadUniRequerida) * parseFloat(canKlgProdIntByUni);
-        cantidadTotalPesoKlg = cantidadTotalPesoKlg.toFixed(3);
+          parseInt(cantidadUniRequerida) * parseFloat(canKlgProdIntByUni)
+        cantidadTotalPesoKlg = cantidadTotalPesoKlg.toFixed(3)
         setRequisicionTransformacion({
           ...requisicionTransformacion,
           canUndProdtDes: cantidadUniRequerida,
           canPesProdtDes: cantidadTotalPesoKlg
-        });
+        })
       }
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-  };
+  }
 
   // calcular requisicion de devolucion y de materiales
   const calcularDetallesTransformacion = () => {
@@ -397,60 +396,60 @@ export const CreateRequisicionTransformacion = () => {
       idProdtOri !== idProdtDes
     ) {
       // buscamos el peso por unidad del producto de origen
-      const { detFor } = valueProductoOrigenSeleccionado;
+      const { detFor } = valueProductoOrigenSeleccionado
       const valueFindProductoIntermedio = detFor.find(
-        (element) => element.idAre != 6 && element.idAre != 5
-      );
+        (element) => element.idAre !== 6 && element.idAre !== 5
+      )
       const pesoPorUnidad = parseFloat(
-        valueFindProductoIntermedio["canForProDet"]
-      );
-      const totalUnidades = canPesProdtDes / pesoPorUnidad;
-      const formatFloatUnidadesTotales = parseFloat(totalUnidades.toFixed(3));
-      let formatEnteroUnidadesTotales = 0;
+        valueFindProductoIntermedio.canForProDet
+      )
+      const totalUnidades = canPesProdtDes / pesoPorUnidad
+      const formatFloatUnidadesTotales = parseFloat(totalUnidades.toFixed(3))
+      let formatEnteroUnidadesTotales = 0
 
       // debemos hacer que si contiene decimales, se redondee hacia arriba el entero ya que hablamos de unidades fisicas
       if (formatFloatUnidadesTotales % 1 === 0) {
-        formatEnteroUnidadesTotales = formatFloatUnidadesTotales; // Si el número es entero, no se hace ningún cambio
+        formatEnteroUnidadesTotales = formatFloatUnidadesTotales // Si el número es entero, no se hace ningún cambio
       } else {
-        formatEnteroUnidadesTotales = Math.ceil(formatFloatUnidadesTotales); // Si hay decimales, se redondea hacia arriba
+        formatEnteroUnidadesTotales = Math.ceil(formatFloatUnidadesTotales) // Si hay decimales, se redondea hacia arriba
       }
 
       // ahora que ya se tiene el valor entero, se calcula la requisicion de devolucion
-      let detalleRequisicionDevolucion = [];
+      const detalleRequisicionDevolucion = []
       detFor.forEach((detalle) => {
-        if (detalle.idAre == 5 || detalle.idAre == 6) {
+        if (detalle.idAre === 5 || detalle.idAre === 6) {
           const cantidadRequisicionDevuelta = parseFloat(
             detalle.canForProDet * formatEnteroUnidadesTotales
-          ).toFixed(5);
+          ).toFixed(5)
           detalleRequisicionDevolucion.push({
             ...detalle,
             canReqProdLot: cantidadRequisicionDevuelta
-          });
+          })
         }
-      });
+      })
 
       // colocar motivos de devolucion
       const detalleRequisicionMotivos = detalleRequisicionDevolucion.map(
         (obj) => {
-          const cantidadParser = parseIntCantidad(obj);
+          const cantidadParser = parseIntCantidad(obj)
           return {
             ...obj,
             canReqProdLot: cantidadParser,
             motivos: [
               {
                 idProdDevMot: 2,
-                nomDevMot: "Desmedro",
+                nomDevMot: 'Desmedro',
                 canProdDev: cantidadParser
               },
               {
                 idProdDevMot: 5,
-                nomDevMot: "Transformación",
+                nomDevMot: 'Transformación',
                 canProdDev: 0
               }
             ]
-          };
+          }
         }
-      );
+      )
 
       setRequisicionDevolucionTransformacion({
         ...requisicionDevolucionTransformacion,
@@ -458,27 +457,27 @@ export const CreateRequisicionTransformacion = () => {
         detDev: detalleRequisicionMotivos,
         canDevUnd: formatEnteroUnidadesTotales,
         canDevPes: canPesProdtDes
-      });
+      })
 
       // calculamos la requisicion de materiales
-      const { detFor: detForReq } = valueProductoDestinoSeleccionado;
-      let detalleRequisicionMateriales = [];
+      const { detFor: detForReq } = valueProductoDestinoSeleccionado
+      const detalleRequisicionMateriales = []
       detForReq.forEach((detalle) => {
-        if (detalle.idAre == 5 || detalle.idAre == 6) {
+        if (detalle.idAre === 5 || detalle.idAre === 6) {
           const cantidadRequisicionMateriales = parseFloat(
             canUndProdtDes * detalle.canForProDet
-          ).toFixed(5);
+          ).toFixed(5)
           detalleRequisicionMateriales.push({
             ...detalle,
             indexProdFin: 1,
             canReqProdLot: cantidadRequisicionMateriales
-          });
+          })
         }
-      });
+      })
 
-      detalleRequisicionMateriales.map((obj) => {
-        obj.canReqProdLot = _parseInt(obj);
-      });
+      detalleRequisicionMateriales.forEach((obj) => {
+        obj.canReqProdLot = _parseInt(obj.canReqProdLot)
+      })
 
       setRequisicionMaterialesTransformacion({
         ...requisicionMaterialesTransformacion,
@@ -486,25 +485,25 @@ export const CreateRequisicionTransformacion = () => {
         detReq: detalleRequisicionMateriales,
         canReqUnd: canUndProdtDes,
         canReqPes: canPesProdtDes
-      });
+      })
     } else {
       if (idProdtOri === idProdtDes) {
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Los productos de origen y destino son iguales"
-        });
-        handleClickFeeback();
+            'Los productos de origen y destino son iguales'
+        })
+        handleClickFeeback()
       } else {
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "No se han indicado cantidades mayores a cero. Revise el detalle de transformación"
-        });
-        handleClickFeeback();
+            'No se han indicado cantidades mayores a cero. Revise el detalle de transformación'
+        })
+        handleClickFeeback()
       }
     }
-  };
+  }
 
   // --------------- OPERACIONES EDIT Y DELETE DE DEVOLUCION ----------------------
 
@@ -514,50 +513,50 @@ export const CreateRequisicionTransformacion = () => {
     detalle,
     indexProd
   ) => {
-    const { value } = target;
+    const { value } = target
     // Crear una copia del arreglo de detalles
     const editFormDetalle = requisicionDevolucionTransformacion.detDev.map(
       (element) => {
         // Si el idProdt coincide con el detalle proporcionado, actualiza los motivos
         if (detalle.idProd === element.idProd) {
           // Crear una copia del arreglo de motivos
-          const nuevosMotivos = [...element.motivos];
+          const nuevosMotivos = [...element.motivos]
 
           // Si el índice coincide con el índice proporcionado, actualiza canProdDev
           if (nuevosMotivos[indexProd]) {
-            nuevosMotivos[indexProd].canProdDev = value;
+            nuevosMotivos[indexProd].canProdDev = value
           }
 
           // Actualiza los motivos en el detalle
-          element.motivos = nuevosMotivos;
+          element.motivos = nuevosMotivos
         }
 
-        return element;
+        return element
       }
-    );
+    )
 
     setRequisicionDevolucionTransformacion({
       ...requisicionDevolucionTransformacion,
       detDev: editFormDetalle
-    });
-  };
+    })
+  }
 
   // Manejador de eliminacion de un detalle de devolucion
   const handleDeleteProductoDevuelto = (idItem) => {
     const dataDetalleProductosDevueltos =
       requisicionDevolucionTransformacion.detDev.filter((element) => {
         if (element.idProd !== idItem) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
-      });
+      })
 
     setRequisicionDevolucionTransformacion({
       ...requisicionDevolucionTransformacion,
       detDev: dataDetalleProductosDevueltos
-    });
-  };
+    })
+  }
 
   // --------------- OPERACIONES EDIT Y DELETE DE REQUISICION ----------------------
   // operación de eliminacion
@@ -565,17 +564,17 @@ export const CreateRequisicionTransformacion = () => {
     const dataDetalleRequisicionMateriales =
       requisicionMaterialesTransformacion.detReq.filter((element) => {
         if (element.idProd === idItem && element.indexProdFin === index) {
-          return false;
+          return false
         } else {
-          return true;
+          return true
         }
-      });
+      })
 
     setRequisicionMaterialesTransformacion({
       ...requisicionMaterialesTransformacion,
       detReq: dataDetalleRequisicionMateriales
-    });
-  };
+    })
+  }
 
   // operación de edicion
   const handleEditItemRequisicionTransformacion = (
@@ -583,65 +582,65 @@ export const CreateRequisicionTransformacion = () => {
     idItem,
     index
   ) => {
-    const { value } = target;
+    const { value } = target
     const editFormDetalle = requisicionMaterialesTransformacion.detReq.map(
       (element) => {
         if (element.idProd === idItem && element.indexProdFin === index) {
           return {
             ...element,
             canReqProdLot: value
-          };
+          }
         } else {
-          return element;
+          return element
         }
       }
-    );
+    )
     setRequisicionMaterialesTransformacion({
       ...requisicionMaterialesTransformacion,
       detReq: editFormDetalle
-    });
-  };
+    })
+  }
 
   // creamos la orden de transformacion
   const handleCrearOrdenTransformacion = async () => {
     // eliminar requisiciones en cero de devoluciones
-    let detDevParser = [];
+    const detDevParser = []
     requisicionDevolucionTransformacion.detDev.forEach((element) => {
       element.motivos.forEach((motivo) => {
-        const canProdDevMot = parseFloat(motivo.canProdDev);
-        const idMotivo = motivo.idProdDevMot;
+        const canProdDevMot = parseFloat(motivo.canProdDev)
+        const idMotivo = motivo.idProdDevMot
         if (!isNaN(canProdDevMot) && canProdDevMot !== 0) {
           const nuevoObjeto = {
             ...element,
             canProdDev: canProdDevMot,
             idProdDevMot: idMotivo
-          };
-          delete nuevoObjeto.motivos;
-          detDevParser.push(nuevoObjeto);
+          }
+          delete nuevoObjeto.motivos
+          detDevParser.push(nuevoObjeto)
         }
-      });
-    });
+      })
+    })
 
     const requisicionDevolucionTransformacionParser = {
       ...requisicionDevolucionTransformacion,
       detDev: detDevParser
-    };
+    }
 
     // eliminar requisiciones en cero de materiales
-    const { detReq } = requisicionMaterialesTransformacion;
+    const { detReq } = requisicionMaterialesTransformacion
     const detReqParser = detReq.filter((element) => {
-      const parserCantidad = parseFloat(element.canReqProdLot);
+      const parserCantidad = parseFloat(element.canReqProdLot)
       if (!isNaN(parserCantidad) && parserCantidad !== 0) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
 
     const requisicionMaterialesTransformacionParser = {
       ...requisicionMaterialesTransformacion,
       detReq: detReqParser
-    };
+    }
 
     if (detReqParser.length !== 0) {
       // formamos la data para enviar al backend
@@ -649,46 +648,46 @@ export const CreateRequisicionTransformacion = () => {
         ordenTransformacion: requisicionTransformacion,
         requisicionMateriales: requisicionMaterialesTransformacionParser,
         requisicionDevolucion: requisicionDevolucionTransformacionParser
-      };
+      }
 
-      console.log(formatData);
-      const resultPeticion = await createOrdenTransformacion(formatData);
-      console.log(resultPeticion);
-      const { message_error, description_error } = resultPeticion;
+      console.log(formatData)
+      const resultPeticion = await createOrdenTransformacion(formatData)
+      console.log(resultPeticion)
+      const { message_error, description_error } = resultPeticion
       if (message_error.length === 0) {
         setfeedbackMessages({
-          style_message: "success",
-          feedback_description_error: "Guardado con exito"
-        });
-        handleClickFeeback();
+          style_message: 'success',
+          feedback_description_error: 'Guardado con exito'
+        })
+        handleClickFeeback()
         // cerramos la ventana
         setTimeout(() => {
-          onNavigateBack();
-        }, "1000");
+          onNavigateBack()
+        }, '1000')
       } else {
         // mostramos el mensaje de advertencia
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error: description_error
-        });
-        handleClickFeeback();
+        })
+        handleClickFeeback()
       }
     } else {
-      let handleErrors = "";
-      if (requisicionDevolucionTransformacion.detDev.length == 0) {
-        handleErrors += "No hay detalle de devolucion\n";
+      let handleErrors = ''
+      if (requisicionDevolucionTransformacion.detDev.length === 0) {
+        handleErrors += 'No hay detalle de devolucion\n'
       }
-      if (requisicionMaterialesTransformacion.detReq.length == 0) {
-        handleErrors += "No hay detalle de requisicion de materiales\n";
+      if (requisicionMaterialesTransformacion.detReq.length === 0) {
+        handleErrors += 'No hay detalle de requisicion de materiales\n'
       }
       // mostramos el mensaje de advertencia
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error: handleErrors
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   return (
     <>
@@ -739,130 +738,132 @@ export const CreateRequisicionTransformacion = () => {
           <div className="card d-flex">
             <h6 className="card-header">Detalle de transformacion</h6>
             {productosFinalesDisponiblesLote.length === 0 ||
-            productosFinalesDisponiblesProductoIntermedio.length === 0 ? (
-              <p className="text-center mt-2 fs-4">
+            productosFinalesDisponiblesProductoIntermedio.length === 0
+              ? (
+                <p className="text-center mt-2 fs-4">
                 No hay información disponible
-              </p>
-            ) : (
-              <div className="card-body row">
-                <div className="col">
-                  <div className="card d-flex">
-                    <h6 className="card-header">Producto origen</h6>
-                    <div className="card-body">
-                      {/* MANEJADORES DE CANTIDADES EN PRODUCTOS DE ORIGEN */}
-                      <div className="row mb-4">
-                        <div className="col">
-                          <label htmlFor="nombre" className="form-label">
-                            <b>Can. unidades</b>
-                          </label>
-                          <input
-                            type="number"
-                            value={canUndProdtOri}
-                            disabled={true}
-                            className={
-                              canPesProdtOri < canPesProdtDes
-                                ? "text-danger"
-                                : "text-success"
-                            }
-                          />
-                        </div>
-                        <div className="col">
-                          <label htmlFor="nombre" className="form-label">
-                            <b>Can. peso (Kg)</b>
-                          </label>
-                          <input
-                            type="number"
-                            value={canPesProdtOri}
-                            disabled={true}
-                            className={
-                              canPesProdtOri < canPesProdtDes
-                                ? "text-danger"
-                                : "text-success"
-                            }
-                          />
-                        </div>
-                      </div>
-                      {/* PRODUCTOS */}
-                      <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label">
-                          Productos
-                        </FormLabel>
-                        <RadioGroup
-                          aria-labelledby="demo-radio-buttons-group-label"
-                          name="radio-buttons-group"
-                          value={idProdtOri}
-                          onChange={onAddProductoFinalOrigen}
-                        >
-                          {productosFinalesDisponiblesLote.map((element) => (
-                            <FormControlLabel
-                              key={element.idProd}
-                              value={element.idProd}
-                              control={<Radio />}
-                              label={`${element.nomProd}`}
+                </p>
+              )
+              : (
+                <div className="card-body row">
+                  <div className="col">
+                    <div className="card d-flex">
+                      <h6 className="card-header">Producto origen</h6>
+                      <div className="card-body">
+                        {/* MANEJADORES DE CANTIDADES EN PRODUCTOS DE ORIGEN */}
+                        <div className="row mb-4">
+                          <div className="col">
+                            <label htmlFor="nombre" className="form-label">
+                              <b>Can. unidades</b>
+                            </label>
+                            <input
+                              type="number"
+                              value={canUndProdtOri}
+                              disabled={true}
+                              className={
+                                canPesProdtOri < canPesProdtDes
+                                  ? 'text-danger'
+                                  : 'text-success'
+                              }
                             />
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                    </div>
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="card d-flex">
-                    <h6 className="card-header">Productos destino</h6>
-                    <div className="card-body">
-                      {/* MANEJADORES DE CANTIDADES EN PRODUCTOS DE DESTINO */}
-                      <div className="row mb-4">
-                        <div className="col">
-                          <label htmlFor="nombre" className="form-label">
-                            <b>Can. unidades</b>
-                          </label>
-                          <input
-                            type="number"
-                            value={canUndProdtDes}
-                            disabled={idProdtDes === 0}
-                            onChange={handleChangeUnidadesTotalProductoDestino}
-                          />
+                          </div>
+                          <div className="col">
+                            <label htmlFor="nombre" className="form-label">
+                              <b>Can. peso (Kg)</b>
+                            </label>
+                            <input
+                              type="number"
+                              value={canPesProdtOri}
+                              disabled={true}
+                              className={
+                                canPesProdtOri < canPesProdtDes
+                                  ? 'text-danger'
+                                  : 'text-success'
+                              }
+                            />
+                          </div>
                         </div>
-                        <div className="col">
-                          <label htmlFor="nombre" className="form-label">
-                            <b>Can. peso (Kg)</b>
-                          </label>
-                          <input
-                            type="number"
-                            value={canPesProdtDes}
-                            disabled={idProdtDes === 0}
-                            onChange={handleChangePesoTotalProductoDestino}
-                          />
-                        </div>
-                      </div>
-                      {/* PRODUCTOS */}
-                      <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label">
+                        {/* PRODUCTOS */}
+                        <FormControl>
+                          <FormLabel id="demo-radio-buttons-group-label">
                           Productos
-                        </FormLabel>
-                        <RadioGroup
-                          aria-labelledby="demo-radio-buttons-group-label"
-                          name="radio-buttons-group"
-                          value={idProdtDes}
-                          onChange={onAddProductoFinalDestino}
-                        >
-                          {productosFinalesDisponiblesProductoIntermedio.map(
-                            (element) => (
+                          </FormLabel>
+                          <RadioGroup
+                            aria-labelledby="demo-radio-buttons-group-label"
+                            name="radio-buttons-group"
+                            value={idProdtOri}
+                            onChange={onAddProductoFinalOrigen}
+                          >
+                            {productosFinalesDisponiblesLote.map((element) => (
                               <FormControlLabel
-                                key={element.idProdFin}
-                                value={element.idProdFin}
+                                key={element.idProd}
+                                value={element.idProd}
                                 control={<Radio />}
-                                label={element.nomProd}
+                                label={`${element.nomProd}`}
                               />
-                            )
-                          )}
-                        </RadioGroup>
-                      </FormControl>
+                            ))}
+                          </RadioGroup>
+                        </FormControl>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="card d-flex">
+                      <h6 className="card-header">Productos destino</h6>
+                      <div className="card-body">
+                        {/* MANEJADORES DE CANTIDADES EN PRODUCTOS DE DESTINO */}
+                        <div className="row mb-4">
+                          <div className="col">
+                            <label htmlFor="nombre" className="form-label">
+                              <b>Can. unidades</b>
+                            </label>
+                            <input
+                              type="number"
+                              value={canUndProdtDes}
+                              disabled={idProdtDes === 0}
+                              onChange={handleChangeUnidadesTotalProductoDestino}
+                            />
+                          </div>
+                          <div className="col">
+                            <label htmlFor="nombre" className="form-label">
+                              <b>Can. peso (Kg)</b>
+                            </label>
+                            <input
+                              type="number"
+                              value={canPesProdtDes}
+                              disabled={idProdtDes === 0}
+                              onChange={handleChangePesoTotalProductoDestino}
+                            />
+                          </div>
+                        </div>
+                        {/* PRODUCTOS */}
+                        <FormControl>
+                          <FormLabel id="demo-radio-buttons-group-label">
+                          Productos
+                          </FormLabel>
+                          <RadioGroup
+                            aria-labelledby="demo-radio-buttons-group-label"
+                            name="radio-buttons-group"
+                            value={idProdtDes}
+                            onChange={onAddProductoFinalDestino}
+                          >
+                            {productosFinalesDisponiblesProductoIntermedio.map(
+                              (element) => (
+                                <FormControlLabel
+                                  key={element.idProdFin}
+                                  value={element.idProdFin}
+                                  control={<Radio />}
+                                  label={element.nomProd}
+                                />
+                              )
+                            )}
+                          </RadioGroup>
+                        </FormControl>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             {/* BOTON DE GENERACION */}
             <button
               type="button"
@@ -909,9 +910,9 @@ export const CreateRequisicionTransformacion = () => {
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5"
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
                           }
                         }}
                       >
@@ -988,9 +989,9 @@ export const CreateRequisicionTransformacion = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5"
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
                               }
                             }}
                           >
@@ -1017,7 +1018,7 @@ export const CreateRequisicionTransformacion = () => {
                         <TableBody>
                           {requisicionMaterialesTransformacion.detReq.map(
                             (row, i) => {
-                              if (row.idAre == 5) {
+                              if (row.idAre === 5) {
                                 return (
                                   <RowEditDetalleRequisicionProduccion
                                     key={`${row.idProd}-${i}`}
@@ -1030,7 +1031,9 @@ export const CreateRequisicionTransformacion = () => {
                                     }
                                     onValidate={onValidate}
                                   />
-                                );
+                                )
+                              } else {
+                                return null
                               }
                             }
                           )}
@@ -1050,9 +1053,9 @@ export const CreateRequisicionTransformacion = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5"
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
                               }
                             }}
                           >
@@ -1079,7 +1082,7 @@ export const CreateRequisicionTransformacion = () => {
                         <TableBody>
                           {requisicionMaterialesTransformacion.detReq.map(
                             (row, i) => {
-                              if (row.idAre == 6) {
+                              if (row.idAre === 6) {
                                 return (
                                   <RowEditDetalleRequisicionProduccion
                                     key={`${row.idProd}-${i}`}
@@ -1092,7 +1095,9 @@ export const CreateRequisicionTransformacion = () => {
                                     }
                                     onValidate={onValidate}
                                   />
-                                );
+                                )
+                              } else {
+                                return null
                               }
                             }
                           )}
@@ -1126,7 +1131,7 @@ export const CreateRequisicionTransformacion = () => {
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -1134,13 +1139,13 @@ export const CreateRequisicionTransformacion = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

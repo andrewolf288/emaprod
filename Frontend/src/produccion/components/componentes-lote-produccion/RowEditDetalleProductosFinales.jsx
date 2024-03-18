@@ -1,26 +1,22 @@
-import React, { useState } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { TextField } from "@mui/material";
-import { FilterAlmacen } from "./../../../components/ReferencialesFilters/Almacen/FilterAlmacen";
+import React from 'react'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import { TextField } from '@mui/material'
 
 export const RowEditDetalleProductosFinales = ({
   detalle,
   onDeleteItemProductoFinal,
-  onChangeItemDetalle,
+  onChangeItemDetalle
 }) => {
-  const [disabledButton, setdisabledButton] = useState(true);
-
   const onChangeInput = ({ target }) => {
-    setdisabledButton(false);
-    const { value, name } = target;
-    console.log(value, name);
-  };
+    const { value, name } = target
+    console.log(value, name)
+  }
 
   return (
     <TableRow
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell component="th" scope="row">
@@ -32,18 +28,18 @@ export const RowEditDetalleProductosFinales = ({
       <TableCell component="th" scope="row">
         {detalle.simMed}
       </TableCell>
-     
+
       <TableCell component="th" scope="row">
         <TextField
           value={detalle.canUnd}
-          name={"canUnd"}
+          name={'canUnd'}
           onChange={onChangeInput}
         />
       </TableCell>
       <TableCell component="th" scope="row">
         <TextField
           value={detalle.canKlg}
-          name={"canKlg"}
+          name={'canKlg'}
           onChange={onChangeInput}
         />
       </TableCell>
@@ -51,7 +47,7 @@ export const RowEditDetalleProductosFinales = ({
         <div className="btn-toolbar">
           <button
             onClick={() => {
-              onDeleteItemProductoFinal(detalle.idProdFin);
+              onDeleteItemProductoFinal(detalle.idProdFin)
             }}
             className="btn btn-danger"
           >
@@ -69,5 +65,5 @@ export const RowEditDetalleProductosFinales = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

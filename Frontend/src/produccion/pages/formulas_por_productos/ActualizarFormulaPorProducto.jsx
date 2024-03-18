@@ -1,317 +1,309 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA LA NAVEGACION
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from 'react-router-dom'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
-//IMPORTACIONES PARA DIALOG DELETE
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { FilterAreaEncargada } from "./../../components/FilterAreaEncargada";
-import { RowEditDetalleFormulaProducto } from "./../../components/componentes-formula-producto/RowEditDetalleFormulaProducto";
-import { TextField, Typography } from "@mui/material";
-import { getFormulaProductoWithDetalleById } from "./../../helpers/formula_producto/getFormulaProductoWithDetalleById";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import { DialogDeleteFormulaProductoDetalle } from "./../../components/componentes-formula-producto/DialogDeleteFormulaProductoDetalle";
-import { deleteDetalleFormulaProducto } from "./../../helpers/formula_producto/deleteDetalleFormulaProducto";
-import { updateFormulaProductoDetalle } from "./../../helpers/formula_producto/updateFormulaProductoDetalle";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { FilterAllProductos } from './../../../components/ReferencialesFilters/Producto/FilterAllProductos'
+import { FilterAreaEncargada } from './../../components/FilterAreaEncargada'
+import { RowEditDetalleFormulaProducto } from './../../components/componentes-formula-producto/RowEditDetalleFormulaProducto'
+import { TextField, Typography } from '@mui/material'
+import { getFormulaProductoWithDetalleById } from './../../helpers/formula_producto/getFormulaProductoWithDetalleById'
+import { getMateriaPrimaById } from './../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import { DialogDeleteFormulaProductoDetalle } from './../../components/componentes-formula-producto/DialogDeleteFormulaProductoDetalle'
+import { deleteDetalleFormulaProducto } from './../../helpers/formula_producto/deleteDetalleFormulaProducto'
+import { updateFormulaProductoDetalle } from './../../helpers/formula_producto/updateFormulaProductoDetalle'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ActualizarFormulaPorProducto = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const { idForProd } = useParams();
+  const { idForProd } = useParams()
 
   // DETALLES DEL MAESTRO
   const [formula, setformula] = useState({
-    nomProd: "",
+    nomProd: '',
     idProdFin: 0,
-    reqDet: [], // DETALLE DE FORMULAS
-  });
+    reqDet: [] // DETALLE DE FORMULAS
+  })
 
-  const { idProdFin, reqDet, nomProd } = formula;
+  const { reqDet, nomProd } = formula
 
   // ESTADOS PARA DATOS DE DETALLE FORMULA (DETALLE)
   const [productoDetalle, setproductoDetalle] = useState({
     idProd: 0,
     canForProDet: 0.0,
     idAre: 0,
-    idAlm: 0,
-  });
+    idAlm: 0
+  })
 
-  const { idProd, canForProDet, idAre, idAlm } = productoDetalle;
+  const { idProd, canForProDet, idAre } = productoDetalle
 
   // ESTADOS PARA EL DIALOG DELETE
-  const [mostrarDialog, setMostrarDialog] = useState(false);
-  const [itemSeleccionado, setItemSeleccionado] = useState(null);
+  const [mostrarDialog, setMostrarDialog] = useState(false)
+  const [itemSeleccionado, setItemSeleccionado] = useState(null)
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ******** MANEJADORES DE LOS FILTROS **********
   // MANEJADOR DE AGREGAR PRODUCTO AL FILTRO
   const onProductoId = ({ id }) => {
     setproductoDetalle({
       ...productoDetalle,
-      idProd: id,
-    });
-  };
+      idProd: id
+    })
+  }
 
   // MANEJADOR DE AGREGAR CANTIDAD AL FILTRO
   const handleCantidad = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setproductoDetalle({
       ...productoDetalle,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // MAJEADOR PARA AGREGAR EL AREA AL FILTRO
   const handleAreaId = ({ id }) => {
     setproductoDetalle({
       ...productoDetalle,
-      idAre: id,
-    });
-  };
+      idAre: id
+    })
+  }
 
   // *********** MANEJADOR DE ACCIONES ***************
   const handleAddProductoDetalle = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // primero verificamos que se tenga información
     if (idProd !== 0 && canForProDet > 0 && idAre !== 0) {
       // se verifica si existe alguna coincidencia de lo ingresado
-      const itemFound = reqDet.find((element) => element.idProd === idProd);
+      const itemFound = reqDet.find((element) => element.idProd === idProd)
 
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto",
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Ya se agrego este producto'
+        })
+        handleClickFeeback()
       } else {
         if (idAre !== 1 && idAre !== 3 && idAre !== 4) {
           // hacemos una consulta al producto y desestructuramos
-          const resultPeticion = await getMateriaPrimaById(idProd);
-          const { message_error, description_error, result } = resultPeticion;
+          const resultPeticion = await getMateriaPrimaById(idProd)
+          const { message_error, description_error, result } = resultPeticion
 
           if (message_error.length === 0) {
             const { id, codProd, desCla, desSubCla, nomProd, simMed } =
-              result[0];
+              result[0]
             // generamos nuestro detalle de formula
             const detalleFormulaProducto = {
               idProd: id,
-              idAre: idAre, // area
+              idAre, // area
               idAlm: 1, // almacen principal
-              codProd: codProd,
-              desCla: desCla,
-              desSubCla: desSubCla,
-              nomProd: nomProd,
-              simMed: simMed,
-              canForProDet: canForProDet, // cantidad
-            };
+              codProd,
+              desCla,
+              desSubCla,
+              nomProd,
+              simMed,
+              canForProDet // cantidad
+            }
 
             // seteamos el detalle en general de la formula
-            const dataDetalle = [...reqDet, detalleFormulaProducto];
+            const dataDetalle = [...reqDet, detalleFormulaProducto]
             setformula({
               ...formula,
-              reqDet: dataDetalle,
-            });
+              reqDet: dataDetalle
+            })
           } else {
             setfeedbackMessages({
-              style_message: "error",
-              feedback_description_error: description_error,
-            });
-            handleClickFeeback();
+              style_message: 'error',
+              feedback_description_error: description_error
+            })
+            handleClickFeeback()
           }
         } else {
           setfeedbackMessages({
-            style_message: "warning",
+            style_message: 'warning',
             feedback_description_error:
-              "El area seleccionada no esta permitido",
-          });
-          handleClickFeeback();
+              'El area seleccionada no esta permitido'
+          })
+          handleClickFeeback()
         }
       }
     } else {
-      let advertenciaDetalleFormula = "";
+      let advertenciaDetalleFormula = ''
       if (idProd === 0) {
         advertenciaDetalleFormula +=
-          "Asigne un producto para agregar el detalle\n";
+          'Asigne un producto para agregar el detalle\n'
       }
       if (canForProDet <= 0) {
         advertenciaDetalleFormula +=
-          "Asigne una cantidad mayor a 0 para agregar el detalle\n";
+          'Asigne una cantidad mayor a 0 para agregar el detalle\n'
       }
       if (idAre === 0) {
-        advertenciaDetalleFormula += "Asigne un area para agregar el detalle\n";
+        advertenciaDetalleFormula += 'Asigne un area para agregar el detalle\n'
       }
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: advertenciaDetalleFormula,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: advertenciaDetalleFormula
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // Traer datos de la formula y su detalle
   const traerDatosFormulaProductoDetalle = async () => {
     // realizamos la peticion
-    const resultPeticion = await getFormulaProductoWithDetalleById(idForProd);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getFormulaProductoWithDetalleById(idForProd)
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
       setformula({
-        ...result[0],
-      });
+        ...result[0]
+      })
     } else {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // ****** DELETE DETALLE DE FORMULA *******
 
   // MANEJADOR DE ELIMINACION DE PRODUCTO
   const deleteItemSelected = async (idForProdTerDet) => {
     // primero realizamos la eliminacion
-    const resultPeticion = await deleteDetalleFormulaProducto(idForProdTerDet);
-    const { message_error, description_error } = resultPeticion;
+    const resultPeticion = await deleteDetalleFormulaProducto(idForProdTerDet)
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // actualizamos el detalle de la formula
       const nuevoDetalleFormula = reqDet.filter((element) => {
         if (element.id !== idForProdTerDet) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
-      });
+      })
 
       setformula({
         ...formula,
-        reqDet: nuevoDetalleFormula,
-      });
+        reqDet: nuevoDetalleFormula
+      })
       // cerramos el modal
-      closeDialogDeleteDetalle();
+      closeDialogDeleteDetalle()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
+        style_message: 'success',
         feedback_description_error:
-          "Se elimino el detalle de la formula con exito",
-      });
-      handleClickFeeback();
+          'Se elimino el detalle de la formula con exito'
+      })
+      handleClickFeeback()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   const closeDialogDeleteDetalle = () => {
     // ocultamos el modal
-    setMostrarDialog(false);
+    setMostrarDialog(false)
     // dejamos el null la data del detalle
-    setItemSeleccionado(null);
-  };
+    setItemSeleccionado(null)
+  }
 
   // MOSTRAR Y OCULTAR DETALLE DE REQUISICION MOLIENDA
   const showDialogDeleteItem = (idProd) => {
     const formulaDetalle = reqDet.filter((element) => {
       if (element.idProd === idProd) {
-        return element;
+        return element
       } else {
-        return false;
+        return false
       }
-    });
+    })
     // si es algun aditivo
     if (formulaDetalle[0].id !== undefined) {
       // seteamos la data de la requisicion seleccionada
-      setItemSeleccionado(formulaDetalle[0]);
+      setItemSeleccionado(formulaDetalle[0])
       // mostramos el modal
-      setMostrarDialog(true);
+      setMostrarDialog(true)
     } else {
       const filterDataDetalle = reqDet.filter((element) => {
         if (element.idProd !== idProd) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
-      });
+      })
 
       setformula({
         ...formula,
-        reqDet: filterDataDetalle,
-      });
+        reqDet: filterDataDetalle
+      })
     }
-  };
+  }
 
   // *********** EDICION DE LOS CAMPOS DEL DETALLE *************
 
   // EDICION DE CANTIDAD
   const handleFormulaDetalle = ({ target }, idItem) => {
-    const { value } = target;
+    const { value } = target
     const editFormDetalle = reqDet.map((element) => {
       if (element.idProd === idItem) {
         return {
           ...element,
-          canForProDet: value,
-        };
+          canForProDet: value
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
     setformula({
       ...formula,
-      reqDet: editFormDetalle,
-    });
-  };
+      reqDet: editFormDetalle
+    })
+  }
 
   // EDICION DE ALMACEN
   const handledAlmacenEncargado = (idAlm, idItem) => {
@@ -319,85 +311,75 @@ export const ActualizarFormulaPorProducto = () => {
       if (element.idProd === idItem) {
         return {
           ...element,
-          idAlm: idAlm,
-        };
+          idAlm
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setformula({
       ...formula,
-      reqDet: editFormDetalle,
-    });
-  };
-
-  // ********* EDICION DE DATOS DE LA FORMULA ***********
-
-  // añadir producto final a formula
-  const onAddProducto = ({ id }) => {
-    setformula({
-      ...formula,
-      idProdFin: id,
-    });
-  };
+      reqDet: editFormDetalle
+    })
+  }
 
   // ************ SUBMIT UPDATE FORMULA PRODUCTO **********
   // FUNCION PARA ACTUALIZAR FORMULARIO
   const updateFormulaProducto = async () => {
-    const resultPeticion = await updateFormulaProductoDetalle(formula);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await updateFormulaProductoDetalle(formula)
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // regresamos a la anterior vista
-      onNavigateBack();
+      onNavigateBack()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // CONTROLADOR DE SUBMIT
   const handleSubmitFormulaProducto = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (reqDet.length === 0) {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Asegurese de llenar los datos requeridos'
+      })
+      handleClickFeeback()
     } else {
-      const validAreaEncargada = reqDet.find((element) => element.idAlm === 0);
+      const validAreaEncargada = reqDet.find((element) => element.idAlm === 0)
       if (validAreaEncargada) {
         // MANEJAMOS FORMULARIOS INCOMPLETOS
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Asegurese de asignar almacenes de origen para cada item nuevo agregado",
-        });
-        handleClickFeeback();
+            'Asegurese de asignar almacenes de origen para cada item nuevo agregado'
+        })
+        handleClickFeeback()
       } else {
-        setdisableButton(true);
+        setdisableButton(true)
         // LLAMAMOS A LA FUNCION CREAR MATERIA PRIMA
-        updateFormulaProducto();
+        updateFormulaProducto()
       }
     }
-  };
+  }
 
   useEffect(() => {
     // traer la data de la formula
-    traerDatosFormulaProductoDetalle();
-  }, []);
+    traerDatosFormulaProductoDetalle()
+  }, [])
 
   return (
     <>
       <div className="container-fluid mx-3">
         <h1 className="mt-4 text-center">
-          Actualizar formula de presentacion final{" "}
+          Actualizar formula de presentacion final{' '}
         </h1>
         <div className="row mt-4 mx-2">
           <div className="card d-flex">
@@ -434,7 +416,7 @@ export const ActualizarFormulaPorProducto = () => {
                   <FilterAreaEncargada onNewInput={handleAreaId} />
                 </div>
 
-                {/* AGREGAR CANTIDAD*/}
+                {/* AGREGAR CANTIDAD */}
                 <div className="col-md-2">
                   <label className="form-label">Cantidad</label>
                   <TextField
@@ -477,10 +459,10 @@ export const ActualizarFormulaPorProducto = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5",
-                              },
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
+                              }
                             }}
                           >
                             <TableCell align="left" width={280}>
@@ -500,8 +482,7 @@ export const ActualizarFormulaPorProducto = () => {
                         <TableBody>
                           {reqDet.map((row, i) => {
                             if (row.idAre === 2 || row.idAre === 7) {
-
-                              console.log("Materia prima Este es nuestro row: ",row);
+                              console.log('Materia prima Este es nuestro row: ', row)
 
                               return (
                                 <RowEditDetalleFormulaProducto
@@ -513,7 +494,9 @@ export const ActualizarFormulaPorProducto = () => {
                                     handledAlmacenEncargado
                                   }
                                 />
-                              );
+                              )
+                            } else {
+                              return null
                             }
                           })}
                         </TableBody>
@@ -532,10 +515,10 @@ export const ActualizarFormulaPorProducto = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5",
-                              },
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
+                              }
                             }}
                           >
                             <TableCell align="left" width={280}>
@@ -555,7 +538,7 @@ export const ActualizarFormulaPorProducto = () => {
                         <TableBody>
                           {reqDet.map((row, i) => {
                             if (row.idAre === 5) {
-                              console.log("Materia prima Este es nuestro row: ",row);
+                              console.log('Materia prima Este es nuestro row: ', row)
                               return (
                                 <RowEditDetalleFormulaProducto
                                   key={row.idProd}
@@ -566,7 +549,9 @@ export const ActualizarFormulaPorProducto = () => {
                                     handledAlmacenEncargado
                                   }
                                 />
-                              );
+                              )
+                            } else {
+                              return null
                             }
                           })}
                         </TableBody>
@@ -585,10 +570,10 @@ export const ActualizarFormulaPorProducto = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5",
-                              },
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
+                              }
                             }}
                           >
                             <TableCell align="left" width={280}>
@@ -608,8 +593,8 @@ export const ActualizarFormulaPorProducto = () => {
                         <TableBody>
                           {reqDet.map((row, i) => {
                             if (row.idAre === 6) {
-                              console.log("actualizar");
-                              console.log("Materia prima Este es nuestro row: ",row);
+                              console.log('actualizar')
+                              console.log('Materia prima Este es nuestro row: ', row)
                               return (
                                 <RowEditDetalleFormulaProducto
                                   key={row.idProd}
@@ -620,7 +605,9 @@ export const ActualizarFormulaPorProducto = () => {
                                     handledAlmacenEncargado
                                   }
                                 />
-                              );
+                              )
+                            } else {
+                              return null
                             }
                           })}
                         </TableBody>
@@ -663,7 +650,7 @@ export const ActualizarFormulaPorProducto = () => {
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -671,13 +658,13 @@ export const ActualizarFormulaPorProducto = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

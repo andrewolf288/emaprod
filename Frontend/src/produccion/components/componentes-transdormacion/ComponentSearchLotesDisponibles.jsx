@@ -5,21 +5,21 @@ import {
   DialogContent,
   DialogTitle,
   IconButton
-} from "@mui/material";
-import React, { useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
-import { styled } from "@mui/material/styles";
-import { getLotesDisponiblesByProductoIntermedio } from "../../helpers/requisicion-transformacion/getLotesDisponiblesByProductoIntermedio";
-import { FilterLotesDisponibles } from "./FilterLotesDisponibles";
+} from '@mui/material'
+import React, { useState } from 'react'
+import SearchIcon from '@mui/icons-material/Search'
+import { styled } from '@mui/material/styles'
+import { getLotesDisponiblesByProductoIntermedio } from '../../helpers/requisicion-transformacion/getLotesDisponiblesByProductoIntermedio'
+import { FilterLotesDisponibles } from './FilterLotesDisponibles'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
+  '& .MuiDialogContent-root': {
     padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
+  '& .MuiDialogActions-root': {
     padding: theme.spacing(1)
   }
-}));
+}))
 
 export const ComponentSearchLotesDisponibles = ({
   idProdtInt,
@@ -28,57 +28,56 @@ export const ComponentSearchLotesDisponibles = ({
   setfeedbackMessages,
   handleClickFeeback
 }) => {
-  const [dataLotesDisponibles, setDataLotesDisponibles] = useState([]);
+  const [dataLotesDisponibles, setDataLotesDisponibles] = useState([])
   const [dataLote, setdataLote] = useState({
     idProdc: 0,
-    codLotProd: ""
-  });
-  const { idProdc, codLotProd } = dataLote;
-  const [open, setOpen] = React.useState(false);
+    codLotProd: ''
+  })
+  const [open, setOpen] = React.useState(false)
 
   const handleClickOpen = () => {
     // debemos consultar data
-    seachLotesDisponibles();
-    setOpen(true);
-  };
+    seachLotesDisponibles()
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   // funcion para buscar lotes disponibles del producto intermedio
   const seachLotesDisponibles = async () => {
     if (idProdtInt !== 0) {
-      console.log(idProdtInt);
+      console.log(idProdtInt)
       // debemos buscar aquellos lotes de producción que sean del producto intermedio seleccionado
       const resultPeticion = await getLotesDisponiblesByProductoIntermedio(
         idProdtInt
-      );
-      const { result, message_error, description_error } = resultPeticion;
+      )
+      const { result, message_error, description_error } = resultPeticion
       if (message_error.length === 0) {
-        setDataLotesDisponibles(result);
+        setDataLotesDisponibles(result)
       } else {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error: description_error
-        });
-        handleClickFeeback();
+        })
+        handleClickFeeback()
       }
     } else {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Seleccione un producto intermedio"
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Seleccione un producto intermedio'
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // SELECCIONAR LOTE DISPONIBLE
   const handleChangeLoteDisponible = ({ id, lote }) => {
     setdataLote({
       idProdc: id,
-      lote: lote
-    });
-  };
+      lote
+    })
+  }
 
   return (
     <div>
@@ -92,7 +91,7 @@ export const ComponentSearchLotesDisponibles = ({
         <SearchIcon fontSize="inherit" />
       </IconButton>
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -117,9 +116,9 @@ export const ComponentSearchLotesDisponibles = ({
             autoFocus
             onClick={() => {
               // terminamos de procesar la salida parcial
-              onConfirmOperation(dataLote["idProdc"], dataLote["lote"]);
+              onConfirmOperation(dataLote.idProdc, dataLote.lote)
               // cerramos el cuadro de dialogo
-              handleClose();
+              handleClose()
             }}
           >
             Aceptar
@@ -127,5 +126,5 @@ export const ComponentSearchLotesDisponibles = ({
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
-};
+  )
+}

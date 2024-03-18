@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react'
 
 export const DialogDeleteFormulaProductoDetalle = ({
   itemDelete,
   onClose,
-  onDeleteItemSelected,
+  onDeleteItemSelected
 }) => {
   return (
     <div
@@ -11,7 +11,7 @@ export const DialogDeleteFormulaProductoDetalle = ({
       tabIndex="-1"
       role="dialog"
       style={{
-        display: itemDelete !== null ? "block" : "none",
+        display: itemDelete !== null ? 'block' : 'none'
       }}
     >
       <div className="modal-dialog modal-lg" role="document">
@@ -57,7 +57,7 @@ export const DialogDeleteFormulaProductoDetalle = ({
               className="btn btn-danger"
               data-dismiss="modal"
               onClick={() => {
-                onDeleteItemSelected(itemDelete.id);
+                onDeleteItemSelected(itemDelete.id)
               }}
             >
               Aceptar
@@ -66,5 +66,5 @@ export const DialogDeleteFormulaProductoDetalle = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

@@ -1,6 +1,6 @@
-import { Navigate, useOutlet } from "react-router-dom"
-import { useAuth } from "../hooks/useAuth"
-import NavMolienda from "./../molienda/components/NavMolienda"
+import { Navigate, useOutlet } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import NavMolienda from './../molienda/components/NavMolienda'
 
 export const ProtectedLayoutMolienda = () => {
   // OBTENEMOS INFORMACION DEL LOCALSTORAGE
@@ -8,11 +8,11 @@ export const ProtectedLayoutMolienda = () => {
   const outlet = useOutlet()
 
   if (!user) {
-    return <Navigate to={"/login"} />
+    return <Navigate to={'/login'} />
   } else {
     const { idAre } = user
     if (idAre !== 2) {
-      return <Navigate to={"/login"} />
+      return <Navigate to={'/login'} />
     }
   }
   return (

@@ -1,243 +1,223 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { TextField, Typography } from "@mui/material";
-import { FilterAreaEncargada } from "../../components/FilterAreaEncargada";
-import { RowEditDetalleFormulaProducto } from "./../../components/componentes-formula-producto/RowEditDetalleFormulaProducto";
-import { createFormulaProductoWithDetalle } from "../../helpers/formula_producto/createFormulaProductoWithDetalle";
-import { FilterPresentacionFinal } from "../../../components/ReferencialesFilters/Producto/FilterPresentacionFinal";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { getMateriaPrimaById } from './../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import { FilterAllProductos } from './../../../components/ReferencialesFilters/Producto/FilterAllProductos'
+import { TextField, Typography } from '@mui/material'
+import { FilterAreaEncargada } from '../../components/FilterAreaEncargada'
+import { RowEditDetalleFormulaProducto } from './../../components/componentes-formula-producto/RowEditDetalleFormulaProducto'
+import { createFormulaProductoWithDetalle } from '../../helpers/formula_producto/createFormulaProductoWithDetalle'
+import { FilterPresentacionFinal } from '../../../components/ReferencialesFilters/Producto/FilterPresentacionFinal'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const AgregarFormulaPorProducto = () => {
   // **************** ESTRUCTURAS NECESARIAS *************
   // DETALLES DEL MAESTRO
   const [formula, setformula] = useState({
     idProdFin: 0,
-    forProdTerDet: [], // DETALLE DE FORMULAS
-  });
+    forProdTerDet: [] // DETALLE DE FORMULAS
+  })
 
-  const { idProdFin, forProdTerDet } = formula;
+  const { idProdFin, forProdTerDet } = formula
 
   // DETALLES DEL FILTRO DE PRODUCTO
   const [productoDetalle, setproductoDetalle] = useState({
     idProd: 0,
-    canForProDet: "",
-    idAre: 0,
-  });
+    canForProDet: '',
+    idAre: 0
+  })
 
-  const { idProd, canForProDet, idAre } = productoDetalle;
+  const { idProd, canForProDet, idAre } = productoDetalle
 
   // ************* FEEDBACK ******************
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ******** MANEJADORES DE LOS FILTROS **********
   // MANEJADOR DE AGREGAR PRODUCTO AL FILTRO
   const onProductoId = ({ id }) => {
     setproductoDetalle({
       ...productoDetalle,
-      idProd: id,
-    });
-  };
+      idProd: id
+    })
+  }
 
   // MANEJADOR DE AGREGAR CANTIDAD AL FILTRO
   const handleCantidad = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setproductoDetalle({
       ...productoDetalle,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // MAJEADOR PARA AGREGAR EL AREA AL FILTRO
   const handleAreaId = ({ id }) => {
     setproductoDetalle({
       ...productoDetalle,
-      idAre: id,
-    });
-  };
+      idAre: id
+    })
+  }
 
   // *********** MANEJADOR DE ACCIONES ***************
   const handleAddProductoDetalle = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // primero verificamos que se tenga información
     if (idProd !== 0 && canForProDet > 0 && idAre !== 0) {
       // se verifica si existe alguna coincidencia de lo ingresado
       const itemFound = forProdTerDet.find(
         (element) => element.idProd === idProd
-      );
+      )
 
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto",
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Ya se agrego este producto'
+        })
+        handleClickFeeback()
       } else {
         if (idAre !== 1 && idAre !== 3 && idAre !== 4) {
           // hacemos una consulta al producto y desestructuramos
-          const resultPeticion = await getMateriaPrimaById(idProd);
-          const { message_error, description_error, result } = resultPeticion;
+          const resultPeticion = await getMateriaPrimaById(idProd)
+          const { message_error, description_error, result } = resultPeticion
 
           if (message_error.length === 0) {
             const { id, codProd, desCla, desSubCla, nomProd, simMed } =
-              result[0];
+              result[0]
             // generamos nuestro detalle de formula
             const detalleFormulaProducto = {
               idProd: id,
-              idAre: idAre, // area
+              idAre, // area
               idAlm: 1, // almacen principal
-              codProd: codProd,
-              desCla: desCla,
-              desSubCla: desSubCla,
-              nomProd: nomProd,
-              simMed: simMed,
-              canForProDet: canForProDet, // cantidad
-            };
+              codProd,
+              desCla,
+              desSubCla,
+              nomProd,
+              simMed,
+              canForProDet // cantidad
+            }
 
             // seteamos el detalle en general de la formula
-            const dataDetalle = [...forProdTerDet, detalleFormulaProducto];
+            const dataDetalle = [...forProdTerDet, detalleFormulaProducto]
             setformula({
               ...formula,
-              forProdTerDet: dataDetalle,
-            });
+              forProdTerDet: dataDetalle
+            })
           } else {
             setfeedbackMessages({
-              style_message: "error",
-              feedback_description_error: description_error,
-            });
-            handleClickFeeback();
+              style_message: 'error',
+              feedback_description_error: description_error
+            })
+            handleClickFeeback()
           }
         } else {
           setfeedbackMessages({
-            style_message: "warning",
+            style_message: 'warning',
             feedback_description_error:
-              "El area seleccionada no esta permitido",
-          });
-          handleClickFeeback();
+              'El area seleccionada no esta permitido'
+          })
+          handleClickFeeback()
         }
       }
     } else {
-      let advertenciaDetalleFormula = "";
+      let advertenciaDetalleFormula = ''
       if (idProd === 0) {
         advertenciaDetalleFormula +=
-          "Asigne un producto para agregar el detalle\n";
+          'Asigne un producto para agregar el detalle\n'
       }
       if (canForProDet <= 0) {
         advertenciaDetalleFormula +=
-          "Asigne una cantidad mayor a 0 para agregar el detalle\n";
+          'Asigne una cantidad mayor a 0 para agregar el detalle\n'
       }
       if (idAre === 0) {
-        advertenciaDetalleFormula += "Asigne un area para agregar el detalle\n";
+        advertenciaDetalleFormula += 'Asigne un area para agregar el detalle\n'
       }
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: advertenciaDetalleFormula,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: advertenciaDetalleFormula
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // MANEJADOR DE ELIMINACION DE PRODUCTO
   const handleDeleteDetalleProducto = (idItem) => {
     // filtramos el elemento eliminado
     const dataDetalleFormula = forProdTerDet.filter((element) => {
       if (element.idProd !== idItem) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
 
     // VOLVEMOS A SETEAR LA DATA
     setformula({
       ...formula,
-      forProdTerDet: dataDetalleFormula,
-    });
-  };
+      forProdTerDet: dataDetalleFormula
+    })
+  }
 
   // *********** EDICION DE LOS CAMPOS DEL DETALLE *************
 
   // EDICION DE CANTIDAD
   const handleFormulaDetalle = ({ target }, idItem) => {
-    const { value } = target;
+    const { value } = target
     const editFormDetalle = forProdTerDet.map((element) => {
       if (element.idProd === idItem) {
         return {
           ...element,
-          canForProDet: value,
-        };
+          canForProDet: value
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
     setformula({
       ...formula,
-      forProdTerDet: editFormDetalle,
-    });
-  };
-
-  // EDICION DE AREA
-  const handledAreaEncargada = (idAre, idItem) => {
-    const editFormDetalle = forProdTerDet.map((element) => {
-      if (element.idProd === idItem) {
-        return {
-          ...element,
-          idAre: idAre,
-        };
-      } else {
-        return element;
-      }
-    });
-
-    setformula({
-      ...formula,
-      forProdTerDet: editFormDetalle,
-    });
-  };
+      forProdTerDet: editFormDetalle
+    })
+  }
 
   // EDICION DE ALMACEN
   const handledAlmacenEncargado = (idAlm, idItem) => {
@@ -245,18 +225,18 @@ export const AgregarFormulaPorProducto = () => {
       if (element.idProd === idItem) {
         return {
           ...element,
-          idAlm: idAlm,
-        };
+          idAlm
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setformula({
       ...formula,
-      forProdTerDet: editFormDetalle,
-    });
-  };
+      forProdTerDet: editFormDetalle
+    })
+  }
 
   // ********* EDICION DE DATOS DE LA FORMULA ***********
 
@@ -264,67 +244,67 @@ export const AgregarFormulaPorProducto = () => {
   const onAddProducto = ({ id }) => {
     setformula({
       ...formula,
-      idProdFin: id,
-    });
-  };
+      idProdFin: id
+    })
+  }
 
   // ********** SUBMIT DEL FORMULARIO ************
 
   // FUNCION PARA CREAR FORMULARIO
   const crearFormula = async () => {
-    const resultPeticion = await createFormulaProductoWithDetalle(formula);
-    const { message_error, description_error } = resultPeticion;
+    const resultPeticion = await createFormulaProductoWithDetalle(formula)
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // regresamos a la anterior vista
-      onNavigateBack();
+      onNavigateBack()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   const handleSubmitFormula = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (idProdFin === 0 || forProdTerDet.length === 0) {
-      let advertenciaDetalleFormulaProducto = "";
+      let advertenciaDetalleFormulaProducto = ''
 
       if (idProdFin === 0) {
         advertenciaDetalleFormulaProducto +=
-          "No se proporciono una presentacion final\n";
+          'No se proporciono una presentacion final\n'
       }
       if (forProdTerDet.length === 0) {
         advertenciaDetalleFormulaProducto +=
-          "El detalle de la formula debe tener al menos 1 item\n";
+          'El detalle de la formula debe tener al menos 1 item\n'
       }
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: advertenciaDetalleFormulaProducto,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: advertenciaDetalleFormulaProducto
+      })
+      handleClickFeeback()
     } else {
       const validAlmacenOrigen = forProdTerDet.find(
         (element) => element.idAlm === 0
-      );
+      )
       if (validAlmacenOrigen) {
         // MANEJAMOS FORMULARIOS INCOMPLETOS
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Asegurese de asignar almacenes de origen para cada item",
-        });
-        handleClickFeeback();
+            'Asegurese de asignar almacenes de origen para cada item'
+        })
+        handleClickFeeback()
       } else {
-        setdisableButton(true);
+        setdisableButton(true)
         // LLAMAMOS A LA FUNCION CREAR MATERIA PRIMA
-        crearFormula();
+        crearFormula()
       }
     }
-  };
+  }
 
   return (
     <>
@@ -367,7 +347,7 @@ export const AgregarFormulaPorProducto = () => {
                   <FilterAreaEncargada onNewInput={handleAreaId} />
                 </div>
 
-                {/* AGREGAR CANTIDAD*/}
+                {/* AGREGAR CANTIDAD */}
                 <div className="col-md-2">
                   <label className="form-label">Cantidad</label>
                   <TextField
@@ -410,10 +390,10 @@ export const AgregarFormulaPorProducto = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5",
-                              },
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
+                              }
                             }}
                           >
                             <TableCell align="left" width={280}>
@@ -445,7 +425,9 @@ export const AgregarFormulaPorProducto = () => {
                                     handledAlmacenEncargado
                                   }
                                 />
-                              );
+                              )
+                            } else {
+                              return null
                             }
                           })}
                         </TableBody>
@@ -464,10 +446,10 @@ export const AgregarFormulaPorProducto = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5",
-                              },
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
+                              }
                             }}
                           >
                             <TableCell align="left" width={280}>
@@ -499,7 +481,9 @@ export const AgregarFormulaPorProducto = () => {
                                     handledAlmacenEncargado
                                   }
                                 />
-                              );
+                              )
+                            } else {
+                              return null
                             }
                           })}
                         </TableBody>
@@ -518,10 +502,10 @@ export const AgregarFormulaPorProducto = () => {
                         <TableHead>
                           <TableRow
                             sx={{
-                              "& th": {
-                                color: "rgba(96, 96, 96)",
-                                backgroundColor: "#f5f5f5",
-                              },
+                              '& th': {
+                                color: 'rgba(96, 96, 96)',
+                                backgroundColor: '#f5f5f5'
+                              }
                             }}
                           >
                             <TableCell align="left" width={280}>
@@ -553,7 +537,9 @@ export const AgregarFormulaPorProducto = () => {
                                     handledAlmacenEncargado
                                   }
                                 />
-                              );
+                              )
+                            } else {
+                              return null
                             }
                           })}
                         </TableBody>
@@ -586,7 +572,7 @@ export const AgregarFormulaPorProducto = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -594,13 +580,13 @@ export const AgregarFormulaPorProducto = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

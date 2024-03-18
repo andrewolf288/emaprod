@@ -1,43 +1,43 @@
-import React, { useState } from "react";
-import FechaPicker from "../../components/Fechas/FechaPicker";
-import "../styles/style-modal.css";
+import React, { useState } from 'react'
+import FechaPicker from '../../components/Fechas/FechaPicker'
+import '../styles/style-modal.css'
 
 export const AccionesProduccionLote = ({
   detalle,
   onClose,
-  onUpdateDatesProduccion,
+  onUpdateDatesProduccion
 }) => {
-  const [disabledButton, setDisabledButton] = useState(true);
+  const [disabledButton, setDisabledButton] = useState(true)
   const [fechasProduccion, setFechasProduccion] = useState({
     fecFinMolProd: detalle.fecFinMolProd,
     fecFinEnvProd: detalle.fecFinEnvProd,
     fecFinEncProd: detalle.fecFinEncProd,
-    fecProdFin: detalle.fecProdFin,
-  });
+    fecProdFin: detalle.fecProdFin
+  })
 
   const { fecFinMolProd, fecFinEnvProd, fecFinEncProd, fecProdFin } =
-    fechasProduccion;
+    fechasProduccion
 
   // manejadores de las horas
   const onChangeFecFinMolProd = (newFec) => {
-    setDisabledButton(false);
-    setFechasProduccion({ ...fechasProduccion, fecFinMolProd: newFec });
-  };
+    setDisabledButton(false)
+    setFechasProduccion({ ...fechasProduccion, fecFinMolProd: newFec })
+  }
 
   const onChangeFecFinEnvProd = (newFec) => {
-    setDisabledButton(false);
-    setFechasProduccion({ ...fechasProduccion, fecFinEnvProd: newFec });
-  };
+    setDisabledButton(false)
+    setFechasProduccion({ ...fechasProduccion, fecFinEnvProd: newFec })
+  }
 
   const onChangeFecFinEncProd = (newFec) => {
-    setDisabledButton(false);
-    setFechasProduccion({ ...fechasProduccion, fecFinEncProd: newFec });
-  };
+    setDisabledButton(false)
+    setFechasProduccion({ ...fechasProduccion, fecFinEncProd: newFec })
+  }
 
   const onChangeFecProdFin = (newFec) => {
-    setDisabledButton(false);
-    setFechasProduccion({ ...fechasProduccion, fecProdFin: newFec });
-  };
+    setDisabledButton(false)
+    setFechasProduccion({ ...fechasProduccion, fecProdFin: newFec })
+  }
 
   return (
     <div
@@ -45,7 +45,7 @@ export const AccionesProduccionLote = ({
       tabIndex="-1"
       role="dialog"
       style={{
-        display: detalle !== null ? "block" : "none",
+        display: detalle !== null ? 'block' : 'none'
       }}
     >
       <div className="modal-dialog modal-lg" role="document">
@@ -71,14 +71,18 @@ export const AccionesProduccionLote = ({
                   </label>
                   <div className="col-md-4">
                     {detalle.fecFinMolProd === null &&
-                    fecFinMolProd === null ? (
-                      <p className="text-danger">Aun no terminado</p>
-                    ) : fecFinMolProd !== null &&
-                      detalle.fecFinMolProd !== null ? (
-                      <p className="text-success">{fecFinMolProd}</p>
-                    ) : (
-                      <p className="text-primary">{fecFinMolProd}</p>
-                    )}
+                    fecFinMolProd === null
+                      ? (
+                        <p className="text-danger">Aun no terminado</p>
+                      )
+                      : fecFinMolProd !== null &&
+                      detalle.fecFinMolProd !== null
+                        ? (
+                          <p className="text-success">{fecFinMolProd}</p>
+                        )
+                        : (
+                          <p className="text-primary">{fecFinMolProd}</p>
+                        )}
                   </div>
                   {!detalle.fecFinMolProd && (
                     <div className="col-md-4">
@@ -92,14 +96,18 @@ export const AccionesProduccionLote = ({
                   <b>Fin proceso envasado</b>
                 </label>
                 <div className="col-md-4">
-                  {detalle.fecFinEnvProd === null && fecFinEnvProd === null ? (
-                    <p className="text-danger">Aun no terminado</p>
-                  ) : fecFinEnvProd !== null &&
-                    detalle.fecFinEnvProd !== null ? (
-                    <p className="text-success">{fecFinEnvProd}</p>
-                  ) : (
-                    <p className="text-primary">{fecFinEnvProd}</p>
-                  )}
+                  {detalle.fecFinEnvProd === null && fecFinEnvProd === null
+                    ? (
+                      <p className="text-danger">Aun no terminado</p>
+                    )
+                    : fecFinEnvProd !== null &&
+                    detalle.fecFinEnvProd !== null
+                      ? (
+                        <p className="text-success">{fecFinEnvProd}</p>
+                      )
+                      : (
+                        <p className="text-primary">{fecFinEnvProd}</p>
+                      )}
                 </div>
                 {!detalle.fecFinEnvProd && (
                   <div className="col-md-4">
@@ -115,14 +123,18 @@ export const AccionesProduccionLote = ({
                   <b>Fin proceso encajonado</b>
                 </label>
                 <div className="col-md-4">
-                  {detalle.fecFinEncProd === null && fecFinEncProd === null ? (
-                    <p className="text-danger">Aun no terminado</p>
-                  ) : fecFinEncProd !== null &&
-                    detalle.fecFinEncProd !== null ? (
-                    <p className="text-success">{fecFinEncProd}</p>
-                  ) : (
-                    <p className="text-primary">{fecFinEncProd}</p>
-                  )}
+                  {detalle.fecFinEncProd === null && fecFinEncProd === null
+                    ? (
+                      <p className="text-danger">Aun no terminado</p>
+                    )
+                    : fecFinEncProd !== null &&
+                    detalle.fecFinEncProd !== null
+                      ? (
+                        <p className="text-success">{fecFinEncProd}</p>
+                      )
+                      : (
+                        <p className="text-primary">{fecFinEncProd}</p>
+                      )}
                 </div>
                 {!detalle.fecFinEncProd && (
                   <div className="col-md-4">
@@ -140,13 +152,17 @@ export const AccionesProduccionLote = ({
                   <b>Fin proceso</b>
                 </label>
                 <div className="col-md-4">
-                  {detalle.fecProdFin === null && fecProdFin === null ? (
-                    <p className="text-danger">Aun no terminado</p>
-                  ) : fecProdFin !== null && detalle.fecProdFin !== null ? (
-                    <p className="text-success">{fecProdFin}</p>
-                  ) : (
-                    <p className="text-primary">{fecProdFin}</p>
-                  )}
+                  {detalle.fecProdFin === null && fecProdFin === null
+                    ? (
+                      <p className="text-danger">Aun no terminado</p>
+                    )
+                    : fecProdFin !== null && detalle.fecProdFin !== null
+                      ? (
+                        <p className="text-success">{fecProdFin}</p>
+                      )
+                      : (
+                        <p className="text-primary">{fecProdFin}</p>
+                      )}
                 </div>
                 {!detalle.fecProdFin && (
                   <div className="col-md-4">
@@ -178,7 +194,7 @@ export const AccionesProduccionLote = ({
               className="btn btn-success"
               data-dismiss="modal"
               onClick={() => {
-                onUpdateDatesProduccion(detalle.id, fechasProduccion);
+                onUpdateDatesProduccion(detalle.id, fechasProduccion)
               }}
             >
               Actualizar
@@ -187,5 +203,5 @@ export const AccionesProduccionLote = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

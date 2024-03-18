@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
-import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
+import React, { useEffect, useState } from 'react'
+import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
+import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
 import {
   Paper,
   Table,
@@ -10,134 +10,114 @@ import {
   TableHead,
   TablePagination,
   TableRow
-} from "@mui/material";
-import { getOrdenesTransformacion } from "../../helpers/requisicion-transformacion/getOrdenesTransformacion";
-import { Link } from "react-router-dom";
-import iconProductosFinales from "../../../../src/assets/icons/productos-finales.png";
-import config from "../../../config";
-import axios from "axios";
-import { createRoot } from "react-dom/client";
-import { PDFTransformacion } from "../../components/componentes-transdormacion/PDFTransformacion";
+} from '@mui/material'
+import { getOrdenesTransformacion } from '../../helpers/requisicion-transformacion/getOrdenesTransformacion'
+import { Link } from 'react-router-dom'
+import iconProductosFinales from '../../../../src/assets/icons/productos-finales.png'
+import config from '../../../config'
+import axios from 'axios'
+import { createRoot } from 'react-dom/client'
+import { PDFTransformacion } from '../../components/componentes-transdormacion/PDFTransformacion'
 
 export const ListRequisicionTransformacion = () => {
-  const [dataOrdenTransformacion, setdataOrdenTransformacion] = useState([]);
-  const [dataOrdenTransformacionTemp, setdataOrdenTransformacionTemp] =
-    useState([]);
+  const [dataOrdenTransformacion, setdataOrdenTransformacion] = useState([])
 
   // filtros
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
     fechaFin: FormatDateMYSQL()
-  });
+  })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Filtros generales que hacen nuevas consultas
   const handleFechaInicioChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaInicio: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaInicio: dateFormat
-    };
-    obtenerdataOrdenTransformacion(body);
-  };
+    }
+    obtenerdataOrdenTransformacion(body)
+  }
 
   const handleFechaFinChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaFin: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaFin: dateFormat
-    };
-    obtenerdataOrdenTransformacion(body);
-  };
-
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
-  const obtenerdataOrdenTransformacion = async (formState) => {
-    const resultPeticion = await getOrdenesTransformacion(formState);
-    const { message_error, description_error, result } = resultPeticion;
-    if (message_error.length === 0) {
-      setdataOrdenTransformacion(result);
-      setdataOrdenTransformacionTemp(result);
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
     }
-  };
+    obtenerdataOrdenTransformacion(body)
+  }
+
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  const obtenerdataOrdenTransformacion = async (formState) => {
+    const resultPeticion = await getOrdenesTransformacion(formState)
+    const { message_error, description_error, result } = resultPeticion
+    if (message_error.length === 0) {
+      setdataOrdenTransformacion(result)
+    } else {
+      alert(description_error)
+    }
+  }
 
   // EXPORT PDF REQUISICION
   const exportPDFRequisicionTransformacion = async (idOrdTrans) => {
     // primero hacemos una requisicion para traer los datos necesarios
-    const domain = config.API_URL;
+    const domain = config.API_URL
     const path =
-      "/produccion/requisicion-transformacion/reportPDFOrdenTransformacion.php";
+      '/produccion/requisicion-transformacion/reportPDFOrdenTransformacion.php'
     axios({
       url: domain + path,
       data: {
         idOrdTrans
       },
-      method: "POST"
+      method: 'POST'
     })
       .then((response) => {
-        const { data } = response;
-        const { message_error, description_error, result } = data;
+        const { data } = response
+        const { message_error, description_error, result } = data
 
         if (message_error.length === 0) {
-          const newWindow = window.open("", "Transformacion", "fullscreen=yes");
+          const newWindow = window.open('', 'Transformacion', 'fullscreen=yes')
           // Crear un contenedor específico para tu aplicación
-          const appContainer = newWindow.document.createElement("div");
-          newWindow.document.body.appendChild(appContainer);
-          const root = createRoot(appContainer);
-          root.render(<PDFTransformacion data={result} />);
+          const appContainer = newWindow.document.createElement('div')
+          newWindow.document.body.appendChild(appContainer)
+          const root = createRoot(appContainer)
+          root.render(<PDFTransformacion data={result} />)
         } else {
-          alert(description_error);
+          alert(description_error)
         }
       })
-      .catch((error) => alert("Error al descargar el archivo", error));
-  };
+      .catch((error) => alert('Error al descargar el archivo', error))
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerdataOrdenTransformacion();
-  }, []);
+    obtenerdataOrdenTransformacion()
+  }, [])
 
   return (
     <>
@@ -162,7 +142,7 @@ export const ListRequisicionTransformacion = () => {
           <div className="col-6 d-flex justify-content-end align-items-center">
             <div className="row me-4">
               <Link
-                to={"/produccion/requisicion-transformacion/crear"}
+                to={'/produccion/requisicion-transformacion/crear'}
                 className="btn btn-primary"
               >
                 Crear orden
@@ -178,9 +158,9 @@ export const ListRequisicionTransformacion = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -208,13 +188,13 @@ export const ListRequisicionTransformacion = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataOrdenTransformacionTemp
+                  {dataOrdenTransformacion
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, i) => (
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left">{row.codLotProd}</TableCell>
@@ -235,8 +215,8 @@ export const ListRequisicionTransformacion = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/productos-lote/crear?idLotProdc=${row.idProdc}`,
-                                  "_blank"
-                                );
+                                  '_blank'
+                                )
                               }}
                             >
                               <img
@@ -277,7 +257,7 @@ export const ListRequisicionTransformacion = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={dataOrdenTransformacionTemp.length}
+              count={dataOrdenTransformacion.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -287,5 +267,5 @@ export const ListRequisicionTransformacion = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

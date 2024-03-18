@@ -1,12 +1,12 @@
-import React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import "../../styles/style-modal.css";
+import React from 'react'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import '../../styles/style-modal.css'
 
 export const FormulaProductoDetalle = ({ detalle, onClose }) => {
   return (
@@ -15,7 +15,7 @@ export const FormulaProductoDetalle = ({ detalle, onClose }) => {
       tabIndex="-1"
       role="dialog"
       style={{
-        display: detalle !== null ? "block" : "none"
+        display: detalle !== null ? 'block' : 'none'
       }}
     >
       <div className="modal-dialog modal-lg" role="document">
@@ -39,9 +39,9 @@ export const FormulaProductoDetalle = ({ detalle, onClose }) => {
                   <TableHead>
                     <TableRow
                       sx={{
-                        "& th": {
-                          color: "rgba(96, 96, 96)",
-                          backgroundColor: "#f5f5f5"
+                        '& th': {
+                          color: 'rgba(96, 96, 96)',
+                          backgroundColor: '#f5f5f5'
                         }
                       }}
                     >
@@ -73,7 +73,7 @@ export const FormulaProductoDetalle = ({ detalle, onClose }) => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -104,5 +104,5 @@ export const FormulaProductoDetalle = ({ detalle, onClose }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

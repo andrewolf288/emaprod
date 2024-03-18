@@ -1,14 +1,14 @@
-import React from "react";
-import { ListRequisicionTransformacion } from "./ListRequisicionTransformacion";
-import { CreateRequisicionTransformacion } from "./CreateRequisicionTransformacion";
+import React from 'react'
+import { ListRequisicionTransformacion } from './ListRequisicionTransformacion'
+import { CreateRequisicionTransformacion } from './CreateRequisicionTransformacion'
 
 export const RouterRequisicionTransformacion = [
   {
-    path: "",
+    path: '',
     element: <ListRequisicionTransformacion />
   },
   {
-    path: "crear",
+    path: 'crear',
     element: <CreateRequisicionTransformacion />
   }
-];
+]

@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export const HomeProduccion = () => {
   // controlar la visualizacion de componentes
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false)
 
   // verificamos si el usuario tiene acceso a las formulas
   const verifyAdminUser = () => {
-    const { idRolUsu } = JSON.parse(localStorage.getItem("user"));
+    const { idRolUsu } = JSON.parse(localStorage.getItem('user'))
     // si es un usuario administrador
     if (idRolUsu === 1) {
-      setShow(true);
+      setShow(true)
     }
-  };
+  }
 
   useEffect(() => {
-    verifyAdminUser();
-  }, []);
+    verifyAdminUser()
+  }, [])
 
   return (
     <>
@@ -80,7 +80,7 @@ export const HomeProduccion = () => {
                   </div>
                 </div>
               </div>
-              {/* REQUISICION MATERIALES*/}
+              {/* REQUISICION MATERIALES */}
               <div className="col-lg-6 col-xxl-4 mb-5">
                 <div className="card bg-light border-0 h-100">
                   <div className="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
@@ -136,5 +136,5 @@ export const HomeProduccion = () => {
         </section>
       </div>
     </>
-  );
-};
+  )
+}

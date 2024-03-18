@@ -1,127 +1,108 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
-import { getRequisicionMaterialesWithDetalle } from "../../helpers/requisicion-materiales/getRequisicionMaterialesById";
-import { RequisicionMoliendaDetalleOnlyView } from "../../../molienda/components/RequisicionMoliendaDetalleOnlyView";
-import { Button } from "@mui/material";
-import { PDFRequisicionMateriales } from "../../components/componentes-requisicion-materiales/PDFRequisicionMateriales";
-import { createRoot } from "react-dom/client";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
+import { getRequisicionMaterialesWithDetalle } from '../../helpers/requisicion-materiales/getRequisicionMaterialesById'
+import { RequisicionMoliendaDetalleOnlyView } from '../../../molienda/components/RequisicionMoliendaDetalleOnlyView'
+import { Button } from '@mui/material'
+import { PDFRequisicionMateriales } from '../../components/componentes-requisicion-materiales/PDFRequisicionMateriales'
+import { createRoot } from 'react-dom/client'
 
 export const ListRequisicionMateriales = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataRequisicion, setdataRequisicion] = useState([]);
-  const [dataRequisicionTemp, setdataRequisicionTemp] = useState([]);
+  const [dataRequisicion, setdataRequisicion] = useState([])
 
   // ESTADOS PARA EL MODAL
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
-  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
+  const [mostrarDetalle, setMostrarDetalle] = useState(false)
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null)
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataRequisicionMateriales = async () => {
-    const resultPeticion = await getRequisicionMaterialesWithDetalle();
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getRequisicionMaterialesWithDetalle()
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
-      setdataRequisicion(result);
-      setdataRequisicionTemp(result);
+      setdataRequisicion(result)
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+      alert(description_error)
     }
-  };
+  }
 
   // funcion para mostrar pdf
   const generatePDF = (data) => {
     const formatData = {
-      requisicion: data,
-    };
+      requisicion: data
+    }
     const newWindow = window.open(
-      "",
-      "Requisicion materiales",
-      "fullscreen=yes"
-    );
+      '',
+      'Requisicion materiales',
+      'fullscreen=yes'
+    )
     // Crear un contenedor específico para tu aplicación
-    const appContainer = newWindow.document.createElement("div");
-    newWindow.document.body.appendChild(appContainer);
-    const root = createRoot(appContainer);
-    root.render(<PDFRequisicionMateriales data={formatData} />);
-  };
+    const appContainer = newWindow.document.createElement('div')
+    newWindow.document.body.appendChild(appContainer)
+    const root = createRoot(appContainer)
+    root.render(<PDFRequisicionMateriales data={formatData} />)
+  }
 
   // ******* REQUISICION MATERIALES DETALLE ********
   const closeDetalleRequisicionMateriales = () => {
     // ocultamos el modal
-    setMostrarDetalle(false);
+    setMostrarDetalle(false)
     // dejamos el null la data del detalle
-    setDetalleSeleccionado(null);
-  };
+    setDetalleSeleccionado(null)
+  }
 
   // MOSTRAR Y OCULTAR DETALLE DE REQUISICION MOLIENDA
   const showRequisicionMaterialesDetalle = (idPosElement) => {
-    //var ss = dataRequisicionTemp[idPosElement].reqMolDet
-    var ss = dataRequisicionTemp[idPosElement].reqDet;
-    const requisicionMoliendaDetalle = ss;
-    //return;
-    setDetalleSeleccionado(requisicionMoliendaDetalle);
-    setMostrarDetalle(true);
-  };
+    // var ss = dataRequisicionTemp[idPosElement].reqMolDet
+    const ss = dataRequisicion[idPosElement].reqDet
+    const requisicionMoliendaDetalle = ss
+    // return;
+    setDetalleSeleccionado(requisicionMoliendaDetalle)
+    setMostrarDetalle(true)
+  }
 
   useEffect(() => {
-    obtenerDataRequisicionMateriales();
-  }, []);
+    obtenerDataRequisicionMateriales()
+  }, [])
 
   return (
     <>
       <div className="container-fluid">
         <div className="col-9 mt-4">
-          <div className="row" style={{ border: "0px solid black" }}>
+          <div className="row" style={{ border: '0px solid black' }}>
             <div
               className="col-3"
               style={{
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
+                display: 'flex',
+                justifyContent: 'end',
+                alignItems: 'center'
               }}
             >
               <Button
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  window.open("/produccion/requisicion-materiales/crear");
+                  window.open('/produccion/requisicion-materiales/crear')
                 }}
               >
                 Crear Requisición
@@ -137,10 +118,10 @@ export const ListRequisicionMateriales = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
+                      }
                     }}
                   >
                     <TableCell align="left" width={70}>
@@ -161,13 +142,13 @@ export const ListRequisicionMateriales = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataRequisicionTemp
+                  {dataRequisicion
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, i) => (
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left" width={100}>
@@ -177,12 +158,12 @@ export const ListRequisicionMateriales = () => {
                           <span
                             className={
                               row.idReqEst === 1
-                                ? "badge text-bg-danger"
+                                ? 'badge text-bg-danger'
                                 : row.idReqEst === 2
-                                ? "badge text-bg-warning"
-                                : row.idReqEst === 3
-                                ? "badge text-bg-success"
-                                : "badge text-bg-success"
+                                  ? 'badge text-bg-warning'
+                                  : row.idReqEst === 3
+                                    ? 'badge text-bg-success'
+                                    : 'badge text-bg-success'
                             }
                           >
                             {row.desReqEst}
@@ -191,14 +172,14 @@ export const ListRequisicionMateriales = () => {
                         <TableCell align="left">{row.fecPedReq}</TableCell>
                         <TableCell align="left">
                           {row.fecEntReq === null
-                            ? "Aun no terminado"
+                            ? 'Aun no terminado'
                             : row.fecEntReq}
                         </TableCell>
                         <TableCell align="left">
                           <div className="btn-toolbar">
                             <button
                               onClick={() => {
-                                showRequisicionMaterialesDetalle(i);
+                                showRequisicionMaterialesDetalle(i)
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -218,7 +199,7 @@ export const ListRequisicionMateriales = () => {
                             <button
                               title="PDF produccion"
                               onClick={() => {
-                                generatePDF(row);
+                                generatePDF(row)
                               }}
                               className="btn btn-danger me-2 btn"
                             >
@@ -248,7 +229,7 @@ export const ListRequisicionMateriales = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={dataRequisicionTemp.length}
+              count={dataRequisicion.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -264,5 +245,5 @@ export const ListRequisicionMateriales = () => {
         />
       )}
     </>
-  );
-};
+  )
+}

@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { getDevolucionOperacionDevolucionCalidadDetalleById } from "../../helpers/requisicion-reproceso/getDevolucionOperacionDevolucionCalidadDetalleById";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { getDevolucionOperacionDevolucionCalidadDetalleById } from '../../helpers/requisicion-reproceso/getDevolucionOperacionDevolucionCalidadDetalleById'
+import { useParams } from 'react-router-dom'
 
 export const DevolucionRequisicionReproceso = () => {
-  const { idOpeDevCalDet } = useParams();
+  const { idOpeDevCalDet } = useParams()
   const [devolucionOperacionDevolucionCalidadDetalle, setDevolucionOperacionDevolucionDetalle] = useState(
     {
-      nomProd: "",
+      nomProd: '',
       idProdc: 0,
-      codLotProd: "",
-      fecVenLotProd: "",
+      codLotProd: '',
+      fecVenLotProd: '',
       fueComOpeRep: 0,
-      fecCreOpeDevCalDet: "",
+      fecCreOpeDevCalDet: '',
       reqDev: []
     }
   )
@@ -22,7 +22,8 @@ export const DevolucionRequisicionReproceso = () => {
     fecVenLotProd,
     fueComOpeRep,
     fecCreOpeDevCalDet,
-    reqDev } = devolucionOperacionDevolucionCalidadDetalle;
+    reqDev
+  } = devolucionOperacionDevolucionCalidadDetalle
 
   const traerDevolucionesOperacionDevolucionCalidadDetalle = async () => {
     console.log(idOpeDevCalDet)
@@ -36,7 +37,6 @@ export const DevolucionRequisicionReproceso = () => {
     } else {
       alert(description_error)
     }
-
   }
 
   useEffect(() => {

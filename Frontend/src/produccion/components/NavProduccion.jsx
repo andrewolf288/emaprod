@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { NavLink, Link } from "react-router-dom";
-import logo from "../../assets/logo-oficial.png";
-import { useAuth } from "../../hooks/useAuth";
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../../assets/logo-oficial.png'
+import { useAuth } from '../../hooks/useAuth'
 
 const NavProduccion = () => {
   // controlar la visualizacion de componentes
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false)
   // logout
-  const { logout } = useAuth();
+  const { logout } = useAuth()
   const logoutUser = () => {
-    logout();
-  };
+    logout()
+  }
 
   // verificamos si el usuario tiene acceso a las formulas
   const verifyAdminUser = () => {
-    const { idRolUsu } = JSON.parse(localStorage.getItem("user"));
+    const { idRolUsu } = JSON.parse(localStorage.getItem('user'))
     // si es un usuario administrador
     if (idRolUsu === 1) {
-      setShow(true);
+      setShow(true)
     }
-  };
+  }
 
   useEffect(() => {
-    verifyAdminUser();
-  }, []);
+    verifyAdminUser()
+  }, [])
 
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={"/produccion"}>
+          <Link className="navbar-brand" to={'/produccion'}>
             <img
               src={logo}
               alt="Logo"
@@ -65,7 +65,7 @@ const NavProduccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/produccion/produccion-lote"}
+                      to={'/produccion/produccion-lote'}
                     >
                       Administrar
                     </Link>
@@ -73,7 +73,7 @@ const NavProduccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/produccion/produccion-lote/crear"}
+                      to={'/produccion/produccion-lote/crear'}
                     >
                       Crear
                     </Link>
@@ -171,7 +171,7 @@ const NavProduccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/produccion/requisicion-materiales"}
+                      to={'/produccion/requisicion-materiales'}
                     >
                       Administrar
                     </Link>
@@ -179,7 +179,7 @@ const NavProduccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/produccion/requisicion-materiales/crear"}
+                      to={'/produccion/requisicion-materiales/crear'}
                     >
                       Crear
                     </Link>
@@ -201,7 +201,7 @@ const NavProduccion = () => {
                     <li>
                       <Link
                         className="dropdown-item"
-                        to={"/produccion/formula"}
+                        to={'/produccion/formula'}
                       >
                         Administrar
                       </Link>
@@ -209,7 +209,7 @@ const NavProduccion = () => {
                     <li>
                       <Link
                         className="dropdown-item"
-                        to={"/produccion/formula/crear"}
+                        to={'/produccion/formula/crear'}
                       >
                         Crear
                       </Link>
@@ -231,7 +231,7 @@ const NavProduccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/produccion/formula-producto"}
+                      to={'/produccion/formula-producto'}
                     >
                       Administrar
                     </Link>
@@ -239,7 +239,7 @@ const NavProduccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/produccion/formula-producto/crear"}
+                      to={'/produccion/formula-producto/crear'}
                     >
                       Crear
                     </Link>
@@ -258,7 +258,7 @@ const NavProduccion = () => {
         </div>
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default NavProduccion;
+export default NavProduccion

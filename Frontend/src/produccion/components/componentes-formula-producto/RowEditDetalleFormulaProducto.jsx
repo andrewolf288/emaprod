@@ -1,21 +1,20 @@
-import React, { useState } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { TextField } from "@mui/material";
-import { FilterAlmacen } from "./../../../components/ReferencialesFilters/Almacen/FilterAlmacen";
+import React, { useState } from 'react'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import { TextField } from '@mui/material'
 
 export const RowEditDetalleFormulaProducto = ({
   detalle,
   onDeleteDetalleFormula,
   onChangeFormulaDetalle,
-  onChangeAlmacenEncargadoDetalle,
+  onChangeAlmacenEncargadoDetalle
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
+  const [disabledInput, setdisabledInput] = useState(true)
 
   return (
     <TableRow
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell component="th" scope="row">
@@ -29,7 +28,7 @@ export const RowEditDetalleFormulaProducto = ({
           <TextField
             size="small"
             onChange={(e) => {
-              onChangeFormulaDetalle(e, detalle.idProd);
+              onChangeFormulaDetalle(e, detalle.idProd)
             }}
             type="number"
             name="inputCantidad"
@@ -43,7 +42,7 @@ export const RowEditDetalleFormulaProducto = ({
         <div className="btn-toolbar">
           <button
             onClick={() => {
-              setdisabledInput(!disabledInput);
+              setdisabledInput(!disabledInput)
             }}
             className="btn btn-success me-2"
           >
@@ -60,7 +59,7 @@ export const RowEditDetalleFormulaProducto = ({
           </button>
           <button
             onClick={() => {
-              onDeleteDetalleFormula(detalle.idProd);
+              onDeleteDetalleFormula(detalle.idProd)
             }}
             className="btn btn-danger"
           >
@@ -78,5 +77,5 @@ export const RowEditDetalleFormulaProducto = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

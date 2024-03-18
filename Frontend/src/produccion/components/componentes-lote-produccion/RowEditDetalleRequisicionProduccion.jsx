@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { TextField } from "@mui/material";
-import { FilterAlmacen } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacen";
-import { FilterMotivoAgregacion } from "./../../../components/ReferencialesFilters/MotivoAgregacion/FilterMotivoAgregacion";
+import React, { useState } from 'react'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import { TextField } from '@mui/material'
+import { FilterAlmacen } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacen'
+import { FilterMotivoAgregacion } from './../../../components/ReferencialesFilters/MotivoAgregacion/FilterMotivoAgregacion'
 
-function calculate(item) {
-  return item;
+function calculate (item) {
+  return item
 }
 
 export const RowEditDetalleRequisicionProduccion = ({
@@ -16,22 +16,22 @@ export const RowEditDetalleRequisicionProduccion = ({
   onChangeMotivoAgregacion,
   onValidate,
   isAggregation,
-  entradasNoDisponible,
+  entradasNoDisponible
 }) => {
-  const [disabledInputs, setdisabledInputs] = useState(true);
+  const [disabledInputs, setdisabledInputs] = useState(true)
   const handleDetalleChangeMotivoAgregacion = (value) => {
-    //console.log(value, detalle);
-    onChangeMotivoAgregacion(value.id, detalle.id);
-  };
+    // console.log(value, detalle);
+    onChangeMotivoAgregacion(value.id, detalle.id)
+  }
   return (
     <TableRow
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
+        '&:last-child td, &:last-child th': { border: 0 },
         ...{
           backgroundColor: entradasNoDisponible?.includes(detalle.nomProd)
-            ? "#BC2503"
-            : "",
-        },
+            ? '#BC2503'
+            : ''
+        }
       }}
     >
       <TableCell
@@ -40,9 +40,9 @@ export const RowEditDetalleRequisicionProduccion = ({
         sx={{
           ...{
             color: entradasNoDisponible?.includes(detalle.nomProd)
-              ? "white"
-              : "",
-          },
+              ? 'white'
+              : ''
+          }
         }}
       >
         {detalle.indexProdFin}
@@ -53,9 +53,9 @@ export const RowEditDetalleRequisicionProduccion = ({
         sx={{
           ...{
             color: entradasNoDisponible?.includes(detalle.nomProd)
-              ? "white"
-              : "",
-          },
+              ? 'white'
+              : ''
+          }
         }}
       >
         {detalle.nomProd}
@@ -66,9 +66,9 @@ export const RowEditDetalleRequisicionProduccion = ({
         sx={{
           ...{
             color: entradasNoDisponible?.includes(detalle.nomProd)
-              ? "white"
-              : "",
-          },
+              ? 'white'
+              : ''
+          }
         }}
       >
         {detalle.simMed}
@@ -80,9 +80,9 @@ export const RowEditDetalleRequisicionProduccion = ({
         sx={{
           ...{
             color: entradasNoDisponible?.includes(detalle.nomProd)
-              ? "white"
-              : "",
-          },
+              ? 'white'
+              : ''
+          }
         }}
       >
         {detalle.canForProDet}
@@ -93,7 +93,7 @@ export const RowEditDetalleRequisicionProduccion = ({
           <FilterMotivoAgregacion
             onNewInput={handleDetalleChangeMotivoAgregacion}
             defaultValueFlag={true}
-            //disabled={disabledInput}
+            // disabled={disabledInput}
           />
         </TableCell>
       )}
@@ -104,33 +104,33 @@ export const RowEditDetalleRequisicionProduccion = ({
         sx={{
           ...{
             color: entradasNoDisponible?.includes(detalle.nomProd)
-              ? "white"
-              : "",
-          },
+              ? 'white'
+              : ''
+          }
         }}
       >
         <TextField
           sx={{
             ...{
               color: entradasNoDisponible?.includes(detalle.nomProd)
-                ? "white"
-                : "",
-            },
+                ? 'white'
+                : ''
+            }
           }}
           size="small"
-          disabled={disabledInputs} //calculate(detalle.canForProDet,detalle.canReqProdLot)
-          value={calculate(detalle.canReqProdLot)} //calculate(detalle.canReqProdLot)
-          name={"canReqProdLot"}
+          disabled={disabledInputs} // calculate(detalle.canForProDet,detalle.canReqProdLot)
+          value={calculate(detalle.canReqProdLot)} // calculate(detalle.canReqProdLot)
+          name={'canReqProdLot'}
           onChange={(e) => {
-            //if(isAggregation){
-            e.target.value = onValidate(e.target);
-            console.log(e.target.value);
+            // if(isAggregation){
+            e.target.value = onValidate(e.target)
+            console.log(e.target.value)
 
-            //}
+            // }
             if (isNaN(e.target.value)) {
-              return;
+              return
             }
-            onChangeItemDetalle(e, detalle.idProd, detalle.indexProdFin);
+            onChangeItemDetalle(e, detalle.idProd, detalle.indexProdFin)
           }}
         />
       </TableCell>
@@ -139,24 +139,24 @@ export const RowEditDetalleRequisicionProduccion = ({
         sx={{
           ...{
             color: entradasNoDisponible?.includes(detalle.nomProd)
-              ? "white"
-              : "",
-          },
+              ? 'white'
+              : ''
+          }
         }}
       >
         <div className="btn-toolbar">
           <button
             onClick={() => {
-              setdisabledInputs(!disabledInputs);
-              console.log("click set disable");
+              setdisabledInputs(!disabledInputs)
+              console.log('click set disable')
             }}
             className="btn btn-success me-2"
             style={{
               ...{
                 color: entradasNoDisponible?.includes(detalle.nomProd)
-                  ? "white"
-                  : "",
-              },
+                  ? 'white'
+                  : ''
+              }
             }}
           >
             <svg
@@ -175,18 +175,18 @@ export const RowEditDetalleRequisicionProduccion = ({
           </button>
           <button
             onClick={() => {
-              onDeleteItemRequisicion(detalle.idProd, detalle.indexProdFin);
+              onDeleteItemRequisicion(detalle.idProd, detalle.indexProdFin)
             }}
             className="btn btn-danger"
             style={{
               ...{
                 backgroundColor: entradasNoDisponible?.includes(detalle.nomProd)
-                  ? "#BC2503"
-                  : "",
+                  ? '#BC2503'
+                  : '',
                 color: entradasNoDisponible?.includes(detalle.nomProd)
-                  ? "black"
-                  : "",
-              },
+                  ? 'black'
+                  : ''
+              }
             }}
           >
             <svg
@@ -199,7 +199,7 @@ export const RowEditDetalleRequisicionProduccion = ({
             >
               <path
                 fill={
-                  entradasNoDisponible?.includes(detalle.nomProd) ? "white" : ""
+                  entradasNoDisponible?.includes(detalle.nomProd) ? 'white' : ''
                 }
                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"
               />
@@ -208,11 +208,11 @@ export const RowEditDetalleRequisicionProduccion = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}
 
 /*
-cunatas bolsasd eoreca en un cajon 
+cunatas bolsasd eoreca en un cajon
 frascos por un cajon
 sales parrilleras
 y los paquetes en un cajon

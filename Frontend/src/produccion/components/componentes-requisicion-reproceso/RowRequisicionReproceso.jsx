@@ -1,7 +1,7 @@
-import { IconButton, TableCell, TableRow } from "@mui/material";
-import React from "react";
-import iconDevoluciones from "../../../../src/assets/icons/devoluciones.png"
-import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
+import { IconButton, TableCell, TableRow } from '@mui/material'
+import React from 'react'
+import iconDevoluciones from '../../../../src/assets/icons/devoluciones.png'
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox'
 
 export const RowRequisicionReproceso = ({ detalle }) => {
   return (
@@ -15,24 +15,24 @@ export const RowRequisicionReproceso = ({ detalle }) => {
           <span
             className={
               detalle.fueComOpeRep === 0
-                ? "badge text-bg-danger"
-                : "badge text-bg-success"
+                ? 'badge text-bg-danger'
+                : 'badge text-bg-success'
             }
           >
-            {detalle.fueComOpeRep === 0 ? "Requerido" : "Completo"}
+            {detalle.fueComOpeRep === 0 ? 'Requerido' : 'Completo'}
           </span>
         </TableCell>
         <TableCell align="center">
           <span
             className={
               detalle.numero_requisicion_devolucion === 0
-                ? "badge text-bg-danger"
-                : "badge text-bg-success"
+                ? 'badge text-bg-danger'
+                : 'badge text-bg-success'
             }
           >
             {detalle.numero_requisicion_devolucion === 0
-              ? "No se generaron devoluciones"
-              : "Se generaron devoluciones"}
+              ? 'No se generaron devoluciones'
+              : 'Se generaron devoluciones'}
           </span>
         </TableCell>
         <TableCell>{detalle.fecCreOpeDevCalDet}</TableCell>
@@ -44,7 +44,7 @@ export const RowRequisicionReproceso = ({ detalle }) => {
               onClick={() => {
                 window.open(
                   `/produccion/requisicion-reproceso/devolucion/${detalle.id}`,
-                  "_blank"
+                  '_blank'
                 )
               }}
             >
@@ -62,8 +62,8 @@ export const RowRequisicionReproceso = ({ detalle }) => {
               onClick={() => {
                 window.open(
                   `/produccion/requisicion-reproceso/reproceso/${detalle.id}`,
-                  "_blank"
-                );
+                  '_blank'
+                )
               }}
             >
               <MoveToInboxIcon fontSize="medium" />

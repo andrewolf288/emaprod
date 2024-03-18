@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { TextField } from "@mui/material";
-import { FilterAreaEncargada } from "./FilterAreaEncargada";
+import React, { useState } from 'react'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import { TextField } from '@mui/material'
+import { FilterAreaEncargada } from './FilterAreaEncargada'
 
 export const RowEditDetalleFormula = ({
   detalle,
   onDeleteDetalleFormula,
   onChangeFormulaDetalle,
-  onChangeAreaEncargadaDetalle,
+  onChangeAreaEncargadaDetalle
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
+  const [disabledInput, setdisabledInput] = useState(true)
 
   const handleDetalleChangeAreaEncargada = (value) => {
-    onChangeAreaEncargadaDetalle(value.id, detalle.idMatPri);
-  };
+    onChangeAreaEncargadaDetalle(value.id, detalle.idMatPri)
+  }
 
   return (
     <TableRow
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell align="left">{detalle.nomProd}</TableCell>
@@ -30,21 +30,23 @@ export const RowEditDetalleFormula = ({
         {detalle.desSubCla}
       </TableCell>
       <TableCell align="left">
-        {detalle.idFor === undefined ? (
-          <FilterAreaEncargada
-            onNewInput={handleDetalleChangeAreaEncargada}
-            disabled={disabledInput}
-          />
-        ) : (
-          detalle.desAre
-        )}
+        {detalle.idFor === undefined
+          ? (
+            <FilterAreaEncargada
+              onNewInput={handleDetalleChangeAreaEncargada}
+              disabled={disabledInput}
+            />
+          )
+          : (
+            detalle.desAre
+          )}
       </TableCell>
       <TableCell align="left">
         <div className="d-inline-flex align-items-center">
           <TextField
             size="small"
             onChange={(e) => {
-              onChangeFormulaDetalle(e, detalle.idMatPri);
+              onChangeFormulaDetalle(e, detalle.idMatPri)
             }}
             type="number"
             name="inputCantidad"
@@ -58,7 +60,7 @@ export const RowEditDetalleFormula = ({
         <div className="btn-toolbar">
           <button
             onClick={() => {
-              setdisabledInput(!disabledInput);
+              setdisabledInput(!disabledInput)
             }}
             className="btn btn-success me-2"
           >
@@ -75,7 +77,7 @@ export const RowEditDetalleFormula = ({
           </button>
           <button
             onClick={() => {
-              onDeleteDetalleFormula(detalle.idMatPri);
+              onDeleteDetalleFormula(detalle.idMatPri)
             }}
             className="btn btn-danger"
           >
@@ -93,5 +95,5 @@ export const RowEditDetalleFormula = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

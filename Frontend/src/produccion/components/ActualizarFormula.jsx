@@ -1,348 +1,321 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA LA NAVEGACION
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from 'react-router-dom'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
-//IMPORTACIONES PARA DIALOG DELETE
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { FilterMateriaPrima } from "./../../../components/ReferencialesFilters/Producto/FilterMateriaPrima";
-import { getFormulaWithDetalleById } from "./../../helpers/formula/getFormulaWithDetalleById";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import { RowDetalleFormula } from "./../../components/RowDetalleFormula";
-import { updateFormulaDetalle } from "./../../helpers/formula/updateFormulaDetalle";
-import { DialogDeleteDetalle } from "../../components/DialogDeleteDetalle";
-import { deleteDetalleFormula } from "./../../helpers/formula/deleteDetalleFormula";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { FilterMateriaPrima } from './../../../components/ReferencialesFilters/Producto/FilterMateriaPrima'
+import { getFormulaWithDetalleById } from './../../helpers/formula/getFormulaWithDetalleById'
+import { getMateriaPrimaById } from './../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import { RowDetalleFormula } from './../../components/RowDetalleFormula'
+import { updateFormulaDetalle } from './../../helpers/formula/updateFormulaDetalle'
+import { DialogDeleteDetalle } from '../../components/DialogDeleteDetalle'
+import { deleteDetalleFormula } from './../../helpers/formula/deleteDetalleFormula'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ActualizarFormula = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const { idFor } = useParams();
+  const { idFor } = useParams()
 
   // ESTADOS PARA DATOS DE FORMULARO FORMULA (MAESTRO)
   const [formula, setformula] = useState({
-    nomProd: "",
-    nomFor: "",
-    desFor: "",
-    lotKgrFor: "",
-    forDet: [],
-  });
-  const { nomProd, nomFor, desFor, lotKgrFor, forDet } = formula;
+    nomProd: '',
+    nomFor: '',
+    desFor: '',
+    lotKgrFor: '',
+    forDet: []
+  })
+  const { nomProd, nomFor, desFor, lotKgrFor, forDet } = formula
 
   // ESTADOS PARA DATOS DE DETALLE FORMULA (DETALLE)
   const [materiaPrimaDetalle, setmateriaPrimaDetalle] = useState({
     idMateriaPrima: 0,
-    cantidadMateriaPrima: 0,
-  });
-  const { idMateriaPrima, cantidadMateriaPrima } = materiaPrimaDetalle;
+    cantidadMateriaPrima: 0
+  })
+  const { idMateriaPrima, cantidadMateriaPrima } = materiaPrimaDetalle
 
   // ESTADOS PARA EL DIALOG DELETE
-  const [mostrarDialog, setMostrarDialog] = useState(false);
-  const [itemSeleccionado, setItemSeleccionado] = useState(null);
+  const [mostrarDialog, setMostrarDialog] = useState(false)
+  const [itemSeleccionado, setItemSeleccionado] = useState(null)
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // MANEJADOR DE AGREGAR MATERIA PRIMA A DETALLE DE FORMULA
   const onMateriaPrimaId = ({ id }) => {
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      idMateriaPrima: id,
-    });
-  };
+      idMateriaPrima: id
+    })
+  }
 
   const handleCantidadMateriaPrima = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // MANEJADOR PARA AGREGAR MATERIA PRIMA A FORMULA
   const handleAddNewMateriPrimaDetalle = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // PRIMERO VERIFICAMOS QUE LOS INPUTS TENGAN DATOS
     if (idMateriaPrima !== 0 && cantidadMateriaPrima > 0) {
       // PRIMERO VERIFICAMOS SI EXISTE ALGUNA COINCIDENCIA DE LO INGRESADO
       const itemFound = forDet.find(
         (elemento) => elemento.idMatPri === idMateriaPrima
-      );
+      )
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Ya se agrego esta materia prima",
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Ya se agrego esta materia prima'
+        })
+        handleClickFeeback()
       } else {
         // HACEMOS UNA CONSULTA A LA MATERIA PRIMA Y DESESTRUCTURAMOS
-        const resultPeticion = await getMateriaPrimaById(idMateriaPrima);
-        const { message_error, description_error, result } = resultPeticion;
+        const resultPeticion = await getMateriaPrimaById(idMateriaPrima)
+        const { message_error, description_error, result } = resultPeticion
 
         if (message_error.length === 0) {
-          const { id, codProd, desCla, desSubCla, nomProd, simMed } = result[0];
+          const { id, codProd, desCla, desSubCla, nomProd, simMed } = result[0]
 
           // GENERAMOS NUESTRO DETALLE DE FORMULA DE MATERIA PRIMA
           const detalleFormulaMateriaPrima = {
             idFor: parseInt(idFor, 10),
             idMatPri: id,
-            codProd: codProd,
-            desCla: desCla,
-            desSubCla: desSubCla,
-            nomProd: nomProd,
-            simMed: simMed,
-            canMatPriFor: cantidadMateriaPrima,
-          };
+            codProd,
+            desCla,
+            desSubCla,
+            nomProd,
+            simMed,
+            canMatPriFor: cantidadMateriaPrima
+          }
 
           // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
           const dataMateriaPrimaDetalle = [
             ...forDet,
-            detalleFormulaMateriaPrima,
-          ];
+            detalleFormulaMateriaPrima
+          ]
           setformula({
             ...formula,
-            forDet: dataMateriaPrimaDetalle,
-          });
+            forDet: dataMateriaPrimaDetalle
+          })
         } else {
           setfeedbackMessages({
-            style_message: "error",
-            feedback_description_error: description_error,
-          });
-          handleClickFeeback();
+            style_message: 'error',
+            feedback_description_error: description_error
+          })
+          handleClickFeeback()
         }
       }
     } else {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Asegurese de llenar los datos requeridos'
+      })
+      handleClickFeeback()
     }
-  };
-
-  // MANEJADOR DE ELIMINACION DE MATERIA PRIMA
-  const deleteDetalleMateriaPrima = (idItem) => {
-    // FILTRAMOS EL ELEMENTO ELIMINADO
-    const nuevaDataDetalleFormulario = forDet.filter((element) => {
-      if (element.idMatPri !== idItem) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-
-    // VOLVEMOS A SETEAR LA DATA
-    setformula({
-      ...formula,
-      forDet: nuevaDataDetalleFormulario,
-    });
-  };
-
-  // MANEJADOR DE ELIMINACION DE DETALLE DE FORMULA
+  }
 
   // MANEJADOR PARA ACTUALIZAR REQUISICION
   const handledFormularioDetalle = ({ target }, idItem) => {
-    const { value } = target;
+    const { value } = target
     const editFormDetalle = forDet.map((element) => {
       if (element.idMatPri === idItem) {
         return {
           ...element,
-          canMatPriFor: value,
-        };
+          canMatPriFor: value
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setformula({
       ...formula,
-      forDet: editFormDetalle,
-    });
-  };
+      forDet: editFormDetalle
+    })
+  }
 
   // CONTROLADOR DE FORMULARIO
   const handledForm = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setformula({
       ...formula,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // FUNCION PARA CREAR FORMULARIO
   const updateFormula = async () => {
-    const resultPeticion = await updateFormulaDetalle(formula);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await updateFormulaDetalle(formula)
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // regresamos a la anterior vista
-      onNavigateBack();
+      onNavigateBack()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // CONTROLADOR DE SUBMIT
   const handleSubmitFormula = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (nomFor.length === 0 || forDet.length === 0) {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Asegurese de llenar los datos requeridos'
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
+      setdisableButton(true)
       // LLAMAMOS A LA FUNCION CREAR MATERIA PRIMA
-      updateFormula();
+      updateFormula()
     }
-  };
+  }
 
   // Traer datos de la formula y su detalle
   const traerDatosFormulaDetalle = async () => {
     // realizamos la peticion
-    const resultPeticion = await getFormulaWithDetalleById(idFor);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getFormulaWithDetalleById(idFor)
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
       setformula({
-        ...result[0],
-      });
+        ...result[0]
+      })
     } else {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // ****** DELETE DETALLE DE FORMULA *******
   const closeDialogDeleteDetalle = () => {
     // ocultamos el modal
-    setMostrarDialog(false);
+    setMostrarDialog(false)
     // dejamos el null la data del detalle
-    setItemSeleccionado(null);
-  };
+    setItemSeleccionado(null)
+  }
 
   // MOSTRAR Y OCULTAR DETALLE DE REQUISICION MOLIENDA
   const showDialogDeleteItem = (idMatPri) => {
     const formulaDetalle = forDet.filter((element) => {
       if (element.idMatPri === idMatPri) {
-        return element;
+        return element
       } else {
-        return false;
+        return false
       }
-    });
+    })
     // seteamos la data de la requisicion seleccionada
-    setItemSeleccionado(formulaDetalle[0]);
+    setItemSeleccionado(formulaDetalle[0])
     // mostramos el modal
-    setMostrarDialog(true);
-  };
+    setMostrarDialog(true)
+  }
 
   // ELIMINAR DETALLE DE FORMULA
   const deleteItemSelected = async (idForDet) => {
     // primero realizamos la eliminacion
-    const resultPeticion = await deleteDetalleFormula(idForDet);
-    const { message_error, description_error } = resultPeticion;
+    const resultPeticion = await deleteDetalleFormula(idForDet)
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // actualizamos el detalle de la formula
       const nuevoDetalleFormula = forDet.filter((element) => {
         if (element.id !== idForDet) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
-      });
+      })
 
       setformula({
         ...formula,
-        forDet: nuevoDetalleFormula,
-      });
+        forDet: nuevoDetalleFormula
+      })
       // cerramos el modal
-      closeDialogDeleteDetalle();
+      closeDialogDeleteDetalle()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
+        style_message: 'success',
         feedback_description_error:
-          "Se elimino el detalle de la formula con exito",
-      });
-      handleClickFeeback();
+          'Se elimino el detalle de la formula con exito'
+      })
+      handleClickFeeback()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   useEffect(() => {
     // traer la data de la formula
-    traerDatosFormulaDetalle();
-  }, []);
+    traerDatosFormulaDetalle()
+  }, [])
 
   return (
     <>
@@ -442,7 +415,7 @@ export const ActualizarFormula = () => {
                   <FilterMateriaPrima onNewInput={onMateriaPrimaId} />
                 </div>
 
-                {/* AGREGAR CANTIDAD*/}
+                {/* AGREGAR CANTIDAD */}
                 <div className="col-md-2">
                   <label htmlFor="inputPassword4" className="form-label">
                     Cantidad
@@ -482,10 +455,10 @@ export const ActualizarFormula = () => {
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
                         }}
                       >
                         <TableCell align="left" width={70}>
@@ -571,7 +544,7 @@ export const ActualizarFormula = () => {
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -579,11 +552,11 @@ export const ActualizarFormula = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

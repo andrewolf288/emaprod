@@ -1,283 +1,283 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { createFormulaWithDetalle } from "./../../helpers/formula/createFormulaWithDetalle";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
-import { FilterTipoFormula } from "./../../../components/ReferencialesFilters/Formula/FilterTipoFormula";
-import { RowDetalleFormula } from "./../../components/RowDetalleFormula";
-import { FilterAllProductos } from "./../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { Typography } from "@mui/material";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { createFormulaWithDetalle } from './../../helpers/formula/createFormulaWithDetalle'
+import { getMateriaPrimaById } from './../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import { FilterProductoProduccion } from './../../../components/ReferencialesFilters/Producto/FilterProductoProduccion'
+import { FilterTipoFormula } from './../../../components/ReferencialesFilters/Formula/FilterTipoFormula'
+import { RowDetalleFormula } from './../../components/RowDetalleFormula'
+import { FilterAllProductos } from './../../../components/ReferencialesFilters/Producto/FilterAllProductos'
+import { Typography } from '@mui/material'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const AgregarFormula = () => {
   // ESTADOS PARA DATOS DE FORMULARO FORMULA (MAESTRO)
   const [formula, setformula] = useState({
     idProd: 0,
     idTipFor: 0,
-    nomFor: "",
-    desFor: "",
+    nomFor: '',
+    desFor: '',
     lotKgrFor: 1.0,
-    forDet: [], // DETALLE DE FORMULAS
-  });
-  const { idProd, idTipFor, nomFor, desFor, lotKgrFor, forDet } = formula;
+    forDet: [] // DETALLE DE FORMULAS
+  })
+  const { idProd, idTipFor, nomFor, desFor, lotKgrFor, forDet } = formula
 
   // ESTADOS PARA DATOS DE DETALLE FORMULA (DETALLE)
   const [materiaPrimaDetalle, setmateriaPrimaDetalle] = useState({
     idMateriaPrima: 0,
-    cantidadMateriaPrima: "",
-    idArea: 0,
-  });
-  const { idMateriaPrima, cantidadMateriaPrima, idArea } = materiaPrimaDetalle;
+    cantidadMateriaPrima: '',
+    idArea: 0
+  })
+  const { idMateriaPrima, cantidadMateriaPrima, idArea } = materiaPrimaDetalle
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // MANEJADOR DE AGREGAR MATERIA PRIMA A DETALLE DE FORMULA
   const onProductoId = ({ id }) => {
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      idMateriaPrima: id,
-    });
-  };
+      idMateriaPrima: id
+    })
+  }
 
   const handleCantidadMateriaPrima = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // MANEJADOR PARA AGREGAR MATERIA PRIMA A FORMULA
   const handleAddNewMateriPrimaDetalle = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // PRIMERO VERIFICAMOS QUE LOS INPUTS TENGAN DATOS
     if (idMateriaPrima !== 0 && cantidadMateriaPrima > 0) {
       // PRIMERO VERIFICAMOS SI EXISTE ALGUNA COINCIDENCIA DE LO INGRESADO
       const itemFound = forDet.find(
         (elemento) => elemento.idMatPri === idMateriaPrima
-      );
+      )
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Ya se agrego un detalle con la materia prima elegida",
-        });
-        handleClickFeeback();
+            'Ya se agrego un detalle con la materia prima elegida'
+        })
+        handleClickFeeback()
       } else {
         // HACEMOS UNA CONSULTA A LA MATERIA PRIMA Y DESESTRUCTURAMOS
-        const resultPeticion = await getMateriaPrimaById(idMateriaPrima);
-        const { message_error, description_error, result } = resultPeticion;
+        const resultPeticion = await getMateriaPrimaById(idMateriaPrima)
+        const { message_error, description_error, result } = resultPeticion
 
         if (message_error.length === 0) {
-          const { id, codProd, desCla, desSubCla, nomProd, simMed } = result[0];
+          const { id, codProd, desCla, desSubCla, nomProd, simMed } = result[0]
 
           // GENERAMOS NUESTRO DETALLE DE FORMULA DE MATERIA PRIMA
           const detalleFormulaMateriaPrima = {
             idMatPri: id,
             idAre: idArea,
-            codProd: codProd,
-            desCla: desCla,
-            desSubCla: desSubCla,
-            nomProd: nomProd,
-            simMed: simMed,
-            canMatPriFor: cantidadMateriaPrima,
-          };
+            codProd,
+            desCla,
+            desSubCla,
+            nomProd,
+            simMed,
+            canMatPriFor: cantidadMateriaPrima
+          }
 
           // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
           const dataMateriaPrimaDetalle = [
             ...forDet,
-            detalleFormulaMateriaPrima,
-          ];
+            detalleFormulaMateriaPrima
+          ]
           setformula({
             ...formula,
-            forDet: dataMateriaPrimaDetalle,
-          });
+            forDet: dataMateriaPrimaDetalle
+          })
         } else {
           setfeedbackMessages({
-            style_message: "error",
-            feedback_description_error: description_error,
-          });
-          handleClickFeeback();
+            style_message: 'error',
+            feedback_description_error: description_error
+          })
+          handleClickFeeback()
         }
       }
     } else {
-      let advertenciaDetalleFormula = "";
+      let advertenciaDetalleFormula = ''
       if (idMateriaPrima === 0) {
         advertenciaDetalleFormula +=
-          "Asigne una materia prima para agregar el detalle\n";
+          'Asigne una materia prima para agregar el detalle\n'
       }
       if (cantidadMateriaPrima <= 0) {
         advertenciaDetalleFormula +=
-          "Asigne una cantidad mayor a 0 para agregar el detalle\n";
+          'Asigne una cantidad mayor a 0 para agregar el detalle\n'
       }
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: advertenciaDetalleFormula,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: advertenciaDetalleFormula
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // MANEJADOR DE ELIMINACION DE MATERIA PRIMA
   const deleteDetalleMateriaPrima = (idItem) => {
     // FILTRAMOS EL ELEMENTO ELIMINADO
     const nuevaDataDetalleFormulario = forDet.filter((element) => {
       if (element.idMatPri !== idItem) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
 
     // VOLVEMOS A SETEAR LA DATA
     setformula({
       ...formula,
-      forDet: nuevaDataDetalleFormulario,
-    });
-  };
+      forDet: nuevaDataDetalleFormulario
+    })
+  }
 
   // MANEJADOR PARA ACTUALIZAR REQUISICION
   const handledFormularioDetalle = ({ target }, idItem) => {
-    const { value } = target;
+    const { value } = target
     const editFormDetalle = forDet.map((element) => {
       if (element.idMatPri === idItem) {
         return {
           ...element,
-          canMatPriFor: value,
-        };
+          canMatPriFor: value
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setformula({
       ...formula,
-      forDet: editFormDetalle,
-    });
-  };
+      forDet: editFormDetalle
+    })
+  }
 
   const handledAreaEncargada = (idAre, idItem) => {
     const editFormDetalle = forDet.map((element) => {
       if (element.idMatPri === idItem) {
         return {
           ...element,
-          idAre: idAre,
-        };
+          idAre
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setformula({
       ...formula,
-      forDet: editFormDetalle,
-    });
-  };
+      forDet: editFormDetalle
+    })
+  }
 
   // CONTROLADOR DE FORMULARIO
   const handledForm = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setformula({
       ...formula,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // EVENTO DE ASOCIAR FORMULA A UN PRODUCTO
   const onAddProducto = ({ id }) => {
     setformula({
       ...formula,
-      idProd: id,
-    });
-  };
+      idProd: id
+    })
+  }
 
   const onAddTipoFormula = ({ id }) => {
     setformula({
       ...formula,
-      idTipFor: id,
-    });
-  };
+      idTipFor: id
+    })
+  }
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // FUNCION PARA CREAR FORMULARIO
   const crearFormula = async () => {
     const { message_error, description_error } = await createFormulaWithDetalle(
       formula
-    );
+    )
 
     if (message_error.length === 0) {
       // regresamos a la anterior vista
-      onNavigateBack();
+      onNavigateBack()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // CONTROLADOR DE SUBMIT
   const handleSubmitFormula = (e) => {
-    let advertenciaFormularioIncompleto = "";
-    e.preventDefault();
+    let advertenciaFormularioIncompleto = ''
+    e.preventDefault()
     if (
       nomFor.length === 0 ||
       idTipFor === 0 ||
@@ -286,46 +286,46 @@ export const AgregarFormula = () => {
       forDet.length === 0
     ) {
       if (idProd === 0) {
-        advertenciaFormularioIncompleto += "No se proporciono un subproducto\n";
+        advertenciaFormularioIncompleto += 'No se proporciono un subproducto\n'
       }
       if (idTipFor === 0) {
-        advertenciaFormularioIncompleto += "No se indicó el tipo de formula\n";
+        advertenciaFormularioIncompleto += 'No se indicó el tipo de formula\n'
       }
       if (nomFor.length === 0) {
         advertenciaFormularioIncompleto +=
-          "No se proporciono un nombre para la formula\n";
+          'No se proporciono un nombre para la formula\n'
       }
       if (lotKgrFor <= 0) {
         advertenciaFormularioIncompleto +=
-          "No se puede establecer un peso menor o igual a 0\n";
+          'No se puede establecer un peso menor o igual a 0\n'
       }
       if (forDet.length === 0) {
         advertenciaFormularioIncompleto +=
-          "Debe proporcionar al menos un detalle de la formula\n";
+          'Debe proporcionar al menos un detalle de la formula\n'
       }
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: advertenciaFormularioIncompleto,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: advertenciaFormularioIncompleto
+      })
+      handleClickFeeback()
     } else {
-      const validAreaEncargada = forDet.find((element) => element.idAre === 0);
+      const validAreaEncargada = forDet.find((element) => element.idAre === 0)
       if (validAreaEncargada) {
         // MANEJAMOS FORMULARIOS INCOMPLETOS
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Asegurese de asignar areas encargadas para cada item",
-        });
-        handleClickFeeback();
+            'Asegurese de asignar areas encargadas para cada item'
+        })
+        handleClickFeeback()
       } else {
-        setdisableButton(true);
+        setdisableButton(true)
         // LLAMAMOS A LA FUNCION CREAR MATERIA PRIMA
-        crearFormula();
+        crearFormula()
       }
     }
-  };
+  }
 
   return (
     <>
@@ -425,7 +425,7 @@ export const AgregarFormula = () => {
                   <FilterAllProductos onNewInput={onProductoId} />
                 </div>
 
-                {/* AGREGAR CANTIDAD*/}
+                {/* AGREGAR CANTIDAD */}
                 <div className="col-md-2">
                   <label className="form-label">Cantidad</label>
                   <input
@@ -464,10 +464,10 @@ export const AgregarFormula = () => {
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
                         }}
                       >
                         <TableCell align="left" width={120}>
@@ -543,10 +543,9 @@ export const AgregarFormula = () => {
         </div>
       </div>
 
-
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -554,15 +553,14 @@ export const AgregarFormula = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
-      
 
     </>
-  );
-};
+  )
+}

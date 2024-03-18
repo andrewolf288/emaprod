@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   PDFViewer,
   Page,
@@ -6,16 +6,16 @@ import {
   View,
   Document,
   Image
-} from "@react-pdf/renderer";
-import logo from "../emaran.png";
-import { stylesPDF } from "../pdf-components/stylePDF";
-import { PDFTransformacionRequisicion } from "./PDFTransformacionRequisicion";
-import { PDFTransformacionDevolucion } from "./PDFTransformacionDevolucion";
+} from '@react-pdf/renderer'
+import logo from '../emaran.png'
+import { stylesPDF } from '../pdf-components/stylePDF'
+import { PDFTransformacionRequisicion } from './PDFTransformacionRequisicion'
+import { PDFTransformacionDevolucion } from './PDFTransformacionDevolucion'
 
-const styles = stylesPDF;
+const styles = stylesPDF
 
 export const PDFTransformacion = ({ data }) => {
-  const { requisicion, requisicionDevolucion, requisicionMateriales } = data;
+  const { requisicion, requisicionDevolucion, requisicionMateriales } = data
   return (
     <PDFViewer width="100%" height="100%">
       <Document>
@@ -43,9 +43,9 @@ export const PDFTransformacion = ({ data }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -55,9 +55,9 @@ export const PDFTransformacion = ({ data }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -68,9 +68,9 @@ export const PDFTransformacion = ({ data }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -80,9 +80,9 @@ export const PDFTransformacion = ({ data }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -96,15 +96,15 @@ export const PDFTransformacion = ({ data }) => {
                   <Text
                     style={{
                       ...styles.content,
-                      fontWeight: "bold",
+                      fontWeight: 'bold',
                       borderRadius: 5,
                       fontSize: 16,
                       marginBottom: 1,
-                      backgroundColor: "#d8e86f",
+                      backgroundColor: '#d8e86f',
                       padding: 5,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                       paddingLeft: 48
                     }}
                   >
@@ -114,7 +114,7 @@ export const PDFTransformacion = ({ data }) => {
                     style={{
                       ...styles.sectionWithBorder,
                       marginTop: 25,
-                      backgroundColor: "#d8dbe3",
+                      backgroundColor: '#d8dbe3',
                       width: 220,
                       height: 70,
                       borderRadius: 5,
@@ -126,7 +126,7 @@ export const PDFTransformacion = ({ data }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 7,
-                        maxWidth: "100%"
+                        maxWidth: '100%'
                       }}
                     >
                       Tipo de Producción: Envasado y Encajado
@@ -137,7 +137,7 @@ export const PDFTransformacion = ({ data }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%"
+                        maxWidth: '100%'
                       }}
                     >
                       Número de Lote: {requisicion.codLotProd}
@@ -149,7 +149,7 @@ export const PDFTransformacion = ({ data }) => {
                       ...styles.content,
                       marginLeft: 75,
                       marginTop: -5,
-                      maxWidth: "100%",
+                      maxWidth: '100%',
                       fontSize: 8
                     }}
                   >
@@ -172,5 +172,5 @@ export const PDFTransformacion = ({ data }) => {
         </Page>
       </Document>
     </PDFViewer>
-  );
-};
+  )
+}

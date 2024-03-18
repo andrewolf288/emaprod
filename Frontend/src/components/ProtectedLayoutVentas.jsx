@@ -1,6 +1,6 @@
-import { Navigate, useOutlet } from "react-router-dom"
-import { useAuth } from "../hooks/useAuth"
-import NavVentas from "../ventas/components/NavVentas"
+import { Navigate, useOutlet } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import NavVentas from '../ventas/components/NavVentas'
 
 export const ProtectedLayoutVentas = () => {
   // OBTENEMOS INFORMACION DEL LOCALSTORAGE
@@ -8,7 +8,7 @@ export const ProtectedLayoutVentas = () => {
   const outlet = useOutlet()
 
   if (!user) {
-    return <Navigate to={"/login"} />
+    return <Navigate to={'/login'} />
   } else {
     return (
       <>

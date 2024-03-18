@@ -1,196 +1,170 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from "@mui/material/Alert";
-import { getFormulaProductoDetalle } from "./../../helpers/formula_producto/getFormulaProductoDetalle";
-import { TextField } from "@mui/material";
-import { Link } from "react-router-dom";
-import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
-import { FormulaProductoDetalle } from "./../../components/componentes-formula-producto/FormulaProductoDetalle";
-import { FilterPresentacionFinal } from "../../../components/ReferencialesFilters/Producto/FilterPresentacionFinal";
-import { FilterClase } from "../../../components/ReferencialesFilters/Clase/FilterClase";
+import { getFormulaProductoDetalle } from './../../helpers/formula_producto/getFormulaProductoDetalle'
+import { TextField } from '@mui/material'
+import { Link } from 'react-router-dom'
+import FechaPickerDay from './../../../components/Fechas/FechaPickerDay'
+import { FormulaProductoDetalle } from './../../components/componentes-formula-producto/FormulaProductoDetalle'
+import { FilterPresentacionFinal } from '../../../components/ReferencialesFilters/Producto/FilterPresentacionFinal'
+import { FilterClase } from '../../../components/ReferencialesFilters/Clase/FilterClase'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 export const ListFormulaPorProducto = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataFormula, setdataFormula] = useState([]);
-  const [dataFormulaTemp, setdataFormulaTemp] = useState([]);
+  const [dataFormula, setdataFormula] = useState([])
+  const [dataFormulaTemp, setdataFormulaTemp] = useState([])
 
   // ESTADOS PARA EL MODAL
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
-  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
+  const [mostrarDetalle, setMostrarDetalle] = useState(false)
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null)
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
-
-  const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setfeedbackDelete(false);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
-    filter(value, name);
-  };
+    const { name, value } = target
+    filter(value, name)
+  }
 
   const onChangeProducto = ({ label }) => {
-    filter(label, "filterProducto");
-  };
+    filter(label, 'filterProducto')
+  }
 
   const onChangeClase = ({ label }) => {
-    filter(label, "filterClase");
-  };
+    filter(label, 'filterClase')
+  }
   const onChangeDateFechaActualizado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaActualizado");
-  };
+    const dateFilter = newDate.split(' ')
+    filter(dateFilter[0], 'filterFechaActualizado')
+  }
 
   // funcion para filtrar la data
   const filter = (terminoBusqueda, name) => {
-    let resultSearch = [];
+    let resultSearch = []
     switch (name) {
-      case "filterProducto":
-        resultSearch = dataFormula.filter((element) => {
+    case 'filterProducto':
+      resultSearch = dataFormula.filter((element) => {
+        if (
+          element.nomProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    case 'filterClase':
+      resultSearch = dataFormula.filter((element) => {
+        if (
+          element.desCla
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    case 'filterUnidadMedida':
+      resultSearch = dataFormula.filter((element) => {
+        if (
+          element.simMed
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    case 'filterFechaActualizado':
+      resultSearch = dataFormula.filter((element) => {
+        if (element.fecActForProTer !== null) {
+          const aux = element.fecActForProTer.split(' ')
           if (
-            element.nomProd
+            aux[0]
               .toString()
               .toLowerCase()
               .includes(terminoBusqueda.toLowerCase())
           ) {
-            return true;
+            return true
           } else {
-            return false;
+            return false
           }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      case "filterClase":
-        resultSearch = dataFormula.filter((element) => {
-          if (
-            element.desCla
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      case "filterUnidadMedida":
-        resultSearch = dataFormula.filter((element) => {
-          if (
-            element.simMed
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      case "filterFechaActualizado":
-        resultSearch = dataFormula.filter((element) => {
-          if (element.fecActForProTer !== null) {
-            let aux = element.fecActForProTer.split(" ");
-            if (
-              aux[0]
-                .toString()
-                .toLowerCase()
-                .includes(terminoBusqueda.toLowerCase())
-            ) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        });
-        setdataFormulaTemp(resultSearch);
-        break;
-      default:
-        break;
+        } else {
+          return false
+        }
+      })
+      setdataFormulaTemp(resultSearch)
+      break
+    default:
+      break
     }
-  };
+  }
 
   // FUNCION PARA OBTENER LA DATA
   const obtenerDataFormulaPorProducto = async () => {
-    const resultPeticion = await getFormulaProductoDetalle();
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getFormulaProductoDetalle()
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
-      setdataFormula(result);
-      setdataFormulaTemp(result);
+      setdataFormula(result)
+      setdataFormulaTemp(result)
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+      alert(description_error)
     }
-  };
+  }
 
   const closeDetalleFormula = () => {
     // ocultamos el modal
-    setMostrarDetalle(false);
+    setMostrarDetalle(false)
     // dejamos el null la data del detalle
-    setDetalleSeleccionado(null);
-  };
+    setDetalleSeleccionado(null)
+  }
 
   // MOSTRAR Y OCULTAR DETALLE DE REQUISICION MOLIENDA
   const showFormulaDetalle = (idPosElement) => {
-    const formulaDetalle = dataFormulaTemp[idPosElement].forDet;
+    const formulaDetalle = dataFormulaTemp[idPosElement].forDet
     // seteamos la data de la requisicion seleccionada
-    setDetalleSeleccionado(formulaDetalle);
+    setDetalleSeleccionado(formulaDetalle)
     // mostramos el modal
-    setMostrarDetalle(true);
-  };
+    setMostrarDetalle(true)
+  }
 
   // ****** TRAEMOS LA DATA DE LA FORMULA ******
   useEffect(() => {
-    obtenerDataFormulaPorProducto();
-  }, []);
+    obtenerDataFormulaPorProducto()
+  }, [])
 
   return (
     <>
@@ -201,7 +175,7 @@ export const ListFormulaPorProducto = () => {
               {/* BOTON AGREGAR FORMULA */}
               <div className="col-6">
                 <Link
-                  to={"/produccion/formula-producto/crear"}
+                  to={'/produccion/formula-producto/crear'}
                   className="btn btn-primary d-inline-flex justify-content-end align-items-center"
                 >
                   <svg
@@ -259,10 +233,10 @@ export const ListFormulaPorProducto = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
+                      }
                     }}
                   >
                     <TableCell align="left" width={220}>
@@ -283,9 +257,9 @@ export const ListFormulaPorProducto = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            color: 'black',
+                            background: 'white'
+                          }
                         }}
                       />
                     </TableCell>
@@ -307,7 +281,7 @@ export const ListFormulaPorProducto = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left">{row.nomProd}</TableCell>
@@ -320,7 +294,7 @@ export const ListFormulaPorProducto = () => {
                           <div className="btn-toolbar">
                             <button
                               onClick={() => {
-                                showFormulaDetalle(i);
+                                showFormulaDetalle(i)
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -379,5 +353,5 @@ export const ListFormulaPorProducto = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
