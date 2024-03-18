@@ -1,38 +1,37 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import { IconButton } from "@mui/material";
-import CheckCircle from "@mui/icons-material/CheckCircle";
-import { styled } from "@mui/material/styles";
+import React from 'react'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import { IconButton } from '@mui/material'
+import CheckCircle from '@mui/icons-material/CheckCircle'
+import { styled } from '@mui/material/styles'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
-}));
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}))
 
 export const DialogTerminarIngresosProductoProgramado = ({
   data,
-  handleAccept,
+  handleAccept
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
-  const cantidadIngresada = parseInt(data.canTotIngProdFin);
-  const cantidadProgramada = parseInt(data.canTotProgProdFin);
-  const variacion = cantidadProgramada - cantidadIngresada;
+    setOpen(false)
+  }
+  const cantidadIngresada = parseInt(data.canTotIngProdFin)
+  const cantidadProgramada = parseInt(data.canTotProgProdFin)
+  const variacion = cantidadProgramada - cantidadIngresada
 
   return (
     <div>
@@ -47,7 +46,7 @@ export const DialogTerminarIngresosProductoProgramado = ({
       </IconButton>
 
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -67,17 +66,17 @@ export const DialogTerminarIngresosProductoProgramado = ({
           <strong
             className={
               variacion < 0
-                ? "text-danger"
+                ? 'text-danger'
                 : variacion === 0
-                ? "text-success"
-                : "text-primary"
+                  ? 'text-success'
+                  : 'text-primary'
             }
           >
             {variacion < 0
-              ? "La cantidad ingresada es mayor a la programada, ¿Quieres realizar un cuadre?"
+              ? 'La cantidad ingresada es mayor a la programada, ¿Quieres realizar un cuadre?'
               : variacion === 0
-              ? "La cantidad ingresa es igual a la cantidad programada. No se necesita realizar devoluciones"
-              : "La cantidad ingresa es menor a la cantidad programada. Se deben realizar devoluciones"}
+                ? 'La cantidad ingresa es igual a la cantidad programada. No se necesita realizar devoluciones'
+                : 'La cantidad ingresa es menor a la cantidad programada. Se deben realizar devoluciones'}
           </strong>
         </DialogContent>
         <DialogActions>
@@ -86,11 +85,11 @@ export const DialogTerminarIngresosProductoProgramado = ({
             Cerrar
           </Button>
 
-          {/* BOTON PARA ACEPTAR EL TERMINO DE LA ENTREGA DE PRESENTACION FINAL*/}
+          {/* BOTON PARA ACEPTAR EL TERMINO DE LA ENTREGA DE PRESENTACION FINAL */}
           <Button
             onClick={() => {
-              handleClose();
-              handleAccept(data, variacion);
+              handleClose()
+              handleAccept(data, variacion)
             }}
             color="info"
             variant="contained"
@@ -100,5 +99,5 @@ export const DialogTerminarIngresosProductoProgramado = ({
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
-};
+  )
+}

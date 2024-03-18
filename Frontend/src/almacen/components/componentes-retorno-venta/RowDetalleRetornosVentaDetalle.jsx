@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 import {
   Table,
   TableBody,
@@ -14,28 +14,26 @@ import {
   DialogActions,
   Dialog,
   Button,
-  Checkbox,
   Box
-} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { styled } from "@mui/material/styles";
-import { getRetornoLoteStock } from "../../helpers/retorno-venta/getRetornoLoteStock";
+} from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { styled } from '@mui/material/styles'
+import { getRetornoLoteStock } from '../../helpers/retorno-venta/getRetornoLoteStock'
 // import { getSalidasLoteStockDisponibles } from "../../helpers/salida-venta/getSalidasLoteStockDisponibles";
 
-const ITEM_HEIGHT = 48;
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
+  '& .MuiDialogContent-root': {
     padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
+  '& .MuiDialogActions-root': {
     padding: theme.spacing(1)
   }
-}));
+}))
 
-function parseFecha(fecha) {
-  const splitFecha = fecha.split(" ");
-  return splitFecha[0];
+function parseFecha (fecha) {
+  const splitFecha = fecha.split(' ')
+  return splitFecha[0]
 }
 
 export const RowDetalleRetornosVentaDetalle = ({
@@ -46,8 +44,8 @@ export const RowDetalleRetornosVentaDetalle = ({
   setfeedbackMessages,
   handleClickFeeback
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
-  const { detSal } = detalle;
+  const [disabledInput, setdisabledInput] = useState(true)
+  const { detSal } = detalle
 
   return (
     <div className="mt-2">
@@ -56,7 +54,7 @@ export const RowDetalleRetornosVentaDetalle = ({
       </p>
       <TableContainer key={detalle.refProdc} component={Paper}>
         <Table>
-          <TableHead style={{ backgroundColor: "#FEE7BC" }}>
+          <TableHead style={{ backgroundColor: '#FEE7BC' }}>
             <TableRow>
               <TableCell>
                 <b>Lote</b>
@@ -86,7 +84,7 @@ export const RowDetalleRetornosVentaDetalle = ({
                   <TextField
                     size="small"
                     onChange={(e) => {
-                      onUpdateSalidaStock(detalle.idProdt, item.refProdc, e);
+                      onUpdateSalidaStock(detalle.idProdt, item.refProdc, e)
                     }}
                     type="number"
                     name="canSalLotProd"
@@ -94,8 +92,8 @@ export const RowDetalleRetornosVentaDetalle = ({
                       style: {
                         color:
                           item.canSalLotProd > item.canSalLotProdSal
-                            ? "red"
-                            : "green"
+                            ? 'red'
+                            : 'green'
                       }
                     }}
                     onWheel={(e) => e.target.blur()}
@@ -107,32 +105,34 @@ export const RowDetalleRetornosVentaDetalle = ({
                 <TableCell>{parseFecha(item.fecProdIni)}</TableCell>
                 <TableCell>{parseFecha(item.fecVenLotProd)}</TableCell>
                 <TableCell>
-                  {detalle.fueComDet === 0 ? (
-                    <div className="btn-toolbar">
-                      <IconButton
-                        aria-label="edit"
-                        size="large"
-                        color="warning"
-                        onClick={(e) => {
-                          setdisabledInput(!disabledInput);
-                        }}
-                      >
-                        <EditIcon fontSize="inherit" />
-                      </IconButton>
-                      <IconButton
-                        aria-label="delete"
-                        size="large"
-                        color="error"
-                        onClick={() => {
-                          onDeleteSalidaStock(detalle.idProdt, item.refProdc);
-                        }}
-                      >
-                        <DeleteIcon fontSize="inherit" />
-                      </IconButton>
-                    </div>
-                  ) : (
-                    <p>Sin acciones</p>
-                  )}
+                  {detalle.fueComDet === 0
+                    ? (
+                      <div className="btn-toolbar">
+                        <IconButton
+                          aria-label="edit"
+                          size="large"
+                          color="warning"
+                          onClick={(e) => {
+                            setdisabledInput(!disabledInput)
+                          }}
+                        >
+                          <EditIcon fontSize="inherit" />
+                        </IconButton>
+                        <IconButton
+                          aria-label="delete"
+                          size="large"
+                          color="error"
+                          onClick={() => {
+                            onDeleteSalidaStock(detalle.idProdt, item.refProdc)
+                          }}
+                        >
+                          <DeleteIcon fontSize="inherit" />
+                        </IconButton>
+                      </div>
+                    )
+                    : (
+                      <p>Sin acciones</p>
+                    )}
                 </TableCell>
               </TableRow>
             ))}
@@ -151,8 +151,8 @@ export const RowDetalleRetornosVentaDetalle = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 // componente dialog
 const DialogSelectLoteRetorno = ({
@@ -161,110 +161,110 @@ const DialogSelectLoteRetorno = ({
   setfeedbackMessages,
   handleClickFeeback
 }) => {
-  const { idProdt, detSal } = detalle;
-  const [cantidadTotal, setCantidadTotal] = useState(0);
+  const { idProdt, detSal } = detalle
+  const [cantidadTotal, setCantidadTotal] = useState(0)
   const [dataLoteRetorno, setdataLoteRetorno] = useState({
-    codLotProd: "",
-    yearlot: "",
+    codLotProd: '',
+    yearlot: '',
     canRetLotProd: 0
-  });
-  const { codLotProd, yearlot, canRetLotProd } = dataLoteRetorno;
+  })
+  const { codLotProd, yearlot, canRetLotProd } = dataLoteRetorno
 
   // manejadores de dialogo
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   // guardamos los lotes de salida
   const guardarLotesSalida = async () => {
     // primero debemos verificar que se ingrese un numero de lote y un año, ademas de una cantidad mayor a 0
-    let handledErrors = "";
+    let handledErrors = ''
     if (codLotProd.length === 0 || yearlot.length === 0 || canRetLotProd <= 0) {
       if (codLotProd.length === 0) {
-        handledErrors += "No se proporciono el codigo de lote.\n";
+        handledErrors += 'No se proporciono el codigo de lote.\n'
       }
 
       if (yearlot.length === 0) {
-        handledErrors += "No se proporciono el año de creacion del lote.\n";
+        handledErrors += 'No se proporciono el año de creacion del lote.\n'
       }
 
       if (canRetLotProd <= 0) {
-        handledErrors += "Debes proporcionar una cantidad mayor a 0.\n";
+        handledErrors += 'Debes proporcionar una cantidad mayor a 0.\n'
       }
 
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error: handledErrors
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     } else {
       const body = {
         codLot: codLotProd, // codigo de lote
         anioCreLote: yearlot, // año creacion de lote
-        idProdt: idProdt // producto detalle
-      };
+        idProdt // producto detalle
+      }
       // nos comunicamos con el backend para comprobar la existencia
-      const resultPeticion = await getRetornoLoteStock(body);
-      const { message_error, description_error, result } = resultPeticion;
+      const resultPeticion = await getRetornoLoteStock(body)
+      const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
         // ahora debemos comprobar que el lote traido no se encuentre en el detalle
         const findElementLote = detSal.find(
           (element) =>
-            element.codLotProd === result["codLotProd"] &&
-            element.fecProdIni === result["fecProdIni"]
-        );
+            element.codLotProd === result.codLotProd &&
+            element.fecProdIni === result.fecProdIni
+        )
 
         if (findElementLote) {
           setfeedbackMessages({
-            style_message: "warning",
+            style_message: 'warning',
             feedback_description_error:
-              "Este lote ya se encuentra en el detalle"
-          });
-          handleClickFeeback();
+              'Este lote ya se encuentra en el detalle'
+          })
+          handleClickFeeback()
         } else {
           // llamamos a la funcion para agregar al detalle
           const formatResult = {
             ...result,
             canSalLotProd: parseInt(canRetLotProd),
             canSalLotProdSal: 0
-          };
+          }
 
-          onAddSalidaStock(detalle.idProdt, formatResult);
+          onAddSalidaStock(detalle.idProdt, formatResult)
 
           setfeedbackMessages({
-            style_message: "success",
-            feedback_description_error: "Se agrego exitosamente"
-          });
-          handleClickFeeback();
+            style_message: 'success',
+            feedback_description_error: 'Se agrego exitosamente'
+          })
+          handleClickFeeback()
         }
       } else {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error: description_error
-        });
-        handleClickFeeback();
+        })
+        handleClickFeeback()
       }
     }
-  };
+  }
 
   // const change cantidad
   const onChangeCantidadRetorno = ({ target }) => {
-    const { value } = target;
+    const { value } = target
     setdataLoteRetorno({
       ...dataLoteRetorno,
       canRetLotProd: value
-    });
-  };
+    })
+  }
 
   useEffect(() => {
-    const parseCantidadRetorno = parseInt(canRetLotProd);
-    const total = isNaN(parseCantidadRetorno) ? 0 : parseCantidadRetorno;
-    setCantidadTotal(total + parseInt(detalle.canOpeFacDetAct));
-  }, [canRetLotProd]);
+    const parseCantidadRetorno = parseInt(canRetLotProd)
+    const total = isNaN(parseCantidadRetorno) ? 0 : parseCantidadRetorno
+    setCantidadTotal(total + parseInt(detalle.canOpeFacDetAct))
+  }, [canRetLotProd])
 
   return (
     <div className="d-flex justify-content-center mt-3">
@@ -273,7 +273,7 @@ const DialogSelectLoteRetorno = ({
       </button>
 
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -283,7 +283,7 @@ const DialogSelectLoteRetorno = ({
         </DialogTitle>
 
         <DialogContent dividers>
-          <Box sx={{ display: "flex", gap: 4 }}>
+          <Box sx={{ display: 'flex', gap: 4 }}>
             <div className="border p-2">
               <p>
                 <strong>Cantidad requerida: </strong>
@@ -296,8 +296,8 @@ const DialogSelectLoteRetorno = ({
                 <span
                   className={
                     detalle.canOpeFacDetAct === detalle.canOpeFacDet
-                      ? "text-success"
-                      : "text-danger"
+                      ? 'text-success'
+                      : 'text-danger'
                   }
                 >
                   {detalle.canOpeFacDetAct}
@@ -310,8 +310,8 @@ const DialogSelectLoteRetorno = ({
                 <span
                   className={
                     cantidadTotal === detalle.canOpeFacDet
-                      ? "text-success"
-                      : "text-danger"
+                      ? 'text-success'
+                      : 'text-danger'
                   }
                 >
                   {cantidadTotal}
@@ -327,11 +327,11 @@ const DialogSelectLoteRetorno = ({
                 <input
                   value={codLotProd}
                   onChange={({ target }) => {
-                    const { value } = target;
+                    const { value } = target
                     setdataLoteRetorno({
                       ...dataLoteRetorno,
                       codLotProd: value
-                    });
+                    })
                   }}
                   type="text"
                   size="small"
@@ -345,11 +345,11 @@ const DialogSelectLoteRetorno = ({
                 <input
                   value={yearlot}
                   onChange={({ target }) => {
-                    const { value } = target;
+                    const { value } = target
                     setdataLoteRetorno({
                       ...dataLoteRetorno,
                       yearlot: value
-                    });
+                    })
                   }}
                   type="text"
                   size="small"
@@ -391,5 +391,5 @@ const DialogSelectLoteRetorno = ({
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
-};
+  )
+}

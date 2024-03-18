@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { DetalleAgregacionProduccion } from "./DetalleAgregacionProduccion";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import { IconButton } from "@mui/material";
+import React from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { DetalleAgregacionProduccion } from './DetalleAgregacionProduccion'
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
+import { IconButton } from '@mui/material'
 
 export const RowDetalleAgregacionLoteProduccion = ({
   detalle,
@@ -15,7 +15,7 @@ export const RowDetalleAgregacionLoteProduccion = ({
     <TableRow
       key={detalle.id}
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 }
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell component="th" scope="detalle">
@@ -28,10 +28,10 @@ export const RowDetalleAgregacionLoteProduccion = ({
         <span
           className={
             detalle.idReqEst === 1
-              ? "badge text-bg-danger"
+              ? 'badge text-bg-danger'
               : detalle.idReqEst === 2
-              ? "badge text-bg-warning"
-              : "badge text-bg-success"
+                ? 'badge text-bg-warning'
+                : 'badge text-bg-success'
           }
         >
           {detalle.desReqEst}
@@ -50,7 +50,7 @@ export const RowDetalleAgregacionLoteProduccion = ({
             aria-label="delete"
             size="large"
             onClick={() => {
-              onRenderPDF(detalle, index);
+              onRenderPDF(detalle, index)
             }}
             color="error"
           >
@@ -59,5 +59,5 @@ export const RowDetalleAgregacionLoteProduccion = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

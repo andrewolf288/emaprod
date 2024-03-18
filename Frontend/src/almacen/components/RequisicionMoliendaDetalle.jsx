@@ -1,13 +1,13 @@
-import React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Link } from "react-router-dom";
-import "../styles/style-modal.css";
+import React from 'react'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import { Link } from 'react-router-dom'
+import '../styles/style-modal.css'
 
 export const RequisicionMoliendaDetalle = ({ detalle, onClose }) => {
   return (
@@ -16,7 +16,7 @@ export const RequisicionMoliendaDetalle = ({ detalle, onClose }) => {
       tabIndex="-1"
       role="dialog"
       style={{
-        display: detalle !== null ? "block" : "none",
+        display: detalle !== null ? 'block' : 'none'
       }}
     >
       <div className="modal-dialog modal-lg" role="document">
@@ -40,10 +40,10 @@ export const RequisicionMoliendaDetalle = ({ detalle, onClose }) => {
                   <TableHead>
                     <TableRow
                       sx={{
-                        "& th": {
-                          color: "rgba(96, 96, 96)",
-                          backgroundColor: "#f5f5f5",
-                        },
+                        '& th': {
+                          color: 'rgba(96, 96, 96)',
+                          backgroundColor: '#f5f5f5'
+                        }
                       }}
                     >
                       <TableCell align="left" width={150}>
@@ -65,7 +65,7 @@ export const RequisicionMoliendaDetalle = ({ detalle, onClose }) => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -76,8 +76,8 @@ export const RequisicionMoliendaDetalle = ({ detalle, onClose }) => {
                           <span
                             className={
                               row.idReqMolDetEst === 1
-                                ? "badge text-bg-danger"
-                                : "badge text-bg-success"
+                                ? 'badge text-bg-danger'
+                                : 'badge text-bg-success'
                             }
                           >
                             {row.desReqMolDetEst}
@@ -88,12 +88,12 @@ export const RequisicionMoliendaDetalle = ({ detalle, onClose }) => {
                             <Link
                               className={
                                 row.idReqMolDetEst !== 1
-                                  ? "btn btn-secondary me-2 btn-lg"
-                                  : "btn btn-warning me-2 btn-lg"
+                                  ? 'btn btn-secondary me-2 btn-lg'
+                                  : 'btn btn-warning me-2 btn-lg'
                               }
                               style={{
                                 pointerEvents:
-                                  row.idReqMolDetEst !== 1 ? "none" : "",
+                                  row.idReqMolDetEst !== 1 ? 'none' : ''
                               }}
                               data-toggle="modal"
                               to={`/almacen/salidas-stock/crear?idReqMolDet=${row.id}`}
@@ -110,11 +110,11 @@ export const RequisicionMoliendaDetalle = ({ detalle, onClose }) => {
                               </svg>
                             </Link>
                             <button
-                              disabled={row.idReqMolDetEst !== 1 ? true : false}
+                              disabled={row.idReqMolDetEst !== 1}
                               className={
                                 row.idReqMolDetEst !== 1
-                                  ? "btn btn-secondary btn-lg"
-                                  : "btn btn-success btn-lg"
+                                  ? 'btn btn-secondary btn-lg'
+                                  : 'btn btn-success btn-lg'
                               }
                             >
                               <svg
@@ -150,5 +150,5 @@ export const RequisicionMoliendaDetalle = ({ detalle, onClose }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

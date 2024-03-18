@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from 'react'
 import {
   Table,
   TableBody,
@@ -6,13 +6,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  IconButton
-} from "@mui/material";
-import { DialogUpdateDetalleRequisicionIngresoProducto } from "./DialogUpdateDetalleRequisicionIngresoProducto";
-import { DialogDeleteDetalleRequisicionIngresoProducto } from "./DialogDeleteDetalleRequisicionIngresoProducto";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import { DialogSalidaDetalleRequisicionIngresoProducto } from "./DialogSalidaDetalleRequisicionIngresoProducto";
+  Paper
+} from '@mui/material'
+import { DialogUpdateDetalleRequisicionIngresoProducto } from './DialogUpdateDetalleRequisicionIngresoProducto'
+import { DialogDeleteDetalleRequisicionIngresoProducto } from './DialogDeleteDetalleRequisicionIngresoProducto'
+import { DialogSalidaDetalleRequisicionIngresoProducto } from './DialogSalidaDetalleRequisicionIngresoProducto'
 
 export const CardRequisicionIngresoProductos = ({
   requisicion,
@@ -28,7 +26,7 @@ export const CardRequisicionIngresoProductos = ({
       <div className="card-body">
         <TableContainer component={Paper}>
           <Table>
-            <TableHead style={{ backgroundColor: "#F3DBB6" }}>
+            <TableHead style={{ backgroundColor: '#F3DBB6' }}>
               <TableRow>
                 <TableCell>
                   <b>Ref.</b>
@@ -60,11 +58,11 @@ export const CardRequisicionIngresoProductos = ({
                   <span
                     className={
                       requisicion.esComProdIng === 0
-                        ? "badge text-bg-danger"
-                        : "badge text-bg-success"
+                        ? 'badge text-bg-danger'
+                        : 'badge text-bg-success'
                     }
                   >
-                    {requisicion.esComProdIng === 0 ? "Requerido" : "Completo"}
+                    {requisicion.esComProdIng === 0 ? 'Requerido' : 'Completo'}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -93,5 +91,5 @@ export const CardRequisicionIngresoProductos = ({
         </TableContainer>
       </div>
     </div>
-  );
-};
+  )
+}

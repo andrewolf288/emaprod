@@ -1,19 +1,19 @@
-import React from "react";
-import { NavLink, Link } from "react-router-dom";
-import logo from "../../assets/logo-oficial.png";
-import { useAuth } from "../../hooks/useAuth";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../../assets/logo-oficial.png'
+import { useAuth } from '../../hooks/useAuth'
 
 const NavAlmacen = () => {
-  const { logout } = useAuth();
+  const { logout } = useAuth()
   const logoutUser = () => {
     // cerramos sesion
-    logout();
-  };
+    logout()
+  }
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={"/almacen"}>
+          <Link className="navbar-brand" to={'/almacen'}>
             <img
               src={logo}
               alt="Logo"
@@ -49,7 +49,7 @@ const NavAlmacen = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/almacen/lote-produccion"}
+                      to={'/almacen/lote-produccion'}
                     >
                       Ordenes produccion
                     </Link>
@@ -57,7 +57,7 @@ const NavAlmacen = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/almacen/produccion-agregaciones"}
+                      to={'/almacen/produccion-agregaciones'}
                     >
                       Agregaciones
                     </Link>
@@ -78,7 +78,7 @@ const NavAlmacen = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/almacen/entradas-stock"}
+                      to={'/almacen/entradas-stock'}
                     >
                       Administrar
                     </Link>
@@ -87,7 +87,7 @@ const NavAlmacen = () => {
                     <div
                       className="dropdown-item"
                       onClick={() => {
-                        window.open("/almacen/entradas-stock/crear", "_blank");
+                        window.open('/almacen/entradas-stock/crear', '_blank')
                       }}
                     >
                       Crear
@@ -109,7 +109,7 @@ const NavAlmacen = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/almacen/requisicion-seleccion"}
+                      to={'/almacen/requisicion-seleccion'}
                     >
                       Administrar
                     </Link>
@@ -138,14 +138,14 @@ const NavAlmacen = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/almacen/requisicion-molienda"}
+                      to={'/almacen/requisicion-molienda'}
                     >
                       Administrar
                     </Link>
                   </li>
                 </ul>
               </li>
-              
+
               {/* REQUISICION FRESCOS */}
               <li className="nav-item dropdown">
                 <button
@@ -160,7 +160,7 @@ const NavAlmacen = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/almacen/requisicion-frescos"}
+                      to={'/almacen/requisicion-frescos'}
                     >
                       Administrar
                     </Link>
@@ -235,7 +235,7 @@ const NavAlmacen = () => {
         </div>
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default NavAlmacen;
+export default NavAlmacen

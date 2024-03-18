@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import FechaPicker from "./../../components/Fechas/FechaPicker";
+import React, { useState } from 'react'
 
 export const RowSalidaDisponibleSeleccion = ({
   index,
   element,
-  onChangeInputValue,
+  onChangeInputValue
 }) => {
-  const [disabledInput, setDisabledInput] = useState(true);
+  const [disabledInput, setDisabledInput] = useState(true)
 
   const handleChange = ({ target }, idSalida) => {
-    const { name, value } = target;
-    onChangeInputValue(name, value, idSalida);
-  };
+    const { name, value } = target
+    onChangeInputValue(name, value, idSalida)
+  }
 
   return (
     <tr>
@@ -24,7 +23,7 @@ export const RowSalidaDisponibleSeleccion = ({
           name="canEntStoReqSel"
           value={element.canEntStoReqSel}
           onChange={(e) => {
-            handleChange(e, element.id);
+            handleChange(e, element.id)
           }}
           type="number"
           disabled={disabledInput}
@@ -36,7 +35,7 @@ export const RowSalidaDisponibleSeleccion = ({
           className="me-2"
           value={element.merReqSel}
           onChange={(e) => {
-            handleChange(e, element.id);
+            handleChange(e, element.id)
           }}
           type="number"
           disabled={disabledInput}
@@ -46,8 +45,8 @@ export const RowSalidaDisponibleSeleccion = ({
         <button
           className="btn btn-success"
           onClick={(e) => {
-            e.preventDefault();
-            setDisabledInput(!disabledInput);
+            e.preventDefault()
+            setDisabledInput(!disabledInput)
           }}
         >
           <svg
@@ -63,5 +62,5 @@ export const RowSalidaDisponibleSeleccion = ({
         </button>
       </td>
     </tr>
-  );
-};
+  )
+}

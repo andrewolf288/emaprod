@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { FilterMotivoDevolucion } from "../../../components/ReferencialesFilters/MotivoDevolucion/FilterMotivoDevolucion";
-import { TextField } from "@mui/material";
+import React, { useState } from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { FilterMotivoDevolucion } from '../../../components/ReferencialesFilters/MotivoDevolucion/FilterMotivoDevolucion'
+import { TextField } from '@mui/material'
 
 export const RowDetalleDevolucionLoteProduccionEdit = ({
   detalle,
   onChangeInputDetalle,
   onChangeMotivoDevolucion,
-  onDeleteItemDetalle,
+  onDeleteItemDetalle
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
+  const [disabledInput, setdisabledInput] = useState(true)
 
   const handleDetalleChangeMotivoDevolucion = (value) => {
-    onChangeMotivoDevolucion(value.id, detalle.idProdt);
-  };
+    onChangeMotivoDevolucion(value.id, detalle.idProdt)
+  }
   return (
     <TableRow>
       {/**
@@ -26,14 +26,14 @@ export const RowDetalleDevolucionLoteProduccionEdit = ({
       <TableCell>
         <FilterMotivoDevolucion
           onNewInput={handleDetalleChangeMotivoDevolucion}
-          //disabled={disabledInput}
+          // disabled={disabledInput}
         />
       </TableCell>
       <TableCell>
         <TextField
           disabled={disabledInput}
           onChange={(e) => {
-            onChangeInputDetalle(e, detalle.idProdt);
+            onChangeInputDetalle(e, detalle.idProdt)
           }}
           type="number"
           autoComplete="off"
@@ -46,7 +46,7 @@ export const RowDetalleDevolucionLoteProduccionEdit = ({
           {/* EDITAR */}
           <button
             onClick={() => {
-              setdisabledInput(!disabledInput);
+              setdisabledInput(!disabledInput)
             }}
             className="btn btn-success me-2"
           >
@@ -65,7 +65,7 @@ export const RowDetalleDevolucionLoteProduccionEdit = ({
           {/* ELIMINAR */}
           <button
             onClick={() => {
-              onDeleteItemDetalle(detalle.idProdt);
+              onDeleteItemDetalle(detalle.idProdt)
             }}
             className="btn btn-danger"
           >
@@ -83,5 +83,5 @@ export const RowDetalleDevolucionLoteProduccionEdit = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

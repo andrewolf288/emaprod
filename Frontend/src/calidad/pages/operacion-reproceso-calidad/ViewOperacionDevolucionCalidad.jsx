@@ -366,7 +366,7 @@ export const ViewOperacionDevolucionCalidad = () => {
   return (
     <>
       <div className="container-fluid px-4">
-        <h1 className="mt-4 text-center">Detalle de Operacion devolucion</h1>
+        <h1 className="mt-4 text-center">Detalle de Operacion Devolucion Calidad</h1>
         <div className="row mt-4 mx-4">
           <div className="card d-flex">
             <h6 className="card-header">Datos del Retorno Venta</h6>

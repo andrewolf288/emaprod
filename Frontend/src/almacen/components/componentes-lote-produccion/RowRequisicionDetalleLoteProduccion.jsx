@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { ComponentActionRequisicionDetalle } from "../../../components/Otros/ComponentActionRequisicionDetalle";
+import React from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { ComponentActionRequisicionDetalle } from '../../../components/Otros/ComponentActionRequisicionDetalle'
 
 export const RowRequisicionDetalleLoteProduccion = ({
   detalle,
@@ -10,7 +10,7 @@ export const RowRequisicionDetalleLoteProduccion = ({
   onCreateSalidaTotal,
   onCreateSalidaParcial,
   onTerminarSalidaParcial,
-  show,
+  show
 }) => {
   return (
     <TableRow>
@@ -19,10 +19,10 @@ export const RowRequisicionDetalleLoteProduccion = ({
         <span
           className={
             detalle.idReqDetEst === 1
-              ? "badge text-bg-danger p-2"
+              ? 'badge text-bg-danger p-2'
               : detalle.idReqDetEst === 3
-              ? "badge text-bg-warning p-2"
-              : "badge text-bg-success p-2"
+                ? 'badge text-bg-warning p-2'
+                : 'badge text-bg-success p-2'
           }
         >
           {detalle.desReqDetEst}
@@ -46,5 +46,5 @@ export const RowRequisicionDetalleLoteProduccion = ({
         </TableCell>
       )}
     </TableRow>
-  );
-};
+  )
+}

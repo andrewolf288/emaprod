@@ -1,17 +1,17 @@
-import { TextField } from "@mui/material";
-import React, { useState } from "react";
+import { TextField } from '@mui/material'
+import React, { useState } from 'react'
 
 export const DialogUpdateDetalleRequisicion = ({
   itemUpdate,
   onClose,
-  onUpdateItemSelected,
+  onUpdateItemSelected
 }) => {
-  const [inputValue, setinputValue] = useState(0.0);
+  const [inputValue, setinputValue] = useState(0.0)
 
   const handleInputValue = ({ target }) => {
-    const { value, name } = target;
-    setinputValue(value);
-  };
+    const { value } = target
+    setinputValue(value)
+  }
 
   return (
     <div
@@ -19,7 +19,7 @@ export const DialogUpdateDetalleRequisicion = ({
       tabIndex="-1"
       role="dialog"
       style={{
-        display: itemUpdate !== null ? "block" : "none",
+        display: itemUpdate !== null ? 'block' : 'none'
       }}
     >
       <div className="modal-dialog modal-lg" role="document">
@@ -40,19 +40,19 @@ export const DialogUpdateDetalleRequisicion = ({
             <b className="fw-bolder text-danger d-block mb-2">
               ¿Quieres actualizar este detalle?
             </b>
-              <b className="me-2 d-block">Materia Prima:</b>
-              {itemUpdate.nomProd}
-              <b className="me-2 d-block mt-2">Cantidad:</b>
-              {itemUpdate.canReqDet}
-              <span className="ms-2">{itemUpdate.simMed}</span>
-              <b className="me-2 d-block mt-2">Nueva cantidad</b>
-              <TextField
-                value={inputValue}
-                onChange={handleInputValue}
-                size="small"
-                type="number"
-                autoComplete="off"
-              />
+            <b className="me-2 d-block">Materia Prima:</b>
+            {itemUpdate.nomProd}
+            <b className="me-2 d-block mt-2">Cantidad:</b>
+            {itemUpdate.canReqDet}
+            <span className="ms-2">{itemUpdate.simMed}</span>
+            <b className="me-2 d-block mt-2">Nueva cantidad</b>
+            <TextField
+              value={inputValue}
+              onChange={handleInputValue}
+              size="small"
+              type="number"
+              autoComplete="off"
+            />
             {/* ¿Quieres actualizar este detalle?
             <b className="me-2">Materia Prima:</b>
               {itemUpdate.nomProd}
@@ -83,7 +83,7 @@ export const DialogUpdateDetalleRequisicion = ({
               className="btn btn-danger"
               data-dismiss="modal"
               onClick={() => {
-                onUpdateItemSelected(itemUpdate, inputValue);
+                onUpdateItemSelected(itemUpdate, inputValue)
               }}
             >
               Aceptar
@@ -92,5 +92,5 @@ export const DialogUpdateDetalleRequisicion = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

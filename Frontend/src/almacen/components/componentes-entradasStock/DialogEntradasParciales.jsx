@@ -1,18 +1,18 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import React from 'react'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
 
 export const DialogEntradasParciales = (props) => {
-  const { open, handleClose, handleAccept, data } = props;
+  const { open, handleClose, handleAccept, data } = props
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -55,7 +55,7 @@ export const DialogEntradasParciales = (props) => {
         </Button>
         <Button
           onClick={() => {
-            handleAccept(data);
+            handleAccept(data)
           }}
           color="info"
           variant="contained"
@@ -64,5 +64,5 @@ export const DialogEntradasParciales = (props) => {
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}

@@ -1,19 +1,18 @@
-import React from "react";
-import { Text, View } from "@react-pdf/renderer";
-import { stylesPDF } from "../pdf-components/stylePDF";
-import { _parseInt } from "../../../utils/functions/ParseInt";
+import React from 'react'
+import { Text, View } from '@react-pdf/renderer'
+import { stylesPDF } from '../pdf-components/stylePDF'
 
-const styles = stylesPDF;
+const styles = stylesPDF
 
 export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
-  const { detReqDev } = requisicion;
+  const { detReqDev } = requisicion
 
   return (
     <View>
       <Text
         style={{
           ...styles.title,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           fontSize: 7,
           marginLeft: -450,
           marginTop: 10
@@ -31,7 +30,7 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               style={{
                 ...styles.gridTitle,
                 flex: 4,
-                textAlign: "center"
+                textAlign: 'center'
               }}
             >
               Presentación
@@ -41,7 +40,7 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
           </View>
           <View
             // key={index}
-            style={[styles.gridRow, { backgroundColor: "#a4a8b0" }]}
+            style={[styles.gridRow, { backgroundColor: '#a4a8b0' }]}
           >
             <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
               {requisicion.idProdFin}
@@ -56,7 +55,7 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               style={{
                 ...styles.gridContent_p,
                 flex: 4,
-                textAlign: "left"
+                textAlign: 'left'
               }}
             >
               {requisicion.nomProd}
@@ -72,7 +71,7 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
       <Text
         style={{
           ...styles.title,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           fontSize: 7,
           marginLeft: -440,
           marginTop: -12
@@ -88,11 +87,11 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
             <Text
               style={{
                 flex: 1,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                //border: "1px solid black",
-                maxWidth: "40px"
+                // border: "1px solid black",
+                maxWidth: '40px'
               }}
             >
               EMAPROD
@@ -100,10 +99,10 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
             <Text
               style={{
                 flex: 3,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "40px"
+                maxWidth: '40px'
               }}
             >
               Motivo
@@ -112,8 +111,8 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               style={{
                 ...styles.gridTitle,
                 flex: 4,
-                textAlign: "center"
-                //border: "1px solid black",
+                textAlign: 'center'
+                // border: "1px solid black",
               }}
             >
               Descripción de Item
@@ -121,10 +120,10 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
             <Text
               style={{
                 flex: 1,
-                textAlign: "center",
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "30px"
-                //border: "1px solid black",
+                maxWidth: '30px'
+                // border: "1px solid black",
               }}
             >
               U.M
@@ -132,11 +131,11 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
             <Text
               style={{
                 flex: 1,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                //border: "1px solid black",
-                maxWidth: "40px"
+                // border: "1px solid black",
+                maxWidth: '40px'
               }}
             >
               Cantidad
@@ -147,7 +146,7 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               key={index}
               style={[
                 styles.gridRow,
-                index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {}
+                index % 2 === 0 ? { backgroundColor: '#a4a8b0' } : {}
               ]}
             >
               <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
@@ -159,9 +158,9 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 5.5,
-                  maxWidth: "40px"
+                  maxWidth: '40px'
                 }}
               >
                 {detalle.codProd2}
@@ -169,9 +168,9 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               <Text
                 style={{
                   flex: 3,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 5.5,
-                  maxWidth: "40px"
+                  maxWidth: '40px'
                 }}
               >
                 {detalle.desProdDevMot}
@@ -180,8 +179,8 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                 style={{
                   ...styles.gridContent_p,
                   flex: 4,
-                  textAlign: "left"
-                  //border: "1px solid black",
+                  textAlign: 'left'
+                  // border: "1px solid black",
                 }}
               >
                 {detalle.nomProd}
@@ -189,10 +188,10 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 5.5,
-                  maxWidth: "25px"
-                  //border: "1px solid black",
+                  maxWidth: '25px'
+                  // border: "1px solid black",
                 }}
               >
                 {detalle.simMed}
@@ -201,10 +200,10 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 6.5,
-                  maxWidth: "40px"
-                  //border: "1px solid black",
+                  maxWidth: '40px'
+                  // border: "1px solid black",
                 }}
               >
                 {/* {_parseInt(detalle, "canReqDet")} */}
@@ -218,7 +217,7 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
       <Text
         style={{
           ...styles.title,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           fontSize: 7,
           marginLeft: -440,
           marginTop: -12
@@ -235,11 +234,11 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
             <Text
               style={{
                 flex: 1,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                //border: "1px solid black",
-                maxWidth: "40px"
+                // border: "1px solid black",
+                maxWidth: '40px'
               }}
             >
               EMAPROD
@@ -248,8 +247,8 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               style={{
                 ...styles.gridTitle,
                 flex: 4,
-                textAlign: "center"
-                //border: "1px solid black",
+                textAlign: 'center'
+                // border: "1px solid black",
               }}
             >
               Descripción de Item
@@ -257,10 +256,10 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
             <Text
               style={{
                 flex: 1,
-                textAlign: "center",
+                textAlign: 'center',
                 fontSize: 7,
-                maxWidth: "30px"
-                //border: "1px solid black",
+                maxWidth: '30px'
+                // border: "1px solid black",
               }}
             >
               U.M
@@ -268,11 +267,11 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
             <Text
               style={{
                 flex: 1,
-                fontWeight: "bold",
-                textAlign: "center",
+                fontWeight: 'bold',
+                textAlign: 'center',
                 fontSize: 7,
-                //border: "1px solid black",
-                maxWidth: "40px"
+                // border: "1px solid black",
+                maxWidth: '40px'
               }}
             >
               Cantidad total
@@ -283,7 +282,7 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               key={index}
               style={[
                 styles.gridRow,
-                index % 2 === 0 ? { backgroundColor: "#a4a8b0" } : {}
+                index % 2 === 0 ? { backgroundColor: '#a4a8b0' } : {}
               ]}
             >
               <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
@@ -295,9 +294,9 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 5.5,
-                  maxWidth: "40px"
+                  maxWidth: '40px'
                 }}
               >
                 {detalle.codProd2}
@@ -306,8 +305,8 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
                 style={{
                   ...styles.gridContent_p,
                   flex: 4,
-                  textAlign: "left"
-                  //border: "1px solid black",
+                  textAlign: 'left'
+                  // border: "1px solid black",
                 }}
               >
                 {detalle.nomProd}
@@ -315,10 +314,10 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 5.5,
-                  maxWidth: "25px"
-                  //border: "1px solid black",
+                  maxWidth: '25px'
+                  // border: "1px solid black",
                 }}
               >
                 {detalle.simMed}
@@ -327,10 +326,10 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
               <Text
                 style={{
                   flex: 1,
-                  textAlign: "center",
+                  textAlign: 'center',
                   fontSize: 6.5,
-                  maxWidth: "40px"
-                  //border: "1px solid black",
+                  maxWidth: '40px'
+                  // border: "1px solid black",
                 }}
               >
                 {/* {_parseInt(detalle, "canReqDet")} */}
@@ -341,5 +340,5 @@ export const PDFRequisicionDevolucion = ({ requisicion, acumulado }) => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}

@@ -1,34 +1,34 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import React from 'react'
+import Button from '@mui/material/Button'
+import { styled } from '@mui/material/styles'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import IconButton from '@mui/material/IconButton'
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
+  '& .MuiDialogContent-root': {
     padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
+  '& .MuiDialogActions-root': {
     padding: theme.spacing(1)
   }
-}));
+}))
 
 export const DialogDeleteDetalleRequisicionIngresoProducto = ({
   itemDelete,
   onDeleteItemSelected
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <div>
@@ -42,7 +42,7 @@ export const DialogDeleteDetalleRequisicionIngresoProducto = ({
         <DeleteRoundedIcon fontSize="inherit" />
       </IconButton>
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -67,8 +67,8 @@ export const DialogDeleteDetalleRequisicionIngresoProducto = ({
             color="error"
             autoFocus
             onClick={() => {
-              handleClose();
-              onDeleteItemSelected(itemDelete);
+              handleClose()
+              onDeleteItemSelected(itemDelete)
             }}
           >
             Aceptar
@@ -76,5 +76,5 @@ export const DialogDeleteDetalleRequisicionIngresoProducto = ({
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
-};
+  )
+}

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
+import React from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
 
 export const RowRequisicionMaterialesDetalle = ({
   detalle,
   onCreateSalidasStock,
-  onUpdateDetalleRequisicion,
+  onUpdateDetalleRequisicion
 }) => {
   return (
     <TableRow>
@@ -14,8 +14,8 @@ export const RowRequisicionMaterialesDetalle = ({
         <span
           className={
             detalle.idReqDetEst === 1
-              ? "badge text-bg-danger p-2"
-              : "badge text-bg-success p-2"
+              ? 'badge text-bg-danger p-2'
+              : 'badge text-bg-success p-2'
           }
         >
           {detalle.desReqDetEst}
@@ -28,9 +28,9 @@ export const RowRequisicionMaterialesDetalle = ({
           {onUpdateDetalleRequisicion && (
             <button
               onClick={() => {
-                onUpdateDetalleRequisicion(detalle);
+                onUpdateDetalleRequisicion(detalle)
               }}
-              disabled={detalle.idReqDetEst !== 1 ? true : false}
+              disabled={detalle.idReqDetEst !== 1}
               className="btn btn-danger me-2"
             >
               <svg
@@ -47,10 +47,10 @@ export const RowRequisicionMaterialesDetalle = ({
           )}
 
           <button
-            disabled={detalle.idReqDetEst !== 1 ? true : false}
+            disabled={detalle.idReqDetEst !== 1}
             className="btn btn-success me-2"
             onClick={() => {
-              onCreateSalidasStock(detalle);
+              onCreateSalidasStock(detalle)
             }}
           >
             <svg
@@ -67,5 +67,5 @@ export const RowRequisicionMaterialesDetalle = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

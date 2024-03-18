@@ -6,8 +6,8 @@ import {
   TableContainer,
   TableHead,
   TableRow
-} from "@mui/material";
-import React from "react";
+} from '@mui/material'
+import React from 'react'
 
 export const CardRetornoSalidaDetalle = ({ detalle, index }) => {
   return (
@@ -18,7 +18,7 @@ export const CardRetornoSalidaDetalle = ({ detalle, index }) => {
       <div className="card-body">
         <TableContainer component={Paper}>
           <Table>
-            <TableHead style={{ backgroundColor: "#F3DBB6" }}>
+            <TableHead style={{ backgroundColor: '#F3DBB6' }}>
               <TableRow>
                 <TableCell width={30} align="left">
                   <b>Ref.</b>
@@ -40,11 +40,13 @@ export const CardRetornoSalidaDetalle = ({ detalle, index }) => {
                 <TableCell>{detalle.nomProd}</TableCell>
                 <TableCell align="center">{detalle.canOpeDevDet}</TableCell>
                 <TableCell align="center">
-                  {detalle.fueComDet === 0 ? (
-                    <span className={"badge text-bg-danger"}>Requerido</span>
-                  ) : (
-                    <span className={"badge text-bg-success"}>Completo</span>
-                  )}
+                  {detalle.fueComDet === 0
+                    ? (
+                      <span className={'badge text-bg-danger'}>Requerido</span>
+                    )
+                    : (
+                      <span className={'badge text-bg-success'}>Completo</span>
+                    )}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -52,5 +54,5 @@ export const CardRetornoSalidaDetalle = ({ detalle, index }) => {
         </TableContainer>
       </div>
     </div>
-  );
-};
+  )
+}

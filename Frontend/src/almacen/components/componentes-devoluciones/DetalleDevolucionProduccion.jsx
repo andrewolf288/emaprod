@@ -1,43 +1,43 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import * as React from 'react'
+import Button from '@mui/material/Button'
+import { styled } from '@mui/material/styles'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
+  '& .MuiDialogContent-root': {
     padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
+  '& .MuiDialogActions-root': {
     padding: theme.spacing(1)
   }
-}));
+}))
 
 export const DetalleDevolucionProduccion = ({
   correlativo,
   detalleDevolucionProduccion
 }) => {
-  const [open, setOpen] = React.useState(false);
-  const { detReqDev } = detalleDevolucionProduccion;
+  const [open, setOpen] = React.useState(false)
+  const { detReqDev } = detalleDevolucionProduccion
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <div>
@@ -51,7 +51,7 @@ export const DetalleDevolucionProduccion = ({
       </IconButton>
 
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -73,10 +73,10 @@ export const DetalleDevolucionProduccion = ({
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
-};
+  )
+}
 
-function TableDevolucionProduccion({ correlativo, devolucionProduccion }) {
+function TableDevolucionProduccion ({ correlativo, devolucionProduccion }) {
   return (
     <TableContainer component={Paper}>
       <br />
@@ -105,7 +105,7 @@ function TableDevolucionProduccion({ correlativo, devolucionProduccion }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+          <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell align="left">{correlativo}</TableCell>
             <TableCell align="left">{devolucionProduccion.nomProd}</TableCell>
             <TableCell align="left">
@@ -118,10 +118,10 @@ function TableDevolucionProduccion({ correlativo, devolucionProduccion }) {
               <span
                 className={
                   devolucionProduccion.idReqEst === 1
-                    ? "badge text-bg-danger"
+                    ? 'badge text-bg-danger'
                     : devolucionProduccion.idReqEst === 2
-                    ? "badge text-bg-warning"
-                    : "badge text-bg-success"
+                      ? 'badge text-bg-warning'
+                      : 'badge text-bg-success'
                 }
               >
                 {devolucionProduccion.desReqEst}
@@ -131,10 +131,10 @@ function TableDevolucionProduccion({ correlativo, devolucionProduccion }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }
 
-function TableDevolucionDetalleProduccion({ detalle }) {
+function TableDevolucionDetalleProduccion ({ detalle }) {
   return (
     <TableContainer component={Paper}>
       <br />
@@ -165,7 +165,7 @@ function TableDevolucionDetalleProduccion({ detalle }) {
         <TableBody>
           {detalle.map((element, index) => (
             <TableRow
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               key={index}
             >
               <TableCell align="center">{index + 1}</TableCell>
@@ -174,12 +174,12 @@ function TableDevolucionDetalleProduccion({ detalle }) {
               <TableCell align="left">
                 <span
                   className={
-                    element.esComReqDevDet == 0
-                      ? "badge text-bg-danger"
-                      : "badge text-bg-success"
+                    element.esComReqDevDet === 0
+                      ? 'badge text-bg-danger'
+                      : 'badge text-bg-success'
                   }
                 >
-                  {element.esComReqDevDet === 0 ? "Requerido" : "Completo"}
+                  {element.esComReqDevDet === 0 ? 'Requerido' : 'Completo'}
                 </span>
               </TableCell>
               <TableCell align="center">{element.canReqDevDet}</TableCell>
@@ -188,5 +188,5 @@ function TableDevolucionDetalleProduccion({ detalle }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }

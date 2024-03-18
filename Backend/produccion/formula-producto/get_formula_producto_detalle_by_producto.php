@@ -13,8 +13,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
     $idProdFin = $data["idProdFin"]; // producto final 
-    // $cantidadDeLote = $data["cantidadDeLote"]; // cantidad de kg del lote
-    // $cantidadDeProducto = $data["cantidadDeProducto"]; // cantidad de productos programados
     $idForProdFin = 0;
 
     if ($pdo) {
@@ -71,9 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                     //AÑADIMOS TODA LA DATA FORMATEADA
                     array_push($result, $row);
-
-                    // DESCOMENTAR PARA VER LA DATA
-                    //print_r($data_formula);
                 }
             } else {
                 $message_error = "NO SE ENCONTRO LA FORMULA";

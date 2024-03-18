@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   PDFViewer,
   Page,
@@ -6,15 +6,15 @@ import {
   View,
   Document,
   Image
-} from "@react-pdf/renderer";
-import logo from "../emaran.png";
-import { stylesPDF } from "../pdf-components/stylePDF";
-import { PDFRequisicionDevolucion } from "./PDFRequisicionDevolucion";
+} from '@react-pdf/renderer'
+import logo from '../emaran.png'
+import { stylesPDF } from '../pdf-components/stylePDF'
+import { PDFRequisicionDevolucion } from './PDFRequisicionDevolucion'
 
-const styles = stylesPDF;
+const styles = stylesPDF
 
 export const PDFDevoluciones = ({ data }) => {
-  const { produccion, requisicion, acumulado } = data;
+  const { produccion, requisicion, acumulado } = data
 
   return (
     <PDFViewer width="100%" height="100%">
@@ -43,9 +43,9 @@ export const PDFDevoluciones = ({ data }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -55,9 +55,9 @@ export const PDFDevoluciones = ({ data }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -68,9 +68,9 @@ export const PDFDevoluciones = ({ data }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -80,9 +80,9 @@ export const PDFDevoluciones = ({ data }) => {
                 <Text
                   style={{
                     ...styles.content,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginLeft: 20
                   }}
@@ -93,7 +93,7 @@ export const PDFDevoluciones = ({ data }) => {
                   style={{
                     ...styles.content,
                     fontSize: 9,
-                    maxWidth: "50%",
+                    maxWidth: '50%',
                     marginBottom: 2,
                     marginTop: 2,
                     marginLeft: 20
@@ -104,11 +104,11 @@ export const PDFDevoluciones = ({ data }) => {
                 <View
                   style={{
                     padding: 1,
-                    fontWeight: "bold",
-                    maxWidth: "90%",
+                    fontWeight: 'bold',
+                    maxWidth: '90%',
                     borderRadius: 5,
                     borderWidth: 1,
-                    borderColor: "#000",
+                    borderColor: '#000',
                     height: 25,
                     marginTop: 2,
                     marginLeft: 20
@@ -121,8 +121,8 @@ export const PDFDevoluciones = ({ data }) => {
                       marginLeft: 10,
                       marginRight: 0,
                       paddingRight: 0,
-                      inlineSize: "50px",
-                      overflowWrap: "break-word",
+                      inlineSize: '50px',
+                      overflowWrap: 'break-word',
                       maxWidth: 275,
                       maxHeight: 275
                     }}
@@ -138,15 +138,15 @@ export const PDFDevoluciones = ({ data }) => {
                   <Text
                     style={{
                       ...styles.content,
-                      fontWeight: "bold",
+                      fontWeight: 'bold',
                       borderRadius: 5,
                       fontSize: 16,
                       marginBottom: 1,
-                      backgroundColor: "#d8e86f",
+                      backgroundColor: '#d8e86f',
                       padding: 5,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                       paddingLeft: 70
                     }}
                   >
@@ -155,20 +155,20 @@ export const PDFDevoluciones = ({ data }) => {
                   <Text
                     style={{
                       ...styles.gridContent,
-                      flexDirection: "row",
+                      flexDirection: 'row',
                       marginLeft: 30,
                       marginTop: 10,
-                      textAlign: "center"
+                      textAlign: 'center'
                     }}
                   >
-                    {requisicion["correlativo"]}
+                    {requisicion.correlativo}
                   </Text>
 
                   <View
                     style={{
                       ...styles.sectionWithBorder,
                       marginTop: 25,
-                      backgroundColor: "#d8dbe3",
+                      backgroundColor: '#d8dbe3',
                       width: 220,
                       height: 70,
                       borderRadius: 5,
@@ -180,7 +180,7 @@ export const PDFDevoluciones = ({ data }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 7,
-                        maxWidth: "100%"
+                        maxWidth: '100%'
                       }}
                     >
                       Tipo de Producción: {produccion.desProdTip}
@@ -191,7 +191,7 @@ export const PDFDevoluciones = ({ data }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%"
+                        maxWidth: '100%'
                       }}
                     >
                       Número de Lote: {produccion.codLotProd}
@@ -203,9 +203,9 @@ export const PDFDevoluciones = ({ data }) => {
                         marginTop: 4
                       }}
                     >
-                      Cantidad total de unidades:{" "}
+                      Cantidad total de unidades:{' '}
                       {parseInt(produccion.totalUnidadesLoteProduccion) +
-                        " UND"}
+                        ' UND'}
                     </Text>
 
                     <Text
@@ -213,13 +213,13 @@ export const PDFDevoluciones = ({ data }) => {
                         ...styles.content,
                         marginLeft: 10,
                         marginTop: 4,
-                        maxWidth: "100%"
+                        maxWidth: '100%'
                       }}
                     >
-                      Peso Programado:{" "}
+                      Peso Programado:{' '}
                       {parseFloat(produccion.klgTotalLoteProduccion).toFixed(
                         2
-                      ) + " KG"}
+                      ) + ' KG'}
                     </Text>
                   </View>
 
@@ -228,7 +228,7 @@ export const PDFDevoluciones = ({ data }) => {
                       ...styles.content,
                       marginLeft: 75,
                       marginTop: -5,
-                      maxWidth: "100%",
+                      maxWidth: '100%',
                       fontSize: 8
                     }}
                   >
@@ -247,5 +247,5 @@ export const PDFDevoluciones = ({ data }) => {
         </Page>
       </Document>
     </PDFViewer>
-  );
-};
+  )
+}

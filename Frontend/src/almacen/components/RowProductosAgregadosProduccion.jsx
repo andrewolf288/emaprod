@@ -1,8 +1,8 @@
-import React from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { DetalleProductosFinalesV2 } from "../pages/productos_lote/DetalleProductosFinalesV2";
-import { DialogTerminarIngresosProductoProgramado } from "./componentes-lote-produccion/DialogTerminarIngresosProductoProgramado";
+import React from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { DetalleProductosFinalesV2 } from '../pages/productos_lote/DetalleProductosFinalesV2'
+import { DialogTerminarIngresosProductoProgramado } from './componentes-lote-produccion/DialogTerminarIngresosProductoProgramado'
 
 export const RowProductosAgregadosProduccion = ({
   detalle,
@@ -12,7 +12,7 @@ export const RowProductosAgregadosProduccion = ({
     <TableRow
       key={detalle.id}
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 }
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell component="th" scope="detalle">
@@ -22,11 +22,13 @@ export const RowProductosAgregadosProduccion = ({
       <TableCell align="left">{detalle.canTotProgProdFin}</TableCell>
       <TableCell align="left">{detalle.cantidad_ingresada}</TableCell>
       <TableCell align="left">
-        {detalle.esTerIngProFin ? (
-          <span className="badge text-bg-success p-1">Finalizado</span>
-        ) : (
-          <span className="badge text-bg-warning p-1">Pendiente</span>
-        )}
+        {detalle.esTerIngProFin
+          ? (
+            <span className="badge text-bg-success p-1">Finalizado</span>
+          )
+          : (
+            <span className="badge text-bg-warning p-1">Pendiente</span>
+          )}
       </TableCell>
       <TableCell align="center">
         <div className="btn-toolbar">
@@ -40,5 +42,5 @@ export const RowProductosAgregadosProduccion = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

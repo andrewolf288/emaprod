@@ -12,21 +12,21 @@ import {
   TableContainer,
   TableHead,
   TableRow
-} from "@mui/material";
-import React, { useState } from "react";
-import { RowDetalleSalidasOrdenIrradiacionDetalle } from "./RowDetalleSalidasOrdenIrradiacionDetalle";
-import NorthEastIcon from "@mui/icons-material/NorthEast";
-import NorthWestIcon from "@mui/icons-material/NorthWest";
-import { styled } from "@mui/material/styles";
+} from '@mui/material'
+import React, { useState } from 'react'
+import { RowDetalleSalidasOrdenIrradiacionDetalle } from './RowDetalleSalidasOrdenIrradiacionDetalle'
+import NorthEastIcon from '@mui/icons-material/NorthEast'
+import NorthWestIcon from '@mui/icons-material/NorthWest'
+import { styled } from '@mui/material/styles'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
+  '& .MuiDialogContent-root': {
     padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
+  '& .MuiDialogActions-root': {
     padding: theme.spacing(1)
   }
-}));
+}))
 
 export const CardSalidaOrdenIrradiacionDetalle = ({
   detalle,
@@ -38,10 +38,10 @@ export const CardSalidaOrdenIrradiacionDetalle = ({
   generarSalidaStockDetalle,
   generarEntradaStockDetalle
 }) => {
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
+  const [mostrarDetalle, setMostrarDetalle] = useState(false)
   const toggleDetalle = () => {
-    setMostrarDetalle(!mostrarDetalle);
-  };
+    setMostrarDetalle(!mostrarDetalle)
+  }
 
   return (
     <div className="card mt-4">
@@ -51,35 +51,37 @@ export const CardSalidaOrdenIrradiacionDetalle = ({
           className="btn btn-link ms-auto" // Utiliza ms-auto para alinear a la derecha
           onClick={toggleDetalle}
         >
-          {mostrarDetalle ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-caret-up-fill"
-              viewBox="0 0 16 16"
-            >
-              <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-caret-down-fill"
-              viewBox="0 0 16 16"
-            >
-              <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-            </svg>
-          )}
+          {mostrarDetalle
+            ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-caret-up-fill"
+                viewBox="0 0 16 16"
+              >
+                <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+              </svg>
+            )
+            : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-caret-down-fill"
+                viewBox="0 0 16 16"
+              >
+                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+              </svg>
+            )}
         </button>
       </div>
       <div className="card-body">
         <TableContainer component={Paper}>
           <Table>
-            <TableHead style={{ backgroundColor: "#F3DBB6" }}>
+            <TableHead style={{ backgroundColor: '#F3DBB6' }}>
               <TableRow>
                 <TableCell width={30} align="left">
                   <b>Ref.</b>
@@ -114,32 +116,36 @@ export const CardSalidaOrdenIrradiacionDetalle = ({
                   align="center"
                   className={
                     detalle.canOpeIrraAct != detalle.canOpeIrra
-                      ? "text-danger font-weight-bold"
-                      : "text-success font-weight-bold"
+                      ? 'text-danger font-weight-bold'
+                      : 'text-success font-weight-bold'
                   }
                   style={{ fontWeight: 600 }}
                 >
                   {detalle.canOpeIrraAct}
                 </TableCell>
                 <TableCell align="center">
-                  {detalle.fueComSal == 0 ? (
-                    <span className={"badge text-bg-danger"}>Requerido</span>
-                  ) : (
-                    <span className={"badge text-bg-success"}>Completo</span>
-                  )}
+                  {detalle.fueComSal === 0
+                    ? (
+                      <span className={'badge text-bg-danger'}>Requerido</span>
+                    )
+                    : (
+                      <span className={'badge text-bg-success'}>Completo</span>
+                    )}
                 </TableCell>
                 <TableCell align="center">
-                  {detalle.fueComIngr == 0 ? (
-                    <span className={"badge text-bg-danger"}>Requerido</span>
-                  ) : (
-                    <span className={"badge text-bg-success"}>Completo</span>
-                  )}
+                  {detalle.fueComIngr === 0
+                    ? (
+                      <span className={'badge text-bg-danger'}>Requerido</span>
+                    )
+                    : (
+                      <span className={'badge text-bg-success'}>Completo</span>
+                    )}
                 </TableCell>
                 <TableCell align="center">
                   <div className="btn-toolbar">
                     <DialogConfirmacionOperacionOrdenIrradiacion
                       detalle={detalle}
-                      disabled={detalle.fueComSal === 1 ? true : false}
+                      disabled={detalle.fueComSal === 1}
                       onConfirmOperation={generarSalidaStockDetalle}
                       title="Salida detalle orden de irradiacion"
                       message="¿Estas seguro de realizar la salida de este detalle?"
@@ -148,9 +154,7 @@ export const CardSalidaOrdenIrradiacionDetalle = ({
                     <DialogConfirmacionOperacionOrdenIrradiacion
                       detalle={detalle}
                       disabled={
-                        detalle.fueComIngr === 1 || detalle.fueComSal === 0
-                          ? true
-                          : false
+                        !!(detalle.fueComIngr === 1 || detalle.fueComSal === 0)
                       }
                       onConfirmOperation={generarEntradaStockDetalle}
                       title="Ingreso detalle orden de irradiacion"
@@ -174,25 +178,25 @@ export const CardSalidaOrdenIrradiacionDetalle = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 const DialogConfirmacionOperacionOrdenIrradiacion = ({
   detalle,
   onConfirmOperation,
   disabled,
-  title = "",
-  message = "",
-  operation = ""
+  title = '',
+  message = '',
+  operation = ''
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <div>
@@ -203,14 +207,16 @@ const DialogConfirmacionOperacionOrdenIrradiacion = ({
         color="primary"
         onClick={handleClickOpen}
       >
-        {operation === "OUTPUT" ? (
-          <NorthEastIcon fontSize="inherit" />
-        ) : (
-          <NorthWestIcon fontSize="inherit" />
-        )}
+        {operation === 'OUTPUT'
+          ? (
+            <NorthEastIcon fontSize="inherit" />
+          )
+          : (
+            <NorthWestIcon fontSize="inherit" />
+          )}
       </IconButton>
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -235,9 +241,9 @@ const DialogConfirmacionOperacionOrdenIrradiacion = ({
             autoFocus
             onClick={() => {
               // terminamos de procesar la salida parcial
-              onConfirmOperation(detalle);
+              onConfirmOperation(detalle)
               // cerramos el cuadro de dialogo
-              handleClose();
+              handleClose()
             }}
           >
             Aceptar
@@ -245,5 +251,5 @@ const DialogConfirmacionOperacionOrdenIrradiacion = ({
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
-};
+  )
+}

@@ -1,30 +1,30 @@
-import React, { useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { TextField } from "@mui/material";
-import { FilterMotivoAgregacion } from "./../../../components/ReferencialesFilters/MotivoAgregacion/FilterMotivoAgregacion";
+import React, { useState } from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { TextField } from '@mui/material'
+import { FilterMotivoAgregacion } from './../../../components/ReferencialesFilters/MotivoAgregacion/FilterMotivoAgregacion'
 
 export const RowDetalleAgregacionLoteProduccionEdit = ({
   detalle,
   onChangeInputDetalle,
   onChangeMotivoAgregacion,
   onDeleteItemDetalle,
-  agregacionesProduccionLote,
+  agregacionesProduccionLote
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
+  const [disabledInput, setdisabledInput] = useState(true)
 
   const handleDetalleChangeMotivoAgregacion = (value) => {
-    console.log(value);
-    onChangeMotivoAgregacion(value.id, detalle.idProdt);
-  };
-  //agregacionesProduccionLote.finalProducts idFinalProduct
+    console.log(value)
+    onChangeMotivoAgregacion(value.id, detalle.idProdt)
+  }
+  // agregacionesProduccionLote.finalProducts idFinalProduct
 
   return (
     <TableRow>
       <TableCell>{detalle.nomProd}</TableCell>
       <TableCell>{detalle.desCla}</TableCell>
       <TableCell>{detalle.simMed}</TableCell>
-      <TableCell>{agregacionesProduccionLote.finalProducts?.find((obj)=>obj.id === detalle.idFinalProduct)?.nomProd}</TableCell>
+      <TableCell>{agregacionesProduccionLote.finalProducts?.find((obj) => obj.id === detalle.idFinalProduct)?.nomProd}</TableCell>
 
       <TableCell>
         <FilterMotivoAgregacion
@@ -34,9 +34,9 @@ export const RowDetalleAgregacionLoteProduccionEdit = ({
       </TableCell>
       <TableCell>
         <TextField
-          //disabled={disabledInput}
+          // disabled={disabledInput}
           onChange={(e) => {
-            onChangeInputDetalle(e, detalle.idProdt);
+            onChangeInputDetalle(e, detalle.idProdt)
           }}
           type="number"
           autoComplete="off"
@@ -49,7 +49,7 @@ export const RowDetalleAgregacionLoteProduccionEdit = ({
           {/* EDITAR */}
           <button
             onClick={() => {
-              setdisabledInput(!disabledInput);
+              setdisabledInput(!disabledInput)
             }}
             className="btn btn-success me-2"
           >
@@ -68,7 +68,7 @@ export const RowDetalleAgregacionLoteProduccionEdit = ({
           {/* ELIMINAR */}
           <button
             onClick={() => {
-              onDeleteItemDetalle(detalle.idProdt);
+              onDeleteItemDetalle(detalle.idProdt)
             }}
             className="btn btn-danger"
           >
@@ -86,5 +86,5 @@ export const RowDetalleAgregacionLoteProduccionEdit = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

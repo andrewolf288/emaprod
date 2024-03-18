@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import TableRow from '@mui/material/TableRow'
 import TableCell from '@mui/material/TableCell'
 import { TextField } from '@mui/material'
-import { FilterAlmacen } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacen'
 import { FilterMotivoAgregacion } from './../../../components/ReferencialesFilters/MotivoAgregacion/FilterMotivoAgregacion'
 
 function calculate (item) {

@@ -1,10 +1,10 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
+import React from 'react'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
 
 export const DialogConfirmarEntradaParcial = (props) => {
   const {
@@ -13,8 +13,8 @@ export const DialogConfirmarEntradaParcial = (props) => {
     handleAccept,
     handleAcceptFinEntPar,
     data,
-    canTotEnt,
-  } = props;
+    canTotEnt
+  } = props
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>¿Quieres terminar las entradas parciales?</DialogTitle>
@@ -43,7 +43,7 @@ export const DialogConfirmarEntradaParcial = (props) => {
       <DialogActions>
         <Button
           onClick={() => {
-            handleAccept(data);
+            handleAccept(data)
           }}
           color="error"
           variant="contained"
@@ -52,7 +52,7 @@ export const DialogConfirmarEntradaParcial = (props) => {
         </Button>
         <Button
           onClick={() => {
-            handleAcceptFinEntPar(data);
+            handleAcceptFinEntPar(data)
           }}
           color="warning"
           variant="contained"
@@ -64,5 +64,5 @@ export const DialogConfirmarEntradaParcial = (props) => {
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}

@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { TextField } from "@mui/material";
+import React, { useState } from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { TextField } from '@mui/material'
 
 export const RowDetalleAgregacionLoteProduccionEditV2 = ({
   detalle,
   onChangeItemDetalle,
-  onDeleteItemRequisicion,
+  onDeleteItemRequisicion
 }) => {
-  const [disabledInputs, setdisabledInputs] = useState(true);
+  const [disabledInputs, setdisabledInputs] = useState(true)
 
   return (
     <TableRow>
@@ -28,12 +28,12 @@ export const RowDetalleAgregacionLoteProduccionEditV2 = ({
           size="small"
           disabled={disabledInputs}
           value={detalle.canReqProdLot}
-          name={"canReqProdLot"}
+          name={'canReqProdLot'}
           onChange={(e) => {
             if (isNaN(e.target.value)) {
-              return;
+              return
             }
-            onChangeItemDetalle(e, detalle.idProd);
+            onChangeItemDetalle(e, detalle.idProd)
           }}
         />
       </TableCell>
@@ -41,7 +41,7 @@ export const RowDetalleAgregacionLoteProduccionEditV2 = ({
         <div className="btn-toolbar">
           <button
             onClick={() => {
-              setdisabledInputs(!disabledInputs);
+              setdisabledInputs(!disabledInputs)
             }}
             className="btn btn-success me-2"
           >
@@ -61,7 +61,7 @@ export const RowDetalleAgregacionLoteProduccionEditV2 = ({
           </button>
           <button
             onClick={() => {
-              onDeleteItemRequisicion(detalle.idProd);
+              onDeleteItemRequisicion(detalle.idProd)
             }}
             className="btn btn-danger"
           >
@@ -84,5 +84,5 @@ export const RowDetalleAgregacionLoteProduccionEditV2 = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

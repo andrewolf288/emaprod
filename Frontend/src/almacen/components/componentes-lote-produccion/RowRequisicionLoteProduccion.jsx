@@ -1,13 +1,13 @@
-import React from "react";
-import { RowRequisicionDetalleLoteProduccion } from "./RowRequisicionDetalleLoteProduccion";
+import React from 'react'
+import { RowRequisicionDetalleLoteProduccion } from './RowRequisicionDetalleLoteProduccion'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 
 export const RowRequisicionLoteProduccion = ({
   requisicion,
@@ -16,16 +16,16 @@ export const RowRequisicionLoteProduccion = ({
   onCreateSalidaTotal,
   onCreateSalidaParcial,
   onTerminarSalidaParcial,
-  show,
+  show
 }) => {
   return (
     <div className="card d-flex mb-4">
       <h6 className="card-header">
         {requisicion.idAre === 5
-          ? "Requisicion envasado"
+          ? 'Requisicion envasado'
           : requisicion.idAre === 6
-          ? "Requisicion encajonado"
-          : "Requisicion de materia prima"}
+            ? 'Requisicion encajonado'
+            : 'Requisicion de materia prima'}
       </h6>
       <div className="card-body">
         <div className="mb-3 row">
@@ -53,10 +53,10 @@ export const RowRequisicionLoteProduccion = ({
               <span
                 className={
                   requisicion.idReqEst === 1
-                    ? "badge text-bg-danger p-2"
+                    ? 'badge text-bg-danger p-2'
                     : requisicion.idReqEst === 2
-                    ? "badge text-bg-warning p-2"
-                    : "badge text-bg-success p-2"
+                      ? 'badge text-bg-warning p-2'
+                      : 'badge text-bg-success p-2'
                 }
               >
                 {requisicion.desReqEst}
@@ -85,7 +85,7 @@ export const RowRequisicionLoteProduccion = ({
               disabled={true}
               value={
                 requisicion.fecEntReq === null
-                  ? "Aun no entregado"
+                  ? 'Aun no entregado'
                   : requisicion.fecEntReq
               }
               className="form-control"
@@ -99,10 +99,10 @@ export const RowRequisicionLoteProduccion = ({
           <div
             className={`card ${
               requisicion.idAre === 5
-                ? "text-bg-success"
+                ? 'text-bg-success'
                 : requisicion.idAre === 6
-                ? "text-bg-warning"
-                : "text-bg-primary"
+                  ? 'text-bg-warning'
+                  : 'text-bg-primary'
             } d-flex`}
           >
             <h6 className="card-header">Detalle</h6>
@@ -113,10 +113,10 @@ export const RowRequisicionLoteProduccion = ({
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
                         }}
                       >
                         <TableCell align="left" width={200}>
@@ -158,7 +158,7 @@ export const RowRequisicionLoteProduccion = ({
                             onTerminarSalidaParcial={onTerminarSalidaParcial}
                             show={show}
                           />
-                        );
+                        )
                       })}
                     </TableBody>
                   </Table>
@@ -169,5 +169,5 @@ export const RowRequisicionLoteProduccion = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}

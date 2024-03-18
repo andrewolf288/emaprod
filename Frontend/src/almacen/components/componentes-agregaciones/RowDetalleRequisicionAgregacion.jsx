@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Table,
   TableBody,
@@ -7,17 +7,17 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
-} from "@mui/material";
-import { DialogUpdateDetalleRequisicionAgregacion } from "./DialogUpdateDetalleRequisicionAgregacion";
-import { DialogDeleteDetalleRequisicionAgregacion } from "./DialogDeleteDetalleRequisicionAgregacion";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+  IconButton
+} from '@mui/material'
+import { DialogUpdateDetalleRequisicionAgregacion } from './DialogUpdateDetalleRequisicionAgregacion'
+import { DialogDeleteDetalleRequisicionAgregacion } from './DialogDeleteDetalleRequisicionAgregacion'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 
 export const RowDetalleRequisicionAgregacion = ({
   detalles,
   onUpdateDetalle,
   onDeleteDetalle,
-  onCheckDetalle,
+  onCheckDetalle
 }) => {
   return (
     <div className="mt-2">
@@ -26,7 +26,7 @@ export const RowDetalleRequisicionAgregacion = ({
       </p>
       <TableContainer key={detalles.id} component={Paper}>
         <Table>
-          <TableHead style={{ backgroundColor: "#FEE7BC" }}>
+          <TableHead style={{ backgroundColor: '#FEE7BC' }}>
             <TableRow>
               <TableCell>
                 <b>#</b>
@@ -59,11 +59,11 @@ export const RowDetalleRequisicionAgregacion = ({
                   <span
                     className={
                       detalle.esComReqAgrDet === 0
-                        ? "badge text-bg-danger"
-                        : "badge text-bg-success"
+                        ? 'badge text-bg-danger'
+                        : 'badge text-bg-success'
                     }
                   >
-                    {detalle.esComReqAgrDet === 0 ? "Requerido" : "Completo"}
+                    {detalle.esComReqAgrDet === 0 ? 'Requerido' : 'Completo'}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -82,7 +82,7 @@ export const RowDetalleRequisicionAgregacion = ({
                       color="success"
                       disabled={detalle.esComReqAgrDet === 1}
                       onClick={() => {
-                        onCheckDetalle(detalle);
+                        onCheckDetalle(detalle)
                       }}
                     >
                       <CheckCircleRoundedIcon fontSize="inherit" />
@@ -95,5 +95,5 @@ export const RowDetalleRequisicionAgregacion = ({
         </Table>
       </TableContainer>
     </div>
-  );
-};
+  )
+}

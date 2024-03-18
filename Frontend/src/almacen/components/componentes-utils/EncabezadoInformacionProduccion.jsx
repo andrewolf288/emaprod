@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
   const {
@@ -9,8 +9,8 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
     desProdTip, // descripcion dle tipo de produccion
     fecVenLotProd, // fecha vencimiento de produccion
     klgLotProd, // peso de la produccion
-    nomProd, // nombre de producto intermedio
-  } = datosProduccion;
+    nomProd // nombre de producto intermedio
+  } = datosProduccion
 
   return (
     <div className="card d-flex">
@@ -121,5 +121,5 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

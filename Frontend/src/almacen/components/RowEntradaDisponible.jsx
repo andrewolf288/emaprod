@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Checkbox } from "@mui/material";
+import React, { useState } from 'react'
+import { Checkbox } from '@mui/material'
 
 export const RowEntradaDisponible = ({ entrada, onChangeInputValue }) => {
-  const [inputValue, setinputValue] = useState(0);
-  const [checked, setChecked] = useState(false);
+  const [inputValue, setinputValue] = useState(0)
+  const [checked, setChecked] = useState(false)
 
   const handleChange = (event) => {
-    const isChecked = event.target.checked;
-    setChecked(event.target.checked);
+    const isChecked = event.target.checked
+    setChecked(event.target.checked)
     // mandamos a realizar los cambios
     onChangeInputValue(
       isChecked,
@@ -15,8 +15,8 @@ export const RowEntradaDisponible = ({ entrada, onChangeInputValue }) => {
       inputValue,
       entrada.id,
       setinputValue
-    );
-  };
+    )
+  }
 
   return (
     <tr>
@@ -30,7 +30,7 @@ export const RowEntradaDisponible = ({ entrada, onChangeInputValue }) => {
           <Checkbox
             checked={checked}
             onChange={handleChange}
-            inputProps={{ "aria-label": "controlled" }}
+            inputProps={{ 'aria-label': 'controlled' }}
           />
           <input
             className="form-control"
@@ -42,5 +42,5 @@ export const RowEntradaDisponible = ({ entrada, onChangeInputValue }) => {
         </div>
       </td>
     </tr>
-  );
-};
+  )
+}

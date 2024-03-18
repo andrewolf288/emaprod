@@ -1,43 +1,43 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import * as React from 'react'
+import Button from '@mui/material/Button'
+import { styled } from '@mui/material/styles'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
+  '& .MuiDialogContent-root': {
     padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
+  '& .MuiDialogActions-root': {
     padding: theme.spacing(1)
   }
-}));
+}))
 
 export const DetalleAgregacionProduccion = ({
   correlativo,
   detalleAgregacionProduccion
 }) => {
-  const [open, setOpen] = React.useState(false);
-  const { detReqAgr } = detalleAgregacionProduccion;
+  const [open, setOpen] = React.useState(false)
+  const { detReqAgr } = detalleAgregacionProduccion
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <div>
@@ -51,7 +51,7 @@ export const DetalleAgregacionProduccion = ({
       </IconButton>
 
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -73,10 +73,10 @@ export const DetalleAgregacionProduccion = ({
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
-};
+  )
+}
 
-function TableAgregacionProduccion({ correlativo, agregacionProduccion }) {
+function TableAgregacionProduccion ({ correlativo, agregacionProduccion }) {
   return (
     <TableContainer component={Paper}>
       <br />
@@ -115,7 +115,7 @@ function TableAgregacionProduccion({ correlativo, agregacionProduccion }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+          <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell align="center">{correlativo}</TableCell>
             <TableCell align="left">
               {agregacionProduccion.desProdAgrMot}
@@ -128,10 +128,10 @@ function TableAgregacionProduccion({ correlativo, agregacionProduccion }) {
               <span
                 className={
                   agregacionProduccion.idReqEst === 1
-                    ? "badge text-bg-danger"
+                    ? 'badge text-bg-danger'
                     : agregacionProduccion.idReqEst === 2
-                    ? "badge text-bg-warning"
-                    : "badge text-bg-success"
+                      ? 'badge text-bg-warning'
+                      : 'badge text-bg-success'
                 }
               >
                 {agregacionProduccion.desReqEst}
@@ -151,10 +151,10 @@ function TableAgregacionProduccion({ correlativo, agregacionProduccion }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }
 
-function TableAgregacionDetalleProduccion({ detalle }) {
+function TableAgregacionDetalleProduccion ({ detalle }) {
   return (
     <TableContainer component={Paper}>
       <br />
@@ -182,19 +182,20 @@ function TableAgregacionDetalleProduccion({ detalle }) {
         <TableBody>
           {detalle.map((element, index) => (
             <TableRow
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              key={element.id}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell align="center">{index + 1}</TableCell>
               <TableCell align="left">{element.nomProd}</TableCell>
               <TableCell align="left">
                 <span
                   className={
-                    element.esComReqAgrDet == 0
-                      ? "badge text-bg-danger"
-                      : "badge text-bg-success"
+                    element.esComReqAgrDet === 0
+                      ? 'badge text-bg-danger'
+                      : 'badge text-bg-success'
                   }
                 >
-                  {element.esComReqAgrDet === 0 ? "Requerido" : "Completo"}
+                  {element.esComReqAgrDet === 0 ? 'Requerido' : 'Completo'}
                 </span>
               </TableCell>
               <TableCell align="center">{element.canReqAgrDet}</TableCell>
@@ -203,5 +204,5 @@ function TableAgregacionDetalleProduccion({ detalle }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }

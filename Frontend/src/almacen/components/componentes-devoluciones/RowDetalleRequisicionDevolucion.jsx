@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Table,
   TableBody,
@@ -8,10 +8,10 @@ import {
   TableRow,
   Paper,
   IconButton
-} from "@mui/material";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import { DialogUpdateDetalleRequisicionDevolucion } from "./DialogUpdateDetalleRequisicionDevolucion";
-import { DialogDeleteDetalleRequisicionDevolucion } from "./DialogDeleteDetalleRequisicionDevolucion";
+} from '@mui/material'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import { DialogUpdateDetalleRequisicionDevolucion } from './DialogUpdateDetalleRequisicionDevolucion'
+import { DialogDeleteDetalleRequisicionDevolucion } from './DialogDeleteDetalleRequisicionDevolucion'
 
 export const RowDetalleRequisicionDevolucion = ({
   requisicion,
@@ -19,7 +19,7 @@ export const RowDetalleRequisicionDevolucion = ({
   onDeleteDetalle,
   onCheckDetalle
 }) => {
-  const { detReqDev } = requisicion;
+  const { detReqDev } = requisicion
   return (
     <div className="mt-2">
       <p>
@@ -27,7 +27,7 @@ export const RowDetalleRequisicionDevolucion = ({
       </p>
       <TableContainer key={detReqDev.id} component={Paper}>
         <Table>
-          <TableHead style={{ backgroundColor: "#FEE7BC" }}>
+          <TableHead style={{ backgroundColor: '#FEE7BC' }}>
             <TableRow>
               <TableCell>
                 <b>#</b>
@@ -64,11 +64,11 @@ export const RowDetalleRequisicionDevolucion = ({
                   <span
                     className={
                       detalle.esComReqDevDet === 0
-                        ? "badge text-bg-danger"
-                        : "badge text-bg-success"
+                        ? 'badge text-bg-danger'
+                        : 'badge text-bg-success'
                     }
                   >
-                    {detalle.esComReqDevDet === 0 ? "Requerido" : "Completo"}
+                    {detalle.esComReqDevDet === 0 ? 'Requerido' : 'Completo'}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -87,7 +87,7 @@ export const RowDetalleRequisicionDevolucion = ({
                       color="success"
                       disabled={detalle.esComReqDevDet === 1}
                       onClick={() => {
-                        onCheckDetalle(detalle, requisicion);
+                        onCheckDetalle(detalle, requisicion)
                       }}
                     >
                       <CheckCircleRoundedIcon fontSize="inherit" />
@@ -100,5 +100,5 @@ export const RowDetalleRequisicionDevolucion = ({
         </Table>
       </TableContainer>
     </div>
-  );
-};
+  )
+}
