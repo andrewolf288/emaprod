@@ -33,8 +33,10 @@ module.exports = {
     indent: ['error', 2],
     // comprobacion de signos
     eqeqeq: 'off',
+    // configuracion variables no usadas
+    'no-unused-vars': 'warn',
     // we want to avoid extraneous spaces
-    'no-multi-spaces': ['error'],
+    'no-multi-spaces': ['warn'],
     // no scope react js
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',

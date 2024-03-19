@@ -1,5 +1,4 @@
 import { ListOrdenesReproceso } from './ListOrdenesReproceso'
-import { ViewDevolucionesOrdenReproceso } from './ViewDevolucionesOrdenReproceso'
 import { ViewOrdenReproceso } from './ViewOrdenReproceso'
 
 export const RouterOrdenReproceso = [
@@ -10,9 +9,5 @@ export const RouterOrdenReproceso = [
   {
     path: 'view/:idOpeDevCal',
     element: <ViewOrdenReproceso />
-  },
-  {
-    path: 'viewDevolucion/:id',
-    element: <ViewDevolucionesOrdenReproceso />
   }
 ]

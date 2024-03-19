@@ -42,7 +42,6 @@ export const RowDetalleSalidasOrdenIrradiacionDetalle = ({
   setfeedbackMessages,
   handleClickFeeback
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true)
   const { detSal } = detalle
 
   return (
@@ -82,7 +81,7 @@ export const RowDetalleSalidasOrdenIrradiacionDetalle = ({
                     type="number"
                     name="canSalLotProd"
                     value={item.canSalLotProd}
-                    disabled={disabledInput}
+                    disabled={true}
                   />
                 </TableCell>
                 <TableCell>{parseFecha(item.fecProdIni)}</TableCell>

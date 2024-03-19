@@ -1,193 +1,187 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   CircularProgress,
   Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle
-} from "@mui/material";
+  , Typography
+} from '@mui/material'
 
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { Typography } from "@mui/material";
-import { CardRequisicionIngresoProductos } from "../../components/componentes-productos-lote/CardRequisicionIngresoProductos";
-import { deleteRequisicionIngresoProductoDetalleById } from "../../helpers/producto-produccion/deleteRequisicionIngresoProductoDetalleById";
-import { updateRequisicionIngresoProductoDetalleById } from "../../helpers/producto-produccion/updateRequisicionIngresoProductoDetalleById";
-import { createEntradaRequisicionIngresoProducto } from "../../helpers/producto-produccion/createEntradaRequisicionIngresoProducto";
-import { DiaJuliano, letraAnio } from "../../../utils/functions/FormatDate";
-import { getIngresosOrdenTransformacion } from "../../helpers/orden-transformacion/getIngresosOrdenTransformacion";
-import { createIngresoOrdenTransformacion } from "../../helpers/orden-transformacion/createIngresoOrdenTransformacion";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+
+import { CardRequisicionIngresoProductos } from '../../components/componentes-productos-lote/CardRequisicionIngresoProductos'
+import { deleteRequisicionIngresoProductoDetalleById } from '../../helpers/producto-produccion/deleteRequisicionIngresoProductoDetalleById'
+import { updateRequisicionIngresoProductoDetalleById } from '../../helpers/producto-produccion/updateRequisicionIngresoProductoDetalleById'
+import { getIngresosOrdenTransformacion } from '../../helpers/orden-transformacion/getIngresosOrdenTransformacion'
+import { createIngresoOrdenTransformacion } from '../../helpers/orden-transformacion/createIngresoOrdenTransformacion'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 // esta interfaz esta hecha para atender las requisiciones de agregaciones de un proceso de produccion
 export const ViewIngresosOrdenTransformacion = () => {
-  const { id } = useParams();
+  const { id } = useParams()
 
   // ESTADOS PARA LA DATA DE DEVOLUCIONES
   const [ordenTransformacionIngresos, setordenTransformacionIngresos] =
     useState({
       idProdtInt: 0,
       idProdc: 0,
-      codLotProd: "",
+      codLotProd: '',
       idProdtOri: 0,
-      nomProd1: "",
+      nomProd1: '',
       canUndProdtOri: 0,
       idProdtDes: 0,
-      nomProd2: "",
+      nomProd2: '',
       canUndProdtDes: 0,
-      fecCreOrdTrans: "",
+      fecCreOrdTrans: '',
       prodDetIng: []
-    });
+    })
 
   const {
-    idProdtOri,
     nomProd1,
     canUndProdtOri,
     canPesProdtOri,
-    idProdtDes,
     nomProd2,
     canUndProdtDes,
     canPesProdtDes,
     prodDetIng
-  } = ordenTransformacionIngresos;
+  } = ordenTransformacionIngresos
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
-  const [loading, setLoading] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
 
   // ***** FUNCIONES PARA EL MANEJO DE ACCIONES *****
   const openLoader = () => {
-    setOpenDialog(true);
-    setLoading(true);
-  };
+    setOpenDialog(true)
+  }
   const closeLoader = () => {
-    setLoading(false);
-    setOpenDialog(false);
-  };
+    setOpenDialog(false)
+  }
 
   // ************ ESTADO PARA CONTROLAR EL FEEDBACK **************
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // funcion para editar la requisicion de agregacion
   const onDeleteDetalleRequisicionAgregacion = async (detalle) => {
-    console.log(detalle);
+    console.log(detalle)
     // abrimos el loader
-    openLoader();
-    const { message_error, description_error, result } =
-      await deleteRequisicionIngresoProductoDetalleById(detalle);
+    openLoader()
+    const { message_error, description_error } =
+      await deleteRequisicionIngresoProductoDetalleById(detalle)
     if (message_error.length === 0) {
       // llamamos a la data
-      traerDatosProduccionLoteWithIngresosProducto();
+      traerDatosProduccionLoteWithIngresosProducto()
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
     // cerramos el loader
-    closeLoader();
-  };
+    closeLoader()
+  }
 
   // funcion para eliminar la requisicion de agregacion
   const onUpdateDetalleRequisicionAgregacion = async (detalle, inputValue) => {
-    console.log(detalle, inputValue);
+    console.log(detalle, inputValue)
     // abrimos el loader
-    openLoader();
+    openLoader()
     // canReqAgrDetNew
-    const { message_error, description_error, result } =
-      await updateRequisicionIngresoProductoDetalleById(detalle, inputValue);
+    const { message_error, description_error } =
+      await updateRequisicionIngresoProductoDetalleById(detalle, inputValue)
     if (message_error.length === 0) {
       // llamamos a la data
-      traerDatosProduccionLoteWithIngresosProducto();
+      traerDatosProduccionLoteWithIngresosProducto()
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
     // cerramos el loader
-    closeLoader();
-  };
+    closeLoader()
+  }
 
   // funcion para cumplir la requisicion de agregacion
   const onCheckDetalleRequisicionIngresoProducto = async (detalle) => {
     const formatData = {
       ...detalle,
       idOrdTrans: id
-    };
-    console.log(formatData);
+    }
+    console.log(formatData)
     // abrimos el loader
-    openLoader();
-    const { message_error, description_error, result } =
-      await createIngresoOrdenTransformacion(formatData);
+    openLoader()
+    const { message_error, description_error } =
+      await createIngresoOrdenTransformacion(formatData)
     if (message_error.length === 0) {
       // llamamos a la data
-      traerDatosProduccionLoteWithIngresosProducto();
+      traerDatosProduccionLoteWithIngresosProducto()
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
     // cerramos el loader
-    closeLoader();
-  };
+    closeLoader()
+  }
 
   // FUNCION PARA TRAES DATOS DE PRODUCCION LOTE
   const traerDatosProduccionLoteWithIngresosProducto = async () => {
     if (id.length !== 0) {
-      const resultPeticion = await getIngresosOrdenTransformacion(id);
-      const { message_error, description_error, result } = resultPeticion;
-      console.log(result);
+      const resultPeticion = await getIngresosOrdenTransformacion(id)
+      const { message_error, description_error, result } = resultPeticion
+      console.log(result)
 
       if (message_error.length === 0) {
         // seteamos la informacion de produccion de lote
-        setordenTransformacionIngresos(result[0]);
+        setordenTransformacionIngresos(result[0])
       } else {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error: description_error
-        });
-        handleClickFeeback();
+        })
+        handleClickFeeback()
       }
     }
-  };
+  }
 
   useEffect(() => {
     // TRAEMOS LA DATA DE REQUSICION DETALLE
-    traerDatosProduccionLoteWithIngresosProducto();
-  }, []);
+    traerDatosProduccionLoteWithIngresosProducto()
+  }, [])
 
   return (
     <>
@@ -253,7 +247,7 @@ export const ViewIngresosOrdenTransformacion = () => {
                   />
                 </div>
 
-                {/* CANTIDAD UNIDADES DESTINO*/}
+                {/* CANTIDAD UNIDADES DESTINO */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
                     <b>Cantidad destino</b>
@@ -265,7 +259,7 @@ export const ViewIngresosOrdenTransformacion = () => {
                     className="form-control"
                   />
                 </div>
-                {/* CANTIDAD DE PESO DESTINO*/}
+                {/* CANTIDAD DE PESO DESTINO */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
                     <b>Peso destino</b>
@@ -325,7 +319,7 @@ export const ViewIngresosOrdenTransformacion = () => {
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -333,13 +327,13 @@ export const ViewIngresosOrdenTransformacion = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

@@ -252,7 +252,7 @@ export const ViewOrdenIrradiacion = () => {
     <>
       <div className="container-fluid px-4">
         <h1 className="mt-4 text-center">
-          Detalle de salida orden irradiación
+          Detalle de orden transformación
         </h1>
         {/* DETALLE DE ORDEN DE IRRADIACION */}
         <div className="row mt-4 mx-4">

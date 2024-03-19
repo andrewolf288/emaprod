@@ -1,97 +1,94 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { consultUser } from "./../helpers/consultUser";
-import { useAuth } from "../../hooks/useAuth";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { Link } from 'react-router-dom'
+import { consultUser } from './../helpers/consultUser'
+import { useAuth } from '../../hooks/useAuth'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const Login = () => {
   // FUNCTION LOGIN
-  const { login } = useAuth();
-
-  // NAVEGACION
-  const navigate = useNavigate();
+  const { login } = useAuth()
 
   const [user, setuser] = useState({
-    useUsu: "",
-    pasUsu: ""
-  });
+    useUsu: '',
+    pasUsu: ''
+  })
 
-  const { useUsu, pasUsu } = user;
+  const { useUsu, pasUsu } = user
 
   // CONTROLADOR DE FORMULARIO
   const handledForm = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setuser({
       ...user,
       [name]: value
-    });
-  };
+    })
+  }
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // LOGIN USUARIO
   const loginUser = async (user) => {
     const { message_error, description_error, result } = await consultUser(
       user
-    );
+    )
     if (message_error.length === 0) {
       // FUNCION DE LOGEO
-      login(result);
+      login(result)
     } else {
-      console.log("No se pudo logear al usuario");
+      console.log('No se pudo logear al usuario')
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // SUBMIT DE LOGIN
   const submitLogin = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     // COMPROBAMOS EL ENVIO DE DATA
     if (useUsu.length === 0 || pasUsu.length === 0) {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos"
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Asegurese de llenar los datos requeridos'
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
-      loginUser(user);
+      setdisableButton(true)
+      loginUser(user)
     }
-  };
+  }
 
   return (
     <>
@@ -138,6 +135,7 @@ export const Login = () => {
                         onClick={(e) => submitLogin(e)}
                         className="btn btn-outline-dark"
                         type="submit"
+                        disabled={disableButton}
                       >
                         Login
                       </button>
@@ -145,8 +143,8 @@ export const Login = () => {
                   </form>
                   <div>
                     <p className="mb-0  text-center">
-                      ¿Quieres regresar al Home?{" "}
-                      <Link to={"/"} className="text-primary fw-bold">
+                      ¿Quieres regresar al Home?{' '}
+                      <Link to={'/'} className="text-primary fw-bold">
                         Home
                       </Link>
                     </p>
@@ -159,7 +157,7 @@ export const Login = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -167,11 +165,11 @@ export const Login = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

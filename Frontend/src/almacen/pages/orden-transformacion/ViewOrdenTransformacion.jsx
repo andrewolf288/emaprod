@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 // IMPORTACIONES DE HELPER
-import { RowRequisicionLoteProduccion } from "../../components/componentes-lote-produccion/RowRequisicionLoteProduccion";
+import { RowRequisicionLoteProduccion } from '../../components/componentes-lote-produccion/RowRequisicionLoteProduccion'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 // IMPORTACIONES PARA EL PROGRESS LINEAR
 import {
   Dialog,
@@ -12,125 +12,120 @@ import {
   DialogContent,
   DialogContentText,
   CircularProgress
-} from "@mui/material";
-import { useAuth } from "../../../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { createSalidasStockAutomaticas } from "./../../helpers/lote-produccion/createSalidasStockAutomaticas";
-import { updateProduccionDetalleRequisicion } from "../../helpers/lote-produccion/updateProduccionDetalleRequisicion";
-import { deleteProduccionDetalleRequisicion } from "../../helpers/lote-produccion/deleteProduccionDetalleRequisicion";
-import { checkFinSalidasParcialesDetalle } from "../../helpers/lote-produccion/checkFinSalidasParcialesDetalle";
-import { createSalidasParcialesStockAutomaticas } from "../../helpers/lote-produccion/createSalidasParcialesStockAutomaticas";
-import { getOrdenTransformacionById } from "../../helpers/orden-transformacion/getOrdenTransformacionById";
+} from '@mui/material'
+import { useAuth } from '../../../hooks/useAuth'
+
+import { createSalidasStockAutomaticas } from './../../helpers/lote-produccion/createSalidasStockAutomaticas'
+import { updateProduccionDetalleRequisicion } from '../../helpers/lote-produccion/updateProduccionDetalleRequisicion'
+import { deleteProduccionDetalleRequisicion } from '../../helpers/lote-produccion/deleteProduccionDetalleRequisicion'
+import { checkFinSalidasParcialesDetalle } from '../../helpers/lote-produccion/checkFinSalidasParcialesDetalle'
+import { createSalidasParcialesStockAutomaticas } from '../../helpers/lote-produccion/createSalidasParcialesStockAutomaticas'
+import { getOrdenTransformacionById } from '../../helpers/orden-transformacion/getOrdenTransformacionById'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ViewOrdenTransformacion = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams()
+  const navigate = useNavigate()
 
   const [ordenTransformacionDetalle, setordenTransformacionDetalle] = useState({
     idProdtInt: 0,
     idProdc: 0,
-    codLotProd: "",
+    codLotProd: '',
     idProdtOri: 0,
-    nomProd1: "",
+    nomProd1: '',
     canUndProdtOri: 0,
     idProdtDes: 0,
-    nomProd2: "",
+    nomProd2: '',
     canUndProdtDes: 0,
-    fecCreOrdTrans: "",
+    fecCreOrdTrans: '',
     prodLotReq: []
-  });
+  })
 
   const {
-    idProdtOri,
     nomProd1,
     canUndProdtOri,
     canPesProdtOri,
-    idProdtDes,
     nomProd2,
     canUndProdtDes,
     canPesProdtDes,
     prodLotReq
-  } = ordenTransformacionDetalle;
+  } = ordenTransformacionDetalle
 
-  const { user } = useAuth();
+  const { user } = useAuth()
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
-  const [loading, setLoading] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
 
   // ***** FUNCIONES PARA EL MANEJO DE ACCIONES *****
   const openLoader = () => {
-    setOpenDialog(true);
-    setLoading(true);
-  };
+    setOpenDialog(true)
+  }
   const closeLoader = () => {
-    setLoading(false);
-    setOpenDialog(false);
-  };
+    setOpenDialog(false)
+  }
 
   // ******* ACCIONES DE DETALLES DE REQUISICION *********
 
   // crear salidas correspondientes
   const onCreateSalidaTotalRequisicionDetalle = async (requisicion_detalle) => {
     // abrimos el loader
-    openLoader();
-    console.log(requisicion_detalle);
+    openLoader()
+    console.log(requisicion_detalle)
     const resultPeticion = await createSalidasStockAutomaticas(
       requisicion_detalle
-    );
+    )
 
-    console.log(resultPeticion);
-    const { message_error, description_error, result } = resultPeticion;
+    console.log(resultPeticion)
+    const { message_error, description_error } = resultPeticion
 
     if (message_error.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para crear salidas parciales
   const onCreateSalidaParcialRequisicionDetalle = async (
@@ -138,71 +133,71 @@ export const ViewOrdenTransformacion = () => {
     inputValue
   ) => {
     // abrimos el loader
-    openLoader();
+    openLoader()
     const resultPeticion = await createSalidasParcialesStockAutomaticas(
       requisicion_detalle,
       inputValue
-    );
+    )
 
-    const { message_error, description_error, result } = resultPeticion;
+    const { message_error, description_error } = resultPeticion
 
     if (message_error?.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para terminar el ingreso de salidas parciales
   const onTerminarSalidaParcialRequisicionDetalle = async (
     requisicion_detalle
   ) => {
     // abrimos el loader
-    openLoader();
+    openLoader()
     const resultPeticion = await checkFinSalidasParcialesDetalle(
       requisicion_detalle
-    );
+    )
 
-    const { message_error, description_error, result } = resultPeticion;
+    const { message_error, description_error } = resultPeticion
 
     if (message_error?.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // actualizar detalle de requisicion
   const onUpdateRequisicionDetalle = async (
@@ -210,90 +205,90 @@ export const ViewOrdenTransformacion = () => {
     cantidadNueva
   ) => {
     // abrimos el loader
-    openLoader();
-    const { id } = requisicion_detalle;
-    let body = {
-      id: id,
-      cantidadNueva: cantidadNueva
-    };
-    const resultPeticion = await updateProduccionDetalleRequisicion(body);
-    const { message_error, description_error } = resultPeticion;
+    openLoader()
+    const { id } = requisicion_detalle
+    const body = {
+      id,
+      cantidadNueva
+    }
+    const resultPeticion = await updateProduccionDetalleRequisicion(body)
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // actualizamos la cantidad
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
+        style_message: 'success',
         feedback_description_error:
-          "Se actualizó el detalle de la requisicion con exito"
-      });
-      handleClickFeeback();
+          'Se actualizó el detalle de la requisicion con exito'
+      })
+      handleClickFeeback()
     } else {
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para eliminar el detalle de la requisicion
   const onDeleteRequisicionDetalle = async (requisicion_detalle) => {
     // abrimos el loader
-    openLoader();
+    openLoader()
     const resultPeticion = await deleteProduccionDetalleRequisicion(
       requisicion_detalle
-    );
+    )
 
-    const { message_error, description_error, result } = resultPeticion;
+    const { message_error, description_error } = resultPeticion
 
     if (message_error?.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para obtener la produccion con sus requisiciones y su detalle
   const obtenerDataProduccionRequisicionesDetalle = async () => {
-    const resultPeticion = await getOrdenTransformacionById(id);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getOrdenTransformacionById(id)
+    const { message_error, description_error, result } = resultPeticion
 
     if (message_error.length === 0) {
-      setordenTransformacionDetalle(result[0]);
+      setordenTransformacionDetalle(result[0])
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   useEffect(() => {
-    obtenerDataProduccionRequisicionesDetalle();
-  }, []);
+    obtenerDataProduccionRequisicionesDetalle()
+  }, [])
 
   return (
     <>
@@ -306,7 +301,7 @@ export const ViewOrdenTransformacion = () => {
             <div className="card-body align-self-center">
               <div
                 onClick={() => {
-                  navigate(`/almacen/orden-transformacion/viewIngresos/${id}`);
+                  navigate(`/almacen/orden-transformacion/viewIngresos/${id}`)
                 }}
                 className="btn btn-primary"
               >
@@ -316,7 +311,7 @@ export const ViewOrdenTransformacion = () => {
                 onClick={() => {
                   navigate(
                     `/almacen/orden-transformacion/viewDevolucion/${id}`
-                  );
+                  )
                 }}
                 className="btn btn-warning ms-3"
               >
@@ -381,7 +376,7 @@ export const ViewOrdenTransformacion = () => {
                   />
                 </div>
 
-                {/* CANTIDAD UNIDADES DESTINO*/}
+                {/* CANTIDAD UNIDADES DESTINO */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
                     <b>Cantidad destino</b>
@@ -393,7 +388,7 @@ export const ViewOrdenTransformacion = () => {
                     className="form-control"
                   />
                 </div>
-                {/* CANTIDAD DE PESO DESTINO*/}
+                {/* CANTIDAD DE PESO DESTINO */}
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
                     <b>Peso destino</b>
@@ -428,14 +423,14 @@ export const ViewOrdenTransformacion = () => {
                     }
                     show={user.idAre === 1}
                   />
-                );
+                )
               })}
             </div>
             <div className="btn-toolbar mt-4">
               <button
                 type="button"
                 onClick={() => {
-                  window.close();
+                  window.close()
                 }}
                 className="btn btn-secondary me-2"
               >
@@ -459,7 +454,7 @@ export const ViewOrdenTransformacion = () => {
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -467,11 +462,11 @@ export const ViewOrdenTransformacion = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

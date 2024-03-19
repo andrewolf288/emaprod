@@ -91,28 +91,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $row_operacion_devolucion_calidad["completadas"]++;
                 }
             }
-
-            // debemos que detalle de desmedro estan
-            $esReproceso = 0;
-            $sql_operacion_devolucion_detalle_desmedro =
-                "SELECT 
-            fueComOpeDes
-            FROM operacion_devolucion_calidad_detalle AS odcd
-            WHERE odcd.idOpeDevCal = ? AND odcd.esReproceso = ?";
-            $stmt_operacion_devolucion_detalle_desmedro = $pdo->prepare($sql_operacion_devolucion_detalle_desmedro);
-            $stmt_operacion_devolucion_detalle_desmedro->bindParam(1, $idOpeDevCal, PDO::PARAM_INT);
-            $stmt_operacion_devolucion_detalle_desmedro->bindParam(2, $esReproceso, PDO::PARAM_BOOL);
-            $stmt_operacion_devolucion_detalle_desmedro->execute();
-
-            while ($row_operacion_devolucion_detalle_desmedro = $stmt_operacion_devolucion_detalle_desmedro->fetch(PDO::FETCH_ASSOC)) {
-                $fueComOpeDes = $row_operacion_devolucion_detalle_desmedro["fueComOpeDes"];
-                if ($fueComOpeDes == 0) {
-                    $row_operacion_devolucion_calidad["requeridas"]++;
-                } else {
-                    $row_operacion_devolucion_calidad["completadas"]++;
-                }
-            }
-
             array_push($result, $row_operacion_devolucion_calidad);
         }
     } else {
