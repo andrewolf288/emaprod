@@ -1,19 +1,19 @@
-import { Autocomplete, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Autocomplete, TextField } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona un producto",
-  id: 0,
-};
+  label: 'Selecciona un producto',
+  id: 0
+}
 
 export const FilterProductosProgramados = ({
   defaultValue = 0,
   products = [],
-  onNewInput,
+  onNewInput
 }) => {
-  const [options, setOptions] = useState([defaultOption]);
-  const [value, setValue] = useState(defaultOption);
+  const [options, setOptions] = useState([defaultOption])
+  const [value, setValue] = useState(defaultOption)
 
   const obtenerDataProducto = () => {
     const formatSelect = [
@@ -23,49 +23,49 @@ export const FilterProductosProgramados = ({
           item: element,
           value: element.codProd2,
           label: `${element.codProd2} - ${element.nomProd}`,
-          id: element.id,
-        };
-      }),
-    ];
+          id: element.id
+        }
+      })
+    ]
 
-    setOptions(formatSelect);
+    setOptions(formatSelect)
     // verficar si defualtvalue coincide
     const defaultValueOption = formatSelect.find(
       (option) => option.id === defaultValue
-    );
+    )
 
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  };
+  }
 
   const handleChange = (event, value) => {
-    onNewInput(value);
-    setValue(value);
-  };
+    onNewInput(value)
+    setValue(value)
+  }
 
   useEffect(() => {
     // verficar si defualtvalue coincide
     const defaultValueOption = options.find(
       (option) => option.id === defaultValue
-    );
+    )
 
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  }, [defaultValue]);
+  }, [defaultValue])
 
   useEffect(() => {
-    const controller = new AbortController();
-    obtenerDataProducto();
-    return () => controller.abort();
-  }, [products]);
+    const controller = new AbortController()
+    obtenerDataProducto()
+    return () => controller.abort()
+  }, [products])
 
   useEffect(() => {
-    const controller = new AbortController();
-    obtenerDataProducto();
-    return () => controller.abort();
-  }, []);
+    const controller = new AbortController()
+    obtenerDataProducto()
+    return () => controller.abort()
+  }, [])
 
   return (
     <Autocomplete
@@ -77,5 +77,5 @@ export const FilterProductosProgramados = ({
       isOptionEqualToValue={(option, value) => option.id == value.id}
       renderInput={(params) => <TextField {...params} size="small" />}
     />
-  );
-};
+  )
+}

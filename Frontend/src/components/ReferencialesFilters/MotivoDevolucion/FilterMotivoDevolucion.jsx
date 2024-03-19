@@ -1,41 +1,38 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getMotivoDevoluciones } from "./../../../helpers/Referenciales/motivo_devoluciones/getMotivoDevoluciones";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getMotivoDevoluciones } from './../../../helpers/Referenciales/motivo_devoluciones/getMotivoDevoluciones'
 
 export const FilterMotivoDevolucion = ({ onNewInput, disabled }) => {
-  const [result, setResult] = useState([]);
-  const [value, setValue] = useState({});
+  const [result, setResult] = useState([])
+  const [value, setValue] = useState({})
 
   const obtenerDataMotivoDevolucion = async () => {
-    const resultPeticion = await getMotivoDevoluciones();
+    const resultPeticion = await getMotivoDevoluciones()
     const formatSelect = resultPeticion.map((element) => {
       return {
         value: element.id,
         label: element.desProdDevMot,
-        id: element.id,
-      };
-    });
-    //console.log(formatSelect)
-    if(formatSelect.length){
-      //console.log(formatSelect)
+        id: element.id
+      }
+    })
+    // console.log(formatSelect)
+    if (formatSelect.length) {
+      // console.log(formatSelect)
       setValue(formatSelect[0])
     }
-    setResult(formatSelect);
-  };
+    setResult(formatSelect)
+  }
 
   useEffect(() => {
-    obtenerDataMotivoDevolucion();
-  }, []);
-
- 
-
+    obtenerDataMotivoDevolucion()
+  }, [])
 
   const handledChange = (event, value) => {
     setValue(value)
-    onNewInput(value);
-  };
+    onNewInput(value)
+  }
 
   return (
     <>
@@ -49,5 +46,5 @@ export const FilterMotivoDevolucion = ({ onNewInput, disabled }) => {
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getClases } from "./../../../helpers/Referenciales/clase/getClases";
+import React, { useState, useEffect } from 'react'
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getClases } from './../../../helpers/Referenciales/clase/getClases'
 
 export const FilterClase = ({ onNewInput }) => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState([])
 
   const obtenerDataClases = async () => {
-    const resultPeticion = await getClases();
+    const resultPeticion = await getClases()
     const formatSelect = resultPeticion.map((element) => {
       return {
         value: element.id,
-        label: `${element.desCla}`,
-      };
-    });
-    setResult(formatSelect);
-  };
+        label: `${element.desCla}`
+      }
+    })
+    setResult(formatSelect)
+  }
 
   useEffect(() => {
-    obtenerDataClases();
-  }, []);
+    obtenerDataClases()
+  }, [])
 
   const handledChange = (event, value) => {
-    onNewInput(value);
-  };
+    onNewInput(value)
+  }
 
   return (
     <>
@@ -35,5 +35,5 @@ export const FilterClase = ({ onNewInput }) => {
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

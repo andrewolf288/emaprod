@@ -1,35 +1,35 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getSubClases } from "../../../helpers/Referenciales/subclase/getSubClases";
+import React, { useState, useEffect } from 'react'
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getSubClases } from '../../../helpers/Referenciales/subclase/getSubClases'
 
 export const FilterSubClase = ({ onNewInput }) => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState([])
 
   const obtenerDataClases = async () => {
-    const resultPeticion = await getSubClases();
+    const resultPeticion = await getSubClases()
     let formatSelect = resultPeticion.filter(
       (item, index) =>
         resultPeticion.findIndex((obj) => obj.desSubCla === item.desSubCla) ===
         index
-    );
+    )
 
     formatSelect = formatSelect.map((element) => {
       return {
         value: element.id,
         label: `${element.desSubCla}`
-      };
-    });
-    setResult(formatSelect);
-  };
+      }
+    })
+    setResult(formatSelect)
+  }
 
   useEffect(() => {
-    obtenerDataClases();
-  }, []);
+    obtenerDataClases()
+  }, [])
 
   const handledChange = (event, value) => {
-    onNewInput(value);
-  };
+    onNewInput(value)
+  }
 
   return (
     <>
@@ -41,5 +41,5 @@ export const FilterSubClase = ({ onNewInput }) => {
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

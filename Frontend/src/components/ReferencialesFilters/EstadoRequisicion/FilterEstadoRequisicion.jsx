@@ -1,31 +1,31 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getEstadoRequisicion } from "../../../helpers/Referenciales/estado_requisicion/getEstadoRequisicion";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getEstadoRequisicion } from '../../../helpers/Referenciales/estado_requisicion/getEstadoRequisicion'
 
 export const FilterEstadoRequisicion = ({ onNewInput }) => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState([])
 
   const obtenerDataEstadoRequisicion = async () => {
-    const resultPeticion = await getEstadoRequisicion();
+    const resultPeticion = await getEstadoRequisicion()
     const formatSelect = resultPeticion.map((element) => {
       return {
         value: element.id,
         label: element.desReqEst,
         id: element.id
-      };
-    });
-    setResult(formatSelect);
-  };
+      }
+    })
+    setResult(formatSelect)
+  }
 
   useEffect(() => {
-    obtenerDataEstadoRequisicion();
-  }, []);
+    obtenerDataEstadoRequisicion()
+  }, [])
 
   const handledChange = (event, value) => {
-    onNewInput(value);
-  };
+    onNewInput(value)
+  }
 
   return (
     <>
@@ -37,5 +37,5 @@ export const FilterEstadoRequisicion = ({ onNewInput }) => {
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

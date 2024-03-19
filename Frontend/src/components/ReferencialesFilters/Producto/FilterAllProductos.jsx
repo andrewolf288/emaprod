@@ -1,65 +1,65 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getAllProductos } from "./../../../helpers/Referenciales/producto/getAllProductos";
-import { useAuth } from "../../../hooks/useAuth";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getAllProductos } from './../../../helpers/Referenciales/producto/getAllProductos'
+import { useAuth } from '../../../hooks/useAuth'
 
 export const FilterAllProductos = ({
   onNewInput,
   inputs,
   productos,
-  mostrarCodigo,
+  mostrarCodigo
 }) => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState([])
   const [value, setValue] = useState({
-    label: "",
-  });
+    label: ''
+  })
 
-  const { user } = useAuth();
+  const { user } = useAuth()
   const obtenerDataProductos = async () => {
-    const resultPeticion = await getAllProductos(user);
-    var formatSelect = resultPeticion.map((element) => {
+    const resultPeticion = await getAllProductos(user)
+    const formatSelect = resultPeticion.map((element) => {
       return {
         item: element,
-        value: element.codProd2 === null ? "000000" : element.codProd2,
+        value: element.codProd2 === null ? '000000' : element.codProd2,
         label: element.nomProd,
         id: element.id,
-        idProdFin: "", // only if products has records
-      };
-    });
+        idProdFin: '' // only if products has records
+      }
+    })
 
     if (productos?.length) {
-      var rows = [];
-      formatSelect.map((obj) => {
-        var producto = productos.find((val) => val.idProdt == obj.id);
+      const rows = []
+      formatSelect.forEach((obj) => {
+        const producto = productos.find((val) => val.idProdt == obj.id)
         if (producto) {
-          obj.idProdFin = producto.id;
-          rows.push(obj);
+          obj.idProdFin = producto.id
+          rows.push(obj)
         }
-      });
-      //formatSelect = formatSelect.filter((obj) => productos.includes(obj.id));
-      setResult(rows);
+      })
+      // formatSelect = formatSelect.filter((obj) => productos.includes(obj.id));
+      setResult(rows)
     } else {
-      setResult(formatSelect);
+      setResult(formatSelect)
     }
-  };
+  }
 
   useEffect(() => {
-    obtenerDataProductos();
-  }, [productos]);
+    obtenerDataProductos()
+  }, [productos])
 
   useEffect(() => {
     if (inputs?.producto) {
-      //console.log(inputs?.producto)
-      setValue(inputs?.producto);
+      // console.log(inputs?.producto)
+      setValue(inputs?.producto)
     }
-  }, [inputs]);
+  }, [inputs])
 
   const handledChange = (event, value) => {
-    setValue(value);
-    onNewInput(value);
-  };
+    setValue(value)
+    onNewInput(value)
+  }
 
   return (
     <>
@@ -68,27 +68,27 @@ export const FilterAllProductos = ({
         disableClearable
         autoHighlight={true}
         getOptionLabel={(option) =>
-          typeof option === "string"
+          typeof option === 'string'
             ? option
-            : (mostrarCodigo && option.value ? option.value + " - " : "") +
+            : (mostrarCodigo && option.value ? option.value + ' - ' : '') +
               option.label
         }
         renderOption={(props, option) => {
           return (
             <li {...props} key={option.id}>
-              {(mostrarCodigo ? option.value + " - " : "") + option.label}
+              {(mostrarCodigo ? option.value + ' - ' : '') + option.label}
             </li>
-          );
+          )
         }}
         value={value}
         onInputChange={(event, value, reason) => {
-          if (reason == "input" && value == "") {
-            onNewInput({ label: value });
+          if (reason == 'input' && value == '') {
+            onNewInput({ label: value })
           }
         }}
         onChange={handledChange}
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

@@ -1,44 +1,42 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getMotivoAgregaciones } from "./../../../helpers/Referenciales/motivo_agregaciones/getMotivoAgregaciones";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getMotivoAgregaciones } from './../../../helpers/Referenciales/motivo_agregaciones/getMotivoAgregaciones'
 
 export const FilterMotivoAgregacion = ({ onNewInput, inputs, defaultValueFlag }) => {
-  const [result, setResult] = useState([]);
-  const [value, setValue] = useState({value:"", label:""});
+  const [result, setResult] = useState([])
+  const [value, setValue] = useState({ value: '', label: '' })
 
   const obtenerDataMotivoAgregacion = async () => {
-    const resultPeticion = await getMotivoAgregaciones();
+    const resultPeticion = await getMotivoAgregaciones()
     const formatSelect = resultPeticion.map((element) => {
       return {
         value: element.id,
         label: element.desProdAgrMot,
-        id: element.id,
-      };
-    });
+        id: element.id
+      }
+    })
 
-    if(defaultValueFlag){
+    if (defaultValueFlag) {
       setValue(formatSelect[0])
     }
-    setResult(formatSelect);
-
-  };
+    setResult(formatSelect)
+  }
 
   useEffect(() => {
-    obtenerDataMotivoAgregacion();
-  }, []);
+    obtenerDataMotivoAgregacion()
+  }, [])
 
   const handledChange = (event, value) => {
-    onNewInput(value);
-  };
-  
-  useEffect(() => {
+    onNewInput(value)
+  }
 
-    if(inputs){
+  useEffect(() => {
+    if (inputs) {
       setValue(inputs.motivo)
     }
-    }, [inputs]);
+  }, [inputs])
 
   return (
     <>
@@ -47,9 +45,9 @@ export const FilterMotivoAgregacion = ({ onNewInput, inputs, defaultValueFlag })
         disableClearable
         value={value}
         onInputChange={(event, value, reason) => {
-          if (reason == "input" && value == "") {
-            console.log("reason: ",reason, "value:", value)
-            onNewInput({ label: value });
+          if (reason == 'input' && value == '') {
+            console.log('reason: ', reason, 'value:', value)
+            onNewInput({ label: value })
           }
         }}
         getOptionLabel={(option) => option.label}
@@ -57,5 +55,5 @@ export const FilterMotivoAgregacion = ({ onNewInput, inputs, defaultValueFlag })
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

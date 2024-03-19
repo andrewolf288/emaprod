@@ -1,66 +1,66 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getMateriaPrimaPorSeleccionar } from "./../../../helpers/Referenciales/producto/getMateriaPrimaPorSeleccionar";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getMateriaPrimaPorSeleccionar } from './../../../helpers/Referenciales/producto/getMateriaPrimaPorSeleccionar'
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona una materia prima",
-  id: 0,
-};
+  label: 'Selecciona una materia prima',
+  id: 0
+}
 
 export const FilterMateriaPrimaPorSeleccionar = ({
   defaultValue = 0,
-  onNewInput,
+  onNewInput
 }) => {
-  const [options, setOptions] = useState([defaultOption]);
-  const [value, setValue] = useState(defaultOption);
+  const [options, setOptions] = useState([defaultOption])
+  const [value, setValue] = useState(defaultOption)
 
   const obtenerDataProducto = async () => {
-    var result = await getMateriaPrimaPorSeleccionar();
+    const result = await getMateriaPrimaPorSeleccionar()
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
         return {
           value: element.codProd2,
           label: `${element.codProd2} - ${element.nomProd}`,
-          id: element.id,
-        };
-      }),
-    ];
-    setOptions(formatSelect);
+          id: element.id
+        }
+      })
+    ]
+    setOptions(formatSelect)
     // verficar si defualtvalue coincide
     const defaultValueOption = formatSelect.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  };
+  }
 
   const handleChange = (event, value) => {
-    onNewInput(value);
-    setValue(value);
-  };
+    onNewInput(value)
+    setValue(value)
+  }
 
   // la llamada a la base de datos solo se da una vez
   useEffect(() => {
-    const controller = new AbortController();
-    obtenerDataProducto();
-    return () => controller.abort();
-  }, []);
+    const controller = new AbortController()
+    obtenerDataProducto()
+    return () => controller.abort()
+  }, [])
 
   // esto se llama cada vez que se da un cambio en el defaultValue
   useEffect(() => {
     // verficar si defualtvalue coincide
     const defaultValueOption = options.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  }, [defaultValue]);
+  }, [defaultValue])
 
   return (
     <Autocomplete
@@ -72,5 +72,5 @@ export const FilterMateriaPrimaPorSeleccionar = ({
       isOptionEqualToValue={(option, value) => option.id == value.id}
       renderInput={(params) => <TextField {...params} size="small" />}
     />
-  );
-};
+  )
+}

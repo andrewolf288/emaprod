@@ -1,36 +1,35 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getEstadoInicioProgramadoProduccion } from "./../../../helpers/Referenciales/produccion/getEstadoInicioProgramadoProduccion";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getEstadoInicioProgramadoProduccion } from './../../../helpers/Referenciales/produccion/getEstadoInicioProgramadoProduccion'
 
 export const FilterEstadoInicioProgramadoProduccion = ({ onNewInput, inputs }) => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState([])
 
   const obtenerDataEstadoInicioProgramadoProduccion = async () => {
-    const resultPeticion = await getEstadoInicioProgramadoProduccion();
+    const resultPeticion = await getEstadoInicioProgramadoProduccion()
     const formatSelect = resultPeticion.map((element) => {
       return {
         value: element.id,
         label: element.desProdIniProgEst,
-        id: element.id,
-      };
-    });
-    setResult(formatSelect);
-  };
+        id: element.id
+      }
+    })
+    setResult(formatSelect)
+  }
 
   useEffect(() => {
-    obtenerDataEstadoInicioProgramadoProduccion();
-  }, []);
+    obtenerDataEstadoInicioProgramadoProduccion()
+  }, [])
 
   const handledChange = (event, value) => {
-    onNewInput(value);
-  };
+    onNewInput(value)
+  }
 
-  var d = {}
-  if(inputs?.producto){
+  const d = {}
+  if (inputs?.producto) {
     d.value = inputs.estadoInicio
-
   }
 
   return (
@@ -40,9 +39,9 @@ export const FilterEstadoInicioProgramadoProduccion = ({ onNewInput, inputs }) =
         disableClearable
         {...d}
         onInputChange={(event, value, reason) => {
-          if (reason == "input" && value == "") {
-            console.log("reason: ",reason, "value:", value)
-            onNewInput({ label: value });
+          if (reason == 'input' && value == '') {
+            console.log('reason: ', reason, 'value:', value)
+            onNewInput({ label: value })
           }
         }}
         getOptionLabel={(option) => option.label}
@@ -50,5 +49,5 @@ export const FilterEstadoInicioProgramadoProduccion = ({ onNewInput, inputs }) =
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

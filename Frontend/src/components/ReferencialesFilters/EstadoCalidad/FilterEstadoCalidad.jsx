@@ -1,24 +1,24 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getEstadoCalidad } from "../../../helpers/Referenciales/estado_calidad/getEstadoCalidad";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getEstadoCalidad } from '../../../helpers/Referenciales/estado_calidad/getEstadoCalidad'
 
 const defaultOption = {
   value: null,
-  label: "Selecciona un estado",
+  label: 'Selecciona un estado',
   id: null
-};
+}
 
 export const FilterEstadoCalidad = ({ defaultValue = null, onNewInput }) => {
-  const [options, setOptions] = useState([defaultOption]);
-  const [value, setValue] = useState(defaultOption);
+  const [options, setOptions] = useState([defaultOption])
+  const [value, setValue] = useState(defaultOption)
 
   const obtenerDataEstadoCalidad = async () => {
-    var result = await getEstadoCalidad();
+    let result = await getEstadoCalidad()
     result = result.filter(
       (element) => element.idCla !== 2 && element.idCla !== 4
-    );
+    )
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
@@ -26,29 +26,29 @@ export const FilterEstadoCalidad = ({ defaultValue = null, onNewInput }) => {
           value: element.id,
           label: element.desEntCalEst,
           id: element.id
-        };
+        }
       })
-    ];
-    setOptions(formatSelect);
+    ]
+    setOptions(formatSelect)
     // verficar si defualtvalue coincide
     const defaultValueOption = formatSelect.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  };
+  }
 
   const handleChange = (event, value) => {
-    onNewInput(value);
-    setValue(value);
-  };
+    onNewInput(value)
+    setValue(value)
+  }
 
   useEffect(() => {
-    const controller = new AbortController();
-    obtenerDataEstadoCalidad();
-    return () => controller.abort();
-  }, []);
+    const controller = new AbortController()
+    obtenerDataEstadoCalidad()
+    return () => controller.abort()
+  }, [])
 
   return (
     <Autocomplete
@@ -60,5 +60,5 @@ export const FilterEstadoCalidad = ({ defaultValue = null, onNewInput }) => {
       isOptionEqualToValue={(option, value) => option.id == value.id}
       renderInput={(params) => <TextField {...params} size="small" />}
     />
-  );
-};
+  )
+}

@@ -1,31 +1,31 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getEstadoFinProgramadoProduccion } from "./../../../helpers/Referenciales/produccion/getEstadoFinProgramadoProduccion";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getEstadoFinProgramadoProduccion } from './../../../helpers/Referenciales/produccion/getEstadoFinProgramadoProduccion'
 
 export const FilterEstadoFinProgramadoProduccion = ({ onNewInput }) => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState([])
 
   const obtenerDataEstadoFinProgramadoProduccion = async () => {
-    const resultPeticion = await getEstadoFinProgramadoProduccion();
+    const resultPeticion = await getEstadoFinProgramadoProduccion()
     const formatSelect = resultPeticion.map((element) => {
       return {
         value: element.id,
         label: element.desProdFinProgEst,
-        id: element.id,
-      };
-    });
-    setResult(formatSelect);
-  };
+        id: element.id
+      }
+    })
+    setResult(formatSelect)
+  }
 
   useEffect(() => {
-    obtenerDataEstadoFinProgramadoProduccion();
-  }, []);
+    obtenerDataEstadoFinProgramadoProduccion()
+  }, [])
 
   const handledChange = (event, value) => {
-    onNewInput(value);
-  };
+    onNewInput(value)
+  }
 
   return (
     <>
@@ -37,5 +37,5 @@ export const FilterEstadoFinProgramadoProduccion = ({ onNewInput }) => {
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

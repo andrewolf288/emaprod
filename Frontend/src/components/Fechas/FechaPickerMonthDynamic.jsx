@@ -1,26 +1,26 @@
-import React, { useState } from "react";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import TextField from "@mui/material/TextField";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { FormatDateTimeMYSQL } from "../../utils/functions/FormatDate";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import moment from "moment";
+import React, { useState } from 'react'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import TextField from '@mui/material/TextField'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { FormatDateTimeMYSQL } from '../../utils/functions/FormatDate'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import moment from 'moment'
 
 const FechaPickerMonthDynamic = ({
   onNewfecEntSto,
-  dateValue = "",
-  label = ""
+  dateValue = '',
+  label = ''
 }) => {
-  const [value, setValue] = useState(moment(dateValue));
+  const [value, setValue] = useState(moment(dateValue))
 
   const formatFechaMYSQL = (newValue) => {
-    setValue(newValue);
-    onNewfecEntSto(FormatDateTimeMYSQL(newValue._d));
-  };
+    setValue(newValue)
+    onNewfecEntSto(FormatDateTimeMYSQL(newValue._d))
+  }
 
   const handleKeyDown = (event) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -28,14 +28,14 @@ const FechaPickerMonthDynamic = ({
         label={label}
         value={value}
         inputFormat="DD/MM/YYYY"
-        views={["year", "month", "day"]}
+        views={['year', 'month', 'day']}
         onChange={formatFechaMYSQL}
         renderInput={(params) => (
           <TextField size="small" {...params} onKeyDown={handleKeyDown} />
         )}
       />
     </LocalizationProvider>
-  );
-};
+  )
+}
 
-export default FechaPickerMonthDynamic;
+export default FechaPickerMonthDynamic

@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getClases } from "./../../../helpers/Referenciales/clase/getClases";
+import React, { useState, useEffect } from 'react'
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getClases } from './../../../helpers/Referenciales/clase/getClases'
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona un almacen",
+  label: 'Selecciona un almacen',
   id: null
-};
+}
 
 export const FilterClaseDynamic = ({ defaultValue = null, onNewInput }) => {
-  const [options, setOptions] = useState([defaultOption]);
-  const [value, setValue] = useState(defaultOption);
+  const [options, setOptions] = useState([defaultOption])
+  const [value, setValue] = useState(defaultOption)
 
   const obtenerDataClases = async () => {
-    const result = await getClases();
+    const result = await getClases()
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
@@ -22,35 +22,35 @@ export const FilterClaseDynamic = ({ defaultValue = null, onNewInput }) => {
           value: element.id,
           label: `${element.desCla}`,
           id: element.id
-        };
+        }
       })
-    ];
-    setOptions(formatSelect);
+    ]
+    setOptions(formatSelect)
     // verficar si defualtvalue coincide
     const defaultValueOption = formatSelect.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  };
+  }
 
   const handledChange = (event, value) => {
-    onNewInput(value);
-  };
+    onNewInput(value)
+  }
 
   useEffect(() => {
     const defaultValueOption = options.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  }, [defaultValue]);
+  }, [defaultValue])
 
   useEffect(() => {
-    obtenerDataClases();
-  }, []);
+    obtenerDataClases()
+  }, [])
 
   return (
     <Autocomplete
@@ -62,5 +62,5 @@ export const FilterClaseDynamic = ({ defaultValue = null, onNewInput }) => {
       isOptionEqualToValue={(option, value) => option.id == value.id}
       renderInput={(params) => <TextField {...params} size="small" />}
     />
-  );
-};
+  )
+}

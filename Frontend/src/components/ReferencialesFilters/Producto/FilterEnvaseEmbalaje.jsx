@@ -1,65 +1,65 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getAllProductos2 } from "../../../helpers/Referenciales/producto/getAllProductos2";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getAllProductos2 } from '../../../helpers/Referenciales/producto/getAllProductos2'
 
 const defaultOption = {
   value: 0,
-  label: "Selecciona un producto",
-  id: 0,
-};
+  label: 'Selecciona un producto',
+  id: 0
+}
 
 export const FilterEnvaseEmbalaje = ({ defaultValue = 0, onNewInput }) => {
-  const [options, setOptions] = useState([defaultOption]);
-  const [value, setValue] = useState(defaultOption);
+  const [options, setOptions] = useState([defaultOption])
+  const [value, setValue] = useState(defaultOption)
 
   const obtenerDataProducto = async () => {
-    var result = await getAllProductos2();
+    let result = await getAllProductos2()
     result = result.filter(
       (element) => element.idCla === 3 || element.idCla === 6
-    );
+    )
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
         return {
           value: element.codProd2,
           label: `${element.codProd2} - ${element.nomProd}`,
-          id: element.id,
-        };
-      }),
-    ];
-    setOptions(formatSelect);
+          id: element.id
+        }
+      })
+    ]
+    setOptions(formatSelect)
     // verficar si defualtvalue coincide
     const defaultValueOption = formatSelect.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  };
+  }
 
   const handleChange = (event, value) => {
-    onNewInput(value);
-    setValue(value);
-  };
+    onNewInput(value)
+    setValue(value)
+  }
 
   useEffect(() => {
-    const controller = new AbortController();
-    obtenerDataProducto();
-    return () => controller.abort();
-  }, []);
+    const controller = new AbortController()
+    obtenerDataProducto()
+    return () => controller.abort()
+  }, [])
 
   // esto se llama cada vez que se da un cambio en el defaultValue
   useEffect(() => {
     // verficar si defualtvalue coincide
     const defaultValueOption = options.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  }, [defaultValue]);
+  }, [defaultValue])
 
   return (
     <Autocomplete
@@ -71,5 +71,5 @@ export const FilterEnvaseEmbalaje = ({ defaultValue = 0, onNewInput }) => {
       isOptionEqualToValue={(option, value) => option.id == value.id}
       renderInput={(params) => <TextField {...params} size="small" />}
     />
-  );
-};
+  )
+}

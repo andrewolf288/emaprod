@@ -1,44 +1,38 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getTiposProduccion } from "./../../../helpers/Referenciales/tipo_produccion/getTiposProduccion";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getTiposProduccion } from './../../../helpers/Referenciales/tipo_produccion/getTiposProduccion'
 
 export const FilterTipoProduccion = ({ onNewInput, inputs }) => {
-  const [result, setResult] = useState([]);
-  const [value, setValue] = useState({});
+  const [result, setResult] = useState([])
+  const [value, setValue] = useState({})
 
   const obtenerDataTipoProduccion = async () => {
-    const resultPeticion = await getTiposProduccion();
+    const resultPeticion = await getTiposProduccion()
     const formatSelect = resultPeticion?.map((element) => {
       return {
         value: element.id,
         label: element.desProdTip,
         id: element.id,
-        cod: element.codTipProd,
-      };
-    });
+        cod: element.codTipProd
+      }
+    })
     if (formatSelect.length && inputs?.idProdTip) {
-      var prod = formatSelect.find((item) => item.id == inputs?.idProdTip);
-      setValue(prod);
+      const prod = formatSelect.find((item) => item.id == inputs?.idProdTip)
+      setValue(prod)
     }
 
-    setResult(formatSelect);
-  };
+    setResult(formatSelect)
+  }
 
   useEffect(() => {
-    obtenerDataTipoProduccion();
-  }, []);
+    obtenerDataTipoProduccion()
+  }, [])
 
   const handledChange = (event, value) => {
-    setValue(value);
-    onNewInput(value);
-  };
-
-  var d = {};
-  if (inputs?.tipoProduccion || inputs?.idProdTip) {
-    //d.value = inputs.tipoProduccion;
-    //d.value = result[1];
+    setValue(value)
+    onNewInput(value)
   }
 
   return (
@@ -50,12 +44,12 @@ export const FilterTipoProduccion = ({ onNewInput, inputs }) => {
         getOptionLabel={(option) => option.label}
         onChange={handledChange}
         onInputChange={(event, value, reason) => {
-          if (reason == "input" && value == "") {
-            onNewInput({ label: value });
+          if (reason == 'input' && value == '') {
+            onNewInput({ label: value })
           }
         }}
         renderInput={(params) => <TextField {...params} size="small" />}
       />
     </>
-  );
-};
+  )
+}

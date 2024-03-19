@@ -1,24 +1,24 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { getEncargadoCalidad } from "../../../helpers/Referenciales/encargado_calidad/getEncargadoCalidad";
+import React, { useState, useEffect } from 'react'
+
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import { getEncargadoCalidad } from '../../../helpers/Referenciales/encargado_calidad/getEncargadoCalidad'
 
 const defaultOption = {
   value: null,
-  label: "Selecciona un encargado",
+  label: 'Selecciona un encargado',
   id: null
-};
+}
 
 export const FilterEncargadoCalidad = ({ defaultValue = null, onNewInput }) => {
-  const [options, setOptions] = useState([defaultOption]);
-  const [value, setValue] = useState(defaultOption);
+  const [options, setOptions] = useState([defaultOption])
+  const [value, setValue] = useState(defaultOption)
 
   const obtenerDataProducto = async () => {
-    var result = await getEncargadoCalidad();
+    let result = await getEncargadoCalidad()
     result = result.filter(
       (element) => element.idCla !== 2 && element.idCla !== 4
-    );
+    )
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
@@ -26,29 +26,29 @@ export const FilterEncargadoCalidad = ({ defaultValue = null, onNewInput }) => {
           value: element.id,
           label: element.nomEncCal,
           id: element.id
-        };
+        }
       })
-    ];
-    setOptions(formatSelect);
+    ]
+    setOptions(formatSelect)
     // verficar si defualtvalue coincide
     const defaultValueOption = formatSelect.find(
       (option) => option.id === defaultValue
-    );
+    )
     if (defaultValueOption) {
-      setValue(defaultValueOption);
+      setValue(defaultValueOption)
     }
-  };
+  }
 
   const handleChange = (event, value) => {
-    onNewInput(value);
-    setValue(value);
-  };
+    onNewInput(value)
+    setValue(value)
+  }
 
   useEffect(() => {
-    const controller = new AbortController();
-    obtenerDataProducto();
-    return () => controller.abort();
-  }, []);
+    const controller = new AbortController()
+    obtenerDataProducto()
+    return () => controller.abort()
+  }, [])
 
   return (
     <Autocomplete
@@ -60,5 +60,5 @@ export const FilterEncargadoCalidad = ({ defaultValue = null, onNewInput }) => {
       isOptionEqualToValue={(option, value) => option.id == value.id}
       renderInput={(params) => <TextField {...params} size="small" />}
     />
-  );
-};
+  )
+}
