@@ -1,5 +1,6 @@
 import { RouterAlmacenCalidad } from '../pages/almacen-calidad/RouterAlmacenCalidad'
 import { RouterAtributoCalidad } from '../pages/atributos-calidad/RouterAtributoCalidad'
+import { RouterAlmacenEntradaStock } from '../pages/entradasStock/RouterAlmacenEntradas'
 import { RouterOperacionDevolucionCalidad } from '../pages/operacion-reproceso-calidad/RouterOperacionDevolucionCalidad'
 import { RouterReportesCalidad } from '../pages/reportes/RouterReportesCalidad'
 import LayoutModulo from './../../layout/LayoutModulo'
@@ -9,6 +10,11 @@ export const RouterCalidad = [
   {
     path: '',
     element: <HomeCalidad />
+  },
+  {
+    path: 'entradas-stock',
+    element: <LayoutModulo />,
+    children: RouterAlmacenEntradaStock
   },
   {
     path: 'atributos-calidad',
