@@ -7,6 +7,7 @@ import { CardRequisicionDevolucion } from '../../components/componentes-devoluci
 import { CircularProgress, Dialog, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import { deleteRequisicionDevolucionDetalleById } from '../../helpers/devoluciones-lote-produccion/deleteRequisicionDevolucionDetalleById'
 import { updateRequisicionDevolucionDetalleById } from '../../helpers/devoluciones-lote-produccion/updateRequisicionDevolucionDetalleById'
+import { createDevolucionOrdenReproceso } from '../../helpers/orden-reproceso/createDevolucionOrdenReproceso'
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert (props, ref) {
@@ -106,30 +107,30 @@ export const ViewOrdenReproceso = () => {
 
   // funcion para cumplir la requisicion de agregacion
   const onCheckDetalleRequisicionDevolucion = async (detalle, requisicion) => {
-    // const { idProdFin } = requisicion
-    // const formatData = {
-    //   ...detalle,
-    //   idProdc,
-    //   idProdFin
-    // }
-    // console.log(formatData)
+    const { idProdFin, idProdc } = requisicion
+    const formatData = {
+      ...detalle,
+      idProdc,
+      idProdFin
+    }
+    console.log(formatData)
     // abrimos el loader
     openLoader()
-    // const resultPeticion = await createDevolucionOrdenTransformacion(
-    //   formatData
-    // )
-    // console.log(resultPeticion)
-    // const { message_error, description_error } = resultPeticion
-    // if (message_error.length === 0) {
-    //   // llamamos a la data
-    //   traerInformacionOperacionDevolucionCalidad()
-    // } else {
-    //   setfeedbackMessages({
-    //     style_message: 'error',
-    //     feedback_description_error: description_error
-    //   })
-    //   handleClickFeeback()
-    // }
+    const resultPeticion = await createDevolucionOrdenReproceso(
+      formatData
+    )
+    console.log(resultPeticion)
+    const { message_error, description_error } = resultPeticion
+    if (message_error.length === 0) {
+      // llamamos a la data
+      traerInformacionOperacionDevolucionCalidad()
+    } else {
+      setfeedbackMessages({
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
+    }
     // // cerramos el loader
     closeLoader()
   }

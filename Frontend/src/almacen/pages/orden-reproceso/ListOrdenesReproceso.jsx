@@ -121,7 +121,7 @@ export const ListOrdenesReproceso = () => {
                     <TableCell align="center" width={70}>
                       <strong>Cantidad total</strong>
                     </TableCell>
-                    <TableCell align="left" width={100}>
+                    <TableCell align="center" width={100}>
                       <b>Devolucion</b>
                     </TableCell>
                     <TableCell align="left" width={100}>
