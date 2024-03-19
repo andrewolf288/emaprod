@@ -1,168 +1,142 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
-import { Link } from "react-router-dom";
-//IMPORTACIONES PARA DIALOG DELETE
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { deleteMateriaPrima } from "./../../helpers/materia-prima/deleteMateriaPrima";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
+import { Link } from 'react-router-dom'
+// IMPORTACIONES PARA DIALOG DELETE
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import { deleteMateriaPrima } from './../../helpers/materia-prima/deleteMateriaPrima'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { getMateriaPrima } from "./../../../helpers/Referenciales/producto/getMateriasPrimas";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { getMateriaPrima } from './../../../helpers/Referenciales/producto/getMateriasPrimas'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const ListMateriaPrima = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataMatPri, setdataMatPri] = useState([]);
-  const [dataMatPriTmp, setdataMatPriTmp] = useState([]);
+  const [dataMatPri, setdataMatPri] = useState([])
+  const [dataMatPriTmp, setdataMatPriTmp] = useState([])
   const [filters, setfilters] = useState({
-    filterCodMatPri: "",
+    filterCodMatPri: '',
     filterCatMatPri: 0,
-    filterNomMatPri: "",
-  });
-  const { filterCodMatPri, filterNomMatPri } = filters;
+    filterNomMatPri: ''
+  })
+  const { filterCodMatPri, filterNomMatPri } = filters
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // ESTADOS PARA EL DIALOG DELETE
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
   const [itemDelete, setitemDelete] = useState({
     itemId: 0,
-    itemCodigoMatPri: "",
-    itemNomMatPri: "",
-  });
-  const { itemCodigoMatPri, itemNomMatPri, itemId } = itemDelete;
+    itemCodigoMatPri: '',
+    itemNomMatPri: ''
+  })
+  const { itemCodigoMatPri, itemNomMatPri, itemId } = itemDelete
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
+  const [feedbackDelete, setfeedbackDelete] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+    setfeedbackDelete(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackDelete(false);
-  };
+    setfeedbackDelete(false)
+  }
 
   // FUNCION PARA TRAER LA DATA DE MATERIA DE PRIMA
   const obtenerDataMateriPrima = async () => {
-    const resultPeticion = await getMateriaPrima();
-    setdataMatPri(resultPeticion);
-    setdataMatPriTmp(resultPeticion);
-  };
+    const resultPeticion = await getMateriaPrima()
+    setdataMatPri(resultPeticion)
+    setdataMatPriTmp(resultPeticion)
+  }
 
   // MANEJADORES DE LOS FILTROS
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setfilters({
       ...filters,
-      [name]: value,
-    });
-    filter(value, name);
-  };
+      [name]: value
+    })
+    filter(value, name)
+  }
 
   // FUNCION PARA FILTRAR LA DATA
   const filter = (terminoBusqueda, name) => {
-    if (name === "filterCodMatPri") {
-      let resultadoBusqueda = dataMatPri.filter((element) => {
+    if (name === 'filterCodMatPri') {
+      const resultadoBusqueda = dataMatPri.filter((element) => {
         if (
           element.codMatPri
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
         } else {
-          return false;
+          return false
         }
-      });
-      setdataMatPriTmp(resultadoBusqueda);
+      })
+      setdataMatPriTmp(resultadoBusqueda)
     } else {
-      let resultadoBusqueda = dataMatPri.filter((element) => {
+      const resultadoBusqueda = dataMatPri.filter((element) => {
         if (
           element.nomMatPri
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
         } else {
-          return false;
+          return false
         }
-      });
-      setdataMatPriTmp(resultadoBusqueda);
+      })
+      setdataMatPriTmp(resultadoBusqueda)
     }
-  };
-
-  // CONTROLADOR DE CATEGORIA
-  const AddNewCategory = ({ label }) => {
-    setfilters({
-      ...filters,
-      filterCatMatPri: label,
-    });
-    filterByCategory(label);
-  };
-
-  // FUNCION FILTRO POR CATEGORIA
-  const filterByCategory = (terminoBusqueda) => {
-    let resultadoBusqueda = dataMatPri.filter((element) => {
-      if (
-        element.desMatPriCat
-          .toString()
-          .toLowerCase()
-          .includes(terminoBusqueda.toLowerCase())
-      ) {
-        return element;
-      } else {
-        return false;
-      }
-    });
-    setdataMatPriTmp(resultadoBusqueda);
-  };
+  }
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // MANEJADORES DE CUADRO DE DIALOGO
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
   const handleOn = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   // SETEAMOS LOS VALORES DEL DIALOG DE ELIMINACION
   const openDialogDeleteItem = ({ codMatPri, nomMatPri, id }) => {
@@ -170,54 +144,54 @@ const ListMateriaPrima = () => {
       ...itemDelete,
       itemId: id,
       itemCodigoMatPri: codMatPri,
-      itemNomMatPri: nomMatPri,
-    });
-    handleOn();
-  };
+      itemNomMatPri: nomMatPri
+    })
+    handleOn()
+  }
 
   // FUNCION PARA ELIMINAR MATERIA PRIMA
   const eliminarMateriPrima = async () => {
     const { message_error, description_error } = await deleteMateriaPrima(
       itemId
-    );
+    )
 
     if (message_error.length === 0) {
-      console.log("Se elimino correctamente");
+      console.log('Se elimino correctamente')
       // RECALCULAMOS LA DATA
-      let dataNueva = dataMatPri.filter((element) => {
+      const dataNueva = dataMatPri.filter((element) => {
         if (element.id !== itemId) {
-          //FILTRAMOS
-          return element;
+          // FILTRAMOS
+          return element
         } else {
-          return false;
+          return false
         }
-      });
+      })
       // ACTUALIZAMOS LA DATA
-      setdataMatPri(dataNueva);
-      setdataMatPriTmp(dataNueva);
-      handleClose();
+      setdataMatPri(dataNueva)
+      setdataMatPriTmp(dataNueva)
+      handleClose()
       // MOSTRAMOS FEEDBACK
-      console.log("Se elimino exitosamente");
+      console.log('Se elimino exitosamente')
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se eliminó exitosamente",
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se eliminó exitosamente'
+      })
+      handleClickFeeback()
     } else {
-      handleClose();
+      handleClose()
       // MOSTRAMOS FEEDBACK
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // INICIALIZAMOS LA DATA ANTES DE RENDERIZAR EL COMPONENTE
   useEffect(() => {
-    obtenerDataMateriPrima();
-  }, []);
+    obtenerDataMateriPrima()
+  }, [])
 
   return (
     <>
@@ -253,7 +227,7 @@ const ListMateriaPrima = () => {
           {/* BOTON AGREGAR MATERIA PRIMA */}
           <div className="col-md-3 d-flex justify-content-end ms-auto">
             <Link
-              to={"/almacen/materia-prima/crear"}
+              to={'/almacen/materia-prima/crear'}
               className="btn btn-primary"
             >
               <svg
@@ -297,7 +271,7 @@ const ListMateriaPrima = () => {
                   .map((row) => (
                     <TableRow
                       key={row.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell component="th" scope="row">
                         {row.codMatPri}
@@ -325,7 +299,7 @@ const ListMateriaPrima = () => {
                           </Link>
                           <button
                             onClick={() => {
-                              openDialogDeleteItem(row);
+                              openDialogDeleteItem(row)
                             }}
                             className="btn btn-danger"
                           >
@@ -398,7 +372,7 @@ const ListMateriaPrima = () => {
       </Dialog>
       {/* FEEDBACK DELETE */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackDelete}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -406,13 +380,13 @@ const ListMateriaPrima = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default ListMateriaPrima;
+export default ListMateriaPrima

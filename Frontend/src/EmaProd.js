@@ -12,8 +12,6 @@ import { RouterMolienda } from './molienda/router/router'
 import { RouterSeleccion } from './seleccion/router/router'
 import { RouterProduccion } from './produccion/router/router'
 import { RouterFrescos } from './frescos/router/router'
-import { RouterEncajonado } from './encajonado/router/router'
-import { RouterEnvasado } from './envasado/router/router'
 
 // PLANTILLA NOT FOUND
 import NotFound from './pages/NotFound'
@@ -26,8 +24,6 @@ import { ProtectedLayoutMolienda } from './components/ProtectedLayoutMolienda'
 import { ProtectedLayoutSeleccion } from './components/ProtectedLayoutSeleccion'
 import { ProtectedLayoutProduccion } from './components/ProtectedLayoutProduccion'
 import { ProtectedLayoutFrescos } from './components/ProtectedLayoutFrescos'
-import { ProtectedLayoutEncajonado } from './components/ProtectedLayoutEncajonado'
-import { ProtectedLayoutEnvasado } from './components/ProtectedLayoutEnvasado'
 import { RouterVentas } from './ventas/router/router'
 import { ProtectedLayoutVentas } from './components/ProtectedLayoutVentas'
 
@@ -68,16 +64,6 @@ export const router = createBrowserRouter([
         path: '/frescos',
         element: <ProtectedLayoutFrescos />,
         children: RouterFrescos
-      },
-      {
-        path: '/encajonado',
-        element: <ProtectedLayoutEncajonado />,
-        children: RouterEncajonado
-      },
-      {
-        path: '/envasado',
-        element: <ProtectedLayoutEnvasado />,
-        children: RouterEnvasado
       },
       {
         path: '/calidad',

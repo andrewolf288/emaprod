@@ -5,13 +5,13 @@ import NavAlmacen from '../almacen/components/NavAlmacen'
 const LayoutAlmacenNav = () => {
   return (
     <>
-        <NavAlmacen/>
-        <main>
-            <Outlet />
-        </main>
-        <footer></footer>
+      <NavAlmacen/>
+      <main>
+        <Outlet />
+      </main>
+      <footer></footer>
     </>
-    
+
   )
 }
 

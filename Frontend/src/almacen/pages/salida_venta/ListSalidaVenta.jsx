@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
-import { getSalidasVenta } from "../../helpers/salida-venta/getSalidasVenta";
-import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
+import React, { useEffect, useState } from 'react'
+import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
+import { getSalidasVenta } from '../../helpers/salida-venta/getSalidasVenta'
+import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
 import {
   Paper,
   Table,
@@ -12,146 +12,152 @@ import {
   TablePagination,
   TableRow,
   TextField
-} from "@mui/material";
-import { FilterEstadoRequisicion } from "../../../components/ReferencialesFilters/EstadoRequisicion/FilterEstadoRequisicion";
+} from '@mui/material'
+import { FilterEstadoRequisicion } from '../../../components/ReferencialesFilters/EstadoRequisicion/FilterEstadoRequisicion'
 
 export const ListSalidaVenta = () => {
-  const [dataSalidasVenta, setDataSalidasVenta] = useState([]);
-  const [dataSalidasVentaTemp, setDataSalidasVentaTemp] = useState([]);
+  const [dataSalidasVenta, setDataSalidasVenta] = useState([])
+  const [dataSalidasVentaTemp, setDataSalidasVentaTemp] = useState([])
 
   // filtros
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
     fechaFin: FormatDateMYSQL()
-  });
+  })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Filtros generales que hacen nuevas consultas
   const handleFechaInicioChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaInicio: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaInicio: dateFormat
-    };
-    obtenerDataSalidasVenta(body);
-  };
+    }
+    obtenerDataSalidasVenta(body)
+  }
 
   const handleFechaFinChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaFin: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaFin: dateFormat
-    };
-    obtenerDataSalidasVenta(body);
-  };
+    }
+    obtenerDataSalidasVenta(body)
+  }
 
   const [dataFilter, setDataFilter] = useState({
-    invSerFac: "",
-    invNumFac: "",
+    invSerFac: '',
+    invNumFac: '',
     idReqEst: 0
-  });
-  const { invSerFac, invNumFac, idReqEst } = dataFilter;
+  })
+  const { invSerFac, invNumFac } = dataFilter
 
   const handleChangeInputValue = ({ target }) => {
-    const { value, name } = target;
+    const { value, name } = target
     setDataFilter({
       ...dataFilter,
       [name]: value
-    });
-    filter(value, name);
-  };
+    })
+    filter(value, name)
+  }
 
   const handleChangeSelectValue = (value) => {
-    const { id, label } = value;
+    const { id, label } = value
     setDataFilter({
       ...dataFilter,
       idReqEst: id
-    });
-    filter(label, "idReqEst");
-  };
+    })
+    filter(label, 'idReqEst')
+  }
 
   const filter = (terminoBusqueda, name) => {
-    if (name === "invSerFac") {
-      let resultadoBusqueda = dataSalidasVenta.filter((element) => {
+    if (name === 'invSerFac') {
+      const resultadoBusqueda = dataSalidasVenta.filter((element) => {
         if (
           element.invSerFac
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
+        } else {
+          return false
         }
-      });
-      setDataSalidasVentaTemp(resultadoBusqueda);
+      })
+      setDataSalidasVentaTemp(resultadoBusqueda)
     }
-    if (name === "invNumFac") {
-      let resultadoBusqueda = dataSalidasVenta.filter((element) => {
+    if (name === 'invNumFac') {
+      const resultadoBusqueda = dataSalidasVenta.filter((element) => {
         if (
           element.invNumFac
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
+        } else {
+          return false
         }
-      });
-      setDataSalidasVentaTemp(resultadoBusqueda);
+      })
+      setDataSalidasVentaTemp(resultadoBusqueda)
     }
-    if (name === "idReqEst") {
-      let resultadoBusqueda = dataSalidasVenta.filter((element) => {
+    if (name === 'idReqEst') {
+      const resultadoBusqueda = dataSalidasVenta.filter((element) => {
         if (
           element.desReqEst
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
+        } else {
+          return false
         }
-      });
-      setDataSalidasVentaTemp(resultadoBusqueda);
+      })
+      setDataSalidasVentaTemp(resultadoBusqueda)
     }
-  };
+  }
 
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataSalidasVenta = async (formState) => {
-    const resultPeticion = await getSalidasVenta(formState);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getSalidasVenta(formState)
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
-      setDataSalidasVenta(result);
-      setDataSalidasVentaTemp(result);
+      setDataSalidasVenta(result)
+      setDataSalidasVentaTemp(result)
     } else {
-      alert(description_error);
+      alert(description_error)
     }
-  };
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerDataSalidasVenta();
-  }, []);
+    obtenerDataSalidasVenta()
+  }, [])
 
   return (
     <>
@@ -182,9 +188,9 @@ export const ListSalidaVenta = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -235,83 +241,93 @@ export const ListSalidaVenta = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left">{row.invSerFac}</TableCell>
                         <TableCell align="left">{row.invNumFac}</TableCell>
                         <TableCell align="center">
-                          {row.idReqEst === 1 ? (
-                            <span className={"badge text-bg-danger"}>
-                              {row.desReqEst}
-                            </span>
-                          ) : row.idReqEst === 2 ? (
-                            <span className={"badge text-bg-warning"}>
-                              {row.desReqEst}
-                            </span>
-                          ) : row.idReqEst === 3 ? (
-                            <span className={"badge text-bg-success"}>
-                              {row.desReqEst}
-                            </span>
-                          ) : (
-                            <span className={"badge text-bg-secondary"}>
-                              {row.desReqEst}
-                            </span>
-                          )}
+                          {row.idReqEst === 1
+                            ? (
+                              <span className={'badge text-bg-danger'}>
+                                {row.desReqEst}
+                              </span>
+                            )
+                            : row.idReqEst === 2
+                              ? (
+                                <span className={'badge text-bg-warning'}>
+                                  {row.desReqEst}
+                                </span>
+                              )
+                              : row.idReqEst === 3
+                                ? (
+                                  <span className={'badge text-bg-success'}>
+                                    {row.desReqEst}
+                                  </span>
+                                )
+                                : (
+                                  <span className={'badge text-bg-secondary'}>
+                                    {row.desReqEst}
+                                  </span>
+                                )}
                         </TableCell>
                         <TableCell align="center">
-                          {row.fueAfePorDev === 1 ? (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="20"
-                              height="20"
-                              fill="currentColor"
-                              className="bi bi-check-circle-fill"
-                              viewBox="0 0 16 16"
-                              color="green"
-                            >
-                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                            </svg>
-                          ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="20"
-                              height="20"
-                              fill="currentColor"
-                              className="bi bi-x-circle-fill"
-                              viewBox="0 0 16 16"
-                              color="red"
-                            >
-                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
-                            </svg>
-                          )}
+                          {row.fueAfePorDev === 1
+                            ? (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                className="bi bi-check-circle-fill"
+                                viewBox="0 0 16 16"
+                                color="green"
+                              >
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                              </svg>
+                            )
+                            : (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                className="bi bi-x-circle-fill"
+                                viewBox="0 0 16 16"
+                                color="red"
+                              >
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
+                              </svg>
+                            )}
                         </TableCell>
                         <TableCell align="center">
-                          {row.fueAfePorAnul === 1 ? (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="20"
-                              height="20"
-                              fill="currentColor"
-                              className="bi bi-check-circle-fill"
-                              viewBox="0 0 16 16"
-                              color="green"
-                            >
-                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                            </svg>
-                          ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="20"
-                              height="20"
-                              fill="currentColor"
-                              className="bi bi-x-circle-fill"
-                              viewBox="0 0 16 16"
-                              color="red"
-                            >
-                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
-                            </svg>
-                          )}
+                          {row.fueAfePorAnul === 1
+                            ? (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                className="bi bi-check-circle-fill"
+                                viewBox="0 0 16 16"
+                                color="green"
+                              >
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                              </svg>
+                            )
+                            : (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                className="bi bi-x-circle-fill"
+                                viewBox="0 0 16 16"
+                                color="red"
+                              >
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
+                              </svg>
+                            )}
                         </TableCell>
                         <TableCell align="left">{row.fecCreOpeFac}</TableCell>
                         <TableCell align="left">
@@ -320,8 +336,8 @@ export const ListSalidaVenta = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/salida-venta/view/${row.id}`,
-                                  "_blank"
-                                );
+                                  '_blank'
+                                )
                               }}
                               disabled={row.fueAfePorAnul === 1}
                               className="btn btn-primary me-2 btn"
@@ -360,5 +376,5 @@ export const ListSalidaVenta = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

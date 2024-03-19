@@ -1,19 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import logo from "../../assets/logo-oficial.png";
-import { useAuth } from "../../hooks/useAuth";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../../assets/logo-oficial.png'
+import { useAuth } from '../../hooks/useAuth'
 
 const NavSeleccion = () => {
-  const { logout } = useAuth();
+  const { logout } = useAuth()
   const logoutUser = () => {
     // cerramos sesion
-    logout();
-  };
+    logout()
+  }
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={"/seleccion"}>
+          <Link className="navbar-brand" to={'/seleccion'}>
             <img
               src={logo}
               alt="Logo"
@@ -48,7 +48,7 @@ const NavSeleccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/seleccion/requisicion"}
+                      to={'/seleccion/requisicion'}
                     >
                       Administrar
                     </Link>
@@ -56,7 +56,7 @@ const NavSeleccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/seleccion/requisicion/crear"}
+                      to={'/seleccion/requisicion/crear'}
                     >
                       Crear
                     </Link>
@@ -75,7 +75,7 @@ const NavSeleccion = () => {
         </div>
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default NavSeleccion;
+export default NavSeleccion

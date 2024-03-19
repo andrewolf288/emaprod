@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 // IMPORTACIONES DE HELPER
-import { RowRequisicionLoteProduccion } from "../../components/componentes-lote-produccion/RowRequisicionLoteProduccion";
-import { viewProduccionRequisicionDetalleById } from "./../../helpers/lote-produccion/viewProduccionRequisicionDetalleById";
+import { RowRequisicionLoteProduccion } from '../../components/componentes-lote-produccion/RowRequisicionLoteProduccion'
+import { viewProduccionRequisicionDetalleById } from './../../helpers/lote-produccion/viewProduccionRequisicionDetalleById'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 // IMPORTACIONES PARA EL PROGRESS LINEAR
 import {
   Dialog,
@@ -13,39 +13,39 @@ import {
   DialogContent,
   DialogContentText,
   CircularProgress
-} from "@mui/material";
-import { useAuth } from "../../../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { createSalidasStockAutomaticas } from "./../../helpers/lote-produccion/createSalidasStockAutomaticas";
-import { updateProduccionDetalleRequisicion } from "../../helpers/lote-produccion/updateProduccionDetalleRequisicion";
-import { deleteProduccionDetalleRequisicion } from "../../helpers/lote-produccion/deleteProduccionDetalleRequisicion";
-import { checkFinSalidasParcialesDetalle } from "../../helpers/lote-produccion/checkFinSalidasParcialesDetalle";
-import { createSalidasParcialesStockAutomaticas } from "../../helpers/lote-produccion/createSalidasParcialesStockAutomaticas";
+} from '@mui/material'
+import { useAuth } from '../../../hooks/useAuth'
+
+import { createSalidasStockAutomaticas } from './../../helpers/lote-produccion/createSalidasStockAutomaticas'
+import { updateProduccionDetalleRequisicion } from '../../helpers/lote-produccion/updateProduccionDetalleRequisicion'
+import { deleteProduccionDetalleRequisicion } from '../../helpers/lote-produccion/deleteProduccionDetalleRequisicion'
+import { checkFinSalidasParcialesDetalle } from '../../helpers/lote-produccion/checkFinSalidasParcialesDetalle'
+import { createSalidasParcialesStockAutomaticas } from '../../helpers/lote-produccion/createSalidasParcialesStockAutomaticas'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ViewLoteProduccion = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams()
+  const navigate = useNavigate()
 
   const [produccionRequisicionDetalle, setproduccionRequisicionDetalle] =
     useState({
       idProdt: 0,
-      nomProd: "",
+      nomProd: '',
       idProdEst: 0,
-      desEstPro: "",
+      desEstPro: '',
       idProdTip: 0,
-      desProdTip: "",
-      codLotProd: "",
-      klgLotProd: "",
-      canLotProd: "",
-      fecVenLotProd: "",
+      desProdTip: '',
+      codLotProd: '',
+      klgLotProd: '',
+      canLotProd: '',
+      fecVenLotProd: '',
       prodLotReq: []
-    });
+    })
 
   const {
     nomProd,
@@ -57,154 +57,151 @@ export const ViewLoteProduccion = () => {
     fecVenLotProd,
     prodLotReq,
     numop
-  } = produccionRequisicionDetalle;
+  } = produccionRequisicionDetalle
 
-  const { user } = useAuth();
+  const { user } = useAuth()
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
-  const [loading, setLoading] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
 
   // ***** FUNCIONES PARA EL MANEJO DE ACCIONES *****
   const openLoader = () => {
-    setOpenDialog(true);
-    setLoading(true);
-  };
+    setOpenDialog(true)
+  }
   const closeLoader = () => {
-    setLoading(false);
-    setOpenDialog(false);
-  };
+    setOpenDialog(false)
+  }
 
   // ******* ACCIONES DE DETALLES DE REQUISICION *********
 
   // crear salidas correspondientes
   const onCreateSalidaTotalRequisicionDetalle = async (requisicion_detalle) => {
-    requisicion_detalle.numop = numop;
+    requisicion_detalle.numop = numop
     // abrimos el loader
-    openLoader();
-    console.log(requisicion_detalle);
+    openLoader()
+    console.log(requisicion_detalle)
     const resultPeticion = await createSalidasStockAutomaticas(
       requisicion_detalle
-    );
+    )
 
-    const { message_error, description_error, result } = resultPeticion;
+    const { message_error, description_error } = resultPeticion
 
     if (message_error?.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para crear salidas parciales
   const onCreateSalidaParcialRequisicionDetalle = async (
     requisicion_detalle,
     inputValue
   ) => {
-    requisicion_detalle.numop = numop;
+    requisicion_detalle.numop = numop
     // abrimos el loader
-    openLoader();
+    openLoader()
     const resultPeticion = await createSalidasParcialesStockAutomaticas(
       requisicion_detalle,
       inputValue
-    );
+    )
 
-    const { message_error, description_error, result } = resultPeticion;
+    const { message_error, description_error } = resultPeticion
 
     if (message_error?.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para terminar el ingreso de salidas parciales
   const onTerminarSalidaParcialRequisicionDetalle = async (
     requisicion_detalle
   ) => {
     // abrimos el loader
-    openLoader();
+    openLoader()
     const resultPeticion = await checkFinSalidasParcialesDetalle(
       requisicion_detalle
-    );
+    )
 
-    const { message_error, description_error, result } = resultPeticion;
+    const { message_error, description_error } = resultPeticion
 
     if (message_error?.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // actualizar detalle de requisicion
   const onUpdateRequisicionDetalle = async (
@@ -212,100 +209,100 @@ export const ViewLoteProduccion = () => {
     cantidadNueva
   ) => {
     // abrimos el loader
-    openLoader();
-    const { id } = requisicion_detalle;
-    let body = {
-      id: id,
-      cantidadNueva: cantidadNueva
-    };
-    const resultPeticion = await updateProduccionDetalleRequisicion(body);
-    const { message_error, description_error } = resultPeticion;
+    openLoader()
+    const { id } = requisicion_detalle
+    const body = {
+      id,
+      cantidadNueva
+    }
+    const resultPeticion = await updateProduccionDetalleRequisicion(body)
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // actualizamos la cantidad
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
+        style_message: 'success',
         feedback_description_error:
-          "Se actualizó el detalle de la requisicion con exito"
-      });
-      handleClickFeeback();
+          'Se actualizó el detalle de la requisicion con exito'
+      })
+      handleClickFeeback()
     } else {
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para eliminar el detalle de la requisicion
   const onDeleteRequisicionDetalle = async (requisicion_detalle) => {
     // abrimos el loader
-    openLoader();
+    openLoader()
     const resultPeticion = await deleteProduccionDetalleRequisicion(
       requisicion_detalle
-    );
+    )
 
-    const { message_error, description_error, result } = resultPeticion;
+    const { message_error, description_error } = resultPeticion
 
     if (message_error?.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para obtener la produccion con sus requisiciones y su detalle
   const obtenerDataProduccionRequisicionesDetalle = async () => {
-    const resultPeticion = await viewProduccionRequisicionDetalleById(id);
-    console.log(resultPeticion);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await viewProduccionRequisicionDetalleById(id)
+    console.log(resultPeticion)
+    const { message_error, description_error, result } = resultPeticion
 
     // console.log(result[0].prodLotReq);
 
-    //result[0].prodLotReq = result[0].prodLotReq.reverse();
-    result[0].prodLotReq.map((obj) => {
-      obj.reqDet.map((obj) => {
-        obj.numop = result[0].numop;
-      });
-    });
+    // result[0].prodLotReq = result[0].prodLotReq.reverse();
+    result[0].prodLotReq.forEach((obj) => {
+      obj.reqDet.forEach((obj) => {
+        obj.numop = result[0].numop
+      })
+    })
 
     if (message_error.length === 0) {
-      setproduccionRequisicionDetalle(result[0]);
+      setproduccionRequisicionDetalle(result[0])
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   useEffect(() => {
-    obtenerDataProduccionRequisicionesDetalle();
-  }, []);
+    obtenerDataProduccionRequisicionesDetalle()
+  }, [])
 
   return (
     <>
@@ -320,7 +317,7 @@ export const ViewLoteProduccion = () => {
                 onClick={() => {
                   navigate(
                     `/almacen/productos-lote/atender-requisiciones?idLotProdc=${id}`
-                  );
+                  )
                 }}
                 className="btn btn-primary"
               >
@@ -330,7 +327,7 @@ export const ViewLoteProduccion = () => {
                 onClick={() => {
                   navigate(
                     `/almacen/produccion-devoluciones/atender-requisiciones?idLotProdc=${id}`
-                  );
+                  )
                 }}
                 className="btn btn-warning ms-3"
               >
@@ -340,7 +337,7 @@ export const ViewLoteProduccion = () => {
                 onClick={() => {
                   navigate(
                     `/almacen/produccion-agregaciones/atender-requisiciones?idLotProdc=${id}`
-                  );
+                  )
                 }}
                 className="btn btn-danger ms-3"
               >
@@ -417,7 +414,7 @@ export const ViewLoteProduccion = () => {
                   />
                 </div>
 
-                {/* KILOGRAMOS DE LOTE 
+                {/* KILOGRAMOS DE LOTE
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
                     <b>Peso de Lote</b>
@@ -428,8 +425,8 @@ export const ViewLoteProduccion = () => {
                     value={klgLotProd}
                     className="form-control"
                   />
-                </div>*/}
-                {/* CANTIDAD DE LOTE 
+                </div> */}
+                {/* CANTIDAD DE LOTE
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
                     <b>Cantidad</b>
@@ -440,7 +437,7 @@ export const ViewLoteProduccion = () => {
                     value={canLotProd}
                     className="form-control"
                   />
-                </div>*/}
+                </div> */}
               </div>
               <div className="mb-3 row d-flex align-items-center">
                 {/* TIPO DE PRODUCCION */}
@@ -502,14 +499,14 @@ export const ViewLoteProduccion = () => {
                     }
                     show={user.idAre === 1}
                   />
-                );
+                )
               })}
             </div>
             <div className="btn-toolbar mt-4">
               <button
                 type="button"
                 onClick={() => {
-                  window.close();
+                  window.close()
                 }}
                 className="btn btn-secondary me-2"
               >
@@ -533,7 +530,7 @@ export const ViewLoteProduccion = () => {
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -541,11 +538,11 @@ export const ViewLoteProduccion = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

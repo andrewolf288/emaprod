@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react'
 
 export const ViewDevolucionesOrdenReproceso = () => {
-  return <div>ViewDevolucionesOrdenReproceso</div>;
-};
+  return <div>ViewDevolucionesOrdenReproceso</div>
+}

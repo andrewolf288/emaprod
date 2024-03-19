@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { TextField } from "@mui/material";
-import FechaPicker from "../../../src/components/Fechas/FechaPicker";
+import React, { useState } from 'react'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import { TextField } from '@mui/material'
+import FechaPicker from '../../../src/components/Fechas/FechaPicker'
 
 export const RowDetalleRequisicionSeleccion = ({
   detalle,
   onDeleteDetalleRequisicion,
-  onChangeDetalleRequisicion,
+  onChangeDetalleRequisicion
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
+  const [disabledInput, setdisabledInput] = useState(true)
   return (
     <TableRow
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell align="left">{detalle.nomProd}</TableCell>
@@ -23,13 +23,13 @@ export const RowDetalleRequisicionSeleccion = ({
       <TableCell component="th" scope="row">
         <FechaPicker
           onNewfecEntSto={(data) => {
-            var event = {
+            const event = {
               target: {
                 value: data,
-                name: "fechaRequisicion",
-              },
-            };
-            onChangeDetalleRequisicion(event, detalle.idMatPri);
+                name: 'fechaRequisicion'
+              }
+            }
+            onChangeDetalleRequisicion(event, detalle.idMatPri)
           }}
           date={detalle.fechaRequisicion}
         />
@@ -39,7 +39,7 @@ export const RowDetalleRequisicionSeleccion = ({
           <TextField
             size="small"
             onChange={(e) => {
-              onChangeDetalleRequisicion(e, detalle.idMatPri);
+              onChangeDetalleRequisicion(e, detalle.idMatPri)
             }}
             type="number"
             name="canMatPriFor"
@@ -53,7 +53,7 @@ export const RowDetalleRequisicionSeleccion = ({
         <div className="btn-toolbar">
           <button
             onClick={() => {
-              setdisabledInput(!disabledInput);
+              setdisabledInput(!disabledInput)
             }}
             className="btn btn-success me-2"
           >
@@ -70,7 +70,7 @@ export const RowDetalleRequisicionSeleccion = ({
           </button>
           <button
             onClick={() => {
-              onDeleteDetalleRequisicion(detalle.idMatPri);
+              onDeleteDetalleRequisicion(detalle.idMatPri)
             }}
             className="btn btn-danger"
           >
@@ -88,5 +88,5 @@ export const RowDetalleRequisicionSeleccion = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

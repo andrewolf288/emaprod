@@ -1,108 +1,110 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
-import { Link } from "react-router-dom";
-//IMPORTACIONES PARA DIALOG DELETE
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
+import { Link } from 'react-router-dom'
+// IMPORTACIONES PARA DIALOG DELETE
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { deleteProveedor } from "./../../helpers/proveedor/deleteProveedor";
-import { getProveedores } from "./../../../helpers/Referenciales/proveedor/getProveedores";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { deleteProveedor } from './../../helpers/proveedor/deleteProveedor'
+import { getProveedores } from './../../../helpers/Referenciales/proveedor/getProveedores'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const ListProveedor = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataPro, setdataPro] = useState([]);
-  const [dataProTmp, setdataProTmp] = useState([]);
+  const [dataPro, setdataPro] = useState([])
+  const [dataProTmp, setdataProTmp] = useState([])
   const [filters, setfilters] = useState({
-    filterCodPro: "",
-    filterNomPro: "",
-  });
+    filterCodPro: '',
+    filterNomPro: ''
+  })
 
-  const { filterCodPro, filterNomPro } = filters;
+  const { filterCodPro, filterNomPro } = filters
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // ESTADOS PARA EL DIALOG DELETE
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
   const [itemDelete, setitemDelete] = useState({
     itemId: 0,
-    itemCodigo: "",
-    itemNom: "",
-  });
-  const { itemCodigo, itemNom, itemId } = itemDelete;
+    itemCodigo: '',
+    itemNom: ''
+  })
+  const { itemCodigo, itemNom, itemId } = itemDelete
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
+  const [feedbackDelete, setfeedbackDelete] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+    setfeedbackDelete(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackDelete(false);
-  };
+    setfeedbackDelete(false)
+  }
 
   // FUNCION PARA TRAER LA DATA DE MATERIA DE PRIMA
   const obtenerDataProveedor = async () => {
-    const resultPeticion = await getProveedores();
-    setdataPro(resultPeticion);
-    setdataProTmp(resultPeticion);
-  };
+    const resultPeticion = await getProveedores()
+    setdataPro(resultPeticion)
+    setdataProTmp(resultPeticion)
+  }
 
   // MANEJADORES DE LOS FILTROS
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setfilters({
       ...filters,
-      [name]: value,
-    });
-    filter(value, name);
-  };
+      [name]: value
+    })
+    filter(value, name)
+  }
 
   const filter = (terminoBusqueda, name) => {
-    if (name == "filterCodPro") {
-      let resultadoBusqueda = dataPro.filter((element) => {
+    if (name == 'filterCodPro') {
+      const resultadoBusqueda = dataPro.filter((element) => {
         if (
           element.codPro
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
+        } else {
+          return false
         }
-      });
-      setdataProTmp(resultadoBusqueda);
+      })
+      setdataProTmp(resultadoBusqueda)
     } else {
-      let resultadoBusqueda = dataPro.filter((element) => {
+      const resultadoBusqueda = dataPro.filter((element) => {
         if (
           element.nomPro
             .toString()
@@ -113,30 +115,32 @@ const ListProveedor = () => {
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
+        } else {
+          return false
         }
-      });
-      setdataProTmp(resultadoBusqueda);
+      })
+      setdataProTmp(resultadoBusqueda)
     }
-  };
+  }
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // MANEJADORES DE CUADRO DE DIALOGO
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
   const handleOn = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   // SETEAMOS LOS VALORES DEL DIALOG DE ELIMINACION
   const openDialogDeleteItem = ({ codPro, nomPro, apePro, id }) => {
@@ -144,51 +148,51 @@ const ListProveedor = () => {
       ...itemDelete,
       itemId: id,
       itemCodigo: codPro,
-      itemNom: nomPro + " " + apePro,
-    });
-    handleOn();
-  };
+      itemNom: nomPro + ' ' + apePro
+    })
+    handleOn()
+  }
 
   // FUNCION PARA ELIMINAR UN PROVEEDOR
   const eliminarProveedor = async () => {
-    const { message_error, description_error } = await deleteProveedor(itemId);
+    const { message_error, description_error } = await deleteProveedor(itemId)
     if (message_error.length === 0) {
-      console.log("Se elimino correctamente");
+      console.log('Se elimino correctamente')
       // RECALCULAMOS LA DATA
-      let dataNueva = dataPro.filter((element) => {
+      const dataNueva = dataPro.filter((element) => {
         if (element.id !== itemId) {
-          //FILTRAMOS
-          return element;
+          // FILTRAMOS
+          return element
         } else {
-          return false;
+          return false
         }
-      });
+      })
       // ACTUALIZAMOS LA DATA
-      setdataPro(dataNueva);
-      setdataProTmp(dataNueva);
-      handleClose();
+      setdataPro(dataNueva)
+      setdataProTmp(dataNueva)
+      handleClose()
       // MOSTRAMOS FEEDBACK
-      console.log("Se elimino exitosamente");
+      console.log('Se elimino exitosamente')
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se eliminó exitosamente",
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se eliminó exitosamente'
+      })
+      handleClickFeeback()
     } else {
-      handleClose();
+      handleClose()
       // MOSTRAMOS FEEDBACK
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // INICIALIZAMOS LA DATA ANTES DE RENDERIZAR EL COMPONENTE
   useEffect(() => {
-    obtenerDataProveedor();
-  }, []);
+    obtenerDataProveedor()
+  }, [])
 
   return (
     <>
@@ -224,7 +228,7 @@ const ListProveedor = () => {
 
           {/* BOTON AGREGAR MATERIA PRIMA */}
           <div className="col-md-3 d-flex justify-content-end ms-auto">
-            <Link to={"/almacen/proveedor/crear"} className="btn btn-primary">
+            <Link to={'/almacen/proveedor/crear'} className="btn btn-primary">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -267,7 +271,7 @@ const ListProveedor = () => {
                   .map((row) => (
                     <TableRow
                       key={row.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell component="th" scope="row">
                         {row.codPro}
@@ -293,7 +297,7 @@ const ListProveedor = () => {
                           </Link>
                           <button
                             onClick={() => {
-                              openDialogDeleteItem(row);
+                              openDialogDeleteItem(row)
                             }}
                             className="btn btn-danger"
                           >
@@ -361,7 +365,7 @@ const ListProveedor = () => {
       </Dialog>
       {/* FEEDBACK DELETE */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackDelete}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -369,13 +373,13 @@ const ListProveedor = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default ListProveedor;
+export default ListProveedor

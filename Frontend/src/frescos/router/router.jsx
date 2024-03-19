@@ -1,21 +1,21 @@
-import LayoutModulo from "./../../layout/LayoutModulo";
-import { RouterMoliendaAlmacenStock } from "./../pages/almacen/RouterMoliendaAlmacenStock";
-import HomeFrescos from "./../pages/HomeFrescos";
-import { RouterFrescosRequisicion } from "./../pages/requisicion_frescos/RouterFrescosRequisicion";
+import LayoutModulo from './../../layout/LayoutModulo'
+import { RouterMoliendaAlmacenStock } from './../pages/almacen/RouterMoliendaAlmacenStock'
+import HomeFrescos from './../pages/HomeFrescos'
+import { RouterFrescosRequisicion } from './../pages/requisicion_frescos/RouterFrescosRequisicion'
 
 export const RouterFrescos = [
   {
-    path: "",
-    element: <HomeFrescos />,
+    path: '',
+    element: <HomeFrescos />
   },
   {
-    path: "requisicion",
+    path: 'requisicion',
     element: <LayoutModulo />,
-    children: RouterFrescosRequisicion,
+    children: RouterFrescosRequisicion
   },
   {
-    path: "almacen",
+    path: 'almacen',
     element: <LayoutModulo />,
-    children: RouterMoliendaAlmacenStock,
-  },
-];
+    children: RouterMoliendaAlmacenStock
+  }
+]

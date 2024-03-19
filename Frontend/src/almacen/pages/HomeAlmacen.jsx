@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 const HomeAlmacen = () => {
   return (
@@ -203,7 +203,7 @@ const HomeAlmacen = () => {
         </section>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default HomeAlmacen;
+export default HomeAlmacen

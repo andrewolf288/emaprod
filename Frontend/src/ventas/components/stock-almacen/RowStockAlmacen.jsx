@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
+import React from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
 
 export const RowStockAlmacen = ({ detalle }) => {
   return (
@@ -12,5 +12,5 @@ export const RowStockAlmacen = ({ detalle }) => {
       <TableCell>{detalle.nomAlm}</TableCell>
       <TableCell>{detalle.canStoDis}</TableCell>
     </TableRow>
-  );
-};
+  )
+}

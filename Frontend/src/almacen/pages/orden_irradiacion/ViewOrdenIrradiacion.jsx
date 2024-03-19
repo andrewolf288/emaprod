@@ -1,256 +1,252 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getOrdenIrradiacionById } from "../../helpers/orden-irradiacion/getOrdenIrradiacionById";
-import { CardSalidaOrdenIrradiacionDetalle } from "../../components/componentes-orden-irradiacion/CardSalidaOrdenIrradiacionDetalle";
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { getOrdenIrradiacionById } from '../../helpers/orden-irradiacion/getOrdenIrradiacionById'
+import { CardSalidaOrdenIrradiacionDetalle } from '../../components/componentes-orden-irradiacion/CardSalidaOrdenIrradiacionDetalle'
 import {
   CircularProgress,
   Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle
-} from "@mui/material";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { createSalidaOrdenIrradiacionByDetalle } from "../../helpers/orden-irradiacion/createSalidaOrdenIrradiacionByDetalle";
-import { createIngresoOrdenIrradiacionByDetalle } from "../../helpers/orden-irradiacion/createIngresoOrdenIrradiacionByDetalle";
+} from '@mui/material'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { createSalidaOrdenIrradiacionByDetalle } from '../../helpers/orden-irradiacion/createSalidaOrdenIrradiacionByDetalle'
+import { createIngresoOrdenIrradiacionByDetalle } from '../../helpers/orden-irradiacion/createIngresoOrdenIrradiacionByDetalle'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ViewOrdenIrradiacion = () => {
   // obtenemos el parametro de id de la url
-  const { id: idOrdIrra } = useParams();
-  const [backupdataOrdIrrad, setBackupdataOrdIrrad] = useState(null);
+  const { id: idOrdIrra } = useParams()
   const [dataOrdIrrad, setdataOrdIrrad] = useState({
     id: 0,
-    invSerFac: "",
-    invNumFac: "",
-    desOrdIrraEst: "",
-    fecCreOrdIrra: "",
+    invSerFac: '',
+    invNumFac: '',
+    desOrdIrraEst: '',
+    fecCreOrdIrra: '',
     detOrdIrra: []
-  });
+  })
 
   const { invSerFac, invNumFac, desOrdIrraEst, fecCreOrdIrra, detOrdIrra } =
-    dataOrdIrrad;
+    dataOrdIrrad
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
-  const [loading, setLoading] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
 
   // ***** FUNCIONES PARA EL MANEJO DE ACCIONES *****
   const openLoader = () => {
-    setOpenDialog(true);
-    setLoading(true);
-  };
+    setOpenDialog(true)
+  }
   const closeLoader = () => {
-    setLoading(false);
-    setOpenDialog(false);
-  };
+    setOpenDialog(false)
+  }
 
   // funcion para traer la informacion del detalle de orden de irradiacion
   const traerInformacionOrdenIrradiacion = async () => {
     // abrimos el loader
-    openLoader();
+    openLoader()
     const { result, message_error, description_error } =
-      await getOrdenIrradiacionById({ idOrdIrra });
+      await getOrdenIrradiacionById({ idOrdIrra })
     if (message_error.length === 0) {
-      console.log(result[0]);
-      setdataOrdIrrad(result[0]);
+      console.log(result[0])
+      setdataOrdIrrad(result[0])
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
 
     // cerramos el loader
-    closeLoader();
-  };
+    closeLoader()
+  }
 
   // añadir un lote de salida
   const addLoteSalidaOrdenIrradiacion = (idProdt, salidaLoteDetalle) => {
     // primero debemos encontrar el detalle del elemento
     const detalleFindElement = detOrdIrra.find(
       (element) => element.idProdt === idProdt
-    );
+    )
 
-    const { detSal } = detalleFindElement;
+    const { detSal } = detalleFindElement
 
     // mapeamos
-    let auxCanOpeIrraAct = 0;
+    let auxCanOpeIrraAct = 0
     const dataMapCantidadLote = salidaLoteDetalle.map((element) => {
-      const canSalLotProd = parseInt(element.canSalLotProdAct);
-      auxCanOpeIrraAct += canSalLotProd;
+      const canSalLotProd = parseInt(element.canSalLotProdAct)
+      auxCanOpeIrraAct += canSalLotProd
       return {
         ...element,
-        canSalLotProd: canSalLotProd,
+        canSalLotProd,
         canSalLotProdAct: 0
-      };
-    });
+      }
+    })
 
     // debemos parsear la informacion
-    const detalleSalidasAgregacion = [...detSal, ...dataMapCantidadLote];
+    const detalleSalidasAgregacion = [...detSal, ...dataMapCantidadLote]
 
     const detalleAux = {
       ...detalleFindElement,
       canOpeIrraAct: detalleFindElement.canOpeIrraAct + auxCanOpeIrraAct,
       detSal: detalleSalidasAgregacion
-    };
+    }
 
     const detalleParser = detOrdIrra.map((element) => {
       if (element.idProdt === idProdt) {
         return {
           ...detalleAux
-        };
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setdataOrdIrrad({
       ...dataOrdIrrad,
       detOrdIrra: detalleParser
-    });
-  };
+    })
+  }
 
   // eliminar un lote de salida de venta
   const deleteLoteSalidaOrdenIrradiacion = (idProdt, refProdc) => {
     // primero debemos encontrar el detalle del elemento
     const detalleFindElement = detOrdIrra.find(
       (element) => element.idProdt === idProdt
-    );
+    )
 
     // luego filtrar aquellos que no corresponde a la referencia proporcionada
-    const { detSal } = detalleFindElement;
-    let auxTotalSalidaStock = 0;
+    const { detSal } = detalleFindElement
+    let auxTotalSalidaStock = 0
     const detalleSalidasFilter = detSal.filter((element) => {
       if (element.refProdc !== refProdc) {
-        auxTotalSalidaStock += parseInt(element.canSalLotProd);
-        return true;
+        auxTotalSalidaStock += parseInt(element.canSalLotProd)
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
 
     // formamos la nueva data
     const detalleAux = {
       ...detalleFindElement,
       canOpeIrraAct: auxTotalSalidaStock,
       detSal: detalleSalidasFilter
-    };
+    }
 
     // el detalle del detalle afectado debe ser actualizado con la data formada despues de la operacion
     const detalleParser = detOrdIrra.map((element) => {
       if (element.idProdt === idProdt) {
         return {
           ...detalleAux
-        };
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     // reflejamos los cambios
     setdataOrdIrrad({
       ...dataOrdIrrad,
       detOrdIrra: detalleParser
-    });
-  };
+    })
+  }
 
   // esta funcion se encarga de comunicarse con el backend para hacer las entradas de productos irradiados correspondiente al detalle de orden de irradiaicon
   const generarEntradaOrdenIrradiacionWithLotes = async (detalle) => {
     if (detalle.fueComSal === 0) {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "No se realizó la salida de su detalle"
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'No se realizó la salida de su detalle'
+      })
+      handleClickFeeback()
     } else {
-      console.log(detalle);
+      console.log(detalle)
       const resultPeticion = await createIngresoOrdenIrradiacionByDetalle(
         detalle
-      );
-      console.log(resultPeticion);
-      const { message_error, description_error } = resultPeticion;
+      )
+      console.log(resultPeticion)
+      const { message_error, description_error } = resultPeticion
       if (message_error.length === 0) {
         setfeedbackMessages({
-          style_message: "success",
-          feedback_description_error: "La operación se realizó con éxito"
-        });
-        handleClickFeeback();
+          style_message: 'success',
+          feedback_description_error: 'La operación se realizó con éxito'
+        })
+        handleClickFeeback()
         // traemos de nuevo la data
-        traerInformacionOrdenIrradiacion();
+        traerInformacionOrdenIrradiacion()
       } else {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error: description_error
-        });
-        handleClickFeeback();
+        })
+        handleClickFeeback()
       }
     }
-  };
+  }
 
   // esta funcion se encarga de comunicarse con el backend para hacer las salidas correspondientes por orden de irradiacion
   const generarSalidaOrdenIrradiacionWithLotes = async (detalle) => {
     if (detalle.canOpeIrra !== detalle.canOpeIrraAct) {
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error:
-          "La cantidad requerida no fue cumplida. Agregue lotes al detalle"
-      });
-      handleClickFeeback();
+          'La cantidad requerida no fue cumplida. Agregue lotes al detalle'
+      })
+      handleClickFeeback()
     } else {
-      console.log(detalle);
+      console.log(detalle)
       const resultPeticion = await createSalidaOrdenIrradiacionByDetalle(
         detalle
-      );
-      console.log(resultPeticion);
-      const { message_error, description_error } = resultPeticion;
+      )
+      console.log(resultPeticion)
+      const { message_error, description_error } = resultPeticion
       if (message_error.length === 0) {
         setfeedbackMessages({
-          style_message: "success",
-          feedback_description_error: "La operación se realizó con éxito"
-        });
-        handleClickFeeback();
+          style_message: 'success',
+          feedback_description_error: 'La operación se realizó con éxito'
+        })
+        handleClickFeeback()
         // traemos de nuevo la data
-        traerInformacionOrdenIrradiacion();
+        traerInformacionOrdenIrradiacion()
       } else {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error: description_error
-        });
-        handleClickFeeback();
+        })
+        handleClickFeeback()
       }
     }
-  };
+  }
 
   useEffect(() => {
-    traerInformacionOrdenIrradiacion();
-  }, []);
+    traerInformacionOrdenIrradiacion()
+  }, [])
 
   return (
     <>
@@ -336,7 +332,7 @@ export const ViewOrdenIrradiacion = () => {
 
       {/* alerta */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -344,11 +340,11 @@ export const ViewOrdenIrradiacion = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

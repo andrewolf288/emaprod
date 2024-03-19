@@ -1,78 +1,78 @@
-import React, { useState } from "react";
-import config from "../../../config";
-import axios from "axios";
-import FechaPickerMonthDynamic from "../../../components/Fechas/FechaPickerMonthDynamic";
-import { FilterMateriaPrimaDynamic2 } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic2";
+import React, { useState } from 'react'
+import config from '../../../config'
+import axios from 'axios'
+import FechaPickerMonthDynamic from '../../../components/Fechas/FechaPickerMonthDynamic'
+import { FilterMateriaPrimaDynamic2 } from '../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic2'
 
 export const ReporteEntradaMerma = () => {
   const [filterData, setFilterData] = useState({
     producto: 0,
-    fechaDesde: "",
-    fechaHasta: ""
-  });
+    fechaDesde: '',
+    fechaHasta: ''
+  })
 
-  const { producto, fechaDesde, fechaHasta } = filterData;
+  const { producto, fechaDesde, fechaHasta } = filterData
 
   // controlador de producto
   const handleProducto = ({ id }) => {
     setFilterData({
       ...filterData,
       producto: id
-    });
-  };
+    })
+  }
 
   // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFilterData({ ...filterData, fechaDesde: dateFormat });
-  };
+    const dateFormat = newDate.split(' ')[0]
+    setFilterData({ ...filterData, fechaDesde: dateFormat })
+  }
 
   const onChangeDateEndData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFilterData({ ...filterData, fechaHasta: dateFormat });
-  };
+    const dateFormat = newDate.split(' ')[0]
+    setFilterData({ ...filterData, fechaHasta: dateFormat })
+  }
 
   // ENVIAMOS LA DATA DE LOS FILTERS PARA FILTRAR LA DATA
   const submitDataFilterToExcel = () => {
-    let errors = [];
+    const errors = []
     // seleccion de producto
     if (producto === 0) {
-      errors.push("Debes seleccionar un producto");
+      errors.push('Debes seleccionar un producto')
     }
 
     if (errors.length === 0) {
       // hacemos una peticion
-      console.log(filterData);
-      exportarReporte();
+      console.log(filterData)
+      exportarReporte()
     } else {
-      const handleErrors = errors.join("\n");
-      alert(handleErrors);
+      const handleErrors = errors.join('\n')
+      alert(handleErrors)
     }
-  };
+  }
 
   // funcion para descargar
   const exportarReporte = () => {
-    const domain = config.API_URL;
-    const path = "/almacen/reportes/reporte-mermas.php";
+    const domain = config.API_URL
+    const path = '/almacen/reportes/reporte-mermas.php'
     axios({
       url: domain + path,
       data: filterData,
-      method: "POST",
-      responseType: "blob" // Importante para recibir datos binarios (Blob)
+      method: 'POST',
+      responseType: 'blob' // Importante para recibir datos binarios (Blob)
     })
       .then((response) => {
         // Crear un enlace temporal para descargar el archivo
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "archivo_excel.xlsx";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'archivo_excel.xlsx'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
       })
-      .catch((error) => alert("Error al descargar el archivo", error));
-  };
+      .catch((error) => alert('Error al descargar el archivo', error))
+  }
 
   return (
     <>
@@ -129,5 +129,5 @@ export const ReporteEntradaMerma = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

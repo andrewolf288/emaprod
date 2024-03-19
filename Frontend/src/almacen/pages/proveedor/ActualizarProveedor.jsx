@@ -1,127 +1,127 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { getProveedorById } from "./../../helpers/proveedor/getProveedorById";
-import { useParams, useNavigate } from "react-router-dom";
-import { updateProveedor } from "./../../helpers/proveedor/updateProveedor";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { getProveedorById } from './../../helpers/proveedor/getProveedorById'
+import { useParams, useNavigate } from 'react-router-dom'
+import { updateProveedor } from './../../helpers/proveedor/updateProveedor'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const ActualizarProveedor = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const { id } = useParams();
+  const { id } = useParams()
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ESTADO DEL FORMULARIO DE PROVEEDOR
   const [proveedor, setproveedor] = useState({
-    codPro: "",
-    nomPro: "",
-    apePro: "",
-    desPro: "",
-  });
-  const { codPro, nomPro, apePro, desPro } = proveedor;
+    codPro: '',
+    nomPro: '',
+    apePro: '',
+    desPro: ''
+  })
+  const { codPro, nomPro, apePro, desPro } = proveedor
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackUpdate, setfeedbackUpdate] = useState(false);
+  const [feedbackUpdate, setfeedbackUpdate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackUpdate(true);
-  };
+    setfeedbackUpdate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackUpdate(false);
-  };
+    setfeedbackUpdate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // FUNCION PARA TRAER LA DATA DE PROVEEDOR
   const obtenerDataProveedorById = async () => {
-    const resultPeticion = await getProveedorById(id);
+    const resultPeticion = await getProveedorById(id)
     setproveedor({
       ...proveedor,
       codPro: resultPeticion[0].codPro,
       apePro: resultPeticion[0].apePro,
       nomPro: resultPeticion[0].nomPro,
-      desPro: resultPeticion[0].desPro,
-    });
-  };
+      desPro: resultPeticion[0].desPro
+    })
+  }
 
   // MANEJADOR DE FORMULARIO
   const handledForm = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setproveedor({
       ...proveedor,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // FUNCION PARA ACTUALIZAR PROVEEDOR
   const actualizarProveedor = async (idPro, data) => {
     const { message_error, description_error } = await updateProveedor(
       idPro,
       data
-    );
+    )
 
     if (message_error.length === 0) {
-      console.log("Se actualizo correctamente");
+      console.log('Se actualizo correctamente')
       // MOSTRAMOS FEEDBACK
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se actualizó exitosamente",
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se actualizó exitosamente'
+      })
+      handleClickFeeback()
     } else {
-      console.log("No se pudo actualizar");
+      console.log('No se pudo actualizar')
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // CONTROLADOR SUBMIT DE FORMULARIO
   const handleSubmitProveedor = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (codPro.length === 0 || nomPro.length === 0 || apePro.length === 0) {
-      console.log("Asegurese de completar los campos requeridos");
+      console.log('Asegurese de completar los campos requeridos')
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Asegurese de llenar los datos requeridos'
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
+      setdisableButton(true)
       // EJECUTAMOS LA ACTUALIZACION
-      actualizarProveedor(id, proveedor);
+      actualizarProveedor(id, proveedor)
     }
-  };
+  }
 
   useEffect(() => {
     // OBTENER PROVEEDOR POR ID
-    obtenerDataProveedorById();
-  }, []);
+    obtenerDataProveedorById()
+  }, [])
 
   return (
     <>
@@ -212,7 +212,7 @@ const ActualizarProveedor = () => {
       </div>
       {/* FEEDBACK UPDATE */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackUpdate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -220,13 +220,13 @@ const ActualizarProveedor = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default ActualizarProveedor;
+export default ActualizarProveedor

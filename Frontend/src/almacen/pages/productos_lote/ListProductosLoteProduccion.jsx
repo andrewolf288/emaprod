@@ -1,267 +1,240 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from "@mui/material/Alert";
-import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
-import { useForm } from "./../../../hooks/useForm";
-import { getProduccionLote } from "./../../../produccion/helpers/produccion_lote/getProduccionLote";
-import { TextField } from "@mui/material";
-import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
-import { FilterEstadoProduccion } from "./../../../components/ReferencialesFilters/Produccion/FilterEstadoProduccion";
-import { FilterTipoProduccion } from "./../../../components/ReferencialesFilters/TipoProduccion/FilterTipoProduccion";
-import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
-import { FilterEstadoInicioProgramadoProduccion } from "./../../../components/ReferencialesFilters/Produccion/FilterEstadoInicioProgramadoProduccion";
-import { Link } from "react-router-dom";
-
-// CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import FechaPickerMonth from './../../../components/Fechas/FechaPickerMonth'
+import { useForm } from './../../../hooks/useForm'
+import { getProduccionLote } from './../../../produccion/helpers/produccion_lote/getProduccionLote'
+import { TextField } from '@mui/material'
+import { FilterProductoProduccion } from './../../../components/ReferencialesFilters/Producto/FilterProductoProduccion'
+import { FilterEstadoProduccion } from './../../../components/ReferencialesFilters/Produccion/FilterEstadoProduccion'
+import { FilterTipoProduccion } from './../../../components/ReferencialesFilters/TipoProduccion/FilterTipoProduccion'
+import FechaPickerDay from './../../../components/Fechas/FechaPickerDay'
+import { Link } from 'react-router-dom'
 
 export const ListProductosLoteProduccion = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataProduccionLote, setdataProduccionLote] = useState([]);
-  const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([]);
+  const [dataProduccionLote, setdataProduccionLote] = useState([])
+  const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([])
 
   // filtros
   const {
-    fecProdLotIni,
-    fecProdLotFin,
     formState,
-    setFormState,
-    onInputChange,
+    setFormState
   } = useForm({
-    fecProdLotIni: "",
-    fecProdLotFin: "",
-  });
+    fecProdLotIni: '',
+    fecProdLotFin: ''
+  })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
-    filter(value, name);
-  };
+    const { name, value } = target
+    filter(value, name)
+  }
 
   const onChangeProducto = ({ label }) => {
-    filter(label, "filterProducto");
-  };
+    filter(label, 'filterProducto')
+  }
 
   const onChangeEstadoProduccion = ({ label }) => {
-    filter(label, "filterEstadoProduccion");
-  };
+    filter(label, 'filterEstadoProduccion')
+  }
 
   const onChangeTipoProduccion = ({ label }) => {
-    filter(label, "filterTipoProduccion");
-  };
+    filter(label, 'filterTipoProduccion')
+  }
 
   const onChangeDateFechaIniciado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaInicioProduccion");
-  };
+    const dateFilter = newDate.split(' ')
+    filter(dateFilter[0], 'filterFechaInicioProduccion')
+  }
 
   const onChangeDateFechaFin = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaFinProduccion");
-  };
+    const dateFilter = newDate.split(' ')
+    filter(dateFilter[0], 'filterFechaFinProduccion')
+  }
 
   const onChangeDateFechaVencimiento = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaVencimientoProduccion");
-  };
+    const dateFilter = newDate.split(' ')
+    filter(dateFilter[0], 'filterFechaVencimientoProduccion')
+  }
 
   // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecProdLotIni: dateFormat });
+    const dateFormat = newDate.split(' ')[0]
+    setFormState({ ...formState, fecProdLotIni: dateFormat })
     // realizamos una promesa
-    let body = {
+    const body = {
       ...formState,
-      fecProdLotIni: dateFormat,
-    };
-    obtenerDataProduccionLote(body);
-  };
+      fecProdLotIni: dateFormat
+    }
+    obtenerDataProduccionLote(body)
+  }
 
   const onChangeDateEndData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecProdLotFin: dateFormat });
+    const dateFormat = newDate.split(' ')[0]
+    setFormState({ ...formState, fecProdLotFin: dateFormat })
     // realizamos una promesa
-    let body = {
+    const body = {
       ...formState,
-      fecProdLotFin: dateFormat,
-    };
-    obtenerDataProduccionLote(body);
-  };
+      fecProdLotFin: dateFormat
+    }
+    obtenerDataProduccionLote(body)
+  }
 
   // Funcion para filtrar la data
   const filter = (terminoBusqueda, name) => {
-    let resultSearch = [];
+    let resultSearch = []
     switch (name) {
-      case "filterLoteProduccion":
-        resultSearch = dataProduccionLote.filter((element) => {
-          if (
-            element.codLotProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataProduccionLoteTemp(resultSearch);
-        break;
-      case "filterProducto":
-        resultSearch = dataProduccionLote.filter((element) => {
-          if (
-            element.nomProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataProduccionLoteTemp(resultSearch);
-        break;
-      case "filterEstadoProduccion":
-        resultSearch = dataProduccionLote.filter((element) => {
-          if (
-            element.desEstPro
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataProduccionLoteTemp(resultSearch);
-        break;
-      case "filterTipoProduccion":
-        resultSearch = dataProduccionLote.filter((element) => {
-          if (
-            element.desProdTip
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataProduccionLoteTemp(resultSearch);
-        break;
-      case "filterFechaVencimientoProduccion":
-        resultSearch = dataProduccionLote.filter((element) => {
-          if (
-            element.fecVenLotProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataProduccionLoteTemp(resultSearch);
-        break;
-      case "filterFechaInicioProduccion":
-        resultSearch = dataProduccionLote.filter((element) => {
-          let aux = element.fecProdIni.split(" ");
-          if (
-            aux[0]
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataProduccionLoteTemp(resultSearch);
-        break;
-      case "filterFechaFinProduccion":
-        resultSearch = dataProduccionLote.filter((element) => {
-          let aux = element.fecProdFin.split(" ");
-          if (
-            aux[0]
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataProduccionLoteTemp(resultSearch);
-        break;
+    case 'filterLoteProduccion':
+      resultSearch = dataProduccionLote.filter((element) => {
+        if (
+          element.codLotProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataProduccionLoteTemp(resultSearch)
+      break
+    case 'filterProducto':
+      resultSearch = dataProduccionLote.filter((element) => {
+        if (
+          element.nomProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataProduccionLoteTemp(resultSearch)
+      break
+    case 'filterEstadoProduccion':
+      resultSearch = dataProduccionLote.filter((element) => {
+        if (
+          element.desEstPro
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataProduccionLoteTemp(resultSearch)
+      break
+    case 'filterTipoProduccion':
+      resultSearch = dataProduccionLote.filter((element) => {
+        if (
+          element.desProdTip
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataProduccionLoteTemp(resultSearch)
+      break
+    case 'filterFechaVencimientoProduccion':
+      resultSearch = dataProduccionLote.filter((element) => {
+        if (
+          element.fecVenLotProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataProduccionLoteTemp(resultSearch)
+      break
+    case 'filterFechaInicioProduccion':
+      resultSearch = dataProduccionLote.filter((element) => {
+        const aux = element.fecProdIni.split(' ')
+        if (
+          aux[0]
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataProduccionLoteTemp(resultSearch)
+      break
+    case 'filterFechaFinProduccion':
+      resultSearch = dataProduccionLote.filter((element) => {
+        const aux = element.fecProdFin.split(' ')
+        if (
+          aux[0]
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataProduccionLoteTemp(resultSearch)
+      break
 
-      default:
-        break;
+    default:
+      break
     }
-  };
+  }
 
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataProduccionLote = async (body = {}) => {
-    const resultPeticion = await getProduccionLote(body);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getProduccionLote(body)
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
-      setdataProduccionLote(result);
-      setdataProduccionLoteTemp(result);
+      setdataProduccionLote(result)
+      setdataProduccionLoteTemp(result)
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+      alert(description_error)
     }
-  };
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerDataProduccionLote();
-  }, []);
+    obtenerDataProduccionLote()
+  }, [])
 
   return (
     <>
@@ -325,10 +298,10 @@ export const ListProductosLoteProduccion = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
+                      }
                     }}
                   >
                     <TableCell align="left" width={70}>
@@ -341,9 +314,9 @@ export const ListProductosLoteProduccion = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            color: 'black',
+                            background: 'white'
+                          }
                         }}
                       />
                     </TableCell>
@@ -391,7 +364,7 @@ export const ListProductosLoteProduccion = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -403,7 +376,7 @@ export const ListProductosLoteProduccion = () => {
                         <TableCell align="center">{row.fecProdIni}</TableCell>
                         <TableCell align="center">
                           {row.fecProdFin === null
-                            ? "Aún no terminado"
+                            ? 'Aún no terminado'
                             : row.fecProdFin}
                         </TableCell>
                         <TableCell align="left">{row.fecVenLotProd}</TableCell>
@@ -461,5 +434,5 @@ export const ListProductosLoteProduccion = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

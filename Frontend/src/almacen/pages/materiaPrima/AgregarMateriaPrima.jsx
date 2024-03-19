@@ -1,110 +1,102 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createMateriaPrima } from "../../helpers/materia-prima/createMateriaPrima";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { createMateriaPrima } from '../../helpers/materia-prima/createMateriaPrima'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { FilterMedidas } from "./../../../components/ReferencialesFilters/Medidas/FilterMedidas";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { FilterMedidas } from './../../../components/ReferencialesFilters/Medidas/FilterMedidas'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const AgregarMateriaPrima = () => {
   // ESTADOS PARA EL CONTROL DEL FORMULARIO MATERIA PRIMA
   const [materiaPrima, setmateriaPrima] = useState({
-    codMatPri: "",
+    codMatPri: '',
     idMatPriCat: 0,
     idMed: 0,
-    nomMatPri: "",
-    desMatPri: "",
-    stoMatPri: 0,
-  });
+    nomMatPri: '',
+    desMatPri: '',
+    stoMatPri: 0
+  })
 
   const { codMatPri, idMatPriCat, idMed, nomMatPri, desMatPri, stoMatPri } =
-    materiaPrima;
+    materiaPrima
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // CONTROLADOR DE FORMULARIO
   const handledForm = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setmateriaPrima({
       ...materiaPrima,
-      [name]: value,
-    });
-  };
-
-  // CONTROLADOR DE CATEGORIA
-  const onAddCategoriaMateriaPrima = (value) => {
-    setmateriaPrima({
-      ...materiaPrima,
-      idMatPriCat: value.id,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // CONTROLADOR DE MEDIDA
   const onAddMedida = (newValue) => {
     setmateriaPrima({
       ...materiaPrima,
-      idMed: newValue,
-    });
-  };
+      idMed: newValue
+    })
+  }
 
   // FUNCION PARA CREAR MATERIA PRIMA
   const crearMateriaPrima = async () => {
     const { message_error, description_error } = await createMateriaPrima(
       materiaPrima
-    );
+    )
     if (message_error.length === 0) {
-      console.log("Se creo exitosamente");
+      console.log('Se creo exitosamente')
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se creó exitosamente",
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se creó exitosamente'
+      })
+      handleClickFeeback()
     } else {
-      console.log("No se pudo crear");
+      console.log('No se pudo crear')
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // CONTROLADOR DE SUBMIT
   const handleSubmitMateriPrima = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (
       codMatPri.length === 0 ||
       nomMatPri.length === 0 ||
@@ -114,16 +106,16 @@ const AgregarMateriaPrima = () => {
     ) {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Asegurese de llenar los datos requeridos'
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
+      setdisableButton(true)
       // LLAMAMOS A LA FUNCION CREAR MATERIA PRIMA
-      crearMateriaPrima();
+      crearMateriaPrima()
     }
-  };
+  }
 
   return (
     <>
@@ -133,7 +125,7 @@ const AgregarMateriaPrima = () => {
           {/* CODIGO DE REFERENCIA */}
           <div className="mb-3 row">
             <label
-              htmFor="codigo_referencia"
+              htmlFor="codigo_referencia"
               className="col-sm-2 col-form-label"
             >
               Codigo de referencia
@@ -226,7 +218,7 @@ const AgregarMateriaPrima = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -234,13 +226,13 @@ const AgregarMateriaPrima = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default AgregarMateriaPrima;
+export default AgregarMateriaPrima

@@ -1,241 +1,211 @@
-import React, { useState, useEffect } from "react";
-// HOOKS
-import { FilterAlmacen } from "./../../../components/ReferencialesFilters/Almacen/FilterAlmacen";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
-import { TextField } from "@mui/material";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
+import { TextField } from '@mui/material'
 // IMPORTACIONES PARA EL FEEDBACK
-import { FilterAllProductos } from "../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { FilterClase } from "./../../../components/ReferencialesFilters/Clase/FilterClase";
-import ExportExcel from "./ExportExcel";
-import { getStockAlmacenVentas } from "../../helpers/stock-almacen/getStockAlmacenVentas";
-import { RowStockAlmacen } from "../../components/stock-almacen/RowStockAlmacen";
-import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic";
+import { FilterAllProductos } from '../../../components/ReferencialesFilters/Producto/FilterAllProductos'
+import { FilterClase } from './../../../components/ReferencialesFilters/Clase/FilterClase'
+import ExportExcel from './ExportExcel'
+import { getStockAlmacenVentas } from '../../helpers/stock-almacen/getStockAlmacenVentas'
+import { RowStockAlmacen } from '../../components/stock-almacen/RowStockAlmacen'
+import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic'
 
 export const ListAlmacenStockVentas = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataStockAlmacen, setdataStockAlmacen] = useState([]);
-  const [dataStockAlmacenTmp, setdataStockAlmacenTmp] = useState([]);
+  const [dataStockAlmacen, setdataStockAlmacen] = useState([])
+  const [dataStockAlmacenTmp, setdataStockAlmacenTmp] = useState([])
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(25)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setfeedbackDelete(false);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // ***** MANEJADORES DE FILTROS GENERALES *****
   const onChangeFilterAlmacenGeneral = (value) => {
-    let body = {
+    const body = {
       idAlm: value.id
-    };
+    }
 
-    obtenerDataStockAlmacen(body);
-  };
+    obtenerDataStockAlmacen(body)
+  }
 
   // ****** FILTROS PARTICULARES POR DATO *******
   // Manejadores de cambios de inputs
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
-    filter(value, name);
-  };
+    const { name, value } = target
+    filter(value, name)
+  }
 
   // Manejador de cambio de producto
   const onChangeProducto = ({ label }) => {
-    filter(label, "filterProducto");
-  };
+    filter(label, 'filterProducto')
+  }
   // Manejador de cambio de clase
   const onChangeClase = ({ label }) => {
-    filter(label, "filterClase");
-  };
-  // Manejador de cambio de almacen
-  const onChangeAlmacen = ({ label }) => {
-    filter(label, "filterAlmacen");
-  };
+    filter(label, 'filterClase')
+  }
 
   // Funcion para filtrar la data
   const filter = (terminoBusqueda, name) => {
-    let resultSearch = [];
+    let resultSearch = []
     switch (name) {
-      case "filterCodigo":
-        resultSearch = dataStockAlmacen.filter((element) => {
-          if (
-            element.codProd2
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataStockAlmacenTmp(resultSearch);
-        break;
+    case 'filterCodigo':
+      resultSearch = dataStockAlmacen.filter((element) => {
+        if (
+          element.codProd2
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataStockAlmacenTmp(resultSearch)
+      break
 
-      case "filterProducto":
-        resultSearch = dataStockAlmacen.filter((element) => {
-          if (
-            element.nomProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataStockAlmacenTmp(resultSearch);
-        break;
+    case 'filterProducto':
+      resultSearch = dataStockAlmacen.filter((element) => {
+        if (
+          element.nomProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataStockAlmacenTmp(resultSearch)
+      break
 
       // filter de clase
-      case "filterClase":
-        resultSearch = dataStockAlmacen.filter((element) => {
-          if (
-            element.desCla
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataStockAlmacenTmp(resultSearch);
-        break;
+    case 'filterClase':
+      resultSearch = dataStockAlmacen.filter((element) => {
+        if (
+          element.desCla
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataStockAlmacenTmp(resultSearch)
+      break
 
       // filter de unidad de medida
-      case "filterUnidadMedida":
-        resultSearch = dataStockAlmacen.filter((element) => {
-          if (
-            element.simMed
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataStockAlmacenTmp(resultSearch);
-        break;
+    case 'filterUnidadMedida':
+      resultSearch = dataStockAlmacen.filter((element) => {
+        if (
+          element.simMed
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataStockAlmacenTmp(resultSearch)
+      break
 
       // filter de almacen
-      case "filterAlmacen":
-        resultSearch = dataStockAlmacen.filter((element) => {
-          if (
-            element.nomAlm
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataStockAlmacenTmp(resultSearch);
-        break;
+    case 'filterAlmacen':
+      resultSearch = dataStockAlmacen.filter((element) => {
+        if (
+          element.nomAlm
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataStockAlmacenTmp(resultSearch)
+      break
 
       // filter de cantidad total
-      case "filterCantidadTotal":
-        resultSearch = dataStockAlmacen.filter((element) => {
-          if (
-            element.canSto
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataStockAlmacenTmp(resultSearch);
-        break;
+    case 'filterCantidadTotal':
+      resultSearch = dataStockAlmacen.filter((element) => {
+        if (
+          element.canSto
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataStockAlmacenTmp(resultSearch)
+      break
 
       // filter de cantidad total disponible
-      case "filterCantidadTotalDisponible":
-        resultSearch = dataStockAlmacen.filter((element) => {
-          if (
-            element.canStoDis
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataStockAlmacenTmp(resultSearch);
-        break;
+    case 'filterCantidadTotalDisponible':
+      resultSearch = dataStockAlmacen.filter((element) => {
+        if (
+          element.canStoDis
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataStockAlmacenTmp(resultSearch)
+      break
     }
-  };
+  }
 
   // Funcion para traer la data del stock de almacenes
   const obtenerDataStockAlmacen = async (body = {}) => {
     // hacer validaciones correpondientes
-    const resultPeticion = await getStockAlmacenVentas(body);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getStockAlmacenVentas(body)
+    const { message_error, description_error, result } = resultPeticion
 
-    //console.log(result)
+    // console.log(result)
     if (message_error.length === 0) {
-      setdataStockAlmacen(result);
-      setdataStockAlmacenTmp(result);
+      setdataStockAlmacen(result)
+      setdataStockAlmacenTmp(result)
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      alert(description_error)
     }
-  };
+  }
 
   const resetData = () => {
     // le seteamos la data
-    setdataStockAlmacenTmp(dataStockAlmacen);
-  };
+    setdataStockAlmacenTmp(dataStockAlmacen)
+  }
 
   useEffect(() => {
-    obtenerDataStockAlmacen();
-  }, []);
+    obtenerDataStockAlmacen()
+  }, [])
 
   return (
     <>
@@ -244,31 +214,31 @@ export const ListAlmacenStockVentas = () => {
         <div
           className="row d-flex mt-4"
           style={{
-            //border: "1px solid black",
-            display: "flex",
-            justifyContent: "start",
-            alignItems: "center"
+            // border: "1px solid black",
+            display: 'flex',
+            justifyContent: 'start',
+            alignItems: 'center'
           }}
         >
           <div
             className="col-8"
             style={{
-              //border: "1px solid black",
-              width: "100%"
+              // border: "1px solid black",
+              width: '100%'
             }}
           >
             <div
               className="row ms-3"
               style={{
-                //border: "1px solid black",
-                width: "100%"
+                // border: "1px solid black",
+                width: '100%'
               }}
             >
               <div
                 className="col-5"
                 style={
                   {
-                    //border: "1px solid black",
+                    // border: "1px solid black",
                   }
                 }
               >
@@ -283,7 +253,7 @@ export const ListAlmacenStockVentas = () => {
                 className="col-3 d-flex align-items-end"
                 style={
                   {
-                    //border: "1px solid black",
+                    // border: "1px solid black",
                   }
                 }
               >
@@ -308,11 +278,11 @@ export const ListAlmacenStockVentas = () => {
               <div
                 className="col-2"
                 style={{
-                  //border: "1px solid black",
-                  display: "flex",
-                  //width:"50%",
-                  justifyContent: "center",
-                  alignItems: "center"
+                  // border: "1px solid black",
+                  display: 'flex',
+                  // width:"50%",
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <ExportExcel exelData={dataStockAlmacenTmp} />
@@ -329,9 +299,9 @@ export const ListAlmacenStockVentas = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -401,5 +371,5 @@ export const ListAlmacenStockVentas = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

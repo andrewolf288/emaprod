@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { TextField } from "@mui/material";
+import React, { useState } from 'react'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import { TextField } from '@mui/material'
 
 export const RowDetalleFormula = ({
   detalle,
   onDeleteDetalleFormula,
-  onChangeFormulaDetalle,
+  onChangeFormulaDetalle
 }) => {
-  const [disabledInput, setdisabledInput] = useState(true);
+  const [disabledInput, setdisabledInput] = useState(true)
 
   return (
     <TableRow
       sx={{
-        "&:last-child td, &:last-child th": { border: 0 },
+        '&:last-child td, &:last-child th': { border: 0 }
       }}
     >
       <TableCell component="th" scope="row">
@@ -31,7 +31,7 @@ export const RowDetalleFormula = ({
           <TextField
             size="small"
             onChange={(e) => {
-              onChangeFormulaDetalle(e, detalle.idMatPri);
+              onChangeFormulaDetalle(e, detalle.idMatPri)
             }}
             type="number"
             name="inputCantidad"
@@ -45,7 +45,7 @@ export const RowDetalleFormula = ({
         <div className="btn-toolbar">
           <button
             onClick={() => {
-              setdisabledInput(!disabledInput);
+              setdisabledInput(!disabledInput)
             }}
             className="btn btn-success me-2"
           >
@@ -62,7 +62,7 @@ export const RowDetalleFormula = ({
           </button>
           <button
             onClick={() => {
-              onDeleteDetalleFormula(detalle.idMatPri);
+              onDeleteDetalleFormula(detalle.idMatPri)
             }}
             className="btn btn-danger"
           >
@@ -80,5 +80,5 @@ export const RowDetalleFormula = ({
         </div>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

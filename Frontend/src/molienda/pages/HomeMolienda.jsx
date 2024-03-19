@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 const HomeMolienda = () => {
   return (
@@ -47,7 +47,7 @@ const HomeMolienda = () => {
         </section>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default HomeMolienda;
+export default HomeMolienda

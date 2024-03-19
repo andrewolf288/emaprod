@@ -1,18 +1,13 @@
-import { ViewLoteMolienda } from "./ViewLoteMolienda";
-import { ListRequisicionesMolienda } from "./ListRequisicionesMolienda";
-import { AgregarProductosLoteMolienda } from "./agregar_productos_molienda/AgregarProductosLoteMolienda";
+import { ViewLoteMolienda } from './ViewLoteMolienda'
+import { ListRequisicionesMolienda } from './ListRequisicionesMolienda'
 
 export const RouterRequisicionMolienda = [
   {
-    path: "",
-    element: <ListRequisicionesMolienda />,
+    path: '',
+    element: <ListRequisicionesMolienda />
   },
   {
-    path: "view/:idProdc/:idReq",
-    element: <ViewLoteMolienda />,
-  },
-  {
-    path: "agregar",
-    element: <AgregarProductosLoteMolienda />,
-  },
-];
+    path: 'view/:idProdc/:idReq',
+    element: <ViewLoteMolienda />
+  }
+]

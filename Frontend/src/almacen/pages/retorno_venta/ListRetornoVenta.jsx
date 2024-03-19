@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
-import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
+import React, { useEffect, useState } from 'react'
+import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
+import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
 import {
   Paper,
   Table,
@@ -10,78 +10,78 @@ import {
   TableHead,
   TablePagination,
   TableRow
-} from "@mui/material";
-import { getRetornosVenta } from "../../helpers/retorno-venta/getRetornosVenta";
+} from '@mui/material'
+import { getRetornosVenta } from '../../helpers/retorno-venta/getRetornosVenta'
 
 export const ListRetornoVenta = () => {
-  const [dataRetornosVentaTemp, setdataRetornosVentaTemp] = useState([]);
+  const [dataRetornosVentaTemp, setdataRetornosVentaTemp] = useState([])
 
   // filtros
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
     fechaFin: FormatDateMYSQL()
-  });
+  })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Filtros generales que hacen nuevas consultas
   const handleFechaInicioChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaInicio: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaInicio: dateFormat
-    };
-    obtenerdataRetornosVenta(body);
-  };
+    }
+    obtenerdataRetornosVenta(body)
+  }
 
   const handleFechaFinChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaFin: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaFin: dateFormat
-    };
-    obtenerdataRetornosVenta(body);
-  };
-
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
-  const obtenerdataRetornosVenta = async (formState) => {
-    const resultPeticion = await getRetornosVenta(formState);
-    console.log(resultPeticion);
-    const { message_error, description_error, result } = resultPeticion;
-    if (message_error.length === 0) {
-      setdataRetornosVentaTemp(result);
-    } else {
-      alert(description_error);
     }
-  };
+    obtenerdataRetornosVenta(body)
+  }
+
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  const obtenerdataRetornosVenta = async (formState) => {
+    const resultPeticion = await getRetornosVenta(formState)
+    console.log(resultPeticion)
+    const { message_error, description_error, result } = resultPeticion
+    if (message_error.length === 0) {
+      setdataRetornosVentaTemp(result)
+    } else {
+      alert(description_error)
+    }
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerdataRetornosVenta();
-  }, []);
+    obtenerdataRetornosVenta()
+  }, [])
 
   return (
     <>
@@ -112,9 +112,9 @@ export const ListRetornoVenta = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -145,25 +145,29 @@ export const ListRetornoVenta = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left">{row.invSerFac}</TableCell>
                         <TableCell align="left">{row.invNumFac}</TableCell>
                         <TableCell align="center">
-                          {row.idReqEst === 1 ? (
-                            <span className={"badge text-bg-danger"}>
-                              {row.desReqEst}
-                            </span>
-                          ) : row.idReqEst === 2 ? (
-                            <span className={"badge text-bg-warning"}>
-                              {row.desReqEst}
-                            </span>
-                          ) : (
-                            <span className={"badge text-bg-success"}>
-                              {row.desReqEst}
-                            </span>
-                          )}
+                          {row.idReqEst === 1
+                            ? (
+                              <span className={'badge text-bg-danger'}>
+                                {row.desReqEst}
+                              </span>
+                            )
+                            : row.idReqEst === 2
+                              ? (
+                                <span className={'badge text-bg-warning'}>
+                                  {row.desReqEst}
+                                </span>
+                              )
+                              : (
+                                <span className={'badge text-bg-success'}>
+                                  {row.desReqEst}
+                                </span>
+                              )}
                         </TableCell>
                         <TableCell align="center">{row.desOpeFacMot}</TableCell>
                         <TableCell align="left">{row.fecCreOpeDev}</TableCell>
@@ -173,8 +177,8 @@ export const ListRetornoVenta = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/retorno-venta/view/${row.id}`,
-                                  "_blank"
-                                );
+                                  '_blank'
+                                )
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -212,5 +216,5 @@ export const ListRetornoVenta = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

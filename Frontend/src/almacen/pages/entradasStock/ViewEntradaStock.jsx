@@ -1,40 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { viewEntradaStockById } from "./../../helpers/entradas-stock/viewEntradaStockById";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { viewEntradaStockById } from './../../helpers/entradas-stock/viewEntradaStockById'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ViewEntradaStock = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const { id } = useParams();
+  const { id } = useParams()
 
   const [entradaStock, setentradaStock] = useState({
     id: 0,
     idProd: 0,
-    nomProd: "",
-    codProd: "",
-    codProd2: "",
-    codProd3: "",
-    desCla: "",
+    nomProd: '',
+    codProd: '',
+    codProd2: '',
+    codProd3: '',
+    desCla: '',
     idProv: 0,
-    nomProv: "",
-    apeProv: "",
-    codProv: "",
+    nomProv: '',
+    apeProv: '',
+    codProv: '',
     idAlm: 0,
-    nomAlm: "",
-    codAlm: "",
+    nomAlm: '',
+    codAlm: '',
     idEntStoEst: 0,
-    desEntStoEst: "",
-    codEntSto: "",
-    fecEntSto: "",
-    fecVenEntSto: "",
+    desEntStoEst: '',
+    codEntSto: '',
+    fecEntSto: '',
+    fecVenEntSto: '',
     esSel: 0,
     canSel: 0,
     canPorSel: 0,
@@ -44,8 +44,8 @@ export const ViewEntradaStock = () => {
     canTotEnt: 0,
     canTotDis: 0,
     canVar: 0,
-    fecFinSto: "",
-  });
+    fecFinSto: ''
+  })
 
   const {
     nomProd,
@@ -70,55 +70,54 @@ export const ViewEntradaStock = () => {
     canTotEnt,
     canTotDis,
     canVar,
-    fecFinSto,
-  } = entradaStock;
+    fecFinSto
+  } = entradaStock
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // funcion para obtener la produccion con sus requisiciones y su detalle
   const obtenerDataEntradaStock = async () => {
-    const resultPeticion = await viewEntradaStockById(id);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await viewEntradaStockById(id)
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
-      setentradaStock(result[0]);
+      setentradaStock(result[0])
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
   const onNavigateBack = () => {
-    window.close();
-    //navigate(-1);
-  };
+    window.close()
+    // navigate(-1);
+  }
 
   useEffect(() => {
-    obtenerDataEntradaStock();
-  }, []);
+    obtenerDataEntradaStock()
+  }, [])
 
   return (
     <>
@@ -138,7 +137,7 @@ export const ViewEntradaStock = () => {
                   <input
                     type="text"
                     disabled={true}
-                    value={nomProd ? nomProd : "No establecido"}
+                    value={nomProd || 'No establecido'}
                     className="form-control"
                   />
                 </div>
@@ -150,7 +149,7 @@ export const ViewEntradaStock = () => {
                   <input
                     type="text"
                     disabled={true}
-                    value={codProd === null ? "No establecido" : codProd}
+                    value={codProd === null ? 'No establecido' : codProd}
                     className="form-control"
                   />
                 </div>
@@ -162,7 +161,7 @@ export const ViewEntradaStock = () => {
                   <input
                     type="text"
                     disabled={true}
-                    value={codProd2 === null ? "No establecido" : codProd2}
+                    value={codProd2 === null ? 'No establecido' : codProd2}
                     className="form-control"
                   />
                 </div>
@@ -174,7 +173,7 @@ export const ViewEntradaStock = () => {
                   <input
                     type="text"
                     disabled={true}
-                    value={codProd3 === null ? "No establecido" : codProd3}
+                    value={codProd3 === null ? 'No establecido' : codProd3}
                     className="form-control"
                   />
                 </div>
@@ -373,7 +372,7 @@ export const ViewEntradaStock = () => {
                   <input
                     type="text"
                     disabled={true}
-                    value={esSel === 0 ? "No es seleccion" : "Es seleccion"}
+                    value={esSel === 0 ? 'No es seleccion' : 'Es seleccion'}
                     className="form-control"
                   />
                 </div>
@@ -410,7 +409,7 @@ export const ViewEntradaStock = () => {
                     type="text"
                     disabled={true}
                     value={
-                      fecFinSto === null ? "Entrada no terminada" : fecFinSto
+                      fecFinSto === null ? 'Entrada no terminada' : fecFinSto
                     }
                     className="form-control"
                   />
@@ -439,7 +438,7 @@ export const ViewEntradaStock = () => {
                     disabled={true}
                     value={canVar}
                     className={`form-control ${
-                      parseFloat(canVar) < 0 ? "text-danger" : "text-success"
+                      parseFloat(canVar) < 0 ? 'text-danger' : 'text-success'
                     }`}
                   />
                 </div>
@@ -460,7 +459,7 @@ export const ViewEntradaStock = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -468,11 +467,11 @@ export const ViewEntradaStock = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

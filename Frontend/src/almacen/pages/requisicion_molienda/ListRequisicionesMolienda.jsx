@@ -1,302 +1,239 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from "@mui/material/Alert";
-import { useForm } from "./../../../hooks/useForm";
-import { TextField } from "@mui/material";
-import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
-import { FilterEstadoRequisicionMolienda } from "./../../../components/ReferencialesFilters/EstadoRequisicionMolienda/FilterEstadoRequisicionMolienda";
-import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
-import { FilterTipoProduccion } from "./../../../components/ReferencialesFilters/TipoProduccion/FilterTipoProduccion";
-import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
-import { getRequisicionMoliendaWithDetalle } from "./../../../almacen/helpers/requisicion-molienda/getRequisicionMoliendaWithDetalle";
-import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
-
-// CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { useForm } from './../../../hooks/useForm'
+import { TextField } from '@mui/material'
+import { FilterEstadoRequisicionMolienda } from './../../../components/ReferencialesFilters/EstadoRequisicionMolienda/FilterEstadoRequisicionMolienda'
+import FechaPickerMonth from './../../../components/Fechas/FechaPickerMonth'
+import { FilterProductoProduccion } from './../../../components/ReferencialesFilters/Producto/FilterProductoProduccion'
+import { getRequisicionMoliendaWithDetalle } from './../../../almacen/helpers/requisicion-molienda/getRequisicionMoliendaWithDetalle'
+import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
 
 export const ListRequisicionesMolienda = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataRequisicion, setdataRequisicion] = useState([]);
-  const [dataRequisicionTemp, setdataRequisicionTemp] = useState([]);
-
-  // ESTADOS PARA EL MODAL
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
-  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
+  const [dataRequisicion, setdataRequisicion] = useState([])
+  const [dataRequisicionTemp, setdataRequisicionTemp] = useState([])
 
   // filtros
-  const { fecReqMolIni, fecReqMolFin, formState, setFormState, onInputChange } =
+  const { formState, setFormState } =
     useForm({
       fecReqMolIni: FormatDateMYSQL(),
       fecReqMolFin: FormatDateMYSQL(),
-      idAre: 2,
-    });
+      idAre: 2
+    })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
-    filter(value, name);
-  };
+    const { name, value } = target
+    filter(value, name)
+  }
 
   const onChangeProducto = ({ label }) => {
-    filter(label, "filterProducto");
-  };
-
-  const onChangeTipoProduccion = ({ label }) => {
-    filter(label, "filterTipoProduccion");
-  };
+    filter(label, 'filterProducto')
+  }
 
   const onChangeEstadoRequisicionMolienda = ({ label }) => {
-    filter(label, "filterEstado");
-  };
-
-  const onChangeDateFechaPedido = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaRequerido");
-  };
-
-  const onChangeDateFechaTerminado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaTerminado");
-  };
+    filter(label, 'filterEstado')
+  }
 
   // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecReqMolIni: dateFormat });
+    const dateFormat = newDate.split(' ')[0]
+    setFormState({ ...formState, fecReqMolIni: dateFormat })
     // realizamos una promesa
-    let body = {
+    const body = {
       ...formState,
-      fecReqMolIni: dateFormat,
-    };
-    obtenerDataRequisicionMolienda(body);
-  };
+      fecReqMolIni: dateFormat
+    }
+    obtenerDataRequisicionMolienda(body)
+  }
 
   const onChangeDateEndData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecReqMolFin: dateFormat });
+    const dateFormat = newDate.split(' ')[0]
+    setFormState({ ...formState, fecReqMolFin: dateFormat })
     // realizamos una promesa
-    let body = {
+    const body = {
       ...formState,
-      fecReqMolFin: dateFormat,
-    };
-    obtenerDataRequisicionMolienda(body);
-  };
+      fecReqMolFin: dateFormat
+    }
+    obtenerDataRequisicionMolienda(body)
+  }
 
   // Funcion para filtrar la data
   const filter = (terminoBusqueda, name) => {
-    let resultSearch = [];
+    let resultSearch = []
     switch (name) {
-      case "filterCodReq":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (
-            element.codReq
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterLoteProduccion":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (
-            element.codLotProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterTipoProduccion":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (
-            element.desProdTip
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterProducto":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (
-            element.nomProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterPeso":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (
-            element.klgLotProd
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterEstado":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (
-            element.desReqMolEst
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterFechaRequerido":
-        resultSearch = dataRequisicion.filter((element) => {
-          let aux = element.fecPedReqMol.split(" ");
+    case 'filterCodReq':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (
+          element.codReq
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterLoteProduccion':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (
+          element.codLotProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterTipoProduccion':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (
+          element.desProdTip
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterProducto':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (
+          element.nomProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterPeso':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (
+          element.klgLotProd
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterEstado':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (
+          element.desReqMolEst
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterFechaRequerido':
+      resultSearch = dataRequisicion.filter((element) => {
+        const aux = element.fecPedReqMol.split(' ')
+        if (
+          aux[0]
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterFechaTerminado':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (element.fecTerReqMol !== null) {
+          const aux = element.fecTerReqMol.split(' ')
           if (
             aux[0]
               .toString()
               .toLowerCase()
               .includes(terminoBusqueda.toLowerCase())
           ) {
-            return true;
+            return true
           } else {
-            return false;
+            return false
           }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterFechaTerminado":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (element.fecTerReqMol !== null) {
-            let aux = element.fecTerReqMol.split(" ");
-            if (
-              aux[0]
-                .toString()
-                .toLowerCase()
-                .includes(terminoBusqueda.toLowerCase())
-            ) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      default:
-        break;
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    default:
+      break
     }
-  };
+  }
 
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataRequisicionMolienda = async (body = formState) => {
-    const resultPeticion = await getRequisicionMoliendaWithDetalle(body);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getRequisicionMoliendaWithDetalle(body)
+    const { message_error, description_error, result } = resultPeticion
 
-    //console.log(resultPeticion);
-    //return;
+    // console.log(resultPeticion);
+    // return;
     if (message_error.length === 0) {
-      setdataRequisicion(result);
-      setdataRequisicionTemp(result);
+      setdataRequisicion(result)
+      setdataRequisicionTemp(result)
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+      alert(description_error)
     }
-  };
-
-  // ******* REQUISICION MOLIENDA DETALLE ********
-
-  const closeDetalleRequisicionMolienda = () => {
-    // ocultamos el modal
-    setMostrarDetalle(false);
-    // dejamos el null la data del detalle
-    setDetalleSeleccionado(null);
-  };
-
-  // MOSTRAR Y OCULTAR DETALLE DE REQUISICION MOLIENDA
-  const showRequisicionMoliendaDetalle = (idPosElement) => {
-    //var ss = dataRequisicionTemp[idPosElement].reqMolDet
-    var ss = dataRequisicionTemp[idPosElement].reqDet;
-    const requisicionMoliendaDetalle = ss;
-
-    //console.log(requisicionMoliendaDetalle, idPosElement, dataRequisicionTemp);
-
-    //return;
-    setDetalleSeleccionado(requisicionMoliendaDetalle);
-    setMostrarDetalle(true);
-  };
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerDataRequisicionMolienda();
-  }, []);
+    obtenerDataRequisicionMolienda()
+  }, [])
 
   return (
     <>
@@ -364,10 +301,10 @@ export const ListRequisicionesMolienda = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
+                      }
                     }}
                   >
                     <TableCell align="left" width={80}>
@@ -380,9 +317,9 @@ export const ListRequisicionesMolienda = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            color: 'black',
+                            background: 'white'
+                          }
                         }}
                       />
                     </TableCell>
@@ -395,9 +332,9 @@ export const ListRequisicionesMolienda = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            color: 'black',
+                            background: 'white'
+                          }
                         }}
                       />
                     </TableCell>
@@ -421,9 +358,9 @@ export const ListRequisicionesMolienda = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            color: 'black',
+                            background: 'white'
+                          }
                         }}
                       />
                     </TableCell>
@@ -451,7 +388,7 @@ export const ListRequisicionesMolienda = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -465,12 +402,12 @@ export const ListRequisicionesMolienda = () => {
                           <span
                             className={
                               row.idReqEst === 1
-                                ? "badge text-bg-danger"
+                                ? 'badge text-bg-danger'
                                 : row.idReqEst === 2
-                                ? "badge text-bg-warning"
-                                : row.idReqEst === 3
-                                ? "badge text-bg-success"
-                                : "badge text-bg-success"
+                                  ? 'badge text-bg-warning'
+                                  : row.idReqEst === 3
+                                    ? 'badge text-bg-success'
+                                    : 'badge text-bg-success'
                             }
                           >
                             {row.desReqEst}
@@ -479,20 +416,20 @@ export const ListRequisicionesMolienda = () => {
                         <TableCell align="left">{row.fecPedReq}</TableCell>
                         <TableCell align="left">
                           {row.fecTerReqMol === null
-                            ? "Aun no terminado"
+                            ? 'Aun no terminado'
                             : row.fecTerReqMol}
                         </TableCell>
                         <TableCell align="left">
                           <div className="btn-toolbar">
                             <button
-                              //onClick={() => {
+                              // onClick={() => {
                               //  showRequisicionMoliendaDetalle(i);
-                              //}}
+                              // }}
                               onClick={() => {
                                 window.open(
                                   `/almacen/requisicion-molienda/view/${row.idProdc}/${row.id}`,
-                                  "_blank"
-                                );
+                                  '_blank'
+                                )
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -530,5 +467,5 @@ export const ListRequisicionesMolienda = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

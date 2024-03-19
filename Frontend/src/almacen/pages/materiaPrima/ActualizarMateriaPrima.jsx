@@ -1,69 +1,69 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA LA NAVEGACION
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from 'react-router-dom'
 // IMPORTACIONES PARA EL MANEJO DE LA DATA
-import { updateMateriaPrima } from "./../../helpers/materia-prima/updateMateriaPrima";
+import { updateMateriaPrima } from './../../helpers/materia-prima/updateMateriaPrima'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 // FILTROS
-import { FilterMedidas } from "./../../../components/ReferencialesFilters/Medidas/FilterMedidas";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
+import { FilterMedidas } from './../../../components/ReferencialesFilters/Medidas/FilterMedidas'
+import { getMateriaPrimaById } from './../../../helpers/Referenciales/producto/getMateriaPrimaById'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const ActualizarMateriaPrima = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const { id } = useParams();
+  const { id } = useParams()
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ESTADOS DE LA MATERIA PRIMA
   const [materiaPrima, setmateriaPrima] = useState({
-    codMatPri: "",
+    codMatPri: '',
     idMatPriCat: 0,
     idMed: 0,
-    nomMatPri: "",
-    desMatPri: "",
-    stoMatPri: 0,
-  });
+    nomMatPri: '',
+    desMatPri: '',
+    stoMatPri: 0
+  })
 
   const { codMatPri, idMatPriCat, idMed, nomMatPri, desMatPri, stoMatPri } =
-    materiaPrima;
+    materiaPrima
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackUpdate, setfeedbackUpdate] = useState(false);
+  const [feedbackUpdate, setfeedbackUpdate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackUpdate(true);
-  };
+    setfeedbackUpdate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackUpdate(false);
-  };
+    setfeedbackUpdate(false)
+  }
 
   // ESTADO PARA BOTON ACTUALIZAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // FUNCION PARA TRAER LA DATA DE MATERIA DE PRIMA
   const obtenerDataMateriPrimaById = async () => {
-    const resultPeticion = await getMateriaPrimaById(id);
+    const resultPeticion = await getMateriaPrimaById(id)
     setmateriaPrima({
       ...materiaPrima,
       codMatPri: resultPeticion[0].codMatPri,
@@ -71,64 +71,56 @@ const ActualizarMateriaPrima = () => {
       idMed: resultPeticion[0].idMed,
       nomMatPri: resultPeticion[0].nomMatPri,
       desMatPri: resultPeticion[0].desMatPri,
-      stoMatPri: resultPeticion[0].stoMatPri,
-    });
-  };
+      stoMatPri: resultPeticion[0].stoMatPri
+    })
+  }
 
   // MANEJADOR DE FORMULARIO
   const handledForm = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setmateriaPrima({
       ...materiaPrima,
-      [name]: value,
-    });
-  };
-
-  // CONTROLADOR DE CATEGORIA MATERIA PRIMA
-  const onAddCategoriaMateriaPrima = ({ value }) => {
-    setmateriaPrima({
-      ...materiaPrima,
-      idMatPriCat: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // CONTROLADOR DE MEDIDA MATERIA PRIMA
   const onAddMedida = (newValue) => {
     setmateriaPrima({
       ...materiaPrima,
-      idMed: newValue,
-    });
-  };
+      idMed: newValue
+    })
+  }
 
   // FUNCION PARA ACTUALIZAR MATERIA PRIMA
   const actualizarMateriaPrima = async (idMatPri, data) => {
     const { message_error, description_error } = await updateMateriaPrima(
       idMatPri,
       data
-    );
+    )
 
     if (message_error.length === 0) {
-      console.log("Se actualizo correctamente");
+      console.log('Se actualizo correctamente')
       // MOSTRAMOS FEEDBACK
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se actualizó exitosamente",
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se actualizó exitosamente'
+      })
+      handleClickFeeback()
     } else {
-      console.log("No se pudo actualizar");
+      console.log('No se pudo actualizar')
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // CONTROLADOR SUBMIT DEL FORMULARIO
   const handleSubmitMateriPrima = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (
       codMatPri.length === 0 ||
       nomMatPri.length === 0 ||
@@ -138,21 +130,21 @@ const ActualizarMateriaPrima = () => {
     ) {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Asegurese de llenar los datos requeridos'
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
+      setdisableButton(true)
       // EJECUTAMOS LA ACTUALIZACION
-      actualizarMateriaPrima(id, materiaPrima);
+      actualizarMateriaPrima(id, materiaPrima)
     }
-  };
+  }
 
   // CODIGO QUE SE EJECUTA ANTES DE LA RENDERIZACION
   useEffect(() => {
-    obtenerDataMateriPrimaById();
-  }, []);
+    obtenerDataMateriPrimaById()
+  }, [])
 
   return (
     <>
@@ -255,7 +247,7 @@ const ActualizarMateriaPrima = () => {
       </div>
       {/* FEEDBACK UPDATE */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackUpdate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -263,13 +255,13 @@ const ActualizarMateriaPrima = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default ActualizarMateriaPrima;
+export default ActualizarMateriaPrima

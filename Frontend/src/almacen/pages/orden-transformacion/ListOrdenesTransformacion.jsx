@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
-import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
+import React, { useEffect, useState } from 'react'
+import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
+import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
 import {
   Paper,
   Table,
@@ -10,98 +10,78 @@ import {
   TableHead,
   TablePagination,
   TableRow
-} from "@mui/material";
-import { getOrdenesTransformacionAlmacen } from "../../helpers/orden-transformacion/getOrdenesTransformacionAlmacen";
+} from '@mui/material'
+import { getOrdenesTransformacionAlmacen } from '../../helpers/orden-transformacion/getOrdenesTransformacionAlmacen'
 
 export const ListOrdenesTransformacion = () => {
-  const [dataOrdenTransformacion, setdataOrdenTransformacion] = useState([]);
-  const [dataOrdenTransformacionTemp, setdataOrdenTransformacionTemp] =
-    useState([]);
+  const [dataOrdenTransformacion, setdataOrdenTransformacion] = useState([])
 
   // filtros
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
     fechaFin: FormatDateMYSQL()
-  });
+  })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Filtros generales que hacen nuevas consultas
   const handleFechaInicioChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaInicio: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaInicio: dateFormat
-    };
-    obtenerdataOrdenTransformacion(body);
-  };
+    }
+    obtenerdataOrdenTransformacion(body)
+  }
 
   const handleFechaFinChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaFin: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaFin: dateFormat
-    };
-    obtenerdataOrdenTransformacion(body);
-  };
-
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
-  const obtenerdataOrdenTransformacion = async (formState) => {
-    const resultPeticion = await getOrdenesTransformacionAlmacen(formState);
-    const { message_error, description_error, result } = resultPeticion;
-    console.log(result);
-    if (message_error.length === 0) {
-      setdataOrdenTransformacion(result);
-      setdataOrdenTransformacionTemp(result);
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
     }
-  };
+    obtenerdataOrdenTransformacion(body)
+  }
+
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  const obtenerdataOrdenTransformacion = async (formState) => {
+    const resultPeticion = await getOrdenesTransformacionAlmacen(formState)
+    const { message_error, description_error, result } = resultPeticion
+    console.log(result)
+    if (message_error.length === 0) {
+      setdataOrdenTransformacion(result)
+    } else {
+      console.log(description_error)
+    }
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerdataOrdenTransformacion();
-  }, []);
+    obtenerdataOrdenTransformacion()
+  }, [])
 
   return (
     <>
@@ -132,9 +112,9 @@ export const ListOrdenesTransformacion = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -168,13 +148,13 @@ export const ListOrdenesTransformacion = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataOrdenTransformacionTemp
+                  {dataOrdenTransformacion
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, i) => (
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left">{row.codLotProd}</TableCell>
@@ -187,79 +167,85 @@ export const ListOrdenesTransformacion = () => {
                           {row.canUndProdtDes}
                         </TableCell>
                         <TableCell align="center">
-                          {row["req_env_enc"] ? (
-                            <React.Fragment>
-                              {row["req_env_enc"][0]["requerido"] != 0 && (
-                                <span className="d-block mb-2 badge text-bg-danger p-2">
-                                  {`Requerido: ${row["req_env_enc"][0]["requerido"]}`}
-                                </span>
-                              )}
-                              {row["req_env_enc"][0]["en_proceso"] != 0 && (
-                                <span className="d-block badge text-bg-warning p-2">
-                                  {`En proceso: ${row["req_env_enc"][0]["en_proceso"]}`}
-                                </span>
-                              )}
-                              {row["req_env_enc"][0]["terminado"] != 0 && (
-                                <span className="d-block badge text-bg-success p-2">
-                                  {`Completo: ${row["req_env_enc"][0]["terminado"]}`}
-                                </span>
-                              )}
-                              {row["req_env_enc"][0]["requerido"] == 0 &&
-                                row["req_env_enc"][0]["en_proceso"] == 0 &&
-                                row["req_env_enc"][0]["terminado"] == 0 && (
-                                  <p>No hay requisiciones</p>
-                                )}
-                            </React.Fragment>
-                          ) : (
-                            <p>No hay requisiciones</p>
-                          )}
-                        </TableCell>
-                        <TableCell align="center">
-                          {row["req_ing_prod"] ? (
-                            <React.Fragment>
-                              {row["req_ing_prod"][0]["requerido"] != 0 && (
-                                <span className="d-block mb-2 badge text-bg-danger p-2">
-                                  {`Requerido: ${row["req_ing_prod"][0]["requerido"]}`}
-                                </span>
-                              )}
-                              {row["req_ing_prod"][0]["requerido"] == 0 &&
-                                row["req_ing_prod"][0]["terminado"] != 0 && (
-                                  <span className="d-block badge text-bg-success p-2">
-                                    {`Completo: ${row["req_ing_prod"][0]["terminado"]}`}
+                          {row.req_env_enc
+                            ? (
+                              <React.Fragment>
+                                {row.req_env_enc[0].requerido != 0 && (
+                                  <span className="d-block mb-2 badge text-bg-danger p-2">
+                                    {`Requerido: ${row.req_env_enc[0].requerido}`}
                                   </span>
                                 )}
-                              {row["req_ing_prod"][0]["requerido"] == 0 &&
-                                row["req_ing_prod"][0]["terminado"] == 0 && (
+                                {row.req_env_enc[0].en_proceso != 0 && (
+                                  <span className="d-block badge text-bg-warning p-2">
+                                    {`En proceso: ${row.req_env_enc[0].en_proceso}`}
+                                  </span>
+                                )}
+                                {row.req_env_enc[0].terminado != 0 && (
+                                  <span className="d-block badge text-bg-success p-2">
+                                    {`Completo: ${row.req_env_enc[0].terminado}`}
+                                  </span>
+                                )}
+                                {row.req_env_enc[0].requerido == 0 &&
+                                row.req_env_enc[0].en_proceso == 0 &&
+                                row.req_env_enc[0].terminado == 0 && (
                                   <p>No hay requisiciones</p>
                                 )}
-                            </React.Fragment>
-                          ) : (
-                            <p>No hay requisiciones</p>
-                          )}
+                              </React.Fragment>
+                            )
+                            : (
+                              <p>No hay requisiciones</p>
+                            )}
                         </TableCell>
                         <TableCell align="center">
-                          {row["req_dev"] ? (
-                            <React.Fragment>
-                              {row["req_dev"][0]["requerido"] != 0 && (
-                                <span className="d-block mb-2 badge text-bg-danger p-2">
-                                  {`Requerido: ${row["req_dev"][0]["requerido"]}`}
-                                </span>
-                              )}
-                              {row["req_dev"][0]["en_proceso"] != 0 && (
-                                <span className="d-block badge text-bg-warning p-2">
-                                  {`En proceso: ${row["req_dev"][0]["en_proceso"]}`}
-                                </span>
-                              )}
+                          {row.req_ing_prod
+                            ? (
+                              <React.Fragment>
+                                {row.req_ing_prod[0].requerido != 0 && (
+                                  <span className="d-block mb-2 badge text-bg-danger p-2">
+                                    {`Requerido: ${row.req_ing_prod[0].requerido}`}
+                                  </span>
+                                )}
+                                {row.req_ing_prod[0].requerido == 0 &&
+                                row.req_ing_prod[0].terminado != 0 && (
+                                  <span className="d-block badge text-bg-success p-2">
+                                    {`Completo: ${row.req_ing_prod[0].terminado}`}
+                                  </span>
+                                )}
+                                {row.req_ing_prod[0].requerido == 0 &&
+                                row.req_ing_prod[0].terminado == 0 && (
+                                  <p>No hay requisiciones</p>
+                                )}
+                              </React.Fragment>
+                            )
+                            : (
+                              <p>No hay requisiciones</p>
+                            )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {row.req_dev
+                            ? (
+                              <React.Fragment>
+                                {row.req_dev[0].requerido != 0 && (
+                                  <span className="d-block mb-2 badge text-bg-danger p-2">
+                                    {`Requerido: ${row.req_dev[0].requerido}`}
+                                  </span>
+                                )}
+                                {row.req_dev[0].en_proceso != 0 && (
+                                  <span className="d-block badge text-bg-warning p-2">
+                                    {`En proceso: ${row.req_dev[0].en_proceso}`}
+                                  </span>
+                                )}
 
-                              {row["req_dev"][0]["terminado"] != 0 && (
-                                <span className="d-block badge text-bg-success p-2">
-                                  {`Completo: ${row["req_dev"][0]["terminado"]}`}
-                                </span>
-                              )}
-                            </React.Fragment>
-                          ) : (
-                            <p>No hay requisiciones</p>
-                          )}
+                                {row.req_dev[0].terminado != 0 && (
+                                  <span className="d-block badge text-bg-success p-2">
+                                    {`Completo: ${row.req_dev[0].terminado}`}
+                                  </span>
+                                )}
+                              </React.Fragment>
+                            )
+                            : (
+                              <p>No hay requisiciones</p>
+                            )}
                         </TableCell>
                         <TableCell align="left">
                           <div className="btn-toolbar">
@@ -268,8 +254,8 @@ export const ListOrdenesTransformacion = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/orden-transformacion/view/${row.id}`,
-                                  "_blank"
-                                );
+                                  '_blank'
+                                )
                               }}
                             >
                               <svg
@@ -295,7 +281,7 @@ export const ListOrdenesTransformacion = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={dataOrdenTransformacionTemp.length}
+              count={dataOrdenTransformacion.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -305,5 +291,5 @@ export const ListOrdenesTransformacion = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

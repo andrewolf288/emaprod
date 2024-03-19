@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react'
 
 export const ListAlmacenMolienda = () => {
-  return <div>ListAlmacenMolienda</div>;
-};
+  return <div>ListAlmacenMolienda</div>
+}

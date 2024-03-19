@@ -1,75 +1,74 @@
-import React, { useState } from "react";
-import { FilterProductosDynamic } from "../../../components/ReferencialesFilters/Producto/FilterProductosDynamic";
-import { FilterAlmacenDynamic } from "../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic";
-import config from "../../../config";
-import axios from "axios";
-import { FilterClaseDynamic } from "../../../components/ReferencialesFilters/Clase/FilterClaseDynamic";
+import React, { useState } from 'react'
+import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic'
+import config from '../../../config'
+import axios from 'axios'
+import { FilterClaseDynamic } from '../../../components/ReferencialesFilters/Clase/FilterClaseDynamic'
 
 export const ReporteStockTotal = () => {
   const [filterData, setFilterData] = useState({
     clase: 0,
     almacen: 0
-  });
+  })
 
-  const { clase, almacen } = filterData;
+  const { clase, almacen } = filterData
 
   // controlador de producto
   const handleClase = ({ id }) => {
     setFilterData({
       ...filterData,
       clase: id
-    });
-  };
+    })
+  }
 
   // controlador de almacne
   const handleAlmacen = ({ id }) => {
     setFilterData({
       ...filterData,
       almacen: id
-    });
-  };
+    })
+  }
 
   // ENVIAMOS LA DATA DE LOS FILTERS PARA FILTRAR LA DATA
   const submitDataFilterToExcel = async () => {
-    let errors = [];
+    const errors = []
     // seleccion de almacen
     if (almacen === 0) {
-      errors.push("Debes seleccionar un almacen");
+      errors.push('Debes seleccionar un almacen')
     }
 
     if (errors.length === 0) {
       // hacemos una peticion
-      console.log(filterData);
-      exportarReporte();
+      console.log(filterData)
+      exportarReporte()
     } else {
-      const handleErrors = errors.join("\n");
-      alert(handleErrors);
+      const handleErrors = errors.join('\n')
+      alert(handleErrors)
     }
-  };
+  }
 
-  //FUNCION PARA EXPORTAR EN EXCEL
+  // FUNCION PARA EXPORTAR EN EXCEL
   const exportarReporte = () => {
-    const domain = config.API_URL;
-    const path = "/almacen/reportes/reporte-stock-total.php";
+    const domain = config.API_URL
+    const path = '/almacen/reportes/reporte-stock-total.php'
     axios({
       url: domain + path,
       data: filterData,
-      method: "POST",
-      responseType: "blob" // Importante para recibir datos binarios (Blob)
+      method: 'POST',
+      responseType: 'blob' // Importante para recibir datos binarios (Blob)
     })
       .then((response) => {
         // Crear un enlace temporal para descargar el archivo
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "reporte-stock-total.xlsx";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'reporte-stock-total.xlsx'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
       })
-      .catch((error) => alert("Error al descargar el archivo", error));
-  };
+      .catch((error) => alert('Error al descargar el archivo', error))
+  }
 
   return (
     <>
@@ -114,5 +113,5 @@ export const ReporteStockTotal = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

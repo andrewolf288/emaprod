@@ -1,106 +1,90 @@
-import React, { useState, useEffect } from "react";
-import { FilterPresentacionFinal } from "../../../components/ReferencialesFilters/Producto/FilterPresentacionFinal";
-import { TextField } from "@mui/material";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import { RowEditDetalleProductosFinales } from "./../../../../src/produccion/components/componentes-lote-produccion/RowEditDetalleProductosFinales";
-//import { RowEditDetalleProductosFinales } from "./../../components/componentes-lote-produccion/RowEditDetalleProductosFinales";
-import { FilterAllProductos } from "./../../../../src/components/ReferencialesFilters/Producto/FilterAllProductos";
-//import { FilterAllProductos } from "./../../../../src/produccion/components/ReferencialesFilters/Producto/FilterAllProductos";
-import { FilterAreaEncargada } from "./../../../../src/produccion/components/FilterAreaEncargada";
-//import { FilterAreaEncargada } from "./../../components/FilterAreaEncargada";
-import { RowEditDetalleRequisicionProduccion } from "./../../../../src/produccion/components/componentes-lote-produccion/RowEditDetalleRequisicionProduccion";
-import { getFormulaProductoDetalleByProducto } from "../../../../src/produccion/helpers/formula_producto/getFormulaProductoDetalleByProducto";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import React, { useState, useEffect } from 'react'
+import { FilterPresentacionFinal } from '../../../components/ReferencialesFilters/Producto/FilterPresentacionFinal'
+import { TextField } from '@mui/material'
+import Paper from '@mui/material/Paper'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import { RowEditDetalleProductosFinales } from './../../../../src/produccion/components/componentes-lote-produccion/RowEditDetalleProductosFinales'
+// import { RowEditDetalleProductosFinales } from "./../../components/componentes-lote-produccion/RowEditDetalleProductosFinales";
+import { FilterAllProductos } from './../../../../src/components/ReferencialesFilters/Producto/FilterAllProductos'
+// import { FilterAllProductos } from "./../../../../src/produccion/components/ReferencialesFilters/Producto/FilterAllProductos";
+import { FilterAreaEncargada } from './../../../../src/produccion/components/FilterAreaEncargada'
+// import { FilterAreaEncargada } from "./../../components/FilterAreaEncargada";
+import { RowEditDetalleRequisicionProduccion } from './../../../../src/produccion/components/componentes-lote-produccion/RowEditDetalleRequisicionProduccion'
+import { getFormulaProductoDetalleByProducto } from '../../../../src/produccion/helpers/formula_producto/getFormulaProductoDetalleByProducto'
+import { getMateriaPrimaById } from './../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 
-export default function DetalleProducts({
+export default function DetalleProducts ({
   produccionLote,
   setproduccionLote,
   entradasNoDisponible,
-  setEntradasNoDisponible,
+  setEntradasNoDisponible
 }) {
-  function _parseInt(str) {
+  function _parseInt (str) {
     if (str.canReqProdLot) {
-      str.canReqDet = str.canReqProdLot;
+      str.canReqDet = str.canReqProdLot
     }
 
     if (str.canTotProgProdFin) {
-      str.canReqDet = str.canTotProgProdFin;
+      str.canReqDet = str.canTotProgProdFin
     }
-    str.canReqDet = parseFloat(str.canReqDet).toFixed(2);
-    let index = str.canReqDet.toString().indexOf(".");
-    let result = str.canReqDet.toString().substring(index + 1);
-    //console.log("index: ",index, "result: ", result)
-    let val =
-      parseInt(result) >= 1 && str.simMed !== "KGM"
+    str.canReqDet = parseFloat(str.canReqDet).toFixed(2)
+    const index = str.canReqDet.toString().indexOf('.')
+    const result = str.canReqDet.toString().substring(index + 1)
+    // console.log("index: ",index, "result: ", result)
+    const val =
+      parseInt(result) >= 1 && str.simMed !== 'KGM'
         ? Math.trunc(str.canReqDet) + 1
-        : str.canReqDet;
-    return val;
+        : str.canReqDet
+    return val
   }
 
-  const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
+  const Alert = React.forwardRef(function Alert (props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+  })
 
-  const [finalProducts, setFinalProducts] = useState([]);
+  const [finalProducts, setFinalProducts] = useState([])
 
   // ESTADO DE KLG DISPONIBLES PARA LOTE PRODUCCION
   const [cantidadLoteProduccion, setcantidadLoteProduccion] = useState({
     totalUnidadesLoteProduccion: 0,
     klgTotalLoteProduccion: 0,
-    klgDisponibleLoteProduccion: 0,
-  });
+    klgDisponibleLoteProduccion: 0
+  })
 
   const {
     totalUnidadesLoteProduccion,
-    klgTotalLoteProduccion,
-    klgDisponibleLoteProduccion,
-  } = cantidadLoteProduccion;
+    klgTotalLoteProduccion
+  } = cantidadLoteProduccion
 
-  // ESTADO PARA LOS DATOS DE PRODUCCION LOTE
-  //const [produccionLote, setproduccionLote] = useState({
-  //  idProdt: 0, // producto intermedio
-  //  idProdTip: 0, // tipo de produccion
-  //  codLotProd: "", // codigo de lote
-  //  klgLotProd: 1, // kilogramos del lote
-  //  canLotProd: 1, // cantidad
-  //  obsProd: "", // observaciones
-  //  fecProdIniProg: "", // fecha de inicio programado
-  //  fecProdFinProg: "", // fecha de fin programado
-  //  fecVenLotProd: "", // fecha de vencimiento del lote
-  //  reqDetProdc: [], // detalle requisicion de lote
-  //  prodDetProdc: [], // detalle de productos finales esperados
-  //});
-
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
+    style_message: '',
+    feedback_description_error: ''
+  })
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // STATE PARA CONTROLAR LA AGREGACION DE PRODUCTOS FINALES DEL LOTE
   const [productoLoteProduccion, setproductoLoteProduccion] = useState({
     idProdFin: 0,
     cantidadDeLote: 0.0,
-    cantidadDeProducto: 0,
-  });
+    cantidadDeProducto: 0
+  })
 
   // state producto para detalle requisicion
   const [productoRequisicionProduccion, setproductoRequisicionProduccion] =
@@ -108,255 +92,241 @@ export default function DetalleProducts({
       idProdReq: 0,
       cantidadRequisicion: 0,
       idAre: 0,
-      idAlm: 0,
-    });
+      idAlm: 0
+    })
 
   const onAddProductoFinalLoteProduccion = (value) => {
     setproductoLoteProduccion({
       ...productoLoteProduccion,
-      idProdFin: value.id,
-    });
-  };
+      idProdFin: value.id
+    })
+  }
 
   const handleInputsProductosFinales = ({ target }) => {
-    const { value, name } = target;
+    const { value, name } = target
 
     setproductoLoteProduccion({
       ...productoLoteProduccion,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   const onAddProductoRequisicionLoteProduccion = (value) => {
     setproductoRequisicionProduccion({
       ...productoRequisicionProduccion,
-      idProdReq: value.id,
-    });
-  };
+      idProdReq: value.id
+    })
+  }
 
   const handleAreaIdProductoRequisicion = ({ id }) => {
     setproductoRequisicionProduccion({
       ...productoRequisicionProduccion,
-      idAre: id,
-    });
-  };
+      idAre: id
+    })
+  }
 
   const handleInputsProductosRequisicion = ({ target }) => {
-    const { value, name } = target;
+    const { value, name } = target
     setproductoRequisicionProduccion({
       ...productoRequisicionProduccion,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   const handleDeleteItemRequisicionProduccion = (idItem, index) => {
     const dataDetalleRequisicionProduccion = produccionLote.reqDetProdc.filter(
       (element) => {
         if (element.idProd === idItem && element.indexProdFin === index) {
-          return false;
+          return false
         } else {
-          return true;
+          return true
         }
       }
-    );
+    )
 
     setproduccionLote({
       ...produccionLote,
-      reqDetProdc: dataDetalleRequisicionProduccion,
-    });
-  };
+      reqDetProdc: dataDetalleRequisicionProduccion
+    })
+  }
 
   const handleEditItemRequisicionProduccion = ({ target }, idItem, index) => {
-    const { value } = target;
-    //console.log("test " , value)
+    const { value } = target
+    // console.log("test " , value)
     const editFormDetalle = produccionLote.reqDetProdc.map((element) => {
       if (element.idProd === idItem && element.indexProdFin === index) {
         return {
           ...element,
-          canReqProdLot: value,
-        };
+          canReqProdLot: value
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
     setproduccionLote({
       ...produccionLote,
-      reqDetProdc: editFormDetalle,
-    });
-  };
+      reqDetProdc: editFormDetalle
+    })
+  }
 
   const handleAddProductoProduccionLote = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    //console.log(prodDetProdc,idProdFin)
-    //return
-    setEntradasNoDisponible([]);
-    console.log(productoLoteProduccion);
+    // console.log(prodDetProdc,idProdFin)
+    // return
+    setEntradasNoDisponible([])
+    console.log(productoLoteProduccion)
     if (
       parseFloat(productoLoteProduccion.cantidadDeLote) > 0.0 &&
       productoLoteProduccion.idProdFin !== 0
     ) {
       const itemFound = produccionLote.prodDetProdc.find(
         (element) => element.idProdFin === productoLoteProduccion.idProdFin
-      );
+      )
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto a la orden",
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Ya se agrego este producto a la orden'
+        })
+        handleClickFeeback()
       } else {
         const resultPeticion = await getFormulaProductoDetalleByProducto(
           productoLoteProduccion.idProdFin
-        );
-        const { message_error, description_error, result } = resultPeticion;
-        //console.log(result);
-        //return
+        )
+        const { message_error, description_error, result } = resultPeticion
+        // console.log(result);
+        // return
 
         if (message_error.length === 0) {
-          const { idProdFin, nomProd, simMed, reqDet } = result[0]; // obtenemos la requisicion
-          let equivalenteKilogramos = 0;
-          //buscamos la requisicion de materia prima
-          //console.log("Complete Element -> ",reqDet);
+          const { idProdFin, nomProd, simMed, reqDet } = result[0] // obtenemos la requisicion
+          let equivalenteKilogramos = 0
+          // buscamos la requisicion de materia prima
+          // console.log("Complete Element -> ",reqDet);
 
           reqDet.forEach((element) => {
             if (element.idAre === 2 || element.idAre === 7) {
-              equivalenteKilogramos = parseFloat(element.canForProDet);
-              //console.log("elemento are:", element.desAre);
-              //console.log("elemento value: ", equivalenteKilogramos);
+              equivalenteKilogramos = parseFloat(element.canForProDet)
+              // console.log("elemento are:", element.desAre);
+              // console.log("elemento value: ", equivalenteKilogramos);
             }
-          });
+          })
 
-          let cantidadUnidades = 0;
-          let cantidadklgLote = 0;
-          //if (parseFloat(productoLoteProduccion.cantidadDeLote) > 0.0) {
+          let cantidadUnidades = 0
+          let cantidadklgLote = 0
+          // if (parseFloat(productoLoteProduccion.cantidadDeLote) > 0.0) {
           cantidadUnidades =
             parseFloat(productoLoteProduccion.cantidadDeLote) /
-            equivalenteKilogramos;
+            equivalenteKilogramos
           cantidadklgLote = parseFloat(
             productoLoteProduccion.cantidadDeLote
-          ).toFixed(2);
-          //} else {
-          //cantidadUnidades = Math.round(
+          ).toFixed(2)
+          // } else {
+          // cantidadUnidades = Math.round(
           //  parseFloat(productoLoteProduccion.cantidadDeProducto)
-          //);
-          //cantidadklgLote = parseFloat(
+          // );
+          // cantidadklgLote = parseFloat(
           //  (
           //    equivalenteKilogramos *
           //    parseFloat(productoLoteProduccion.cantidadDeProducto)
           //  ).toFixed(2)
-          //);
-          //}
+          // );
+          // }
 
           const cantidadTotalDelLoteProduccion = parseFloat(
             klgTotalLoteProduccion + cantidadklgLote
-          );
+          )
 
           const cantidadTotalUnidadesDelLoteProduccion = parseInt(
             totalUnidadesLoteProduccion + cantidadUnidades
-          );
+          )
 
-          if (
-            false &&
-            cantidadTotalDelLoteProduccion > klgDisponibleLoteProduccion
-          ) {
-            setfeedbackMessages({
-              style_message: "warning",
-              feedback_description_error:
-                "Asegurese de que la asignancion de kg de lote sea menor a lo permitido",
-            });
-            handleClickFeeback();
-          } else {
-            setcantidadLoteProduccion({
-              ...cantidadLoteProduccion,
-              klgTotalLoteProduccion: cantidadTotalDelLoteProduccion,
-              totalUnidadesLoteProduccion:
-                cantidadTotalUnidadesDelLoteProduccion,
-            });
+          setcantidadLoteProduccion({
+            ...cantidadLoteProduccion,
+            klgTotalLoteProduccion: cantidadTotalDelLoteProduccion,
+            totalUnidadesLoteProduccion:
+                cantidadTotalUnidadesDelLoteProduccion
+          })
 
-            const nextIndex = produccionLote.prodDetProdc.length + 1;
-            const detalleProductosFinales = [
-              ...produccionLote.prodDetProdc,
-              {
+          const nextIndex = produccionLote.prodDetProdc.length + 1
+          const detalleProductosFinales = [
+            ...produccionLote.prodDetProdc,
+            {
+              idProdFin,
+              index: nextIndex,
+              nomProd,
+              simMed,
+              canUnd: cantidadUnidades,
+              canKlg: cantidadklgLote
+            }
+          ]
+
+          const detalleRequisicionesFormula = []
+
+          reqDet.forEach((element) => {
+            if (element.idAre === 5 || element.idAre === 6) {
+              detalleRequisicionesFormula.push({
+                ...element,
+                indexProdFin: nextIndex,
                 idProdFin,
-                index: nextIndex,
-                nomProd,
-                simMed,
-                canUnd: cantidadUnidades,
-                canKlg: cantidadklgLote,
-              },
-            ];
+                idProdAgrMot: 1,
+                cantidadUnidades,
+                cantidadklgLote,
+                canReqProdLot: parseFloat(
+                  (
+                    parseFloat(element.canForProDet) * cantidadUnidades
+                  ).toFixed(2)
+                )
+              })
+            }
+          })
 
-            let detalleRequisicionesFormula = [];
-
-            reqDet.forEach((element) => {
-              if (element.idAre === 5 || element.idAre === 6) {
-                detalleRequisicionesFormula.push({
-                  ...element,
-                  indexProdFin: nextIndex,
-                  idProdFin: idProdFin,
-                  idProdAgrMot: 1,
-                  cantidadUnidades,
-                  cantidadklgLote,
-                  canReqProdLot: parseFloat(
-                    (
-                      parseFloat(element.canForProDet) * cantidadUnidades
-                    ).toFixed(2)
-                  ),
-                });
-              } else {
-                return;
-              }
-            });
-
-            //console.log(detalleRequisicionesFormula)
-            detalleRequisicionesFormula.map((obj) => {
-              obj.canReqProdLot = _parseInt(obj);
-            });
-            const detalleRequisicion = [
-              ...produccionLote.reqDetProdc,
-              ...detalleRequisicionesFormula,
-            ];
-            //console.log(detalleProductosFinales)
-            setproduccionLote({
-              ...produccionLote,
-              prodDetProdc: detalleProductosFinales,
-              reqDetProdc: detalleRequisicion,
-            });
-          }
+          // console.log(detalleRequisicionesFormula)
+          detalleRequisicionesFormula.forEach((obj) => {
+            obj.canReqProdLot = _parseInt(obj)
+          })
+          const detalleRequisicion = [
+            ...produccionLote.reqDetProdc,
+            ...detalleRequisicionesFormula
+          ]
+          // console.log(detalleProductosFinales)
+          setproduccionLote({
+            ...produccionLote,
+            prodDetProdc: detalleProductosFinales,
+            reqDetProdc: detalleRequisicion
+          })
         } else {
           setfeedbackMessages({
-            style_message: "error",
-            feedback_description_error: description_error,
-          });
-          handleClickFeeback();
+            style_message: 'error',
+            feedback_description_error: description_error
+          })
+          handleClickFeeback()
         }
       }
     } else {
-      let advertenciaPresentacionFinal = "";
+      let advertenciaPresentacionFinal = ''
       if (productoLoteProduccion.idProdFin === 0) {
         advertenciaPresentacionFinal +=
-          "Se debe proporcionar una presentacion final para agregar a la orden\n";
+          'Se debe proporcionar una presentacion final para agregar a la orden\n'
       }
       if (
         productoLoteProduccion.cantidadDeLote <= 0.0 ||
         productoLoteProduccion.cantidadDeProducto <= 0
       ) {
         advertenciaPresentacionFinal +=
-          "Se debe proporcionar una cantidad mayor a 0 para agregar a la orden\n";
+          'Se debe proporcionar una cantidad mayor a 0 para agregar a la orden\n'
       }
 
       // mostramos el mensaje de error
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: advertenciaPresentacionFinal,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: advertenciaPresentacionFinal
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   const handleAddProductoRequisicionLote = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (
       productoRequisicionProduccion.idProdReq !== 0 &&
       productoRequisicionProduccion.idAre !== 0 &&
@@ -364,16 +334,16 @@ export default function DetalleProducts({
     ) {
       const itemFound = produccionLote.reqDetProdc.find(
         (element) => element.idProd === productoRequisicionProduccion.idProdReq
-      );
+      )
 
-      //console.log(itemFound)
+      // console.log(itemFound)
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Ya se agrego este producto a la requisicion",
-        });
-        handleClickFeeback();
+            'Ya se agrego este producto a la requisicion'
+        })
+        handleClickFeeback()
       } else {
         if (
           productoRequisicionProduccion.idAre === 5 ||
@@ -381,98 +351,98 @@ export default function DetalleProducts({
         ) {
           const resultPeticion = await getMateriaPrimaById(
             productoRequisicionProduccion.idProdReq
-          );
-          const { message_error, description_error, result } = resultPeticion;
+          )
+          const { message_error, description_error, result } = resultPeticion
 
           if (message_error.length === 0) {
             const { id, codProd, desCla, desSubCla, nomProd, simMed } =
-              result[0];
+              result[0]
             const detalleFormulaProducto = {
               idProd: id,
               idAre: productoRequisicionProduccion.idAre, // area
               idAlm: 1, // almacen de orgien
-              nomAlm: "Almacen Principal",
-              codProd: codProd,
-              desCla: desCla,
-              desSubCla: desSubCla,
-              nomProd: nomProd,
-              simMed: simMed,
+              nomAlm: 'Almacen Principal',
+              codProd,
+              desCla,
+              desSubCla,
+              nomProd,
+              simMed,
               canForProDet: 1,
-              canReqProdLot: productoRequisicionProduccion.cantidadRequisicion,
-            };
+              canReqProdLot: productoRequisicionProduccion.cantidadRequisicion
+            }
 
             const dataDetalle = [
               ...produccionLote.reqDetProdc,
-              detalleFormulaProducto,
-            ];
+              detalleFormulaProducto
+            ]
             setproduccionLote({
               ...produccionLote,
-              reqDetProdc: dataDetalle,
-            });
+              reqDetProdc: dataDetalle
+            })
           } else {
             setfeedbackMessages({
-              style_message: "error",
-              feedback_description_error: description_error,
-            });
-            handleClickFeeback();
+              style_message: 'error',
+              feedback_description_error: description_error
+            })
+            handleClickFeeback()
           }
         } else {
           setfeedbackMessages({
-            style_message: "warning",
+            style_message: 'warning',
             feedback_description_error:
-              "Solo se adminte areas de envasado y encajonado",
-          });
-          handleClickFeeback();
+              'Solo se adminte areas de envasado y encajonado'
+          })
+          handleClickFeeback()
         }
       }
     } else {
-      let advertenciaDetalleRequisicion = "";
+      let advertenciaDetalleRequisicion = ''
       if (productoRequisicionProduccion.idProdReq === 0) {
         advertenciaDetalleRequisicion +=
-          "Debe elegir un envase, embalaje u otro material para agregar el detalle\n";
+          'Debe elegir un envase, embalaje u otro material para agregar el detalle\n'
       }
       if (productoRequisicionProduccion.idAre === 0) {
         advertenciaDetalleRequisicion +=
-          "Debe asignar un area para agregar el detalle\n";
+          'Debe asignar un area para agregar el detalle\n'
       }
       if (productoRequisicionProduccion.cantidadRequisicion <= 0) {
         advertenciaDetalleRequisicion +=
-          "Debe proporcionar una cantidad mayor a 0 para agregar el detalle\n";
+          'Debe proporcionar una cantidad mayor a 0 para agregar el detalle\n'
       }
 
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: advertenciaDetalleRequisicion,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: advertenciaDetalleRequisicion
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // ELIMINAR UN PRODUCTO FINAL Y SU REQUISICION
   const handleDeleteDetalleProducto = (idItem) => {
-    let totalKlgProductoFinal = 0;
-    let totalUnidadesProductoFinal = 0;
+    let totalKlgProductoFinal = 0
+    let totalUnidadesProductoFinal = 0
     // filtramos el elemento eliminado
     const dataDetalleProductoFinalProduccion =
       produccionLote.prodDetProdc.filter((element) => {
         if (element.idProdFin !== idItem) {
-          return true;
+          return true
         } else {
-          totalKlgProductoFinal = element.canKlg;
-          totalUnidadesProductoFinal = element.canUnd;
-          return false;
+          totalKlgProductoFinal = element.canKlg
+          totalUnidadesProductoFinal = element.canUnd
+          return false
         }
-      });
+      })
 
     const dataDetalleRequisicionProduccion = produccionLote.reqDetProdc.filter(
       (element) => {
         if (element.idProdFin !== idItem) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
       }
-    );
+    )
 
     // descontamos del total acumulado de klg
     setcantidadLoteProduccion({
@@ -482,33 +452,33 @@ export default function DetalleProducts({
       ),
       totalUnidadesLoteProduccion: parseInt(
         totalUnidadesLoteProduccion - totalUnidadesProductoFinal
-      ),
-    });
+      )
+    })
 
     // lo insertamos en el detalle
     setproduccionLote({
       ...produccionLote,
       prodDetProdc: dataDetalleProductoFinalProduccion,
-      reqDetProdc: dataDetalleRequisicionProduccion,
-    });
-  };
+      reqDetProdc: dataDetalleRequisicionProduccion
+    })
+  }
 
-  //const handleSubmitProduccionLote = (e) => {
+  // const handleSubmitProduccionLote = (e) => {
   //  e.preventDefault();
   //  console.log(produccionLote)
-  //};
+  // };
 
   useEffect(() => {
     if (produccionLote?.finalProducts?.length) {
-      //console.log(produccionLote.finalProducts)
-      setFinalProducts(produccionLote.finalProducts);
+      // console.log(produccionLote.finalProducts)
+      setFinalProducts(produccionLote.finalProducts)
     }
-  }, [produccionLote]);
+  }, [produccionLote])
 
-  function onValidate(e) {
-    var t = e.value;
-    e.value = t.indexOf(".") >= 0 ? t.slice(0, t.indexOf(".") + 3) : t;
-    return e.value;
+  function onValidate (e) {
+    const t = e.value
+    e.value = t.indexOf('.') >= 0 ? t.slice(0, t.indexOf('.') + 3) : t
+    return e.value
   }
 
   // ACCION PARA CAMBIAR EL MOTIVO DEL DETALLE DE UN PRODUCTO DEVUELTO
@@ -517,26 +487,26 @@ export default function DetalleProducts({
     idItem
   ) => {
     const editFormDetalle = produccionLote.reqDetProdc.map((element) => {
-      //console.log(element,idItem)
+      // console.log(element,idItem)
 
       if (element.id === idItem) {
         return {
           ...element,
-          idProdAgrMot: idProdAgrMot,
-        };
+          idProdAgrMot
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
     setproduccionLote({
       ...produccionLote,
-      reqDetProdc: editFormDetalle,
-    });
-  };
+      reqDetProdc: editFormDetalle
+    })
+  }
 
   return (
     <>
-      {/* DATOS DE PRODUCTOS FINALES O LOTES DE SUBPRODUCTOS*/}
+      {/* DATOS DE PRODUCTOS FINALES O LOTES DE SUBPRODUCTOS */}
       <div className="card d-flex mt-4">
         <h6 className="card-header">Detalle Presentaciones Finales</h6>
         <div className="card-body">
@@ -589,10 +559,10 @@ export default function DetalleProducts({
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
+                      }
                     }}
                   >
                     <TableCell align="left" width={20}>
@@ -623,14 +593,14 @@ export default function DetalleProducts({
                         detalle={row}
                         onDeleteItemProductoFinal={handleDeleteDetalleProducto}
                       />
-                    );
+                    )
                   })}
                 </TableBody>
               </Table>
             </TableContainer>
           </Paper>
-          {/* 
-              
+          {/*
+
               <div className="mt-4 d-flex justify-content-end align-items-center">
                 <p className="me-4 p-2 bg-dark-subtle">
                   <b>Total Unidades: </b>
@@ -641,8 +611,7 @@ export default function DetalleProducts({
                   {klgTotalLoteProduccion} / {klgDisponibleLoteProduccion}
                 </p>
               </div>
-              
-              
+
               */}
         </div>
       </div>
@@ -709,10 +678,10 @@ export default function DetalleProducts({
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
                         }}
                       >
                         <TableCell align="left" width={20}>
@@ -756,7 +725,9 @@ export default function DetalleProducts({
                               isAggregation={true}
                               entradasNoDisponible={entradasNoDisponible}
                             />
-                          );
+                          )
+                        } else {
+                          return null
                         }
                       })}
                     </TableBody>
@@ -775,10 +746,10 @@ export default function DetalleProducts({
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
                         }}
                       >
                         <TableCell align="left" width={20}>
@@ -824,7 +795,9 @@ export default function DetalleProducts({
                               isAggregation={true}
                               entradasNoDisponible={entradasNoDisponible}
                             />
-                          );
+                          )
+                        } else {
+                          return null
                         }
                       })}
                     </TableBody>
@@ -838,7 +811,7 @@ export default function DetalleProducts({
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -846,11 +819,11 @@ export default function DetalleProducts({
         <Alert
           onClose={handleCloseFeedback}
           severity={feedbackMessages.style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedbackMessages.feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
+  )
 }

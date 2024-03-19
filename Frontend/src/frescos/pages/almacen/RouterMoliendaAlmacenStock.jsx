@@ -1,8 +1,8 @@
-import { ListAlmacenFrescos } from "./ListAlmacenFrescos";
+import { ListAlmacenFrescos } from './ListAlmacenFrescos'
 
 export const RouterMoliendaAlmacenStock = [
   {
-    path: "",
-    element: <ListAlmacenFrescos />,
-  },
-];
+    path: '',
+    element: <ListAlmacenFrescos />
+  }
+]

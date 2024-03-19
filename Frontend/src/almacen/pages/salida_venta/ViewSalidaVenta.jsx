@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { getSalidaVentaDetalleById } from "../../helpers/salida-venta/getSalidaVentaDetalleById";
-import { CardSalidaVentaDetalle } from "../../components/componentes-salida-venta/CardSalidaVentaDetalle";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { createSalidaLoteStockByDetalle } from "../../helpers/salida-venta/createSalidaLoteStockByDetalle";
+import React, { useEffect, useState } from 'react'
+import { getSalidaVentaDetalleById } from '../../helpers/salida-venta/getSalidaVentaDetalleById'
+import { CardSalidaVentaDetalle } from '../../components/componentes-salida-venta/CardSalidaVentaDetalle'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { createSalidaLoteStockByDetalle } from '../../helpers/salida-venta/createSalidaLoteStockByDetalle'
 import {
   CircularProgress,
   Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle
-} from "@mui/material";
-import { useParams } from "react-router-dom";
+} from '@mui/material'
+import { useParams } from 'react-router-dom'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ViewSalidaVenta = () => {
-  const { idSalidaVenta } = useParams();
+  const { idSalidaVenta } = useParams()
   const [dataSalidaVenta, setdataSalidaVenta] = useState({
     id: 0,
-    invSerFac: "",
-    invNumFac: "",
-    desOpeFacMot: "",
+    invSerFac: '',
+    invNumFac: '',
+    desOpeFacMot: '',
     fueAfePorAnul: 0,
     fueAfePorDev: 0,
-    fecCreOpeFac: "",
+    fecCreOpeFac: '',
     detOpeFac: []
-  });
+  })
 
   const {
     invSerFac,
@@ -39,240 +39,237 @@ export const ViewSalidaVenta = () => {
     fueAfePorDev,
     fecCreOpeFac,
     detOpeFac
-  } = dataSalidaVenta;
+  } = dataSalidaVenta
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
-  const [loading, setLoading] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
 
   // ***** FUNCIONES PARA EL MANEJO DE ACCIONES *****
   const openLoader = () => {
-    setOpenDialog(true);
-    setLoading(true);
-  };
+    setOpenDialog(true)
+  }
   const closeLoader = () => {
-    setLoading(false);
-    setOpenDialog(false);
-  };
+    setOpenDialog(false)
+  }
 
   // obtenemos la data de la venta con su detalle de salidas por item
   const obtenerDataDetalleVenta = async () => {
     // abrimos el loader
-    openLoader();
+    openLoader()
     const formatData = {
       idOpeFac: idSalidaVenta
-    };
-    const resultPeticion = await getSalidaVentaDetalleById(formatData);
-    const { result } = resultPeticion;
-    setdataSalidaVenta(result[0]);
+    }
+    const resultPeticion = await getSalidaVentaDetalleById(formatData)
+    const { result } = resultPeticion
+    setdataSalidaVenta(result[0])
     // cerramos el loader
-    closeLoader();
-  };
+    closeLoader()
+  }
 
   // añadir un lote de salida
   const addLoteSalidaVenta = (idProdt, salidaLoteDetalle) => {
     // primero debemos encontrar el detalle del elemento
     const detalleFindElement = detOpeFac.find(
       (element) => element.idProdt === idProdt
-    );
+    )
 
-    const { detSal } = detalleFindElement;
+    const { detSal } = detalleFindElement
 
     // mapeamos
     const dataMapCantidadLote = salidaLoteDetalle.map((element) => {
-      const canSalLotProd = parseInt(element.canSalLotProdAct);
+      const canSalLotProd = parseInt(element.canSalLotProdAct)
       return {
         ...element,
-        canSalLotProd: canSalLotProd,
+        canSalLotProd,
         canSalLotProdAct: 0
-      };
-    });
+      }
+    })
 
     // debemos parsear la informacion
-    const detalleSalidasAgregacion = [...detSal, ...dataMapCantidadLote];
+    const detalleSalidasAgregacion = [...detSal, ...dataMapCantidadLote]
 
     const detalleAux = {
       ...detalleFindElement,
       canOpeFacDetAct: detalleFindElement.canOpeFacDet,
       detSal: detalleSalidasAgregacion
-    };
+    }
 
     const detalleParser = detOpeFac.map((element) => {
       if (element.idProdt === idProdt) {
         return {
           ...detalleAux
-        };
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setdataSalidaVenta({
       ...dataSalidaVenta,
       detOpeFac: detalleParser
-    });
-  };
+    })
+  }
 
   // editar un lote de salida de venta
   const editLoteSalidaVenta = (idProdt, refProdc, { target }) => {
-    const { value } = target;
+    const { value } = target
     // primero debemos encontrar el detalle del elemento
     const detalleFindElement = detOpeFac.find(
       (element) => element.idProdt === idProdt
-    );
+    )
 
-    const { detSal } = detalleFindElement;
-    let auxTotalSalidaStock = 0;
+    const { detSal } = detalleFindElement
+    let auxTotalSalidaStock = 0
     const detalleSalidasUpdate = detSal.map((element) => {
       if (element.refProdc === refProdc) {
-        auxTotalSalidaStock += parseInt(value);
+        auxTotalSalidaStock += parseInt(value)
         return {
           ...element,
           canSalLotProd: value
-        };
+        }
       } else {
-        auxTotalSalidaStock += parseInt(element.canSalLotProd);
-        return element;
+        auxTotalSalidaStock += parseInt(element.canSalLotProd)
+        return element
       }
-    });
+    })
 
     const detalleAux = {
       ...detalleFindElement,
       canOpeFacDetAct: auxTotalSalidaStock,
       detSal: detalleSalidasUpdate
-    };
+    }
 
     const detalleParser = detOpeFac.map((element) => {
       if (element.idProdt === idProdt) {
         return {
           ...detalleAux
-        };
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setdataSalidaVenta({
       ...dataSalidaVenta,
       detOpeFac: detalleParser
-    });
-  };
+    })
+  }
 
   // eliminar un lote de salida de venta
   const deleteLoteSalidaVenta = (idProdt, refProdc) => {
     // primero debemos encontrar el detalle del elemento
     const detalleFindElement = detOpeFac.find(
       (element) => element.idProdt === idProdt
-    );
+    )
 
     // luego filtrar aquellos que no corresponde a la referencia proporcionada
-    const { detSal } = detalleFindElement;
-    let auxTotalSalidaStock = 0;
+    const { detSal } = detalleFindElement
+    let auxTotalSalidaStock = 0
     const detalleSalidasFilter = detSal.filter((element) => {
       if (element.refProdc !== refProdc) {
-        auxTotalSalidaStock += parseInt(element.canSalLotProd);
-        return true;
+        auxTotalSalidaStock += parseInt(element.canSalLotProd)
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
     const detalleAux = {
       ...detalleFindElement,
       canOpeFacDetAct: auxTotalSalidaStock,
       detSal: detalleSalidasFilter
-    };
+    }
 
     const detalleParser = detOpeFac.map((element) => {
       if (element.idProdt === idProdt) {
         return {
           ...detalleAux
-        };
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setdataSalidaVenta({
       ...dataSalidaVenta,
       detOpeFac: detalleParser
-    });
-  };
+    })
+  }
 
   const generarSalidaVentaWithLotes = async (detalle) => {
     if (detalle.canOpeFacDet !== detalle.canOpeFacDetAct) {
       if (detalle.esMerProm === 1) {
-        const resultPeticion = await createSalidaLoteStockByDetalle(detalle);
-        const { message_error, description_error } = resultPeticion;
+        const resultPeticion = await createSalidaLoteStockByDetalle(detalle)
+        const { message_error, description_error } = resultPeticion
 
         if (message_error.length === 0) {
           setfeedbackMessages({
-            style_message: "success",
-            feedback_description_error: "La operación se realizó con éxito"
-          });
-          handleClickFeeback();
+            style_message: 'success',
+            feedback_description_error: 'La operación se realizó con éxito'
+          })
+          handleClickFeeback()
           // traemos de nuevo la data
-          obtenerDataDetalleVenta();
+          obtenerDataDetalleVenta()
         } else {
           setfeedbackMessages({
-            style_message: "error",
+            style_message: 'error',
             feedback_description_error: description_error
-          });
-          handleClickFeeback();
+          })
+          handleClickFeeback()
         }
       } else {
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "La cantidad requerida no fue cumplida. Agregue lotes al detalle"
-        });
-        handleClickFeeback();
+            'La cantidad requerida no fue cumplida. Agregue lotes al detalle'
+        })
+        handleClickFeeback()
       }
     } else {
-      const resultPeticion = await createSalidaLoteStockByDetalle(detalle);
-      const { message_error, description_error } = resultPeticion;
+      const resultPeticion = await createSalidaLoteStockByDetalle(detalle)
+      const { message_error, description_error } = resultPeticion
 
       if (message_error.length === 0) {
         setfeedbackMessages({
-          style_message: "success",
-          feedback_description_error: "La operación se realizó con éxito"
-        });
-        handleClickFeeback();
+          style_message: 'success',
+          feedback_description_error: 'La operación se realizó con éxito'
+        })
+        handleClickFeeback()
         // traemos de nuevo la data
-        obtenerDataDetalleVenta();
+        obtenerDataDetalleVenta()
       } else {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error: description_error
-        });
-        handleClickFeeback();
+        })
+        handleClickFeeback()
       }
     }
-  };
+  }
 
   useEffect(() => {
-    obtenerDataDetalleVenta();
-  }, []);
+    obtenerDataDetalleVenta()
+  }, [])
 
   return (
     <>
@@ -321,13 +318,13 @@ export const ViewSalidaVenta = () => {
                   <label htmlFor="nombre" className="form-label">
                     <b>Anulado</b>
                   </label>
-                  <p>{fueAfePorAnul === 0 ? "NO" : "SI"}</p>
+                  <p>{fueAfePorAnul === 0 ? 'NO' : 'SI'}</p>
                 </div>
                 <div className="col-md-2">
                   <label htmlFor="nombre" className="form-label">
                     <b>Afectado</b>
                   </label>
-                  <p>{fueAfePorDev === 0 ? "NO" : "SI"}</p>
+                  <p>{fueAfePorDev === 0 ? 'NO' : 'SI'}</p>
                 </div>
               </div>
             </div>
@@ -365,7 +362,7 @@ export const ViewSalidaVenta = () => {
 
       {/* alerta */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -373,11 +370,11 @@ export const ViewSalidaVenta = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

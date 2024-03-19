@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import React, { useEffect, useState } from 'react'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 import {
   Button,
   CircularProgress,
@@ -15,31 +15,31 @@ import {
   Radio,
   RadioGroup,
   Typography
-} from "@mui/material";
-import { useParams } from "react-router-dom";
-import { getRetornoVentaDetalleById } from "../../helpers/retorno-venta/getRetornoVentaDetalleById";
-import { CardRetornoSalidaDetalle } from "../../components/componentes-retorno-venta/CardRetornoSalidaDetalle";
-import { createRetornoLoteStockByDetalle } from "../../helpers/retorno-venta/createRetornoLoteStockByDetalle";
+} from '@mui/material'
+import { useParams } from 'react-router-dom'
+import { getRetornoVentaDetalleById } from '../../helpers/retorno-venta/getRetornoVentaDetalleById'
+import { CardRetornoSalidaDetalle } from '../../components/componentes-retorno-venta/CardRetornoSalidaDetalle'
+import { createRetornoLoteStockByDetalle } from '../../helpers/retorno-venta/createRetornoLoteStockByDetalle'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ViewRetornoVenta = () => {
-  const { idDevolucionVenta } = useParams();
+  const { idDevolucionVenta } = useParams()
   const [dataRetornoVenta, setdataRetornoVenta] = useState({
     id: 0,
     idReqEst: 3,
-    invSerFac: "",
-    invNumFac: "",
+    invSerFac: '',
+    invNumFac: '',
     idOpeFacMot: 0,
-    desOpeFacMot: "",
+    desOpeFacMot: '',
     esOpeFacExi: 0,
     esRet: 0,
-    fecCreOpeDev: "",
+    fecCreOpeDev: '',
     detOpeDev: []
-  });
+  })
 
   const {
     invSerFac,
@@ -50,125 +50,125 @@ export const ViewRetornoVenta = () => {
     esOpeFacExi,
     esRet,
     detOpeDev
-  } = dataRetornoVenta;
+  } = dataRetornoVenta
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
 
   // ***** FUNCIONES PARA EL MANEJO DE ACCIONES *****
   const openLoader = () => {
-    setOpenDialog(true);
-  };
+    setOpenDialog(true)
+  }
   const closeLoader = () => {
-    setOpenDialog(false);
-  };
+    setOpenDialog(false)
+  }
 
   // ******* MANEJADORES DE DIALOGO DE CONFIRMACION *********
-  const [openDialogConfirmacion, setOpenDialogConfirmacion] = useState(false);
+  const [openDialogConfirmacion, setOpenDialogConfirmacion] = useState(false)
   const handleOpenDialogConfirmacion = () => {
-    setOpenDialogConfirmacion(true);
-  };
+    setOpenDialogConfirmacion(true)
+  }
   const handleCloseDialogConfirmacion = () => {
-    setOpenDialogConfirmacion(false);
-  };
+    setOpenDialogConfirmacion(false)
+  }
 
   // ******* MANEJADORES DE DIALOGO DE CREACION DE LOTES ********
-  const [openDialogCrearLote, setOpenDialogCrearLote] = useState(false);
+  const [openDialogCrearLote, setOpenDialogCrearLote] = useState(false)
   const handleOpenDialogCrearLote = () => {
-    setOpenDialogCrearLote(true);
-  };
+    setOpenDialogCrearLote(true)
+  }
   const handleCloseDialogCrearLote = () => {
-    setOpenDialogCrearLote(false);
-  };
+    setOpenDialogCrearLote(false)
+  }
 
   // cerrar ventana
   const handleCloseWindows = (time = 100) => {
     setTimeout(() => {
-      window.close();
-    }, time);
-  };
+      window.close()
+    }, time)
+  }
 
   // obtenemos la data de la venta con su detalle de salidas por item
   const obtenerDataDetalleVenta = async () => {
     // abrimos el loader
-    openLoader();
+    openLoader()
     const formatData = {
       idOpeDev: idDevolucionVenta
-    };
-    const resultPeticion = await getRetornoVentaDetalleById(formatData);
-    const { result } = resultPeticion;
-    setdataRetornoVenta(result);
+    }
+    const resultPeticion = await getRetornoVentaDetalleById(formatData)
+    const { result } = resultPeticion
+    setdataRetornoVenta(result)
     // cerramos el loader
-    closeLoader();
-  };
+    closeLoader()
+  }
 
   // cambiar valor radio button
   const onChangeValueRadioButtonRetorno = (event) => {
     setdataRetornoVenta({
       ...dataRetornoVenta,
       esRet: parseInt(event.target.value)
-    });
-  };
+    })
+  }
 
   const crearRetornoVenta = async () => {
-    console.log(dataRetornoVenta);
+    console.log(dataRetornoVenta)
     const resultPeticion = await createRetornoLoteStockByDetalle(
       dataRetornoVenta
-    );
-    const { message_error, description_error } = resultPeticion;
+    )
+    const { message_error, description_error } = resultPeticion
 
     if (message_error.length === 0) {
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "La operación se realizó con éxito"
-      });
-      handleClickFeeback();
-      handleCloseWindows(1000);
+        style_message: 'success',
+        feedback_description_error: 'La operación se realizó con éxito'
+      })
+      handleClickFeeback()
+      handleCloseWindows(1000)
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   const crearRetornoVentaConLotes = async (detalle) => {
-    console.log(detalle);
-  };
+    console.log(detalle)
+  }
 
   const handleDialogCreacionRetornoVenta = () => {
     if (esRet === 1 && esOpeFacExi === 0) {
-      handleOpenDialogCrearLote();
-      return;
+      handleOpenDialogCrearLote()
+      return
     }
-    handleOpenDialogConfirmacion();
-  };
+    handleOpenDialogConfirmacion()
+  }
 
   useEffect(() => {
-    obtenerDataDetalleVenta();
-  }, []);
+    obtenerDataDetalleVenta()
+  }, [])
 
   return (
     <>
@@ -219,12 +219,12 @@ export const ViewRetornoVenta = () => {
                   </label>
                   <p
                     className={
-                      esOpeFacExi === 0 ? "text-danger" : "text-success"
+                      esOpeFacExi === 0 ? 'text-danger' : 'text-success'
                     }
                   >
                     {esOpeFacExi === 0
-                      ? "Sin trazabilidad"
-                      : "Existe trazabilidad"}
+                      ? 'Sin trazabilidad'
+                      : 'Existe trazabilidad'}
                   </p>
                 </div>
               </div>
@@ -251,28 +251,28 @@ export const ViewRetornoVenta = () => {
                     control={
                       <Radio
                         sx={{
-                          "& .MuiSvgIcon-root": {
+                          '& .MuiSvgIcon-root': {
                             fontSize: 28
                           }
                         }}
                       />
                     }
                     label="Retornar stock"
-                    disabled={idReqEst === 3 ? true : false}
+                    disabled={idReqEst === 3}
                   />
                   <FormControlLabel
                     value={0}
                     control={
                       <Radio
                         sx={{
-                          "& .MuiSvgIcon-root": {
+                          '& .MuiSvgIcon-root': {
                             fontSize: 28
                           }
                         }}
                       />
                     }
                     label="No retornar stock"
-                    disabled={idReqEst === 3 ? true : false}
+                    disabled={idReqEst === 3}
                   />
                 </RadioGroup>
               </FormControl>
@@ -299,7 +299,7 @@ export const ViewRetornoVenta = () => {
             type="submit"
             onClick={handleDialogCreacionRetornoVenta}
             className="btn btn-primary"
-            disabled={idReqEst === 3 ? true : false}
+            disabled={idReqEst === 3}
           >
             Guardar
           </button>
@@ -337,7 +337,7 @@ export const ViewRetornoVenta = () => {
 
       {/* alerta */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -345,14 +345,14 @@ export const ViewRetornoVenta = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
 // DIALOGO PARA CONFIRMAR OPERACION
 const DialogConfirmarOperacion = ({
@@ -363,10 +363,10 @@ const DialogConfirmarOperacion = ({
   existeRegistro,
   handleActionConfirm
 }) => {
-  const textRetorno = esRetorno ? " ES DE RETORNO" : " NO ES DE RETORNO";
+  const textRetorno = esRetorno ? ' ES DE RETORNO' : ' NO ES DE RETORNO'
   const textExisteRegistro = existeRegistro
-    ? " EXISTE EL REGISTRO"
-    : " NO EXISTE EL REGISTRO";
+    ? ' EXISTE EL REGISTRO'
+    : ' NO EXISTE EL REGISTRO'
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>{title}</DialogTitle>
@@ -387,8 +387,8 @@ const DialogConfirmarOperacion = ({
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}
 
 // DIALOGO PARA CREACION DE LOTES
 const DialogCrearLotes = ({
@@ -410,5 +410,5 @@ const DialogCrearLotes = ({
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}

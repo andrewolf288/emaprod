@@ -1,21 +1,21 @@
-import HomeMolienda from "./../pages/HomeMolienda";
-import { RouterMoliendaRequisicion } from "./../pages/requisicion_molienda/RouterMoliendaRequisicion";
-import LayoutModulo from "./../../layout/LayoutModulo";
-import { RouterMoliendaAlmacenStock } from "./../pages/almacen/RouterMoliendaAlmacenStock";
+import HomeMolienda from './../pages/HomeMolienda'
+import { RouterMoliendaRequisicion } from './../pages/requisicion_molienda/RouterMoliendaRequisicion'
+import LayoutModulo from './../../layout/LayoutModulo'
+import { RouterMoliendaAlmacenStock } from './../pages/almacen/RouterMoliendaAlmacenStock'
 
 export const RouterMolienda = [
   {
-    path: "",
-    element: <HomeMolienda />,
+    path: '',
+    element: <HomeMolienda />
   },
   {
-    path: "requisicion",
+    path: 'requisicion',
     element: <LayoutModulo />,
-    children: RouterMoliendaRequisicion,
+    children: RouterMoliendaRequisicion
   },
   {
-    path: "almacen",
+    path: 'almacen',
     element: <LayoutModulo />,
-    children: RouterMoliendaAlmacenStock,
-  },
-];
+    children: RouterMoliendaAlmacenStock
+  }
+]

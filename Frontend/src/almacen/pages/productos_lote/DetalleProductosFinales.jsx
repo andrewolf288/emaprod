@@ -1,56 +1,60 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { getEntradasStockByProdcFinal } from "./../../helpers/entradas-stock/getEntradasStockByProdcFinal";
-import CheckIcon from "@mui/icons-material/Check";
+import * as React from 'react'
+import Button from '@mui/material/Button'
+import { styled } from '@mui/material/styles'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
+import Typography from '@mui/material/Typography'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import { getEntradasStockByProdcFinal } from './../../helpers/entradas-stock/getEntradasStockByProdcFinal'
+import CheckIcon from '@mui/icons-material/Check'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
-}));
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}))
 
-export function DetalleProductosFinales({ row, idProduccion }) {
-  const [open, setOpen] = React.useState(false);
-  const [entradas, setEntradas] = React.useState([]);
+export function DetalleProductosFinales ({ row, idProduccion }) {
+  const [open, setOpen] = React.useState(false)
+  const [entradas, setEntradas] = React.useState([])
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   React.useEffect(() => {
     if (open && idProduccion) {
-      //detail
-      //console.log(row, idProduccion);
-      getEntradas({ idProduccion: idProduccion });
+      // detail
+      // console.log(row, idProduccion);
+      getEntradas({ idProduccion })
     }
-  }, [row, idProduccion, open]);
+  }, [row, idProduccion, open])
 
-  async function getEntradas(body) {
-    const resultPeticion = await getEntradasStockByProdcFinal(body);
-    const { message_error, description_error, result } = resultPeticion;
-    setEntradas(result);
+  async function getEntradas (body) {
+    const resultPeticion = await getEntradasStockByProdcFinal(body)
+    const { message_error, description_error, result } = resultPeticion
+    if (message_error.length === 0) {
+      setEntradas(result)
+    } else {
+      alert(description_error)
+    }
   }
 
   return (
@@ -65,7 +69,7 @@ export function DetalleProductosFinales({ row, idProduccion }) {
       </IconButton>
 
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -85,13 +89,13 @@ export function DetalleProductosFinales({ row, idProduccion }) {
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
+  )
 }
 
-function TableEntradas2({ row, idProdt }) {
+function TableEntradas2 ({ row, idProdt }) {
   React.useEffect(() => {
     // console.log(row);
-  }, [row, idProdt]);
+  }, [row, idProdt])
 
   return (
     <TableContainer component={Paper}>
@@ -114,7 +118,7 @@ function TableEntradas2({ row, idProdt }) {
           {row.detail?.map((row, index) => (
             <TableRow
               key={index}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell align="right">{row.id}</TableCell>
               <TableCell align="left">{row.codProd2}</TableCell>
@@ -130,27 +134,27 @@ function TableEntradas2({ row, idProdt }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }
 
-function TableEntradas({ rows, idProdt }) {
-  const [data, setData] = React.useState([]);
+function TableEntradas ({ rows, idProdt }) {
+  const [data, setData] = React.useState([])
 
   React.useEffect(() => {
-    var result = [];
-    var total = 0;
-    rows.map((obj) => {
-      //console.log(obj.idProd, idProdt )
+    const result = []
+    let total = 0
+    rows.forEach((obj) => {
+      // console.log(obj.idProd, idProdt )
       if (obj.idProd == idProdt) {
-        //console.log(obj.canTotDis)
-        total += parseFloat(obj.canTotDis);
-        obj.acumulado = total.toFixed(2);
-        //data.canTotDis = parseFloat(data.canTotDis)
-        result.push(obj);
+        // console.log(obj.canTotDis)
+        total += parseFloat(obj.canTotDis)
+        obj.acumulado = total.toFixed(2)
+        // data.canTotDis = parseFloat(data.canTotDis)
+        result.push(obj)
       }
-    });
-    setData(result);
-  }, [rows, idProdt]);
+    })
+    setData(result)
+  }, [rows, idProdt])
 
   return (
     <TableContainer component={Paper}>
@@ -175,7 +179,7 @@ function TableEntradas({ rows, idProdt }) {
           {data.map((row, index) => (
             <TableRow
               key={index}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row"></TableCell>
               <TableCell align="left">{row.nomProd}</TableCell>
@@ -191,5 +195,5 @@ function TableEntradas({ rows, idProdt }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }

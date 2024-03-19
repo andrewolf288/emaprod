@@ -1,47 +1,46 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import queryString from "query-string";
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import queryString from 'query-string'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { useNavigate } from "react-router-dom";
-import { getRequisicionSeleccionDetalleById } from "./../../helpers/requisicion-seleccion/getRequisicionSeleccionDetalleById";
-import { getSalidasDisponiblesForSeleccion } from "./../../helpers/requisicion-seleccion/getSalidasDisponiblesForSeleccion";
-import { createEntradasStockByReqSelDet } from "../../helpers/requisicion-seleccion/createEntradasStockByReqSelDet";
-import FechaPicker from "./../../../components/Fechas/FechaPicker";
-import { RowSalidaDisponibleSeleccion } from "./../../components/RowSalidaDisponibleSeleccion";
-import { FilterAllProductos } from "../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import FechaPickerYear from "../../../components/Fechas/FechaPickerYear";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+
+import { getRequisicionSeleccionDetalleById } from './../../helpers/requisicion-seleccion/getRequisicionSeleccionDetalleById'
+import { getSalidasDisponiblesForSeleccion } from './../../helpers/requisicion-seleccion/getSalidasDisponiblesForSeleccion'
+import { createEntradasStockByReqSelDet } from '../../helpers/requisicion-seleccion/createEntradasStockByReqSelDet'
+import FechaPicker from './../../../components/Fechas/FechaPicker'
+import { RowSalidaDisponibleSeleccion } from './../../components/RowSalidaDisponibleSeleccion'
+import FechaPickerYear from '../../../components/Fechas/FechaPickerYear'
 import {
   DiaJuliano,
   FormatDateTimeMYSQLNow,
-  letraAnio,
-} from "../../../utils/functions/FormatDate";
-import { FilterMateriaPrimaSelecionadaByRef } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaSelecionadaByRef";
-import { Typography } from "@mui/material";
+  letraAnio
+} from '../../../utils/functions/FormatDate'
+import { FilterMateriaPrimaSelecionadaByRef } from '../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaSelecionadaByRef'
+import { Typography } from '@mui/material'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 export const EntradaStock = () => {
-  const location = useLocation();
+  const location = useLocation()
 
-  const { idReqSelDet = "" } = queryString.parse(location.search);
+  const { idReqSelDet = '' } = queryString.parse(location.search)
 
   // ESTADOS PARA EL FORMULARIO DE SALIDA
   const [entradaSeleccion, setentradaSeleccion] = useState({
-    codLotSel: "",
+    codLotSel: '',
     idReqSelDet: 0,
     idReqSel: 0,
-    codReqSel: "",
+    codReqSel: '',
     idMatPri: 0,
-    codMatPri: "",
+    codMatPri: '',
     salStoSelDet: [],
-    codProd: "",
-    codProd2: "",
-    canReqSelDet: 0,
-  });
+    codProd: '',
+    codProd2: '',
+    canReqSelDet: 0
+  })
 
   const {
     idReqSel,
@@ -50,23 +49,22 @@ export const EntradaStock = () => {
     codProd,
     codProd2,
     nomProd,
-    canReqSelDet,
-    salStoSelDet,
-  } = entradaSeleccion;
+    canReqSelDet
+  } = entradaSeleccion
 
   // ESTADO PARA LA ENTRADA DE REQUISICION SELECCION
-  const [canReqSelEnt, setCanReqSelEnt] = useState(0);
+  const [canReqSelEnt, setCanReqSelEnt] = useState(0)
 
   // ESTADO PARA EL PRODUCTO DE ENTRADA
   const [datosEntrada, setdatosEntrada] = useState({
     prodtEnt: 0,
-    codProdEnt: "",
-    fecVenEntSto: "",
+    codProdEnt: '',
+    fecVenEntSto: '',
     fecEnt: FormatDateTimeMYSQLNow(),
-    fecVent: "",
-  });
+    fecVent: ''
+  })
 
-  const { prodtEnt, fecVenEntSto, codProdEnt } = datosEntrada;
+  const { prodtEnt } = datosEntrada
 
   // *********** FUNCIONES PARA MANEJO DE DATOS DE ENTRADA **********
   // agregar materia prima seleccionada
@@ -74,56 +72,53 @@ export const EntradaStock = () => {
     setdatosEntrada({
       ...datosEntrada,
       prodtEnt: id,
-      codProdEnt: value,
-    });
-  };
+      codProdEnt: value
+    })
+  }
 
   const onAddFecEntSto = (newfecEntSto) => {
-    setdatosEntrada({ ...datosEntrada, fecEnt: newfecEntSto });
-  };
+    setdatosEntrada({ ...datosEntrada, fecEnt: newfecEntSto })
+  }
   const onAddFecVenSto = (newfecEntSto) => {
-    setdatosEntrada({ ...datosEntrada, fecVent: newfecEntSto });
-  };
+    setdatosEntrada({ ...datosEntrada, fecVent: newfecEntSto })
+  }
   // ESTADO PARA LAS SALIDAS DISPONIBLES
-  const [salidasDisponibles, setsalidasDisponibles] = useState([]);
-
-  // ESTADO PARA CONTROLAR LAS CANTIDADES DE LAS DIFERENTES ENTRADAS
-  const [count, setcount] = useState(0);
+  const [salidasDisponibles, setsalidasDisponibles] = useState([])
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // CONTROLADOR DE FORMULARIO
   const handleForm = ({ target }) => {
-    const { name, value } = target;
-    setCanReqSelEnt(value);
-  };
+    const { value } = target
+    setCanReqSelEnt(value)
+  }
 
   // MANEJADOR PARA ACTUALIZAR REQUISICION
   const handledSalidasDetalle = (name, value, idSalida) => {
@@ -131,46 +126,46 @@ export const EntradaStock = () => {
       if (element.id === idSalida) {
         return {
           ...element,
-          [name]: value,
-        };
+          [name]: value
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
-    setsalidasDisponibles(updateSalidasDetalle);
-  };
+    setsalidasDisponibles(updateSalidasDetalle)
+  }
 
   // ************* REPARTIR LA ENTRADA DE LA REQUISICION SELECCION ENTRE SUS DIFERENTES SALIDAS *************
   const repartirEntradaRequisicionSeleccion = () => {
     if (canReqSelEnt > 0) {
       // parseamos el valor de la cantidad de ingreso de la requisicion
-      //const cantidadRequisicion = parseInt(canReqSelDet, 10);
-      const cantidadRequisicion = parseFloat(canReqSelDet);
+      // const cantidadRequisicion = parseInt(canReqSelDet, 10);
+      const cantidadRequisicion = parseFloat(canReqSelDet)
 
       // recorremos las salidas y las actualizamos segun la regla de 3 simple
       const salidasRequisicionSeleccion = salidasDisponibles.map((element) => {
         const canEntStoReqSel =
-          (element.canSalStoReqSel * canReqSelEnt) / cantidadRequisicion;
+          (element.canSalStoReqSel * canReqSelEnt) / cantidadRequisicion
         return {
           ...element,
           canEntStoReqSel: parseFloat(canEntStoReqSel).toFixed(3),
           merReqSel: parseFloat(
             element.canSalStoReqSel - canEntStoReqSel
-          ).toFixed(3),
-        };
-      });
+          ).toFixed(3)
+        }
+      })
 
-      //console.log(salidasRequisicionSeleccion);
-      setsalidasDisponibles(salidasRequisicionSeleccion);
+      // console.log(salidasRequisicionSeleccion);
+      setsalidasDisponibles(salidasRequisicionSeleccion)
     } else {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "La entrada debe ser mayor que 0",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'La entrada debe ser mayor que 0'
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // TRAER DATOS DE REQUISICION SELECCION DETALLE
   const traerDatosRequisicionSeleccionDetalle = async () => {
@@ -178,8 +173,8 @@ export const EntradaStock = () => {
       try {
         const resultData = await getRequisicionSeleccionDetalleById(
           idReqSelDet
-        );
-        const { message_error, description_error, result } = resultData;
+        )
+        const { message_error, description_error, result } = resultData
 
         if (message_error.length === 0) {
           const {
@@ -189,45 +184,44 @@ export const EntradaStock = () => {
             codLotSel,
             codProd,
             codProd2,
-            canReqSelDet,
-          } = result[0];
-          setcount(canReqSelDet);
+            canReqSelDet
+          } = result[0]
           setentradaSeleccion({
             ...entradaSeleccion,
-            idReqSel: idReqSel,
+            idReqSel,
             idReqSelDet: parseInt(idReqSelDet, 10),
-            nomProd: nomProd,
-            idMatPri: idMatPri,
-            codLotSel: codLotSel,
-            codProd: codProd,
-            codProd2: codProd2,
-            canReqSelDet: canReqSelDet,
-          });
-          traerDatosEntradasDisponibles(idReqSel, idMatPri);
+            nomProd,
+            idMatPri,
+            codLotSel,
+            codProd,
+            codProd2,
+            canReqSelDet
+          })
+          traerDatosEntradasDisponibles(idReqSel, idMatPri)
         } else {
-          console.log("Se proporciono un id inexistente");
+          console.log('Se proporciono un id inexistente')
           setfeedbackMessages({
-            style_message: "error",
-            feedback_description_error: description_error,
-          });
-          handleClickFeeback();
+            style_message: 'error',
+            feedback_description_error: description_error
+          })
+          handleClickFeeback()
         }
-        setdisableButton(false);
+        setdisableButton(false)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
     }
-  };
+  }
 
   const traerDatosEntradasDisponibles = async (idReqSel, idMatPri) => {
     const { result } = await getSalidasDisponiblesForSeleccion(
       idReqSel,
       idMatPri
-    );
+    )
 
-    console.log(result);
-    setsalidasDisponibles(result);
-  };
+    console.log(result)
+    setsalidasDisponibles(result)
+  }
 
   const crearEntradasStockByRequisicionSeleccionDetalle = async () => {
     // const fechaIngreso = FormatDateTimeMYSQLNow();
@@ -235,41 +229,41 @@ export const EntradaStock = () => {
       ...datosEntrada,
       letAniEntSto: letraAnio(datosEntrada.fecEnt),
       diaJulEntSto: DiaJuliano(datosEntrada.fecEnt),
-      fecEntSto: datosEntrada.fecEnt,
-    };
+      fecEntSto: datosEntrada.fecEnt
+    }
 
     const data = {
       ...entradaSeleccion,
       salStoSelDet: salidasDisponibles,
-      datEntSto: datEntSto,
-    };
-    console.log(data);
+      datEntSto
+    }
+    console.log(data)
 
     // setdisableButton(false);
     // return;
 
-    const resultPeticion = await createEntradasStockByReqSelDet(data);
-    console.log(resultPeticion);
-    const { message_error, description_error } = resultPeticion;
+    const resultPeticion = await createEntradasStockByReqSelDet(data)
+    console.log(resultPeticion)
+    const { message_error, description_error } = resultPeticion
 
     if (message_error.length === 0) {
       // Volvemos a la vista de requisiciones
-      onNavigateBack();
+      onNavigateBack()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // enviar salida
   const onSubmitSalidaStock = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    let handleErrors = "";
+    let handleErrors = ''
 
     if (
       salidasDisponibles.length === 0 ||
@@ -279,36 +273,36 @@ export const EntradaStock = () => {
       datosEntrada.fecVent.length === 0
     ) {
       if (salidasDisponibles.length === 0) {
-        handleErrors += "- No se encontraron salidas disponibles\n";
+        handleErrors += '- No se encontraron salidas disponibles\n'
       }
 
       if (prodtEnt === 0) {
-        handleErrors += "- Debes elegir un producto de entrada\n";
+        handleErrors += '- Debes elegir un producto de entrada\n'
       }
 
       if (datosEntrada.fecVent.length === 0) {
         handleErrors +=
-          "- No ha proporcionado una fecha de vencimiento para la entrada\n";
+          '- No ha proporcionado una fecha de vencimiento para la entrada\n'
       }
 
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: handleErrors,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: handleErrors
+      })
+      handleClickFeeback()
     } else {
       // establecemos un mensaje
-      let message_error = "";
+      let message_error = ''
       // recorremos las salidas disponibles
       for (let i = 0; i < salidasDisponibles.length; i++) {
-        let element = { ...salidasDisponibles[i] };
+        const element = { ...salidasDisponibles[i] }
         if (element.canEntStoReqSel < 0 || element.merReqSel < 0) {
           message_error =
-            "No se proporciono las cantidades de las salidas realizadas";
-          break;
+            'No se proporciono las cantidades de las salidas realizadas'
+          break
         } else {
-          let canPlusMer =
-            parseFloat(element.canEntStoReqSel) + parseFloat(element.merReqSel);
+          const canPlusMer =
+            parseFloat(element.canEntStoReqSel) + parseFloat(element.merReqSel)
           console.log(
             parseFloat(element.canEntStoReqSel),
             parseFloat(element.merReqSel),
@@ -316,14 +310,14 @@ export const EntradaStock = () => {
             parseFloat(element.canSalStoReqSel),
             parseFloat(canPlusMer).toFixed(3) !=
               parseFloat(element.canSalStoReqSel).toFixed(3)
-          );
+          )
 
           if (
             parseFloat(canPlusMer).toFixed(3) !=
             parseFloat(element.canSalStoReqSel).toFixed(3)
           ) {
-            message_error = `En la salida de: ${element.canSalStoReqSel} no coinciden la cantidad entrada y la merma`;
-            break;
+            message_error = `En la salida de: ${element.canSalStoReqSel} no coinciden la cantidad entrada y la merma`
+            break
           }
         }
       }
@@ -331,21 +325,21 @@ export const EntradaStock = () => {
       // evaluamos el valor del mensaje de error
 
       if (message_error.length === 0) {
-        setdisableButton(true);
-        crearEntradasStockByRequisicionSeleccionDetalle();
+        setdisableButton(true)
+        crearEntradasStockByRequisicionSeleccionDetalle()
       } else {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: message_error,
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: message_error
+        })
+        handleClickFeeback()
       }
     }
-  };
+  }
 
   useEffect(() => {
-    traerDatosRequisicionSeleccionDetalle();
-  }, []);
+    traerDatosRequisicionSeleccionDetalle()
+  }, [])
 
   return (
     <>
@@ -428,7 +422,7 @@ export const EntradaStock = () => {
                     <input
                       type="text"
                       name="codProd"
-                      value={codProd === null ? "No establecido" : codProd}
+                      value={codProd === null ? 'No establecido' : codProd}
                       disabled
                       className="form-control"
                     />
@@ -443,7 +437,7 @@ export const EntradaStock = () => {
                     <input
                       type="text"
                       name="codProd"
-                      value={codProd2 === null ? "No establecido" : codProd2}
+                      value={codProd2 === null ? 'No establecido' : codProd2}
                       disabled
                       className="form-control"
                     />
@@ -588,7 +582,7 @@ export const EntradaStock = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -596,13 +590,13 @@ export const EntradaStock = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

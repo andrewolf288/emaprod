@@ -1,72 +1,70 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import queryString from "query-string";
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import queryString from 'query-string'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 // IMPORTACIONES PARA TABLE
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { getProduccionLoteWithAgregacionesById } from "./../../../produccion/helpers/produccion_lote/getProduccionLoteWithAgregacionesById";
-import { TextField, Typography } from "@mui/material";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import { RowDetalleAgregacionLoteProduccion } from "./../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccion";
-import { createAgregacionesLoteProduccion } from "./../../helpers/agregaciones-lote-produccion/createAgregacionesLoteProduccion";
-import { getFormulaProductoDetalleByProducto } from "../../../produccion/helpers/formula_producto/getFormulaProductoDetalleByProducto";
-import { FilterMotivoAgregacionDynamic } from "../../../components/ReferencialesFilters/MotivoAgregacion/FilterMotivoAgregacionDinamyc";
-import { getPresentacionFinal } from "../../../helpers/Referenciales/producto/getPresentacionFinal";
-import { FilterProductosProgramados } from "../../../components/ReferencialesFilters/Producto/FilterProductosProgramados";
-import { RowDetalleAgregacionLoteProduccionEditV2 } from "../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccionEditV2";
-import { createRoot } from "react-dom/client";
-import { PDFAgregaciones } from "../../components/componentes-agregaciones/PDFAgregaciones";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import { getProduccionLoteWithAgregacionesById } from './../../../produccion/helpers/produccion_lote/getProduccionLoteWithAgregacionesById'
+import { TextField, Typography } from '@mui/material'
+import { RowDetalleAgregacionLoteProduccion } from './../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccion'
+import { createAgregacionesLoteProduccion } from './../../helpers/agregaciones-lote-produccion/createAgregacionesLoteProduccion'
+import { getFormulaProductoDetalleByProducto } from '../../../produccion/helpers/formula_producto/getFormulaProductoDetalleByProducto'
+import { FilterMotivoAgregacionDynamic } from '../../../components/ReferencialesFilters/MotivoAgregacion/FilterMotivoAgregacionDinamyc'
+import { getPresentacionFinal } from '../../../helpers/Referenciales/producto/getPresentacionFinal'
+import { FilterProductosProgramados } from '../../../components/ReferencialesFilters/Producto/FilterProductosProgramados'
+import { RowDetalleAgregacionLoteProduccionEditV2 } from '../../components/componentes-agregaciones/RowDetalleAgregacionLoteProduccionEditV2'
+import { createRoot } from 'react-dom/client'
+import { PDFAgregaciones } from '../../components/componentes-agregaciones/PDFAgregaciones'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
-function parseIntCantidad(str, property) {
-  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(2);
-  let index = str.canReqProdLot.toString().indexOf(".");
-  let result = str.canReqProdLot.toString().substring(index + 1);
-  let val =
-    parseInt(result) >= 1 && str.simMed !== "KGM"
+function parseIntCantidad (str, property) {
+  str.canReqProdLot = parseFloat(str.canReqProdLot).toFixed(2)
+  const index = str.canReqProdLot.toString().indexOf('.')
+  const result = str.canReqProdLot.toString().substring(index + 1)
+  const val =
+    parseInt(result) >= 1 && str.simMed !== 'KGM'
       ? Math.trunc(str.canReqProdLot) + 1
-      : str.canReqProdLot;
-  return val;
+      : str.canReqProdLot
+  return val
 }
 
 export const AgregarAgregacionV2 = () => {
-  const location = useLocation();
-  const { idLotProdc = "" } = queryString.parse(location.search);
+  const location = useLocation()
+  const { idLotProdc = '' } = queryString.parse(location.search)
 
   // ESTADOS PARA LA DATA DE DEVOLUCIONES
   const [agregacionesProduccionLote, setagregacionesProduccionLote] = useState({
     id: 0,
     idProdt: 0,
-    nomProd: "",
+    nomProd: '',
     idProdEst: 0,
-    desEstPro: "",
+    desEstPro: '',
     idProdTip: 0,
-    desProdTip: "",
-    codLotProd: "",
-    klgTotalLoteProduccion: "",
+    desProdTip: '',
+    codLotProd: '',
+    klgTotalLoteProduccion: '',
     totalUnidadesLoteProduccion: 0,
-    fecVenLotProd: "",
-    fecProdIniProg: "",
-    fecProdFinProg: "",
-    numop: "",
+    fecVenLotProd: '',
+    fecProdIniProg: '',
+    fecProdFinProg: '',
+    numop: '',
     prodDetProdc: [],
     prodDetAgr: []
-  });
+  })
 
   const {
-    id,
     totalUnidadesLoteProduccion,
     codLotProd,
     desEstPro,
@@ -77,65 +75,56 @@ export const AgregarAgregacionV2 = () => {
     numop,
     prodDetProdc,
     prodDetAgr
-  } = agregacionesProduccionLote;
+  } = agregacionesProduccionLote
 
   // productos disponibles
-  const [productosDisponibles, setProductosDisponibles] = useState([]);
+  const [productosDisponibles, setProductosDisponibles] = useState([])
   const [filterProductosDisponibles, setFilterProductosDisponibles] = useState(
     []
-  );
+  )
 
   // detalle de requisicion agregacion
   const [detalleRequisicionAgregacion, setDetalleRequisicionAgregacion] =
     useState({
       requisicionAgregacion: null,
       detalleProductosAgregados: []
-    });
+    })
 
   const { requisicionAgregacion, detalleProductosAgregados } =
-    detalleRequisicionAgregacion;
-
-  // STATES PARA AGREGAR materiales de envase y encaje adicionales
-  const [productoAgregado, setproductoAgregado] = useState({
-    idProdAgr: 0,
-    cantidadAgregada: 0.0,
-    idAreaEncargada: 0
-  });
-
-  const { idProdAgr, cantidadAgregada, idAreaEncargada } = productoAgregado;
+    detalleRequisicionAgregacion
 
   // ************ ESTADO PARA CONTROLAR EL FEEDBACK **************
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ******* MANEJADORES PARA EL AGREGADO DE PRODUCCION *******
   // producto final informacion
-  const [formulaProductoFinal, setFormulaProductoFinal] = useState(null);
+  const [formulaProductoFinal, setFormulaProductoFinal] = useState(null)
 
   // STATE PARA CONTROLAR LA AGREGACION DE PRODUCTOS FINALES DEL LOTE
   const [productoLoteProduccion, setproductoLoteProduccion] = useState({
@@ -143,14 +132,14 @@ export const AgregarAgregacionV2 = () => {
     idProdcMot: 0, // motivo de agregacion
     cantidadDeLote: 0.0,
     cantidadDeProducto: 0
-  });
+  })
 
-  const { idProdFin, idProdcMot, cantidadDeLote, cantidadDeProducto } =
-    productoLoteProduccion;
+  const { idProdcMot, cantidadDeLote, cantidadDeProducto } =
+    productoLoteProduccion
 
   // funcion para manejar el motivo de la agregacion
   const onAddMotivoAgregacionProduccionAgregacion = (value) => {
-    /* 
+    /*
     1. faltante de materiales
     2. nueva presentacion
     3. encuadre
@@ -162,94 +151,94 @@ export const AgregarAgregacionV2 = () => {
         idProdFin: 0,
         cantidadDeLote: 0.0,
         cantidadDeProducto: 0
-      });
-      setFilterProductosDisponibles([]);
-      setFormulaProductoFinal(null);
+      })
+      setFilterProductosDisponibles([])
+      setFormulaProductoFinal(null)
       setDetalleRequisicionAgregacion({
         requisicionAgregacion: {},
         detalleProductosAgregados: []
-      });
+      })
     } else {
       if (value.id === 1) {
         // solo filtramos las presentaciones finales programadas
         const productosFilter = productosDisponibles.filter((producto) => {
           return prodDetProdc.some(
             (productoProduccion) => productoProduccion.idProdt === producto.id
-          );
-        });
-        setFilterProductosDisponibles(productosFilter);
+          )
+        })
+        setFilterProductosDisponibles(productosFilter)
         // ahora actualizamos las cantidades
         setproductoLoteProduccion({
           idProdcMot: value.id,
           idProdFin: 0,
           cantidadDeLote: 0.0,
           cantidadDeProducto: 1
-        });
-        setFormulaProductoFinal(null);
+        })
+        setFormulaProductoFinal(null)
         setDetalleRequisicionAgregacion({
           requisicionAgregacion: {},
           detalleProductosAgregados: []
-        });
+        })
       } else if (value.id === 2) {
         // Filtramos los productos no programados
         const productosFilter = productosDisponibles.filter((producto) => {
           return !prodDetProdc.some(
             (productoProduccion) => productoProduccion.idProdt === producto.id
-          );
-        });
-        setFilterProductosDisponibles(productosFilter);
+          )
+        })
+        setFilterProductosDisponibles(productosFilter)
         // primero actualizamos el setting
         setproductoLoteProduccion({
           idProdFin: 0,
           idProdcMot: value.id,
           cantidadDeLote: 0.0,
           cantidadDeProducto: 0
-        });
-        setFormulaProductoFinal(null);
+        })
+        setFormulaProductoFinal(null)
         setDetalleRequisicionAgregacion({
           requisicionAgregacion: {},
           detalleProductosAgregados: []
-        });
+        })
       } else {
         // Filtramos los productos no programados
         const productosFilter = productosDisponibles.filter((producto) => {
           return prodDetProdc.some(
             (productoProduccion) => productoProduccion.idProdt === producto.id
-          );
-        });
-        setFilterProductosDisponibles(productosFilter);
+          )
+        })
+        setFilterProductosDisponibles(productosFilter)
         // primero actualizamos el setting
         setproductoLoteProduccion({
           idProdFin: 0,
           idProdcMot: value.id,
           cantidadDeLote: 0.0,
           cantidadDeProducto: 0
-        });
-        setFormulaProductoFinal(null);
+        })
+        setFormulaProductoFinal(null)
         setDetalleRequisicionAgregacion({
           requisicionAgregacion: {},
           detalleProductosAgregados: []
-        });
+        })
       }
     }
-  };
+  }
 
   // funcion para agregar presentacion final para la agregacion
   const onAddProductoFinalLoteProduccionAgregacion = async ({ id, value }) => {
-    const { result } = await getFormulaProductoDetalleByProducto(id);
+    const { result } = await getFormulaProductoDetalleByProducto(id)
     if (result.length === 1) {
-      const { reqDet } = result[0]; // obtenemos las requisiciones
+      const { reqDet } = result[0] // obtenemos las requisiciones
 
-      let reqProdInt = null;
-      let reqEnvEnc = [];
+      let reqProdInt = null
+      const reqEnvEnc = []
 
       reqDet.forEach((detalle) => {
         if (detalle.idAre === 2 || detalle.idAre === 7) {
-          reqProdInt = detalle;
+          reqProdInt = detalle
         } else {
-          reqEnvEnc.push(detalle);
+          reqEnvEnc.push(detalle)
         }
-      });
+      })
 
       if (reqProdInt !== null) {
         const formulaPresentacionFinal = {
@@ -259,22 +248,22 @@ export const AgregarAgregacionV2 = () => {
           simMed: result[0].simMed,
           canForProInt: reqProdInt.canForProDet,
           reqDet: reqEnvEnc
-        };
+        }
 
-        setFormulaProductoFinal(formulaPresentacionFinal);
+        setFormulaProductoFinal(formulaPresentacionFinal)
 
         // seteamos
         setproductoLoteProduccion({
           ...productoLoteProduccion,
           idProdFin: id
-        });
+        })
       } else {
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Esta formula no tiene información de su producto intermedio"
-        });
-        handleClickFeeback();
+            'Esta formula no tiene información de su producto intermedio'
+        })
+        handleClickFeeback()
 
         // reseteamos los campos
         setproductoLoteProduccion({
@@ -282,15 +271,15 @@ export const AgregarAgregacionV2 = () => {
           idProdFin: 0,
           cantidadDeLote: 0.0,
           cantidadDeProducto: 0
-        });
+        })
       }
     } else {
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error:
-          "No hay formulas o hay mas de una formula para esta presetacion final"
-      });
-      handleClickFeeback();
+          'No hay formulas o hay mas de una formula para esta presetacion final'
+      })
+      handleClickFeeback()
 
       // reseteamos los campos
       setproductoLoteProduccion({
@@ -298,65 +287,65 @@ export const AgregarAgregacionV2 = () => {
         idProdFin: 0,
         cantidadDeLote: 0.0,
         cantidadDeProducto: 0
-      });
+      })
     }
-  };
+  }
 
   // funcion para manejar la cantidad de klg requerida
   const handleInputsProductoFinalLoteAgregacion = ({ target }) => {
-    var { value } = target;
+    const { value } = target
     // cantidad requerida de klg de lote para presentacion final
     try {
-      const cantidadKlgRequerida = value;
+      const cantidadKlgRequerida = value
 
       if (formulaProductoFinal !== null) {
         // cantidad de klg de producto intermedio por unidad de presentacion final
-        const canKlgProdIntByUni = formulaProductoFinal.canForProInt;
+        const canKlgProdIntByUni = formulaProductoFinal.canForProInt
         // cantidad de unidades obtenidas segun klg requerido ingresado
         const cantidadUniRequerida = parseInt(
           parseFloat(cantidadKlgRequerida) / parseFloat(canKlgProdIntByUni)
-        );
+        )
 
         setproductoLoteProduccion({
           ...productoLoteProduccion,
           cantidadDeLote: cantidadKlgRequerida,
           cantidadDeProducto: cantidadUniRequerida
-        });
+        })
       }
     } catch (e) {}
-  };
+  }
 
   // funcion para manejar la cantidad de unidades requeridas
   const handleInputsProductoFinalCantidadAgregacion = ({ target }) => {
-    var { value } = target;
+    const { value } = target
     // cantidad requerida de klg de lote para presentacion final
     try {
-      const cantidadUniRequerida = value;
-      let cantidadKlgRequerida = 0;
+      const cantidadUniRequerida = value
+      let cantidadKlgRequerida = 0
 
       if (formulaProductoFinal !== null) {
         // cantidad de klg de producto intermedio por unidad de presentacion final
-        const canKlgProdIntByUni = formulaProductoFinal.canForProInt;
+        const canKlgProdIntByUni = formulaProductoFinal.canForProInt
         // cantidad de unidades obtenidas segun klg requerido ingresado
         cantidadKlgRequerida =
-          parseInt(cantidadUniRequerida) * parseFloat(canKlgProdIntByUni);
-        cantidadKlgRequerida = cantidadKlgRequerida.toFixed(5);
+          parseInt(cantidadUniRequerida) * parseFloat(canKlgProdIntByUni)
+        cantidadKlgRequerida = cantidadKlgRequerida.toFixed(5)
         setproductoLoteProduccion({
           ...productoLoteProduccion,
           cantidadDeLote: cantidadKlgRequerida,
           cantidadDeProducto: cantidadUniRequerida
-        });
+        })
       }
     } catch (e) {}
-  };
+  }
 
   // funcion para añadir al detalle
   const handleAddProductoProduccionLoteAgregacion = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     // equivalente en klg
-    const cantidadDeLote = productoLoteProduccion.cantidadDeLote;
+    const cantidadDeLote = productoLoteProduccion.cantidadDeLote
     // equivalente en unidades
-    const cantidadDeProducto = productoLoteProduccion.cantidadDeProducto;
+    const cantidadDeProducto = productoLoteProduccion.cantidadDeProducto
 
     // primero verificamos si se ha ingresado la data necesaria
     if (
@@ -366,21 +355,21 @@ export const AgregarAgregacionV2 = () => {
     ) {
       const itemFound = prodDetProdc.find(
         (element) => element.idProdFin === productoLoteProduccion.idProdFin
-      );
+      )
 
       // verificamos si este producto final ha sido agregado previamente
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto a la orden"
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Ya se agrego este producto a la orden'
+        })
+        handleClickFeeback()
       } else {
         if (formulaProductoFinal !== null) {
-          const { nomProd, simMed, reqDet, canForProInt } =
-            formulaProductoFinal;
+          const { reqDet } =
+            formulaProductoFinal
 
-          let detalleRequisicionesFormula = [];
+          const detalleRequisicionesFormula = []
 
           reqDet.forEach((detalle) => {
             detalleRequisicionesFormula.push({
@@ -390,18 +379,18 @@ export const AgregarAgregacionV2 = () => {
               canReqProdLot: parseFloat(
                 cantidadDeProducto * detalle.canForProDet
               ).toFixed(5)
-            });
-          });
+            })
+          })
 
-          detalleRequisicionesFormula.map((obj) => {
-            obj.canReqProdLot = parseIntCantidad(obj);
-          });
+          detalleRequisicionesFormula.forEach((obj) => {
+            obj.canReqProdLot = parseIntCantidad(obj)
+          })
 
           // actualizamos el detalle de la requisicion de agregacion
           setDetalleRequisicionAgregacion({
             requisicionAgregacion: productoLoteProduccion,
             detalleProductosAgregados: detalleRequisicionesFormula
-          });
+          })
 
           // reseteamos los campos
           // setproductoLoteProduccion({
@@ -414,175 +403,74 @@ export const AgregarAgregacionV2 = () => {
           // setFormulaProductoFinal(null);
         } else {
           setfeedbackMessages({
-            style_message: "warning",
+            style_message: 'warning',
             feedback_description_error:
-              "No se ha seleccionado ninguna presentacion final"
-          });
-          handleClickFeeback();
+              'No se ha seleccionado ninguna presentacion final'
+          })
+          handleClickFeeback()
         }
       }
     } else {
-      let advertenciaPresentacionFinal = "";
+      let advertenciaPresentacionFinal = ''
       if (productoLoteProduccion.idProdcMot === 0) {
         advertenciaPresentacionFinal +=
-          "Se debe proporcionar un motivo de agregación\n";
+          'Se debe proporcionar un motivo de agregación\n'
       }
       if (productoLoteProduccion.idProdFin === 0) {
         advertenciaPresentacionFinal +=
-          "Se debe proporcionar una presentacion final para agregar a la orden\n";
+          'Se debe proporcionar una presentacion final para agregar a la orden\n'
       }
       if (
         productoLoteProduccion.cantidadDeLote <= 0.0 ||
         productoLoteProduccion.cantidadDeProducto <= 0
       ) {
         advertenciaPresentacionFinal +=
-          "Se debe proporcionar una cantidad mayor a 0 para agregar a la orden\n";
+          'Se debe proporcionar una cantidad mayor a 0 para agregar a la orden\n'
       }
 
       // mostramos el mensaje de error
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error: advertenciaPresentacionFinal
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para mostrar pdf
   const generatePDF = (data, index) => {
     const formatData = {
       produccion: agregacionesProduccionLote,
       requisicion: data
-    };
-    const newWindow = window.open("", "Agregaciones", "fullscreen=yes");
-    // Crear un contenedor específico para tu aplicación
-    const appContainer = newWindow.document.createElement("div");
-    newWindow.document.body.appendChild(appContainer);
-    const root = createRoot(appContainer);
-    root.render(<PDFAgregaciones data={formatData} index={index} />);
-  };
-
-  // ******** MANEJADORES PARA EL ARREGLO DE DEVOLUCIONES ******
-  // MANEJADOR DE PRODUCTO
-  const onAddProductoAgregado = (value) => {
-    setproductoAgregado({
-      ...productoAgregado,
-      idProdAgr: value.id
-    });
-  };
-
-  // MANEJADOR DE AREA ENCARGADA
-  const onAddAreaEncargada = (value) => {
-    setproductoAgregado({
-      ...productoAgregado,
-      idAreaEncargada: value.id
-    });
-  };
-
-  // MANEJADOR DE CANTIDAD
-  const handledFormcantidadAgregada = ({ target }) => {
-    const { name, value } = target;
-    setproductoAgregado({
-      ...productoAgregado,
-      [name]: value
-    });
-  };
-
-  // ACCION DE AÑADIR UN PRODUCTO A DEVOLVER AL DETALLE
-  const handleAddproductoAgregado = async (e) => {
-    e.preventDefault();
-    if (idProdAgr !== 0 && cantidadAgregada > 0.0 && idAreaEncargada !== 0) {
-      if (idAreaEncargada === 5 || idAreaEncargada === 6) {
-        const itemFound = detalleProductosAgregados.find(
-          (element) => element.idProdt === idProdAgr
-        );
-
-        if (itemFound) {
-          setfeedbackMessages({
-            style_message: "warning",
-            feedback_description_error: "Ya se agrego este producto al detalle"
-          });
-          handleClickFeeback();
-        } else {
-          const resultPeticion = await getMateriaPrimaById(idProdAgr);
-          const { message_error, description_error, result } = resultPeticion;
-          if (message_error.length === 0) {
-            const {
-              id: idProd,
-              codProd,
-              desCla,
-              desSubCla,
-              nomProd,
-              simMed
-            } = result[0];
-            // generamos nuestro detalle
-            const detalle = {
-              idProdc: id, // lote de produccion asociado
-              idProdt: idProd, // producto
-              idProdAgrMot: 0, // motivo de devolucion
-              idAre: idAreaEncargada,
-              codProd: codProd, // codigo de producto
-              desCla: desCla, // clase del producto
-              desSubCla: desSubCla, // subclase del producto
-              nomProd: nomProd, // nombre del producto
-              simMed: simMed, // medida del producto
-              canProdAgr: cantidadAgregada, // cantidad devuelta
-              idFinalProduct: productoAgregado.finalProduct
-            };
-
-            // seteamos el detalle
-            const dataDetalle = [...detalleProductosAgregados, detalle];
-
-            // actualizamos el detalle de la requisicion de agregacion
-            setDetalleRequisicionAgregacion({
-              ...detalleRequisicionAgregacion,
-              detalleProductosAgregados: dataDetalle
-            });
-          } else {
-            setfeedbackMessages({
-              style_message: "error",
-              feedback_description_error: description_error
-            });
-            handleClickFeeback();
-          }
-        }
-      } else {
-        setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error:
-            "Solo se pueden hacer agregaciones de envasado o encajado"
-        });
-        handleClickFeeback();
-      }
-    } else {
-      setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos"
-      });
-      handleClickFeeback();
     }
-  };
+    const newWindow = window.open('', 'Agregaciones', 'fullscreen=yes')
+    // Crear un contenedor específico para tu aplicación
+    const appContainer = newWindow.document.createElement('div')
+    newWindow.document.body.appendChild(appContainer)
+    const root = createRoot(appContainer)
+    root.render(<PDFAgregaciones data={formatData} index={index} />)
+  }
 
   // ACCION PARA EDITAR CAMPOS EN DETALLE DE PRODUCTO DEVUELTO
   const handleChangeInputProductoAgregado = async ({ target }, idItem) => {
-    const { value } = target;
+    const { value } = target
     const editFormDetalle = detalleProductosAgregados.map((element) => {
       if (element.idProd === idItem) {
         return {
           ...element,
           canReqProdLot: value
-        };
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     // actualizamos el detalle de la requisicion de agregacion
     setDetalleRequisicionAgregacion({
       ...detalleRequisicionAgregacion,
       detalleProductosAgregados: editFormDetalle
-    });
-  };
+    })
+  }
 
   // ACCION PARA ELIMINA DEL DETALLE UN PRODUCTO DEVUELTO
   const handleDeleteProductoAgregado = async (idItem) => {
@@ -590,155 +478,155 @@ export const AgregarAgregacionV2 = () => {
     const datadetalleProductosAgregados = detalleProductosAgregados.filter(
       (element) => {
         if (element.idProd !== idItem) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
       }
-    );
+    )
 
     // actualizamos el detalle de la requisicion de agregacion
     setDetalleRequisicionAgregacion({
       ...detalleRequisicionAgregacion,
       detalleProductosAgregados: datadetalleProductosAgregados
-    });
-  };
+    })
+  }
 
   // FUNCION PARA TRAES DATOS DE PRODUCCION LOTE
   const traerDatosProduccionLoteWithAgregaciones = async () => {
     if (idLotProdc.length !== 0) {
       const resultPeticion = await getProduccionLoteWithAgregacionesById(
         idLotProdc
-      );
-      const { message_error, description_error, result } = resultPeticion;
+      )
+      const { message_error, description_error, result } = resultPeticion
 
       if (message_error.length === 0) {
-        console.log(result);
-        const { idProdt } = result[0];
+        console.log(result)
+        const { idProdt } = result[0]
 
         // ahora debemos obtener los productos que se podran agregar
-        const productosDisponibles = await getPresentacionFinal(idProdt);
+        const productosDisponibles = await getPresentacionFinal(idProdt)
         // seteamos la informacion de productos disponibles
-        setProductosDisponibles(productosDisponibles);
+        setProductosDisponibles(productosDisponibles)
         // seteamos la informacion de produccion de lote
-        setagregacionesProduccionLote(result[0]);
+        setagregacionesProduccionLote(result[0])
       } else {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error: description_error
-        });
-        handleClickFeeback();
+        })
+        handleClickFeeback()
       }
     }
-  };
+  }
 
   // ********** SUBMIT DE DEVOLUCIONES ***********
   const crearAgregacionesLoteProduccion = async () => {
     // obtenemos informacion de la requisicion agregacion
     const informacionRequisicionAgregacion =
-      detalleRequisicionAgregacion["requisicionAgregacion"];
+      detalleRequisicionAgregacion.requisicionAgregacion
     const informacionDetalleProductosAgregados =
-      detalleRequisicionAgregacion["detalleProductosAgregados"];
-    const { idProdcMot, idProdFin } = informacionRequisicionAgregacion;
+      detalleRequisicionAgregacion.detalleProductosAgregados
+    const { idProdcMot, idProdFin } = informacionRequisicionAgregacion
 
-    let formatDataRequisicion = null;
+    let formatDataRequisicion = null
     // si no es una nueva presentacion
     if (idProdcMot !== 2) {
       // buscamos su referencia de producto final
       const referenciaProductoFinal = prodDetProdc.find(
         (element) => idProdFin === element.idProdt
-      );
+      )
 
       formatDataRequisicion = {
         correlativo: `${numop} - A${String(prodDetAgr.length + 1).padStart(
           2,
-          "0"
+          '0'
         )}`,
         detalleProductosAgregados: informacionDetalleProductosAgregados,
         requisicionAgregacion: {
           ...informacionRequisicionAgregacion,
           idProdc: idLotProdc, // lote de produccion
-          idProdcMot: informacionRequisicionAgregacion["idProdcMot"], // motivo de agregacion
+          idProdcMot: informacionRequisicionAgregacion.idProdcMot, // motivo de agregacion
           idProdFin: referenciaProductoFinal.id, // referencia directa a su producto programado
-          idProdt: informacionRequisicionAgregacion["idProdFin"] // producto final agregado
+          idProdt: informacionRequisicionAgregacion.idProdFin // producto final agregado
         }
-      };
+      }
     } else {
       formatDataRequisicion = {
         correlativo: `${numop} - A${String(prodDetAgr.length + 1).padStart(
           2,
-          "0"
+          '0'
         )}`,
         detalleProductosAgregados: informacionDetalleProductosAgregados,
         requisicionAgregacion: {
           ...informacionRequisicionAgregacion,
           idProdc: idLotProdc, // lote de produccion
-          idProdcMot: informacionRequisicionAgregacion["idProdcMot"], // motivo de agregacion
+          idProdcMot: informacionRequisicionAgregacion.idProdcMot, // motivo de agregacion
           idProdFin: 0, // referencia directa a su producto programado
-          idProdt: informacionRequisicionAgregacion["idProdFin"] // producto final agregado
+          idProdt: informacionRequisicionAgregacion.idProdFin // producto final agregado
         }
-      };
+      }
     }
 
     // finalmente, agregamos el correlativo
 
     const resultPeticion = await createAgregacionesLoteProduccion(
       formatDataRequisicion
-    );
-    console.log(resultPeticion);
-    const { message_error, description_error } = resultPeticion;
+    )
+    console.log(resultPeticion)
+    const { message_error, description_error } = resultPeticion
 
     if (message_error.length === 0) {
       // regresamos a la anterior vista
-      onNavigateBack();
+      onNavigateBack()
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Creado con exito"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Creado con exito'
+      })
+      handleClickFeeback()
       setTimeout(() => {
-        window.close();
-      }, "1000");
+        window.close()
+      }, '1000')
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   const handleSubmitAgregacionesLoteProduccion = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (
       detalleProductosAgregados.length === 0 ||
       requisicionAgregacion === null
     ) {
-      let handleErrors = "";
+      let handleErrors = ''
       if (detalleProductosAgregados.length === 0) {
-        handleErrors += "- No se ha agregado ningun detalle de agregacion\n";
+        handleErrors += '- No se ha agregado ningun detalle de agregacion\n'
       }
       if (requisicionAgregacion === null) {
-        handleErrors += "- No se ha agregado ningun detalle de requisicion\n";
+        handleErrors += '- No se ha agregado ningun detalle de requisicion\n'
       }
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error: handleErrors
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
+      setdisableButton(true)
       // crear devolucion
-      crearAgregacionesLoteProduccion();
+      crearAgregacionesLoteProduccion()
     }
-  };
+  }
 
   useEffect(() => {
     // TRAEMOS LA DATA DE REQUSICION DETALLE
-    traerDatosProduccionLoteWithAgregaciones();
-  }, []);
+    traerDatosProduccionLoteWithAgregaciones()
+  }, [])
 
   return (
     <>
@@ -851,9 +739,9 @@ export const AgregarAgregacionV2 = () => {
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5"
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
                           }
                         }}
                       >
@@ -882,7 +770,7 @@ export const AgregarAgregacionV2 = () => {
                         <RowDetalleAgregacionLoteProduccion
                           key={row.id}
                           index={i}
-                          correlativo={row["correlativo"]}
+                          correlativo={row.correlativo}
                           detalle={row}
                           onRenderPDF={generatePDF}
                         />
@@ -924,7 +812,7 @@ export const AgregarAgregacionV2 = () => {
                 <div className="col-md-2">
                   <label className="form-label">Cantidad Lote (KG)</label>
                   <TextField
-                    //type="number"
+                    // type="number"
                     autoComplete="off"
                     size="small"
                     type="number"
@@ -933,10 +821,8 @@ export const AgregarAgregacionV2 = () => {
                       idProdcMot === 0
                         ? true
                         : idProdcMot === 1
-                        ? false
-                        : idProdcMot === 2
-                        ? false
-                        : true
+                          ? false
+                          : idProdcMot !== 2
                     }
                     value={cantidadDeLote}
                     onChange={handleInputsProductoFinalLoteAgregacion}
@@ -949,21 +835,13 @@ export const AgregarAgregacionV2 = () => {
                 <div className="col-md-2">
                   <label className="form-label">Cantidad Producto</label>
                   <TextField
-                    //type="number"
+                    // type="number"
                     autoComplete="off"
                     size="small"
                     type="number"
                     name="cantidadDeProducto"
                     value={cantidadDeProducto}
-                    disabled={
-                      idProdcMot === 0
-                        ? true
-                        : idProdcMot === 1
-                        ? false
-                        : idProdcMot === 2
-                        ? false
-                        : false
-                    }
+                    disabled={idProdcMot === 0}
                     onChange={handleInputsProductoFinalCantidadAgregacion}
                   />
                 </div>
@@ -989,41 +867,6 @@ export const AgregarAgregacionV2 = () => {
                 </div>
               </form>
 
-              {/* <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
-              <div className="col-md-5">
-                <label className="form-label">Producto agregado</label>
-                <FilterAllProductos onNewInput={onAddProductoAgregado} />
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Cantidad producto</label>
-                <TextField
-                  type="number"
-                  autoComplete="off"
-                  size="small"
-                  name="cantidadAgregada"
-                  onChange={handledFormcantidadAgregada}
-                />
-              </div>
-              <div className="col-md-3 d-flex justify-content-end align-self-center ms-auto">
-                <button
-                  onClick={handleAddproductoAgregado}
-                  className="btn btn-primary"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-plus-circle-fill me-2"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                  </svg>
-                  Agregar
-                </button>
-              </div>
-              </form> */}
-
               <div>
                 {/* DETALLE ENVASADO */}
                 <div className="card text-bg-success d-flex">
@@ -1035,9 +878,9 @@ export const AgregarAgregacionV2 = () => {
                           <TableHead>
                             <TableRow
                               sx={{
-                                "& th": {
-                                  color: "rgba(96, 96, 96)",
-                                  backgroundColor: "#f5f5f5"
+                                '& th': {
+                                  color: 'rgba(96, 96, 96)',
+                                  backgroundColor: '#f5f5f5'
                                 }
                               }}
                             >
@@ -1072,7 +915,9 @@ export const AgregarAgregacionV2 = () => {
                                       handleDeleteProductoAgregado
                                     }
                                   />
-                                );
+                                )
+                              } else {
+                                return null
                               }
                             })}
                           </TableBody>
@@ -1092,9 +937,9 @@ export const AgregarAgregacionV2 = () => {
                           <TableHead>
                             <TableRow
                               sx={{
-                                "& th": {
-                                  color: "rgba(96, 96, 96)",
-                                  backgroundColor: "#f5f5f5"
+                                '& th': {
+                                  color: 'rgba(96, 96, 96)',
+                                  backgroundColor: '#f5f5f5'
                                 }
                               }}
                             >
@@ -1129,7 +974,9 @@ export const AgregarAgregacionV2 = () => {
                                       handleDeleteProductoAgregado
                                     }
                                   />
-                                );
+                                )
+                              } else {
+                                return null
                               }
                             })}
                           </TableBody>
@@ -1163,7 +1010,7 @@ export const AgregarAgregacionV2 = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -1171,13 +1018,13 @@ export const AgregarAgregacionV2 = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

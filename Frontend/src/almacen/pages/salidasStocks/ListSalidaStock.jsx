@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react'
 
 const ListSalidaStock = () => {
-  return <div></div>;
-};
+  return <div></div>
+}
 
-export default ListSalidaStock;
+export default ListSalidaStock

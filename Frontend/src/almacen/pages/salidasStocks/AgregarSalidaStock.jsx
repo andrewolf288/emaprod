@@ -1,46 +1,38 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import { getRequisicionMoliendaDetalleById } from "../../helpers/requisicion-molienda/getRequisicionMoliendaDetalleById";
-import queryString from "query-string";
-import { getEntradasDisponibles } from "../../helpers/salidas-stock/getEntradasDisponibles";
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { getRequisicionMoliendaDetalleById } from '../../helpers/requisicion-molienda/getRequisicionMoliendaDetalleById'
+import queryString from 'query-string'
+import { getEntradasDisponibles } from '../../helpers/salidas-stock/getEntradasDisponibles'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { useNavigate } from "react-router-dom";
-import { createSalidasStockByReqMolDet } from "../../helpers/salidas-stock/createSalidasStockByReqMolDet";
-import FechaPicker from "../../../components/Fechas/FechaPicker";
-// IMPORTACIONES PARA TABLE
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { RowEntradaDisponible } from "../../components/RowEntradaDisponible";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+
+import { createSalidasStockByReqMolDet } from '../../helpers/salidas-stock/createSalidasStockByReqMolDet'
+import FechaPicker from '../../../components/Fechas/FechaPicker'
+import { RowEntradaDisponible } from '../../components/RowEntradaDisponible'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 export const AgregarSalidaStock = () => {
   // importacion para extaer la query
-  const location = useLocation();
-  const { idReqMolDet = "" } = queryString.parse(location.search);
+  const location = useLocation()
+  const { idReqMolDet = '' } = queryString.parse(location.search)
 
   // ESTADOS PARA EL FORMULARIO DE SALIDA
   const [salidaMolienda, setSalidaMolienda] = useState({
     idReqMol: 0,
     idReqMolDet: 0,
-    codLotProd: "",
+    codLotProd: '',
     idMatPri: 0,
-    codProd: "",
-    nomProd: "",
+    codProd: '',
+    nomProd: '',
     salStoMolDet: [],
-    fecSalStoReqMol: "",
+    fecSalStoReqMol: '',
     canReqMolDet: 0,
-    docSalSto: "",
-  });
+    docSalSto: ''
+  })
 
   const {
     idReqMol,
@@ -48,65 +40,64 @@ export const AgregarSalidaStock = () => {
     idMatPri,
     codProd,
     nomProd,
-    fecSalStoReqMol,
     canReqMolDet,
     docSalSto,
-    salStoMolDet,
-  } = salidaMolienda;
+    salStoMolDet
+  } = salidaMolienda
 
   // ESTADO PARA LAS ENTRADAS DISPONIBLES
-  const [entradasDisponibles, setentradasDisponibles] = useState([]);
+  const [entradasDisponibles, setentradasDisponibles] = useState([])
 
   // ESTADO PARA CONTROLAR LAS CANTIDADES DE LAS DIFERENTES ENTRADAS
-  const [count, setcount] = useState(0);
+  const [count, setcount] = useState(0)
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // CONTROLADOR DE FORMULARIO
   const handledForm = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setSalidaMolienda({
       ...salidaMolienda,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // TRAER DATOS DE REQUISICION MOLIENDA DETALLE
   const traerDatosRequisicionMoliendaDetalle = async () => {
     if (idReqMolDet.length !== 0) {
-      const resultData = await getRequisicionMoliendaDetalleById(idReqMolDet);
-      const { message_error, description_error, result } = resultData;
+      const resultData = await getRequisicionMoliendaDetalleById(idReqMolDet)
+      const { message_error, description_error, result } = resultData
 
       if (message_error.length === 0) {
         // SETEAMOS EL CONTADOR
-        setcount(result[0].canReqMolDet);
+        setcount(result[0].canReqMolDet)
         setSalidaMolienda({
           ...salidaMolienda,
           idReqMol: result[0].idReqMol,
@@ -115,43 +106,43 @@ export const AgregarSalidaStock = () => {
           idMatPri: result[0].idMatPri,
           codLotProd: result[0].codLotProd,
           codProd: result[0].codProd,
-          canReqMolDet: result[0].canReqMolDet,
-        });
+          canReqMolDet: result[0].canReqMolDet
+        })
       } else {
         setfeedbackMessages({
-          style_message: "error",
-          feedback_description_error: description_error,
-        });
-        handleClickFeeback();
+          style_message: 'error',
+          feedback_description_error: description_error
+        })
+        handleClickFeeback()
       }
-      setdisableButton(false);
+      setdisableButton(false)
     }
-  };
+  }
 
   // TRAER DATOS DE ENTRADAS DISPONIBLES PARA LA REQUISICION MOLIENDA DETALLE
   const traerDatosEntradasDisponibles = async () => {
-    const resultPeticion = await getEntradasDisponibles(idMatPri);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getEntradasDisponibles(idMatPri)
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
       if (result.length === 0) {
         // no hay entradas disponibles
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "No hay entradas disponibles",
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'No hay entradas disponibles'
+        })
+        handleClickFeeback()
       } else {
         // establecemos las entradas disponibles
-        setentradasDisponibles(result);
+        setentradasDisponibles(result)
       }
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // Habilitar input de envio
   const onChangeCheckedEntrada = (
@@ -162,149 +153,147 @@ export const AgregarSalidaStock = () => {
     setInputValue
   ) => {
     // Obtenemos la cantidad actual de la entrada
-    let cantidadDisponible = parseInt(valueEntrada, 10);
+    const cantidadDisponible = parseInt(valueEntrada, 10)
     // Obtenemos la cantidad actual del input de entrada
-    let cantidadInputEntrada = parseInt(valueInput, 10);
-    console.log(count);
+    const cantidadInputEntrada = parseInt(valueInput, 10)
+    console.log(count)
 
     // Verificamos si la casilla fue seleccionada
     if (isChecked) {
       // si la cantidad requerida es mayor o igual a la cantidad de la entrada
       if (count >= cantidadDisponible) {
         // Actualizamos el input con toda la cantidad de su entrada
-        setInputValue(cantidadDisponible);
+        setInputValue(cantidadDisponible)
         // Actualizamos la cantidad requerida
-        setcount(count - cantidadDisponible);
+        setcount(count - cantidadDisponible)
 
         // Añadimos la informacion a la salida detalle
-        let aux = [...salStoMolDet];
-        console.log(aux);
+        const aux = [...salStoMolDet]
+        console.log(aux)
         aux.push({
           idEntSto: idEntrada,
-          canSalReqMol: cantidadDisponible,
-        });
+          canSalReqMol: cantidadDisponible
+        })
         setSalidaMolienda({
           ...salidaMolienda,
-          salStoMolDet: aux,
-        });
+          salStoMolDet: aux
+        })
 
-        console.log("COUNT: " + (count - cantidadDisponible));
-      }
+        console.log('COUNT: ' + (count - cantidadDisponible))
+      } else {
       // si la cantidad requerida es menor a la cantidad de la entrada
-      else {
         // si la cantidad requerida es igual a 0
         if (count === 0) {
-          setInputValue(0);
-          console.log("COUNT: " + 0);
-        }
+          setInputValue(0)
+          console.log('COUNT: ' + 0)
+        } else {
         // si la cantidad requerida es menor a la cantidad de la entrada
-        else {
           // inputSelected.value = count;
-          setInputValue(count);
-          setcount(0);
+          setInputValue(count)
+          setcount(0)
           // Añadimos la informacion a la salida detalle
-          let aux = [...salStoMolDet];
-          console.log(aux);
+          const aux = [...salStoMolDet]
+          console.log(aux)
           aux.push({
             idEntSto: idEntrada,
-            canSalReqMol: count,
+            canSalReqMol: count
             // canTotDis: canTotDis,
-          });
+          })
           setSalidaMolienda({
             ...salidaMolienda,
-            salStoMolDet: aux,
-          });
-          console.log("COUNT: " + 0);
+            salStoMolDet: aux
+          })
+          console.log('COUNT: ' + 0)
         }
       }
     } else {
       // inputSelected.disabled = true;
-      setcount(count + cantidadInputEntrada);
+      setcount(count + cantidadInputEntrada)
       // Eliminamos la informacion deseleccionada
-      let aux = salStoMolDet.filter((element) => {
+      const aux = salStoMolDet.filter((element) => {
         if (element.idEntSto !== idEntrada) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
-      });
-      console.log(aux);
+      })
+      console.log(aux)
       setSalidaMolienda({
         ...salidaMolienda,
-        salStoMolDet: aux,
-      });
-      console.log("COUNT: " + (count + cantidadInputEntrada));
-      setInputValue(0);
+        salStoMolDet: aux
+      })
+      console.log('COUNT: ' + (count + cantidadInputEntrada))
+      setInputValue(0)
     }
-  };
+  }
 
   // ******** ENVIAR SALIDA *********
   const crearSalidasStockByRequisicionMoliendaDetalle = async () => {
-    console.log(salidaMolienda);
+    console.log(salidaMolienda)
     const { message_error, description_error } =
-      await createSalidasStockByReqMolDet(salidaMolienda);
+      await createSalidasStockByReqMolDet(salidaMolienda)
 
     if (message_error.length === 0) {
       // Volvemos a la vista de requisiciones
-      onNavigateBack();
+      onNavigateBack()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   const onSubmitSalidaStock = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     // CONDICIONES DE ENVIO
     if (salStoMolDet.length === 0 || idReqMol === 0 || idMatPri === 0) {
       // MANEJAMOS FORMULARIOS INCOMPLETOS
       if (salStoMolDet.length === 0) {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error:
-            "No hay entradas de materia prima para este producto.",
-        });
-        handleClickFeeback();
+            'No hay entradas de materia prima para este producto.'
+        })
+        handleClickFeeback()
       } else {
         setfeedbackMessages({
-          style_message: "warning",
+          style_message: 'warning',
           feedback_description_error:
-            "Asegurese de llenar los datos requeridos",
-        });
-        handleClickFeeback();
+            'Asegurese de llenar los datos requeridos'
+        })
+        handleClickFeeback()
       }
     } else {
       // PRIMERO HACEMOS UNA VALIDACION SI LA SALIDA DE STOCK DETALLE CUMPLE CON LO REQUERIDO
-      let cantSalStoDet = 0;
+      let cantSalStoDet = 0
       salStoMolDet.forEach((element) => {
-        cantSalStoDet += parseInt(element.canSalReqMol);
-      });
+        cantSalStoDet += parseInt(element.canSalReqMol)
+      })
 
       // Si las entradas elegidas cumplen con la cantidada requerida
       if (cantSalStoDet != canReqMolDet) {
         setfeedbackMessages({
-          style_message: "error",
+          style_message: 'error',
           feedback_description_error:
-            "Asegurese de completar la cantidad requerida. Si no alcanza lo solicitado, realizace una entrada de stock de la materia prima",
-        });
-        handleClickFeeback();
+            'Asegurese de completar la cantidad requerida. Si no alcanza lo solicitado, realizace una entrada de stock de la materia prima'
+        })
+        handleClickFeeback()
       } else {
         // Deshabilitamos el boton de enviar
-        setdisableButton(true);
+        setdisableButton(true)
         // llamamos a la funcion de registrar salidas segun el detalle
-        crearSalidasStockByRequisicionMoliendaDetalle();
+        crearSalidasStockByRequisicionMoliendaDetalle()
       }
     }
-  };
+  }
 
   useEffect(() => {
     // TRAEMOS DATOS DE REQUISICION DETALLE
-    traerDatosRequisicionMoliendaDetalle();
-  }, []);
+    traerDatosRequisicionMoliendaDetalle()
+  }, [])
 
   return (
     <>
@@ -510,7 +499,7 @@ export const AgregarSalidaStock = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -518,11 +507,11 @@ export const AgregarSalidaStock = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

@@ -1,68 +1,65 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 
-import { getProduccionWhitProductosFinales } from "./../../helpers/producto-produccion/getProduccionWhitProductosFinales";
-import { useLocation, useNavigate } from "react-router-dom";
-import { RowProductosAgregadosProduccion } from "./../../components/RowProductosAgregadosProduccion";
-import { FilterProductoProduccion } from "../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
-import { PackAsyncFilterProductosProduccionLote } from "./../../components/PackAsyncFilterProductosProduccionLote";
-import { RowProductosDisponiblesProduccion } from "./../../components/RowProductosDisponiblesProduccion";
-import queryString from "query-string";
-import { FilterAllProductos } from "../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import { TextField } from "@mui/material";
-import { getMateriaPrimaById } from "../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import { createProductosFinalesLoteProduccion } from "./../../helpers/producto-produccion/createProductosFinalesLoteProduccion";
+import { getProduccionWhitProductosFinales } from './../../helpers/producto-produccion/getProduccionWhitProductosFinales'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { RowProductosAgregadosProduccion } from './../../components/RowProductosAgregadosProduccion'
+import { RowProductosDisponiblesProduccion } from './../../components/RowProductosDisponiblesProduccion'
+import queryString from 'query-string'
+import { FilterAllProductos } from '../../../components/ReferencialesFilters/Producto/FilterAllProductos'
+import { TextField } from '@mui/material'
+import { getMateriaPrimaById } from '../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import { createProductosFinalesLoteProduccion } from './../../helpers/producto-produccion/createProductosFinalesLoteProduccion'
 import {
   DiaJuliano,
   FormatDateTimeMYSQLNow,
   FormatDateTimeMYSQL,
   letraAnio,
-  _parseInt,
-} from "../../../utils/functions/FormatDate";
-import { DetalleProductosFinales } from "./DetalleProductosFinales";
-import FechaPicker from "../../../../src/components/Fechas/FechaPicker";
-import FechaPickerYear from "../../../components/Fechas/FechaPickerYear";
-import Checkbox from "@mui/material/Checkbox";
+  _parseInt
+} from '../../../utils/functions/FormatDate'
+import { DetalleProductosFinales } from './DetalleProductosFinales'
+import FechaPicker from '../../../../src/components/Fechas/FechaPicker'
+import FechaPickerYear from '../../../components/Fechas/FechaPickerYear'
+import Checkbox from '@mui/material/Checkbox'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const AgregarProductosLoteProduccion = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const location = useLocation();
-  const { idLotProdc = "" } = queryString.parse(location.search);
-  const [finalizarRegProdFinal, setFinalizarRegProdFinal] = useState(false);
+  const location = useLocation()
+  const { idLotProdc = '' } = queryString.parse(location.search)
+  const [finalizarRegProdFinal, setFinalizarRegProdFinal] = useState(false)
 
   // ESTADOS DE LOS PRODUCTOS FINALES DE LA PRODUCCION
   const [proFinProd, setProFinProd] = useState({
     id: 0,
-    numop: "",
+    numop: '',
     canLotProd: 0,
-    codLotProd: "",
-    desEstPro: "",
-    desProdTip: "",
-    fecVenLotProd: "",
+    codLotProd: '',
+    desEstPro: '',
+    desProdTip: '',
+    fecVenLotProd: '',
     idProdEst: 0,
     idProdTip: 0,
     idProdt: 0,
-    klgLotProd: "",
-    nomProd: "",
+    klgLotProd: '',
+    nomProd: '',
     proFinProdDet: [],
-    regProFin: false,
-  });
+    regProFin: false
+  })
 
   const {
     id,
@@ -75,113 +72,110 @@ export const AgregarProductosLoteProduccion = () => {
     klgLotProd,
     nomProd,
     proFinProdDet,
-    regProFin,
-  } = proFinProd;
+    regProFin
+  } = proFinProd
 
   // PRODUCTOS FINALES DISPONIBLES POR PRODUCCIÓN
-  const [detalleProductosFinales, setdetalleProductosFinales] = useState([]);
+  const [detalleProductosFinales, setdetalleProductosFinales] = useState([])
 
   // STATES PARA AGREGAR PRODUCTOS
   const [productoFinal, setproductoFinal] = useState({
     idProdFin: 0,
     cantidadIngresada: 0.0,
     fecEntSto: FormatDateTimeMYSQLNow(),
-    fecVenSto: "",
-  });
-  const { idProdFin, cantidadIngresada, fecEntSto, fecVenSto } = productoFinal;
+    fecVenSto: ''
+  })
+  const { idProdFin, cantidadIngresada, fecEntSto, fecVenSto } = productoFinal
 
   // ******* ACCIONES DE FILTER PRODUCTO FINAL ******
   // MANEJADOR DE PRODUCTO
   const onAddProductoFinalSubProducto = (value) => {
-    var year = 0;
-    if (value.item.simMed === "LTS") {
-      year = 1;
+    let year = 0
+    if (value.item.simMed === 'LTS') {
+      year = 1
     } else {
-      year = 4;
+      year = 4
     }
-    var date = new Date(fecEntSto);
-    date.setFullYear(date.getFullYear() + year);
-    var fecVenEntProdFin = FormatDateTimeMYSQL(date);
-    //console.log(fecVenEntProdFin);
+    const date = new Date(fecEntSto)
+    date.setFullYear(date.getFullYear() + year)
+    const fecVenEntProdFin = FormatDateTimeMYSQL(date)
+    // console.log(fecVenEntProdFin);
     setproductoFinal({
       ...productoFinal,
       idProdFin: value.id, // id de producto de la tabla productos
       idProdfinal: value.idProdFin, // id record de la tabla produccion_producto_final
-      fecVenSto: fecVenEntProdFin,
-    });
-  };
+      fecVenSto: fecVenEntProdFin
+    })
+  }
 
   // MANEJADOR DE CANTIDAD
   const handledFormCantidadIngresada = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setproductoFinal({
       ...productoFinal,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   const onAddFecEntSto = (newfecEntSto) => {
     setproductoFinal({
       ...productoFinal,
-      fecEntSto: newfecEntSto,
-    });
-  };
+      fecEntSto: newfecEntSto
+    })
+  }
 
   const onAddFecVenSto = (newfecEntSto) => {
     setproductoFinal({
       ...productoFinal,
-      fecVenSto: newfecEntSto,
-    });
-  };
+      fecVenSto: newfecEntSto
+    })
+  }
 
   // ********* ESTADO PARA CONTROLAR EL FEEDBACK **********
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
-
-  // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+    setfeedbackCreate(false)
+  }
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ******** MANEJO PARA EL ARREGLO DE PRODUCTOS FINALES **********
 
   // AÑADIR PRODUCTOS FINALES AL DETALLE
   const handleAddProductoFinal = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (idProdFin !== 0 && cantidadIngresada > 0.0) {
       const itemFound = detalleProductosFinales.find(
         (element) => element.idProdt === idProdFin
-      );
+      )
 
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Ya se agrego este producto al detalle",
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Ya se agrego este producto al detalle'
+        })
+        handleClickFeeback()
       } else {
-        const resultPeticion = await getMateriaPrimaById(idProdFin);
-        const { message_error, description_error, result } = resultPeticion;
+        const resultPeticion = await getMateriaPrimaById(idProdFin)
+        const { message_error, description_error, result } = resultPeticion
         if (message_error.length === 0) {
           const {
             id: idProd,
@@ -190,59 +184,59 @@ export const AgregarProductosLoteProduccion = () => {
             desCla,
             desSubCla,
             nomProd,
-            simMed,
-          } = result[0];
+            simMed
+          } = result[0]
           // generamos nuestro detalle
           const detalle = {
             idProdFinal: productoFinal.idProdfinal,
             idProdc: id, // lote de produccion asociado
             idProdt: idProd, // producto
-            codProd: codProd, // codigo de producto
-            codProd2: codProd2, // codigo emaprod
-            desCla: desCla, // clase del producto
-            desSubCla: desSubCla, // subclase del producto
-            nomProd: nomProd, // nombre del producto
-            simMed: simMed, // medida del producto
+            codProd, // codigo de producto
+            codProd2, // codigo emaprod
+            desCla, // clase del producto
+            desSubCla, // subclase del producto
+            nomProd, // nombre del producto
+            simMed, // medida del producto
             fecVenEntProdFin: fecVenSto,
             canProdFin: cantidadIngresada,
-            fecEntSto: fecEntSto,
-          };
+            fecEntSto
+          }
 
-          const dataDetalle = [...detalleProductosFinales, detalle];
+          const dataDetalle = [...detalleProductosFinales, detalle]
 
-          setdetalleProductosFinales(dataDetalle);
+          setdetalleProductosFinales(dataDetalle)
         } else {
           setfeedbackMessages({
-            style_message: "error",
-            feedback_description_error: description_error,
-          });
-          handleClickFeeback();
+            style_message: 'error',
+            feedback_description_error: description_error
+          })
+          handleClickFeeback()
         }
       }
     } else {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "Asegurese de llenar los datos requeridos",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'Asegurese de llenar los datos requeridos'
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // ACCION PARA EDITAR CAMPOS EN DETALLE DE PRODUCTO DEVUELTO
   const handleChangeInputProductoFinal = async ({ target }, idItem) => {
-    const { value, name } = target;
+    const { value, name } = target
     const editFormDetalle = detalleProductosFinales.map((element) => {
       if (element.idProdt === idItem) {
         return {
           ...element,
-          [name]: value,
-        };
+          [name]: value
+        }
       } else {
-        return element;
+        return element
       }
-    });
-    setdetalleProductosFinales(editFormDetalle);
-  };
+    })
+    setdetalleProductosFinales(editFormDetalle)
+  }
 
   // ACCION PARA ELIMINA DEL DETALLE UN PRODUCTO FINAL
   const handleDeleteProductoDevuelto = async (idItem) => {
@@ -250,176 +244,174 @@ export const AgregarProductosLoteProduccion = () => {
     const dataDetalleProductosDevueltos = detalleProductosFinales.filter(
       (element) => {
         if (element.idProdt !== idItem) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
       }
-    );
+    )
 
     // establecemos el detalle
-    setdetalleProductosFinales(dataDetalleProductosDevueltos);
-  };
+    setdetalleProductosFinales(dataDetalleProductosDevueltos)
+  }
 
   // ******** OBTENER DATA DE PRODUCTOS FINALES *********
   const obtenerDataProductosFinalesProduccion = async () => {
-    const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
+    const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc)
 
-   // console.log(resultPeticion);
-    const { message_error, description_error, result } = resultPeticion;
-    var products = result[0].proFinProdDet;
+    // console.log(resultPeticion);
+    const { message_error, description_error, result } = resultPeticion
+    const products = result[0].proFinProdDet
 
-    var copyProducts = products.reduce((accumulator, currentValue) => {
+    const copyProducts = products.reduce((accumulator, currentValue) => {
       if (accumulator.some((obj) => obj.idProdt === currentValue.idProdt)) {
-        accumulator.map((obj) => {
+        accumulator.forEach((obj) => {
           if (obj.idProdt === currentValue.idProdt) {
             obj.canTotProgProdFin =
               parseFloat(obj.canTotProgProdFin) +
-              parseFloat(currentValue.canTotProgProdFin);
+              parseFloat(currentValue.canTotProgProdFin)
 
-            obj.canTotProgProdFin = _parseInt(obj, "canTotProgProdFin");
+            obj.canTotProgProdFin = _parseInt(obj, 'canTotProgProdFin')
 
-            //console.log(obj)
+            // console.log(obj)
 
             obj.canTotIngProdFin =
               parseFloat(obj.canTotIngProdFin) +
-              parseFloat(currentValue.canTotIngProdFin);
-            obj.canTotIngProdFin = parseFloat(obj.canTotIngProdFin).toFixed(2);
+              parseFloat(currentValue.canTotIngProdFin)
+            obj.canTotIngProdFin = parseFloat(obj.canTotIngProdFin).toFixed(2)
 
-            currentValue.total = obj.canTotProgProdFin;
+            currentValue.total = obj.canTotProgProdFin
             currentValue.canTotProgProdFin = _parseInt(
               currentValue,
-              "canTotProgProdFin"
-            );
-            const clone = structuredClone(currentValue);
-            obj.detail.push(clone);
+              'canTotProgProdFin'
+            )
+            const clone = structuredClone(currentValue)
+            obj.detail.push(clone)
           }
-        });
+        })
       } else {
-        const clone = structuredClone(currentValue);
-        clone.canTotProgProdFin = _parseInt(currentValue, "canTotProgProdFin");
+        const clone = structuredClone(currentValue)
+        clone.canTotProgProdFin = _parseInt(currentValue, 'canTotProgProdFin')
         currentValue.canTotProgProdFin = _parseInt(
           currentValue,
-          "canTotProgProdFin"
-        );
+          'canTotProgProdFin'
+        )
 
-        clone.total = clone.canTotProgProdFin;
-        currentValue.detail = [clone];
-        accumulator.push(currentValue);
+        clone.total = clone.canTotProgProdFin
+        currentValue.detail = [clone]
+        accumulator.push(currentValue)
       }
-      return accumulator;
-    }, []);
-    result[0].proFinProdDet = copyProducts;
-    result[0].productsAutocomplete = products;
-    //console.log(result[0]);
+      return accumulator
+    }, [])
+    result[0].proFinProdDet = copyProducts
+    result[0].productsAutocomplete = products
+    // console.log(result[0]);
 
     if (message_error.length === 0) {
-      setProFinProd(result[0]);
+      setProFinProd(result[0])
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // ****** SUBMIT PRODUCTOS FINALES ******
   const crearProductosFinalesLoteProduccion = async () => {
-    const { idProdTip } = proFinProd;
-    //const fechaIngreso = FormatDateTimeMYSQLNow();
+    const { idProdTip } = proFinProd
+    // const fechaIngreso = FormatDateTimeMYSQLNow();
 
     const dataEntrada = {
       letAniEntSto: letraAnio(fecEntSto),
       diaJulEntSto: DiaJuliano(fecEntSto),
       fechaIngreso: fecEntSto,
       regProFin: finalizarRegProdFinal,
-      idProdc: id,
-    };
+      idProdc: id
+    }
 
-    //console.log(dataEntrada);
-    detalleProductosFinales.map((obj) => {
-      obj.letAniEntSto = letraAnio(obj.fecEntSto);
-      obj.diaJulEntSto = DiaJuliano(obj.fecEntSto);
-    });
-    const cloneProFinProdDet = structuredClone(proFinProdDet);
-    var productoFin = {};
-    detalleProductosFinales.map((obj) => {
-      var producto = cloneProFinProdDet.find(
+    // console.log(dataEntrada);
+    detalleProductosFinales.forEach((obj) => {
+      obj.letAniEntSto = letraAnio(obj.fecEntSto)
+      obj.diaJulEntSto = DiaJuliano(obj.fecEntSto)
+    })
+    const cloneProFinProdDet = structuredClone(proFinProdDet)
+    let productoFin = {}
+    detalleProductosFinales.forEach((obj) => {
+      const producto = cloneProFinProdDet.find(
         (prodFin) => obj.codProd2 == prodFin.codProd2
-      );
+      )
 
       if (producto) {
         producto.canTotIngProdFin =
-          parseFloat(producto.canTotIngProdFin) + parseFloat(obj.canProdFin);
+          parseFloat(producto.canTotIngProdFin) + parseFloat(obj.canProdFin)
       }
 
       if (producto?.canTotIngProdFin > producto?.canTotProgProdFin) {
-        productoFin = producto;
-        productoFin.check = true;
+        productoFin = producto
+        productoFin.check = true
       }
-    });
+    })
 
     if (productoFin.check) {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error:
-          "la suma de la cantidad ingresada para " +
+          'la suma de la cantidad ingresada para ' +
           productoFin.nomProd +
-          " supera a la cantidad programada",
-      });
-      handleClickFeeback();
-      return;
+          ' supera a la cantidad programada'
+      })
+      handleClickFeeback()
+      return
     }
 
     const resultPeticion = await createProductosFinalesLoteProduccion(
       detalleProductosFinales,
       idProdTip,
       dataEntrada
-    );
+    )
 
-    //console.log(resultPeticion);
-    const { message_error, description_error } = resultPeticion;
+    // console.log(resultPeticion);
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
-      onNavigateBack();
+      onNavigateBack()
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Guardado con exito",
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Guardado con exito'
+      })
+      handleClickFeeback()
 
       setTimeout(() => {
-        window.close();
-      }, "1000");
+        window.close()
+      }, '1000')
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+  }
 
   const handleSubmitProductosFinalesLoteProduccion = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (detalleProductosFinales.length === 0) {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "No has agregado items al detalle",
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'No has agregado items al detalle'
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
-      crearProductosFinalesLoteProduccion();
+      crearProductosFinalesLoteProduccion()
     }
-  };
+  }
 
   // CODIGO QUE SE EJECUTA ANTES DE LA RENDERIZACION
   useEffect(() => {
-    obtenerDataProductosFinalesProduccion();
-  }, []);
+    obtenerDataProductosFinalesProduccion()
+  }, [])
 
   return (
     <>
@@ -541,10 +533,10 @@ export const AgregarProductosLoteProduccion = () => {
                       regProFin ? Boolean(regProFin) : finalizarRegProdFinal
                     }
                     onChange={(event) => {
-                      setFinalizarRegProdFinal(event.target.checked);
+                      setFinalizarRegProdFinal(event.target.checked)
                     }}
-                    sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                    inputProps={{ "aria-label": "controlled" }}
+                    sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
+                    inputProps={{ 'aria-label': 'controlled' }}
                   />
                 </div>
               </div>
@@ -563,10 +555,10 @@ export const AgregarProductosLoteProduccion = () => {
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
                         }}
                       >
                         <TableCell align="left" width={200}>
@@ -676,10 +668,10 @@ export const AgregarProductosLoteProduccion = () => {
                       <TableHead>
                         <TableRow
                           sx={{
-                            "& th": {
-                              color: "rgba(96, 96, 96)",
-                              backgroundColor: "#f5f5f5",
-                            },
+                            '& th': {
+                              color: 'rgba(96, 96, 96)',
+                              backgroundColor: '#f5f5f5'
+                            }
                           }}
                         >
                           <TableCell align="left" width={200}>
@@ -744,7 +736,7 @@ export const AgregarProductosLoteProduccion = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -752,11 +744,11 @@ export const AgregarProductosLoteProduccion = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

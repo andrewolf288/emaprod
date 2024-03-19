@@ -1,18 +1,13 @@
-import { ViewLoteFrescos } from "./ViewLoteFrescos";
-import { ListRequisicionesFrescos } from "./ListRequisicionesFrescos";
-import { AgregarProductosLoteFrescos } from "./agregar_producto_frescos/AgregarProductosLoteFrescos";
+import { ViewLoteFrescos } from './ViewLoteFrescos'
+import { ListRequisicionesFrescos } from './ListRequisicionesFrescos'
 
 export const RouterRequisicionFrescos = [
   {
-    path: "",
-    element: <ListRequisicionesFrescos />,
+    path: '',
+    element: <ListRequisicionesFrescos />
   },
   {
-    path: "view/:idProdc/:idReq",
-    element: <ViewLoteFrescos />,
-  },
-  {
-    path: "agregar",
-    element: <AgregarProductosLoteFrescos />,
-  },
-];
+    path: 'view/:idProdc/:idReq',
+    element: <ViewLoteFrescos />
+  }
+]

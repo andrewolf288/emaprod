@@ -1,193 +1,186 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 // IMPORTACIONES PARA EL PROGRESS LINEAR
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
-  CircularProgress,
-} from "@mui/material";
-import { updateRequisicionMaterialesDetalleById } from "../../helpers/requisicion-materiales/updateRequisicionMaterialesDetalleById";
-import { createSalidasStockAutomaticas } from "../../helpers/lote-produccion/createSalidasStockAutomaticas";
-import { viewMaterialesRequisicionId } from "../../helpers/requisicion-materiales/viewMaterialesRequisicionId";
-import { RowRequisicionMaterialesDetalle } from "../../components/componentes-requisicion-materiales/RowRequisicionMaterialesDetalle";
-import { DialogUpdateDetalleRequisicion } from "../../components/componentes-lote-produccion/DialogUpdateDetalleRequisicion";
+  CircularProgress
+} from '@mui/material'
+import { updateRequisicionMaterialesDetalleById } from '../../helpers/requisicion-materiales/updateRequisicionMaterialesDetalleById'
+import { createSalidasStockAutomaticas } from '../../helpers/lote-produccion/createSalidasStockAutomaticas'
+import { viewMaterialesRequisicionId } from '../../helpers/requisicion-materiales/viewMaterialesRequisicionId'
+import { RowRequisicionMaterialesDetalle } from '../../components/componentes-requisicion-materiales/RowRequisicionMaterialesDetalle'
+import { DialogUpdateDetalleRequisicion } from '../../components/componentes-lote-produccion/DialogUpdateDetalleRequisicion'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ViewRequisicionMateriales = () => {
-  const { idReq } = useParams();
+  const { idReq } = useParams()
   const [requisicionMateriales, setRequisicionMateriales] = useState({
-    codReq: "",
+    codReq: '',
     idAre: 0,
-    desAre: "",
+    desAre: '',
     idReqEst: 0,
-    desReqEst: "",
+    desReqEst: '',
     idReqTip: 0,
-    desReqTip: "",
-    fecPedReq: "",
-    fecEntReq: "",
-    reqDet: [],
-  });
+    desReqTip: '',
+    fecPedReq: '',
+    fecEntReq: '',
+    reqDet: []
+  })
 
-  const { codReq, desAre, desReqEst, desReqTip, fecPedReq, fecEntReq, reqDet } =
-    requisicionMateriales;
+  const { codReq, desReqEst, desReqTip, fecPedReq, fecEntReq, reqDet } =
+    requisicionMateriales
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ****** MANEJADORES DE DIALOG UPDATE CANTIDAD *******
-  const [showDialogUpdate, setshowDialogUpdate] = useState(false);
-  const [itemSeleccionado, setItemSeleccionado] = useState(null);
+  const [showDialogUpdate, setshowDialogUpdate] = useState(false)
+  const [itemSeleccionado, setItemSeleccionado] = useState(null)
 
   // ****** MANEJADORES DE PROGRESS LINEAR CON DIALOG ********
-  const [loading, setLoading] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
 
-  // ***** FUNCIONES PARA EL MANEJO DE ACCIONES *****
-  const openLoader = () => {
-    setOpenDialog(true);
-    setLoading(true);
-  };
   const closeLoader = () => {
-    setLoading(false);
-    setOpenDialog(false);
-  };
+    setOpenDialog(false)
+  }
 
   // mostrar y setear dialog update de detalle de requisicion
   const showAndSetDialogUpdateDetalleRequisicion = (item) => {
     // establecemos los valores
-    setItemSeleccionado(item);
+    setItemSeleccionado(item)
     // abrimos el modal
-    setshowDialogUpdate(true);
-  };
+    setshowDialogUpdate(true)
+  }
 
   const closeDialogUpdateDetalleRequisicion = () => {
-    setshowDialogUpdate(false);
-    setItemSeleccionado(null);
-  };
+    setshowDialogUpdate(false)
+    setItemSeleccionado(null)
+  }
 
   // crear salidas correspondientes
   const onCreateSalidasStock = async (requisicion_detalle) => {
     const formatData = {
       ...requisicion_detalle,
       idAre: 4,
-      numop: "MATERIALES PRODUCCION",
-    };
-    console.log(formatData);
+      numop: 'MATERIALES PRODUCCION'
+    }
+    console.log(formatData)
 
-    const resultPeticion = await createSalidasStockAutomaticas(formatData);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await createSalidasStockAutomaticas(formatData)
+    const { message_error, description_error } = resultPeticion
 
     if (message_error?.length === 0) {
       // volvemos a consultar la data
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se cumplio la requisicion exitosamente",
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se cumplio la requisicion exitosamente'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeLoader();
+      closeLoader()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // actualizar detalle de requisicion
   const onUpdateDetalleRequisicion = async (itemUpdate, cantidadNueva) => {
-    const { id } = itemUpdate;
-    let body = {
-      id: id,
-      cantidadNueva: cantidadNueva,
-    };
-    const resultPeticion = await updateRequisicionMaterialesDetalleById(body);
-    const { message_error, description_error } = resultPeticion;
+    const { id } = itemUpdate
+    const body = {
+      id,
+      cantidadNueva
+    }
+    const resultPeticion = await updateRequisicionMaterialesDetalleById(body)
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       // actualizamos la cantidad
-      obtenerDataProduccionRequisicionesDetalle();
+      obtenerDataProduccionRequisicionesDetalle()
       // cerramos el modal
-      closeDialogUpdateDetalleRequisicion();
+      closeDialogUpdateDetalleRequisicion()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "success",
+        style_message: 'success',
         feedback_description_error:
-          "Se actualizó el detalle de la requisicion con exito",
-      });
-      handleClickFeeback();
+          'Se actualizó el detalle de la requisicion con exito'
+      })
+      handleClickFeeback()
     } else {
       // cerramos el modal
-      closeDialogUpdateDetalleRequisicion();
+      closeDialogUpdateDetalleRequisicion()
       // mostramos el feedback
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // funcion para obtener la produccion con sus requisiciones y su detalle
   const obtenerDataProduccionRequisicionesDetalle = async () => {
-    const resultPeticion = await viewMaterialesRequisicionId(idReq);
+    const resultPeticion = await viewMaterialesRequisicionId(idReq)
 
-    const { message_error, description_error, result } = resultPeticion;
+    const { message_error, description_error, result } = resultPeticion
 
     if (message_error.length === 0) {
-      setRequisicionMateriales(result[0]);
+      setRequisicionMateriales(result[0])
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   useEffect(() => {
-    obtenerDataProduccionRequisicionesDetalle();
-  }, []);
+    obtenerDataProduccionRequisicionesDetalle()
+  }, [])
 
   return (
     <>
@@ -285,10 +278,10 @@ export const ViewRequisicionMateriales = () => {
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
                         }}
                       >
                         <TableCell align="left" width={200}>
@@ -319,7 +312,7 @@ export const ViewRequisicionMateriales = () => {
                             }
                             onCreateSalidasStock={onCreateSalidasStock}
                           />
-                        );
+                        )
                       })}
                     </TableBody>
                   </Table>
@@ -331,7 +324,7 @@ export const ViewRequisicionMateriales = () => {
             <button
               type="button"
               onClick={() => {
-                window.close();
+                window.close()
               }}
               className="btn btn-secondary me-2"
             >
@@ -363,7 +356,7 @@ export const ViewRequisicionMateriales = () => {
 
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -371,11 +364,11 @@ export const ViewRequisicionMateriales = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {feedback_description_error}
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

@@ -31,11 +31,14 @@ module.exports = {
     quotes: ['error', 'single'],
     // we use 2 spaces to indent our code
     indent: ['error', 2],
+    // comprobacion de signos
+    eqeqeq: 'off',
     // we want to avoid extraneous spaces
     'no-multi-spaces': ['error'],
     // no scope react js
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
+    'react/no-deprecated': 'off',
     camelcase: 'off'
   }
 }

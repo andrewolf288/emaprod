@@ -1,44 +1,44 @@
-import React, { useEffect, useState } from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { TextField } from "@mui/material";
-import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableHead from "@mui/material/TableHead";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import Box from "@mui/material/Box";
-import DeleteIcon from "@mui/icons-material/Delete";
+import React, { useEffect, useState } from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import { TextField } from '@mui/material'
+import Collapse from '@mui/material/Collapse'
+import IconButton from '@mui/material/IconButton'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableHead from '@mui/material/TableHead'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import Box from '@mui/material/Box'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 export const RowDevolucionLoteProduccionEdit = ({
   detalle,
   onChangeInputDetalle,
-  onDeleteItemDetalle,
+  onDeleteItemDetalle
 }) => {
-  const [open, setOpen] = React.useState(false);
-  const [valueTotal, setvalueTotal] = useState(0);
+  const [open, setOpen] = React.useState(false)
+  const [valueTotal, setvalueTotal] = useState(0)
 
   const calculateTotalMotivos = () => {
-    let totalAcu = 0;
+    let totalAcu = 0
     detalle?.motivos?.forEach((item, index) => {
       // los exedentes no deben sumar
       if (index !== 2) {
-        const canProdDev = parseFloat(item.canProdDev);
+        const canProdDev = parseFloat(item.canProdDev)
 
         if (!isNaN(canProdDev)) {
-          totalAcu += canProdDev;
+          totalAcu += canProdDev
         }
       }
-    });
+    })
 
-    setvalueTotal(totalAcu.toFixed(2));
-  };
+    setvalueTotal(totalAcu.toFixed(2))
+  }
 
   useEffect(() => {
-    calculateTotalMotivos();
-  }, [detalle]);
+    calculateTotalMotivos()
+  }, [detalle])
 
   return (
     <React.Fragment>
@@ -62,18 +62,20 @@ export const RowDevolucionLoteProduccionEdit = ({
             sx={{ marginRight: 3 }}
             onClick={() => setOpen(!open)}
           >
-            {open ? (
-              <KeyboardArrowUpIcon sx={{ fontSize: 30 }} />
-            ) : (
-              <KeyboardArrowDownIcon sx={{ fontSize: 30 }} />
-            )}
+            {open
+              ? (
+                <KeyboardArrowUpIcon sx={{ fontSize: 30 }} />
+              )
+              : (
+                <KeyboardArrowDownIcon sx={{ fontSize: 30 }} />
+              )}
           </IconButton>
 
           <IconButton
             aria-label="expand row"
             size="small"
             onClick={() => {
-              onDeleteItemDetalle(detalle.idProd);
+              onDeleteItemDetalle(detalle.idProd)
             }}
           >
             <DeleteIcon sx={{ fontSize: 30 }} color="error" />
@@ -105,8 +107,8 @@ export const RowDevolucionLoteProduccionEdit = ({
                       <TableCell align="center">
                         <TextField
                           onChange={(e) => {
-                            onChangeInputDetalle(e, detalle, index);
-                            calculateTotalMotivos();
+                            onChangeInputDetalle(e, detalle, index)
+                            calculateTotalMotivos()
                           }}
                           type="number"
                           autoComplete="off"
@@ -124,5 +126,5 @@ export const RowDevolucionLoteProduccionEdit = ({
         </TableCell>
       </TableRow>
     </React.Fragment>
-  );
-};
+  )
+}

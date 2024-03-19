@@ -1,8 +1,8 @@
-import { ListAlmacenStockVentas } from "./ListAlmacenStockVentas";
+import { ListAlmacenStockVentas } from './ListAlmacenStockVentas'
 
 export const RouterAlmacenStockVentas = [
   {
-    path: "",
+    path: '',
     element: <ListAlmacenStockVentas />
   }
-];
+]

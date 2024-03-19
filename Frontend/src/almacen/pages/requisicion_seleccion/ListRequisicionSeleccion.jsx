@@ -1,225 +1,216 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { getRequisicionSeleccionWithDetalle } from "./../../helpers/requisicion-seleccion/getRequisicionSeleccionWithDetalle";
-import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
-import { useForm } from "./../../../hooks/useForm";
-import { TextField } from "@mui/material";
-import { FilterEstadoRequisicionSeleccion } from "../../../components/ReferencialesFilters/EstadoRequisicionSeleccion/FilterEstadoRequisicionSeleccion";
-import { RequisicionSeleccionDetalle } from "./../../components/RequisicionSeleccionDetalle";
-import { createSalidasByReqSelDetAutomatico } from "../../helpers/requisicion-seleccion/createSalidasByReqSelDetAutomatico";
-import { anularRequisicionSeleccion } from "../../helpers/requisicion-seleccion/anularRequisicionSeleccion";
-import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { getRequisicionSeleccionWithDetalle } from './../../helpers/requisicion-seleccion/getRequisicionSeleccionWithDetalle'
+import FechaPickerMonth from './../../../components/Fechas/FechaPickerMonth'
+import { useForm } from './../../../hooks/useForm'
+import { TextField } from '@mui/material'
+import { FilterEstadoRequisicionSeleccion } from '../../../components/ReferencialesFilters/EstadoRequisicionSeleccion/FilterEstadoRequisicionSeleccion'
+import { RequisicionSeleccionDetalle } from './../../components/RequisicionSeleccionDetalle'
+import { createSalidasByReqSelDetAutomatico } from '../../helpers/requisicion-seleccion/createSalidasByReqSelDetAutomatico'
+import { anularRequisicionSeleccion } from '../../helpers/requisicion-seleccion/anularRequisicionSeleccion'
+import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const ListRequisicionSeleccion = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataRequisicion, setdataRequisicion] = useState([]);
-  const [dataRequisicionTemp, setdataRequisicionTemp] = useState([]);
+  const [dataRequisicion, setdataRequisicion] = useState([])
+  const [dataRequisicionTemp, setdataRequisicionTemp] = useState([])
 
   // ESTADOS PARA EL MODAL
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
-  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
+  const [mostrarDetalle, setMostrarDetalle] = useState(false)
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null)
 
   // filtros
-  const { fecReqMolIni, fecReqMolFin, formState, setFormState, onInputChange } =
+  const { formState, setFormState } =
     useForm({
       fecReqMolIni: FormatDateMYSQL(),
-      fecReqMolFin: FormatDateMYSQL(),
-    });
+      fecReqMolFin: FormatDateMYSQL()
+    })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
+  const [feedbackDelete, setfeedbackDelete] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+    setfeedbackDelete(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackDelete(false);
-  };
+    setfeedbackDelete(false)
+  }
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
-    filter(value, name);
-  };
+    const { name, value } = target
+    filter(value, name)
+  }
 
   const onChangeEstadoRequisicionSeleccion = ({ label }) => {
-    filter(label, "filterEstado");
-  };
-
-  const onChangeDateFechaPedido = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    console.log(dateFilter);
-    filter(dateFilter[0], "filterFechaRequerido");
-  };
-
-  const onChangeDateFechaTerminado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaTerminado");
-  };
+    filter(label, 'filterEstado')
+  }
 
   // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecReqMolIni: dateFormat });
+    const dateFormat = newDate.split(' ')[0]
+    setFormState({ ...formState, fecReqMolIni: dateFormat })
     // realizamos una promesa
-    let body = {
+    const body = {
       ...formState,
-      fecReqMolIni: dateFormat,
-    };
-    obtenerDataRequisicionSeleccion(body);
-  };
+      fecReqMolIni: dateFormat
+    }
+    obtenerDataRequisicionSeleccion(body)
+  }
 
   const onChangeDateEndData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecReqMolFin: dateFormat });
+    const dateFormat = newDate.split(' ')[0]
+    setFormState({ ...formState, fecReqMolFin: dateFormat })
     // realizamos una promesa
-    let body = {
+    const body = {
       ...formState,
-      fecReqMolFin: dateFormat,
-    };
-    obtenerDataRequisicionSeleccion(body);
-  };
+      fecReqMolFin: dateFormat
+    }
+    obtenerDataRequisicionSeleccion(body)
+  }
 
   // Funcion para filtrar la data
   const filter = (terminoBusqueda, name) => {
-    let resultSearch = [];
+    let resultSearch = []
     switch (name) {
-      case "filterLoteRequisicionSeleccion":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (
-            element.codLotSel
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterEstado":
-        resultSearch = dataRequisicion.filter((element) => {
-          var element = element.reqSelDet.find(
-            (obj) => obj.idReqDet == element.idReqDet
-          );
-          if (
-            element.desReqSelDetEst
-              .toString()
-              .toLowerCase()
-              .includes(terminoBusqueda.toLowerCase())
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterFechaRequerido":
-        resultSearch = dataRequisicion.filter((element) => {
-          let aux = element.fecPedReqSel.split(" ");
+    case 'filterLoteRequisicionSeleccion':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (
+          element.codLotSel
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterEstado':
+      resultSearch = dataRequisicion.filter((element) => {
+        const auxElement = element.reqSelDet.find(
+          (obj) => obj.idReqDet == element.idReqDet
+        )
+        if (
+          auxElement.desReqSelDetEst
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterFechaRequerido':
+      resultSearch = dataRequisicion.filter((element) => {
+        const aux = element.fecPedReqSel.split(' ')
+        if (
+          aux[0]
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return true
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    case 'filterFechaTerminado':
+      resultSearch = dataRequisicion.filter((element) => {
+        if (element.fecTerReqSel !== null) {
+          const aux = element.fecTerReqSel.split(' ')
           if (
             aux[0]
               .toString()
               .toLowerCase()
               .includes(terminoBusqueda.toLowerCase())
           ) {
-            return true;
+            return true
           } else {
-            return false;
+            return false
           }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      case "filterFechaTerminado":
-        resultSearch = dataRequisicion.filter((element) => {
-          if (element.fecTerReqSel !== null) {
-            let aux = element.fecTerReqSel.split(" ");
-            if (
-              aux[0]
-                .toString()
-                .toLowerCase()
-                .includes(terminoBusqueda.toLowerCase())
-            ) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        });
-        setdataRequisicionTemp(resultSearch);
-        break;
-      default:
-        break;
+        } else {
+          return false
+        }
+      })
+      setdataRequisicionTemp(resultSearch)
+      break
+    default:
+      break
     }
-  };
+  }
 
   const obtenerDataRequisicionSeleccion = async (body = formState) => {
-    const resultPeticion = await getRequisicionSeleccionWithDetalle(body);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getRequisicionSeleccionWithDetalle(body)
+    const { message_error, description_error, result } = resultPeticion
 
-    //console.log(result, body);
+    // console.log(result, body);
     if (message_error.length === 0) {
-      setdataRequisicion(result);
-      setdataRequisicionTemp(result);
+      setdataRequisicion(result)
+      setdataRequisicionTemp(result)
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // ******* REQUISICION SELECCION DETALLE ********
 
   const closeDetalleRequisicionSeleccion = () => {
     // ocultamos el modal
-    setMostrarDetalle(false);
+    setMostrarDetalle(false)
     // dejamos el null la data del detalle
-    setDetalleSeleccionado(null);
-  };
+    setDetalleSeleccionado(null)
+  }
 
   // MOSTRAR Y OCULTAR DETALLE DE REQUISICION MOLIENDA
   const showRequisicionSeleccionDetalle = (idPosElement) => {
@@ -227,54 +218,54 @@ export const ListRequisicionSeleccion = () => {
       idPosElement
     ].reqSelDet.filter(
       (obj) => obj.idReqDet == dataRequisicionTemp[idPosElement].idReqDet
-    );
+    )
 
     const requisicionSeleccionDetalle =
-      dataRequisicionTemp[idPosElement].reqSelDet;
-    setDetalleSeleccionado(requisicionSeleccionDetalle);
-    setMostrarDetalle(true);
-  };
+      dataRequisicionTemp[idPosElement].reqSelDet
+    setDetalleSeleccionado(requisicionSeleccionDetalle)
+    setMostrarDetalle(true)
+  }
 
   const createSalidasRequisicionSeleccionDetalle = async (detalle) => {
-    console.log(detalle);
-    const resultPeticion = await createSalidasByReqSelDetAutomatico(detalle);
+    console.log(detalle)
+    const resultPeticion = await createSalidasByReqSelDetAutomatico(detalle)
 
-    const { message_error, description_error } = resultPeticion;
+    const { message_error, description_error } = resultPeticion
 
     if (message_error.length === 0) {
-      closeDetalleRequisicionSeleccion();
-      obtenerDataRequisicionSeleccion();
+      closeDetalleRequisicionSeleccion()
+      obtenerDataRequisicionSeleccion()
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se generaron las salidas con exito",
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se generaron las salidas con exito'
+      })
+      handleClickFeeback()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // RESET FILTER
   const resetData = () => {
-    setdataRequisicionTemp(dataRequisicion);
-  };
+    setdataRequisicionTemp(dataRequisicion)
+  }
 
   // TRAEMOS LA DATA ANTES DE QUE SE RENDERICE EL COMPONENTE
   useEffect(() => {
-    obtenerDataRequisicionSeleccion();
-  }, []);
+    obtenerDataRequisicionSeleccion()
+  }, [])
 
-  async function anular(id) {
-    //console.log(id);
-    var data = {
-      idReqSelDet: id,
-    };
-    await anularRequisicionSeleccion(data);
-    obtenerDataRequisicionSeleccion();
+  async function anular (id) {
+    // console.log(id);
+    const data = {
+      idReqSelDet: id
+    }
+    await anularRequisicionSeleccion(data)
+    obtenerDataRequisicionSeleccion()
   }
   return (
     <>
@@ -286,13 +277,13 @@ export const ListRequisicionSeleccion = () => {
               <div className="col-4">
                 <FechaPickerMonth
                   onNewfecEntSto={onChangeDateStartData}
-                  label={"Desde"}
+                  label={'Desde'}
                 />
               </div>
               <div className="col-4">
                 <FechaPickerMonth
                   onNewfecEntSto={onChangeDateEndData}
-                  label={"Hasta"}
+                  label={'Hasta'}
                 />
               </div>
               <div className="col-2 d-flex align-items-end">
@@ -360,10 +351,10 @@ export const ListRequisicionSeleccion = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
+                      }
                     }}
                   >
                     <TableCell align="left" width={70}>
@@ -376,9 +367,9 @@ export const ListRequisicionSeleccion = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white",
-                          },
+                            color: 'black',
+                            background: 'white'
+                          }
                         }}
                       />
                     </TableCell>
@@ -418,7 +409,7 @@ export const ListRequisicionSeleccion = () => {
                       <TableRow
                         key={row.idReqDet}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="center">{row.codLotSel}</TableCell>
@@ -442,23 +433,23 @@ export const ListRequisicionSeleccion = () => {
                               (row.reqSelDet.find(
                                 (obj) => obj.idReqDet == row.idReqDet
                               ).idReqSelDetEst === 1 &&
-                                " badge text-bg-warning p-2 ") +
+                                ' badge text-bg-warning p-2 ') +
                               (row.reqSelDet.find(
                                 (obj) => obj.idReqDet == row.idReqDet
                               ).idReqSelDetEst === 2 &&
-                                " badge text-bg-primary p-2 ") +
+                                ' badge text-bg-primary p-2 ') +
                               // (row.reqSelDet.find(
-                              //</TableCell>   (obj) => obj.idReqDet == row.idReqDet
+                              // </TableCell>   (obj) => obj.idReqDet == row.idReqDet
                               // ).idReqSelDetEst === 3 &&
                               //   " badge text-bg-warning p-2 ") +
                               (row.reqSelDet.find(
                                 (obj) => obj.idReqDet == row.idReqDet
                               ).idReqSelDetEst === 4 &&
-                                " badge text-bg-success p-2 ") +
+                                ' badge text-bg-success p-2 ') +
                               (row.reqSelDet.find(
                                 (obj) => obj.idReqDet == row.idReqDet
                               ).idReqSelDetEst === 5 &&
-                                " badge text-bg-danger p-2 ")
+                                ' badge text-bg-danger p-2 ')
 
                               // "badge text-bg-success p-2"
                             }
@@ -473,13 +464,13 @@ export const ListRequisicionSeleccion = () => {
 
                         <TableCell align="left">
                           {row.codReqSel +
-                            " - " +
-                            String(row.idReqDet).padStart(3, "0")}
+                            ' - ' +
+                            String(row.idReqDet).padStart(3, '0')}
                         </TableCell>
                         <TableCell align="left">{row.fecPedReqSel}</TableCell>
                         <TableCell align="left">
                           {row.fecTerReqSel === null
-                            ? "Aun no terminado"
+                            ? 'Aun no terminado'
                             : row.fecTerReqSel}
                         </TableCell>
 
@@ -508,7 +499,7 @@ export const ListRequisicionSeleccion = () => {
                                 ).idReqSelDetEst === 5
                               }
                               onClick={() => {
-                                showRequisicionSeleccionDetalle(i);
+                                showRequisicionSeleccionDetalle(i)
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -575,7 +566,7 @@ export const ListRequisicionSeleccion = () => {
         </div>
         {/* FEEDBACK DELETE */}
         <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={feedbackDelete}
           autoHideDuration={6000}
           onClose={handleCloseFeedback}
@@ -583,12 +574,12 @@ export const ListRequisicionSeleccion = () => {
           <Alert
             onClose={handleCloseFeedback}
             severity={style_message}
-            sx={{ width: "100%" }}
+            sx={{ width: '100%' }}
           >
             {feedback_description_error}
           </Alert>
         </Snackbar>
       </div>
     </>
-  );
-};
+  )
+}

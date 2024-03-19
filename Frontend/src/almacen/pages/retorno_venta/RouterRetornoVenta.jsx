@@ -1,14 +1,14 @@
-import React from "react";
-import { ListRetornoVenta } from "./ListRetornoVenta";
-import { ViewRetornoVenta } from "./ViewRetornoVenta";
+import React from 'react'
+import { ListRetornoVenta } from './ListRetornoVenta'
+import { ViewRetornoVenta } from './ViewRetornoVenta'
 
 export const RouterRetornoVenta = [
   {
-    path: "",
+    path: '',
     element: <ListRetornoVenta />
   },
   {
-    path: "view/:idDevolucionVenta",
+    path: 'view/:idDevolucionVenta',
     element: <ViewRetornoVenta />
   }
-];
+]

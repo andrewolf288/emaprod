@@ -1,198 +1,121 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from "@mui/material/Alert";
 // IMPORTACIONES UTILS
-import { Link } from "react-router-dom";
-import { TextField } from "@mui/material";
-import { useForm } from "./../../../hooks/useForm";
-import FechaPickerDay from "./../../../components/Fechas/FechaPickerDay";
-import FechaPickerMonth from "./../../../components/Fechas/FechaPickerMonth";
+import { TextField } from '@mui/material'
+import { useForm } from './../../../hooks/useForm'
+import FechaPickerMonth from './../../../components/Fechas/FechaPickerMonth'
 // IMPORTACIONES DE FILTROS
-import { FilterProductoProduccion } from "./../../../components/ReferencialesFilters/Producto/FilterProductoProduccion";
-import { FilterEstadoProduccion } from "./../../../components/ReferencialesFilters/Produccion/FilterEstadoProduccion";
-import { FilterTipoProduccion } from "./../../../components/ReferencialesFilters/TipoProduccion/FilterTipoProduccion";
-import { FilterEstadoInicioProgramadoProduccion } from "./../../../components/ReferencialesFilters/Produccion/FilterEstadoInicioProgramadoProduccion";
-import { getProduccionLote } from "../../../produccion/helpers/produccion_lote/getProduccionLote";
-
-// CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { FilterProductoProduccion } from './../../../components/ReferencialesFilters/Producto/FilterProductoProduccion'
+import { getProduccionLote } from '../../../produccion/helpers/produccion_lote/getProduccionLote'
 
 export const ListLoteProduccion = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataProduccionLote, setdataProduccionLote] = useState([]);
-  const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([]);
-
-  // ESTADOS PARA EL MODAL
-  const [mostrarOpciones, setMostrarOpciones] = useState(false);
-  const [produccionSeleccionado, setProduccionSeleccionado] = useState(null);
+  const [dataProduccionLote, setdataProduccionLote] = useState([])
+  const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([])
 
   // filtros
   const {
-    fecProdLotIni,
-    fecProdLotFin,
     formState,
-    setFormState,
-    onInputChange
+    setFormState
   } = useForm({
-    fecProdLotIni: "",
-    fecProdLotFin: ""
-  });
+    fecProdLotIni: '',
+    fecProdLotFin: ''
+  })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   const [inputs, setInputs] = useState({
-    producto: { label: "" },
-    provedor: { label: "" },
-    estado: { label: "" },
-    tipoProduccion: { label: "" },
-    estadoInicio: { label: "" },
-    numeroOP: "",
-    lotePrduccion: ""
-  });
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+    producto: { label: '' },
+    provedor: { label: '' },
+    estado: { label: '' },
+    tipoProduccion: { label: '' },
+    estadoInicio: { label: '' },
+    numeroOP: '',
+    lotePrduccion: ''
+  })
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Manejadores de cambios
   const handleFormFilter = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setInputs({
       ...inputs,
       [name]: value
-    });
-    //filter(value, name);
-  };
-
-  // Manejadores de cambios
-  const handleFormFilterop = (event, name) => {
-    const inputValue = event.target.value.toUpperCase(); // Convertir a mayúsculas
-    filter(inputValue, name);
-  };
+    })
+    // filter(value, name);
+  }
 
   const onChangeProducto = (obj) => {
     setInputs({
       ...inputs,
       producto: obj
-    });
-    //filter(label, "filterProducto");
-  };
-
-  const onChangeEstadoProduccion = (obj) => {
-    setInputs({
-      ...inputs,
-      estado: obj
-    });
-    //filter(label, "filterEstadoProduccion");
-  };
-
-  const onChangeTipoProduccion = (obj) => {
-    setInputs({
-      ...inputs,
-      tipoProduccion: obj
-    });
-    //filter(label, "filterTipoProduccion");
-  };
-
-  const onChangeEstadoInicioProduccion = (obj) => {
-    setInputs({
-      ...inputs,
-      estadoInicio: obj
-    });
-    //filter(label, "filterEstadoInicioProgramado");
-  };
-
-  const onChangeDateFechaIniciado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaInicioProduccion");
-  };
-
-  const onChangeDateFechaIniciadoProgramado = (newDate) => {
-    const dateFilter = newDate.split(" ");
-    filter(dateFilter[0], "filterFechaInicioProgramadoProduccion");
-  };
+    })
+    // filter(label, "filterProducto");
+  }
 
   // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecProdLotIni: dateFormat });
+    const dateFormat = newDate.split(' ')[0]
+    setFormState({ ...formState, fecProdLotIni: dateFormat })
     // realizamos una promesa
-    let body = {
+    const body = {
       ...formState,
       fecProdLotIni: dateFormat
-    };
-    obtenerDataProduccionLote(body);
-  };
+    }
+    obtenerDataProduccionLote(body)
+  }
 
   const onChangeDateEndData = (newDate) => {
-    let dateFormat = newDate.split(" ")[0];
-    setFormState({ ...formState, fecProdLotFin: dateFormat });
-    let body = {
+    const dateFormat = newDate.split(' ')[0]
+    setFormState({ ...formState, fecProdLotFin: dateFormat })
+    const body = {
       ...formState,
       fecProdLotFin: dateFormat
-    };
-    obtenerDataProduccionLote(body);
-  };
-
-  const filter = (terminoBusqueda, name) => {};
-
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
-  const obtenerDataProduccionLote = async (body = {}) => {
-    const resultPeticion = await getProduccionLote(body);
-    const { message_error, description_error, result } = resultPeticion;
-
-    console.log(result);
-    if (message_error.length === 0) {
-      setdataProduccionLote(result);
-      setdataProduccionLoteTemp(result);
-    } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
     }
-  };
+    obtenerDataProduccionLote(body)
+  }
+
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  const obtenerDataProduccionLote = async (body = {}) => {
+    const resultPeticion = await getProduccionLote(body)
+    const { message_error, description_error, result } = resultPeticion
+
+    console.log(result)
+    if (message_error.length === 0) {
+      setdataProduccionLote(result)
+      setdataProduccionLoteTemp(result)
+    } else {
+      alert(description_error)
+    }
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerDataProduccionLote();
-  }, []);
+    obtenerDataProduccionLote()
+  }, [])
 
   useEffect(() => {
-    let resultSearch = [];
-    dataProduccionLote.map((data) => {
+    const resultSearch = []
+    dataProduccionLote.forEach((data) => {
       if (
         (inputs.estado.label.includes(data.desEstPro) ||
           inputs.estado.label.length == 0) &&
@@ -206,24 +129,11 @@ export const ListLoteProduccion = () => {
         (data.codLotProd?.includes(inputs.lotePrduccion) ||
           inputs.lotePrduccion.length == 0)
       ) {
-        resultSearch.push({ ...data });
+        resultSearch.push({ ...data })
       }
-    });
-    setdataProduccionLoteTemp(resultSearch);
-  }, [inputs, dataProduccionLote]);
-
-  const resetData = () => {
-    setdataProduccionLoteTemp(dataProduccionLote);
-    setInputs({
-      producto: { label: "" },
-      provedor: { label: "" },
-      estado: { label: "" },
-      tipoProduccion: { label: "" },
-      estadoInicio: { label: "" },
-      numeroOP: "",
-      lotePrduccion: ""
-    });
-  };
+    })
+    setdataProduccionLoteTemp(resultSearch)
+  }, [inputs, dataProduccionLote])
 
   return (
     <>
@@ -310,9 +220,9 @@ export const ListLoteProduccion = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -327,14 +237,14 @@ export const ListLoteProduccion = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white"
+                            color: 'black',
+                            background: 'white'
                           }
                         }}
                       />
                     </TableCell>
 
-                    {/**********Agregando numero OP *************** */}
+                    {/** ********Agregando numero OP *************** */}
                     <TableCell align="left" width={140}>
                       <b>Número OP</b>
                       <TextField
@@ -346,13 +256,13 @@ export const ListLoteProduccion = () => {
                         autoComplete="off"
                         InputProps={{
                           style: {
-                            color: "black",
-                            background: "white"
+                            color: 'black',
+                            background: 'white'
                           }
                         }}
                       />
                     </TableCell>
-                    {/**********Agregando numero OP *************** */}
+                    {/** ********Agregando numero OP *************** */}
 
                     <TableCell align="left" width={140}>
                       <b>Producto</b>
@@ -388,7 +298,7 @@ export const ListLoteProduccion = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell component="th" scope="row">
@@ -398,105 +308,105 @@ export const ListLoteProduccion = () => {
                         <TableCell align="left">{row.nomProd}</TableCell>
                         <TableCell align="center">{row.fecProdIni}</TableCell>
                         <TableCell align="center">
-                          {row["req_env_enc"][0]["requerido"] != 0 && (
+                          {row.req_env_enc[0].requerido != 0 && (
                             <span className="d-block mb-2 badge text-bg-danger p-2">
-                              {`Requerido: ${row["req_env_enc"][0]["requerido"]}`}
+                              {`Requerido: ${row.req_env_enc[0].requerido}`}
                             </span>
                           )}
-                          {row["req_env_enc"][0]["en_proceso"] != 0 && (
+                          {row.req_env_enc[0].en_proceso != 0 && (
                             <span className="d-block badge text-bg-warning p-2">
-                              {`En proceso: ${row["req_env_enc"][0]["en_proceso"]}`}
+                              {`En proceso: ${row.req_env_enc[0].en_proceso}`}
                             </span>
                           )}
 
-                          {row["req_env_enc"][0]["terminado"] != 0 && (
+                          {row.req_env_enc[0].terminado != 0 && (
                             <span className="d-block badge text-bg-success p-2">
-                              {`Completo: ${row["req_env_enc"][0]["terminado"]}`}
+                              {`Completo: ${row.req_env_enc[0].terminado}`}
                             </span>
                           )}
-                          {row["req_env_enc"][0]["requerido"] == 0 &&
-                            row["req_env_enc"][0]["en_proceso"] == 0 &&
-                            row["req_env_enc"][0]["terminado"] == 0 && (
-                              <p>No hay requisiciones</p>
-                            )}
+                          {row.req_env_enc[0].requerido == 0 &&
+                            row.req_env_enc[0].en_proceso == 0 &&
+                            row.req_env_enc[0].terminado == 0 && (
+                            <p>No hay requisiciones</p>
+                          )}
                         </TableCell>
                         <TableCell align="center">
-                          {row["req_ing_prod"][0]["requerido"] != 0 && (
+                          {row.req_ing_prod[0].requerido != 0 && (
                             <span className="d-block mb-2 badge text-bg-danger p-2">
-                              {`Requerido: ${row["req_ing_prod"][0]["requerido"]}`}
+                              {`Requerido: ${row.req_ing_prod[0].requerido}`}
                             </span>
                           )}
-                          {row["req_ing_prod"][0]["requerido"] == 0 &&
-                            row["req_ing_prod"][0]["terminado"] != 0 && (
-                              <span className="d-block badge text-bg-success p-2">
-                                {`Completo: ${row["req_ing_prod"][0]["terminado"]}`}
-                              </span>
-                            )}
-                          {row["req_ing_prod"][0]["requerido"] == 0 &&
-                            row["req_ing_prod"][0]["terminado"] == 0 && (
-                              <p>No hay requisiciones</p>
-                            )}
+                          {row.req_ing_prod[0].requerido == 0 &&
+                            row.req_ing_prod[0].terminado != 0 && (
+                            <span className="d-block badge text-bg-success p-2">
+                              {`Completo: ${row.req_ing_prod[0].terminado}`}
+                            </span>
+                          )}
+                          {row.req_ing_prod[0].requerido == 0 &&
+                            row.req_ing_prod[0].terminado == 0 && (
+                            <p>No hay requisiciones</p>
+                          )}
                         </TableCell>
                         <TableCell align="center">
-                          {row["req_agr"][0]["requerido"] != 0 && (
+                          {row.req_agr[0].requerido != 0 && (
                             <span className="d-block mb-2 badge text-bg-danger p-2">
-                              {`Requerido: ${row["req_agr"][0]["requerido"]}`}
+                              {`Requerido: ${row.req_agr[0].requerido}`}
                             </span>
                           )}
-                          {row["req_agr"][0]["en_proceso"] != 0 && (
+                          {row.req_agr[0].en_proceso != 0 && (
                             <span className="d-block badge text-bg-warning p-2">
-                              {`En proceso: ${row["req_agr"][0]["en_proceso"]}`}
+                              {`En proceso: ${row.req_agr[0].en_proceso}`}
                             </span>
                           )}
 
-                          {row["req_agr"][0]["terminado"] != 0 && (
+                          {row.req_agr[0].terminado != 0 && (
                             <span className="d-block badge text-bg-success p-2">
-                              {`Completo: ${row["req_agr"][0]["terminado"]}`}
+                              {`Completo: ${row.req_agr[0].terminado}`}
                             </span>
                           )}
-                          {row["req_agr"][0]["requerido"] == 0 &&
-                            row["req_agr"][0]["en_proceso"] == 0 &&
-                            row["req_agr"][0]["terminado"] == 0 && (
-                              <p>No hay requisiciones</p>
-                            )}
+                          {row.req_agr[0].requerido == 0 &&
+                            row.req_agr[0].en_proceso == 0 &&
+                            row.req_agr[0].terminado == 0 && (
+                            <p>No hay requisiciones</p>
+                          )}
                         </TableCell>
                         <TableCell align="center">
-                          {row["req_dev"][0]["requerido"] != 0 && (
+                          {row.req_dev[0].requerido != 0 && (
                             <span className="d-block mb-2 badge text-bg-danger p-2">
-                              {`Requerido: ${row["req_dev"][0]["requerido"]}`}
+                              {`Requerido: ${row.req_dev[0].requerido}`}
                             </span>
                           )}
-                          {row["req_dev"][0]["en_proceso"] != 0 && (
+                          {row.req_dev[0].en_proceso != 0 && (
                             <span className="d-block badge text-bg-warning p-2">
-                              {`En proceso: ${row["req_dev"][0]["en_proceso"]}`}
+                              {`En proceso: ${row.req_dev[0].en_proceso}`}
                             </span>
                           )}
 
-                          {row["req_dev"][0]["terminado"] != 0 && (
+                          {row.req_dev[0].terminado != 0 && (
                             <span className="d-block badge text-bg-success p-2">
-                              {`Completo: ${row["req_dev"][0]["terminado"]}`}
+                              {`Completo: ${row.req_dev[0].terminado}`}
                             </span>
                           )}
-                          {row["req_dev"][0]["requerido"] == 0 &&
-                            row["req_dev"][0]["en_proceso"] == 0 &&
-                            row["req_dev"][0]["terminado"] == 0 && (
-                              <p>No hay requisiciones</p>
-                            )}
+                          {row.req_dev[0].requerido == 0 &&
+                            row.req_dev[0].en_proceso == 0 &&
+                            row.req_dev[0].terminado == 0 && (
+                            <p>No hay requisiciones</p>
+                          )}
                         </TableCell>
                         <TableCell
                           align="left"
                           sx={{
-                            display: "flex"
+                            display: 'flex'
                           }}
                         >
                           <div
                             className="btn-toolbar btn btn-primary me-2 btn"
                             onClick={() => {
-                              //console.log(row)
+                              // console.log(row)
                               window.open(
                                 `/almacen/lote-produccion/view/${row.id}`,
-                                "_blank"
-                              );
+                                '_blank'
+                              )
                             }}
                           >
                             <svg
@@ -531,5 +441,5 @@ export const ListLoteProduccion = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

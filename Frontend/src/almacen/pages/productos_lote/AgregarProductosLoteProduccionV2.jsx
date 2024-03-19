@@ -1,194 +1,193 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 
-import { getProduccionWhitProductosFinales } from "./../../helpers/producto-produccion/getProduccionWhitProductosFinales";
-import { useLocation, useNavigate } from "react-router-dom";
-import { RowProductosAgregadosProduccion } from "./../../components/RowProductosAgregadosProduccion";
-import { RowProductosDisponiblesProduccion } from "./../../components/RowProductosDisponiblesProduccion";
-import queryString from "query-string";
-import { TextField, Typography } from "@mui/material";
-import { getMateriaPrimaById } from "../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import { createProductosFinalesLoteProduccion } from "./../../helpers/producto-produccion/createProductosFinalesLoteProduccion";
+import { getProduccionWhitProductosFinales } from './../../helpers/producto-produccion/getProduccionWhitProductosFinales'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { RowProductosAgregadosProduccion } from './../../components/RowProductosAgregadosProduccion'
+import { RowProductosDisponiblesProduccion } from './../../components/RowProductosDisponiblesProduccion'
+import queryString from 'query-string'
+import { TextField, Typography } from '@mui/material'
+import { getMateriaPrimaById } from '../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import { createProductosFinalesLoteProduccion } from './../../helpers/producto-produccion/createProductosFinalesLoteProduccion'
 import {
   DiaJuliano,
   FormatDateTimeMYSQLNow,
   letraAnio,
-  _parseInt,
   FormatDateTimeMYSQLNowPlusYears
-} from "../../../utils/functions/FormatDate";
-import { DetalleProductosFinales } from "./DetalleProductosFinales";
-import FechaPicker from "../../../../src/components/Fechas/FechaPicker";
-import FechaPickerYear from "../../../components/Fechas/FechaPickerYear";
-import { EncabezadoInformacionProduccion } from "../../components/componentes-utils/EncabezadoInformacionProduccion";
-import { FilterProductosProgramados } from "../../../components/ReferencialesFilters/Producto/FilterProductosProgramados";
-import { updateFinEntregaProductosFinales } from "../../helpers/producto-produccion/updateFinEntregaProductosFinales";
+} from '../../../utils/functions/FormatDate'
+import { DetalleProductosFinales } from './DetalleProductosFinales'
+import FechaPicker from '../../../../src/components/Fechas/FechaPicker'
+import FechaPickerYear from '../../../components/Fechas/FechaPickerYear'
+import { EncabezadoInformacionProduccion } from '../../components/componentes-utils/EncabezadoInformacionProduccion'
+import { FilterProductosProgramados } from '../../../components/ReferencialesFilters/Producto/FilterProductosProgramados'
+import { updateFinEntregaProductosFinales } from '../../helpers/producto-produccion/updateFinEntregaProductosFinales'
 
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export const AgregarProductosLoteProduccionV2 = () => {
   // RECIBIMOS LOS PARAMETROS DE LA URL
-  const location = useLocation();
-  const { idLotProdc = "" } = queryString.parse(location.search);
+  const location = useLocation()
+  const { idLotProdc = '' } = queryString.parse(location.search)
 
   // ESTADOS DE LOS PRODUCTOS FINALES DE LA PRODUCCION
   const [proFinProd, setProFinProd] = useState({
     id: 0,
-    numop: "", // numero de orden de produccion
+    numop: '', // numero de orden de produccion
     canLotProd: 0, // cantidad de produccion
-    codLotProd: "", // codigo de produccion
-    desEstPro: "", // descripcion de estado de produccion
-    desProdTip: "", // descripcion dle tipo de produccion
-    fecVenLotProd: "", // fecha vencimiento de produccion
+    codLotProd: '', // codigo de produccion
+    desEstPro: '', // descripcion de estado de produccion
+    desProdTip: '', // descripcion dle tipo de produccion
+    fecVenLotProd: '', // fecha vencimiento de produccion
     idProdEst: 0, // id estado produccion
     idProdTip: 0, // id estado tipo produccion
     idProdt: 0, // id producto intermedio
     idSubCla: 0, // sub clase
-    klgLotProd: "", // peso de la produccion
-    nomProd: "", // nombre del producto intermedio
+    klgLotProd: '', // peso de la produccion
+    nomProd: '', // nombre del producto intermedio
     proFinProdDet: [] // productos finales programados
-  });
+  })
 
   const {
     id, // id del proceso de produccion
     proFinProdDet, // productos finales programados
     codLotProd, // codigo de lote de produccion
     idSubCla
-  } = proFinProd;
+  } = proFinProd
 
   // PRODUCTOS FINALES DISPONIBLES POR PRODUCCIÓN
-  const [detalleProductosFinales, setdetalleProductosFinales] = useState([]);
+  const [detalleProductosFinales, setdetalleProductosFinales] = useState([])
 
   // STATES PARA AGREGAR PRESENTACIONES FINALES
   const [productoFinal, setproductoFinal] = useState({
     idProdFin: 0,
     cantidadIngresada: 0.0,
     fecEntSto: FormatDateTimeMYSQLNow(),
-    fecVenSto: ""
-  });
-  const { idProdFin, cantidadIngresada, fecEntSto, fecVenSto } = productoFinal;
+    fecVenSto: ''
+  })
+  const { idProdFin, cantidadIngresada, fecEntSto, fecVenSto } = productoFinal
 
   // ******* ACCIONES DE FILTER PRODUCTO FINAL ******
   // MANEJADOR DE PRODUCTO
   const onAddProductoFinalSubProducto = (value) => {
-    var year = 0;
+    let year = 0
     // si la UM de al presentacion final es LTS, entonces year = 1
     if (idSubCla === 50) {
-      year = 1; // frescos
+      year = 1 // frescos
     } else {
-      year = 4; // otros
+      year = 4 // otros
     }
 
     // Calculamos automaticamente su fecha de vencimiento
-    var fecVenEntProdFin = FormatDateTimeMYSQLNowPlusYears(year);
+    const fecVenEntProdFin = FormatDateTimeMYSQLNowPlusYears(year)
     setproductoFinal({
       ...productoFinal,
       idProdFin: value.id, // id de de la presentacion final
       fecVenSto: fecVenEntProdFin // fecha de vencimiento
-    });
-  };
+    })
+  }
 
   // Manejador de cantidad de presentacion final
   const handledFormCantidadIngresada = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setproductoFinal({
       ...productoFinal,
       [name]: value
-    });
-  };
+    })
+  }
 
   // Manejador de fecha de ingreso de presentacion final
   const onAddFecEntSto = (newfecEntSto) => {
-    var year = 0;
+    let year = 0
     // si la UM de al presentacion final es LTS, entonces year = 1
     if (idSubCla === 50) {
-      year = 1; // frescos
+      year = 1 // frescos
     } else {
-      year = 4; // otros
+      year = 4 // otros
     }
 
-    const newfecVenEnt = FormatDateTimeMYSQLNowPlusYears(year, newfecEntSto);
+    const newfecVenEnt = FormatDateTimeMYSQLNowPlusYears(year, newfecEntSto)
 
     setproductoFinal({
       ...productoFinal,
       fecEntSto: newfecEntSto,
       fecVenSto: newfecVenEnt
-    });
-  };
+    })
+  }
 
   // Manejador de fecha de vencimiento de presentacion final
   const onAddFecVenSto = (newfecEntSto) => {
     setproductoFinal({
       ...productoFinal,
       fecVenSto: newfecEntSto
-    });
-  };
+    })
+  }
 
   // ********* ESTADO PARA CONTROLAR EL FEEDBACK **********
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ******** MANEJO PARA EL ARREGLO DE PRODUCTOS FINALES **********
 
   // AÑADIR PRODUCTOS FINALES AL DETALLE
   const handleAddProductoFinal = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // comprobamos si se ingresaron los datos necesarios
     if (idProdFin !== 0 && cantidadIngresada > 0.0) {
       // primero verificamos si ya se ingreso la presentacion final
       const itemFound = detalleProductosFinales.find(
         (element) => element.idProdt === idProdFin
-      );
+      )
 
       // si se encontro la presentacion final, mostramos una alerta
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Ya se agrego esta presentación final"
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Ya se agrego esta presentación final'
+        })
+        handleClickFeeback()
       } else {
         // traemos los datos de presentacion final
-        const resultPeticion = await getMateriaPrimaById(idProdFin);
-        const { message_error, description_error, result } = resultPeticion;
+        const resultPeticion = await getMateriaPrimaById(idProdFin)
+        const { message_error, description_error, result } = resultPeticion
         if (message_error.length === 0) {
           const {
             id: idProd,
@@ -198,58 +197,58 @@ export const AgregarProductosLoteProduccionV2 = () => {
             desSubCla,
             nomProd,
             simMed
-          } = result[0];
+          } = result[0]
 
           // buscamos en el detall de presentaciones programadas
           const productMatch = proFinProdDet.find(
             (element) => element.idProdt === idProd
-          );
+          )
 
-          const idProdFinal = productMatch?.id; // referencia directa a la celda de producto final de lote de produccion
+          const idProdFinal = productMatch?.id // referencia directa a la celda de producto final de lote de produccion
 
           // generamos nuestro detalle
           const detalle = {
-            idProdFinal: idProdFinal, // referencia directa a su producto programado
+            idProdFinal, // referencia directa a su producto programado
             idProdc: id, // lote de produccion asociado
             idProdt: idProd, // id producto
-            codProd: codProd, // codigo de producto sigo
-            codProd2: codProd2, // codigo emaprod
-            desCla: desCla, // clase del producto
-            desSubCla: desSubCla, // subclase del producto
-            nomProd: nomProd, // nombre del producto
-            simMed: simMed, // medida del producto
-            fecEntSto: fecEntSto, // fecha de entrada
+            codProd, // codigo de producto sigo
+            codProd2, // codigo emaprod
+            desCla, // clase del producto
+            desSubCla, // subclase del producto
+            nomProd, // nombre del producto
+            simMed, // medida del producto
+            fecEntSto, // fecha de entrada
             fecVenEntProdFin: fecVenSto, // fecha de vencimiento
             canProdFin: cantidadIngresada // cantidad de presentacion final ingresada
-          };
+          }
 
-          const dataDetalle = [...detalleProductosFinales, detalle];
+          const dataDetalle = [...detalleProductosFinales, detalle]
 
-          setdetalleProductosFinales(dataDetalle);
+          setdetalleProductosFinales(dataDetalle)
         } else {
           setfeedbackMessages({
-            style_message: "error",
+            style_message: 'error',
             feedback_description_error: description_error
-          });
-          handleClickFeeback();
+          })
+          handleClickFeeback()
         }
       }
     } else {
-      let handledErrors = "";
+      let handledErrors = ''
 
       if (idProdFin === 0) {
-        handledErrors += "No se ha proporcionado una presentación final\n";
+        handledErrors += 'No se ha proporcionado una presentación final\n'
       }
 
       if (cantidadIngresada <= 0) {
-        handledErrors += "No se ha proporcionado una cantidad\n";
+        handledErrors += 'No se ha proporcionado una cantidad\n'
       }
 
       setfeedbackMessages({
-        style_message: "warning",
+        style_message: 'warning',
         feedback_description_error: handledErrors
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
 
     // reset de los filtros
@@ -257,25 +256,25 @@ export const AgregarProductosLoteProduccionV2 = () => {
       idProdFin: 0,
       cantidadIngresada: 0.0,
       fecEntSto: FormatDateTimeMYSQLNow(),
-      fecVenSto: ""
-    });
-  };
+      fecVenSto: ''
+    })
+  }
 
   // ACCION PARA EDITAR CAMPOS EN DETALLE DE PRODUCTO DEVUELTO
   const handleChangeInputProductoFinal = async ({ target }, idItem) => {
-    const { value, name } = target;
+    const { value, name } = target
     const editFormDetalle = detalleProductosFinales.map((element) => {
       if (element.idProdt === idItem) {
         return {
           ...element,
           [name]: value
-        };
+        }
       } else {
-        return element;
+        return element
       }
-    });
-    setdetalleProductosFinales(editFormDetalle);
-  };
+    })
+    setdetalleProductosFinales(editFormDetalle)
+  }
 
   // ACCION PARA ELIMINA DEL DETALLE UN PRODUCTO FINAL
   const handleDeleteDetallePresentacionFinal = async (idItem) => {
@@ -283,33 +282,33 @@ export const AgregarProductosLoteProduccionV2 = () => {
     const dataDetalleProductosDevueltos = detalleProductosFinales.filter(
       (element) => {
         if (element.idProdt !== idItem) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
       }
-    );
+    )
 
     // establecemos el detalle
-    setdetalleProductosFinales(dataDetalleProductosDevueltos);
-  };
+    setdetalleProductosFinales(dataDetalleProductosDevueltos)
+  }
 
   // ******** OBTENER DATA DE PRODUCTOS FINALES *********
   const obtenerDataProductosFinalesProduccion = async () => {
     // traer informacion de backend sobre el lote de produccion y sus productos finales
-    const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getProduccionWhitProductosFinales(idLotProdc)
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
       // establecemos el valor con la informacion de la llamada
-      setProFinProd(result[0]);
+      setProFinProd(result[0])
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   /*
     Funciones que nos permiten dar por finalizar el ingreso de una presentacion final en particular
@@ -324,88 +323,88 @@ export const AgregarProductosLoteProduccionV2 = () => {
         idProdcProdtFinEst: variacion > 0 ? 3 : variacion == 0 ? 4 : 2 // menor, conforme, mayor a lo programado
       },
       idProdc: id // id de produccion
-    };
+    }
 
     const { message_error, description_error } =
-      await updateFinEntregaProductosFinales(dataActualizacion);
+      await updateFinEntregaProductosFinales(dataActualizacion)
     if (message_error.length === 0) {
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Se actualizó con éxito"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Se actualizó con éxito'
+      })
+      handleClickFeeback()
 
       setTimeout(() => {
-        window.close();
-      }, "1000");
+        window.close()
+      }, '1000')
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   // ****** SUBMIT PRODUCTOS FINALES ******
   const crearProductosFinalesLoteProduccion = async () => {
     const datosProduccion = {
       idProduccion: id,
       codLotProd
-    };
+    }
 
-    detalleProductosFinales.map((obj) => {
-      obj.letAniEntSto = letraAnio(obj.fecEntSto);
-      obj.diaJulEntSto = DiaJuliano(obj.fecEntSto);
-    });
+    detalleProductosFinales.forEach((obj) => {
+      obj.letAniEntSto = letraAnio(obj.fecEntSto)
+      obj.diaJulEntSto = DiaJuliano(obj.fecEntSto)
+    })
 
-    console.log(detalleProductosFinales, datosProduccion);
+    console.log(detalleProductosFinales, datosProduccion)
 
     const resultPeticion = await createProductosFinalesLoteProduccion(
       detalleProductosFinales,
       datosProduccion
-    );
-    const { message_error, description_error } = resultPeticion;
+    )
+    const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
-      onNavigateBack();
+      onNavigateBack()
       setfeedbackMessages({
-        style_message: "success",
-        feedback_description_error: "Guardado con exito"
-      });
-      handleClickFeeback();
+        style_message: 'success',
+        feedback_description_error: 'Guardado con exito'
+      })
+      handleClickFeeback()
 
       setTimeout(() => {
-        window.close();
-      }, "1000");
+        window.close()
+      }, '1000')
     } else {
       setfeedbackMessages({
-        style_message: "error",
+        style_message: 'error',
         feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   const handleSubmitProductosFinalesLoteProduccion = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (detalleProductosFinales.length === 0) {
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: "No has agregado items al detalle"
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: 'No has agregado items al detalle'
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
-      crearProductosFinalesLoteProduccion();
+      setdisableButton(true)
+      crearProductosFinalesLoteProduccion()
     }
-  };
+  }
 
   // CODIGO QUE SE EJECUTA ANTES DE LA RENDERIZACION
   useEffect(() => {
-    obtenerDataProductosFinalesProduccion();
-  }, []);
+    obtenerDataProductosFinalesProduccion()
+  }, [])
 
   return (
     <>
@@ -427,9 +426,9 @@ export const AgregarProductosLoteProduccionV2 = () => {
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5"
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
                           }
                         }}
                       >
@@ -554,9 +553,9 @@ export const AgregarProductosLoteProduccionV2 = () => {
                       <TableHead>
                         <TableRow
                           sx={{
-                            "& th": {
-                              color: "rgba(96, 96, 96)",
-                              backgroundColor: "#f5f5f5"
+                            '& th': {
+                              color: 'rgba(96, 96, 96)',
+                              backgroundColor: '#f5f5f5'
                             }
                           }}
                         >
@@ -616,6 +615,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
               type="submit"
               onClick={handleSubmitProductosFinalesLoteProduccion}
               className="btn btn-primary"
+              value={disableButton}
             >
               Guardar
             </button>
@@ -624,7 +624,7 @@ export const AgregarProductosLoteProduccionV2 = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -632,13 +632,13 @@ export const AgregarProductosLoteProduccionV2 = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

@@ -1,66 +1,47 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
-import { getRequisicionMaterialesWithDetalle } from "../../helpers/requisicion-materiales/getRequisicionMaterialesById";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
+import { getRequisicionMaterialesWithDetalle } from '../../helpers/requisicion-materiales/getRequisicionMaterialesById'
 
 export const ListRequisicionMaterialesAlmacen = () => {
   // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataRequisicion, setdataRequisicion] = useState([]);
-  const [dataRequisicionTemp, setdataRequisicionTemp] = useState([]);
+  const [dataRequisicion, setdataRequisicion] = useState([])
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataRequisicionMateriales = async () => {
-    const resultPeticion = await getRequisicionMaterialesWithDetalle();
-    const { message_error, description_error, result } = resultPeticion;
-    console.log(resultPeticion);
+    const resultPeticion = await getRequisicionMaterialesWithDetalle()
+    const { message_error, description_error, result } = resultPeticion
+    console.log(resultPeticion)
     if (message_error.length === 0) {
-      setdataRequisicion(result);
-      setdataRequisicionTemp(result);
+      setdataRequisicion(result)
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+      alert(description_error)
     }
-  };
+  }
 
   useEffect(() => {
-    obtenerDataRequisicionMateriales();
-  }, []);
+    obtenerDataRequisicionMateriales()
+  }, [])
 
   return (
     <>
@@ -73,10 +54,10 @@ export const ListRequisicionMaterialesAlmacen = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5",
-                      },
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
+                      }
                     }}
                   >
                     <TableCell align="left" width={70}>
@@ -97,13 +78,13 @@ export const ListRequisicionMaterialesAlmacen = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataRequisicionTemp
+                  {dataRequisicion
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, i) => (
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left" width={100}>
@@ -113,12 +94,12 @@ export const ListRequisicionMaterialesAlmacen = () => {
                           <span
                             className={
                               row.idReqEst === 1
-                                ? "badge text-bg-danger"
+                                ? 'badge text-bg-danger'
                                 : row.idReqEst === 2
-                                ? "badge text-bg-warning"
-                                : row.idReqEst === 3
-                                ? "badge text-bg-success"
-                                : "badge text-bg-success"
+                                  ? 'badge text-bg-warning'
+                                  : row.idReqEst === 3
+                                    ? 'badge text-bg-success'
+                                    : 'badge text-bg-success'
                             }
                           >
                             {row.desReqEst}
@@ -127,7 +108,7 @@ export const ListRequisicionMaterialesAlmacen = () => {
                         <TableCell align="left">{row.fecPedReq}</TableCell>
                         <TableCell align="left">
                           {row.fecEntReq === null
-                            ? "Aun no terminado"
+                            ? 'Aun no terminado'
                             : row.fecEntReq}
                         </TableCell>
                         <TableCell align="left">
@@ -136,8 +117,8 @@ export const ListRequisicionMaterialesAlmacen = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/requisicion-materiales/view/${row.id}`,
-                                  "_blank"
-                                );
+                                  '_blank'
+                                )
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -165,7 +146,7 @@ export const ListRequisicionMaterialesAlmacen = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={dataRequisicionTemp.length}
+              count={dataRequisicion.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -175,5 +156,5 @@ export const ListRequisicionMaterialesAlmacen = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

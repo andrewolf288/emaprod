@@ -1,285 +1,283 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from 'react'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TablePagination from "@mui/material/TablePagination";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import TablePagination from '@mui/material/TablePagination'
 // IMPORTACIONES PARA EL FEEDBACK
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { useNavigate } from "react-router-dom";
-import { createRequisicionSeleccionWithDetalle } from "./../../helpers/requisicion/createRequisicionSeleccionWithDetalle";
-import { getMateriaPrimaById } from "./../../../helpers/Referenciales/producto/getMateriaPrimaById";
-import { RowDetalleRequisicionSeleccion } from "../../components/RowDetalleRequisicionSeleccion";
-import { FilterAllProductos } from "../../../components/ReferencialesFilters/Producto/FilterAllProductos";
-import FechaPicker from "../../../../src/components/Fechas/FechaPicker";
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { useNavigate } from 'react-router-dom'
+import { createRequisicionSeleccionWithDetalle } from './../../helpers/requisicion/createRequisicionSeleccionWithDetalle'
+import { getMateriaPrimaById } from './../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import { RowDetalleRequisicionSeleccion } from '../../components/RowDetalleRequisicionSeleccion'
+import FechaPicker from '../../../../src/components/Fechas/FechaPicker'
 import {
-  FormatDateMYSQL,
-  FormatDateTimeMYSQLNow,
-} from "../../../utils/functions/FormatDate";
-import { FilterMateriaPrimaPorSeleccionar } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaPorSeleccionar";
-import { Typography } from "@mui/material";
+  FormatDateTimeMYSQLNow
+} from '../../../utils/functions/FormatDate'
+import { FilterMateriaPrimaPorSeleccionar } from '../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaPorSeleccionar'
+import { Typography } from '@mui/material'
 // CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = React.forwardRef(function Alert (props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 export const AgregarRequisicionSeleccion = () => {
   // ESTADOS PARA LOS DATOS DE REQUISICION
   const [requisicion, setRequisicion] = useState({
-    codLotSel: "",
+    codLotSel: '',
     fecPedReqSel: FormatDateTimeMYSQLNow(),
-    reqSelDet: [], // DETALLE DE REQUISICION MOLIENDA
-  });
-  const { codLotSel, reqSelDet } = requisicion;
+    reqSelDet: [] // DETALLE DE REQUISICION MOLIENDA
+  })
+  const { codLotSel, reqSelDet } = requisicion
 
   // ESTADOS PARA DATOS DE DETALLE FORMULA (DETALLE)
   const [materiaPrimaDetalle, setmateriaPrimaDetalle] = useState({
     idMateriaPrima: 0,
     cantidadMateriaPrima: 0,
-    fechaRequisicion: FormatDateTimeMYSQLNow(),
-  });
+    fechaRequisicion: FormatDateTimeMYSQLNow()
+  })
   const { idMateriaPrima, cantidadMateriaPrima, fechaRequisicion } =
-    materiaPrimaDetalle;
+    materiaPrimaDetalle
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false);
+  const [feedbackCreate, setfeedbackCreate] = useState(false)
   const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: "",
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
+    style_message: '',
+    feedback_description_error: ''
+  })
+  const { style_message, feedback_description_error } = feedbackMessages
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
-    setfeedbackCreate(true);
-  };
+    setfeedbackCreate(true)
+  }
 
   const handleCloseFeedback = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
+    if (reason === 'clickaway') {
+      return
     }
-    setfeedbackCreate(false);
-  };
+    setfeedbackCreate(false)
+  }
 
   // ESTADO PARA BOTON CREAR
-  const [disableButton, setdisableButton] = useState(false);
+  const [disableButton, setdisableButton] = useState(false)
 
   // ESTADOS PARA LA NAVEGACION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const onNavigateBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // CONTROLADOR DE FORMULARIO
   const handledForm = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setRequisicion({
       ...requisicion,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   // MANEJADOR DE AGREGAR MATERIA PRIMA A DETALLE DE FORMULA
   const onMateriaPrimaId = ({ id }) => {
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      idMateriaPrima: id,
-    });
-  };
+      idMateriaPrima: id
+    })
+  }
 
   const onAddFecReq = (newfecEntSto) => {
-    //setdatosEntrada({ ...datosEntrada, fecVenEntSto: newfecEntSto });
-    console.log(newfecEntSto);
+    // setdatosEntrada({ ...datosEntrada, fecVenEntSto: newfecEntSto });
+    console.log(newfecEntSto)
 
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      fechaRequisicion: newfecEntSto,
-    });
-  };
+      fechaRequisicion: newfecEntSto
+    })
+  }
 
   const handleCantidadMateriaPrima = ({ target }) => {
-    const { name, value } = target;
+    const { name, value } = target
     setmateriaPrimaDetalle({
       ...materiaPrimaDetalle,
-      [name]: value,
-    });
-  };
+      [name]: value
+    })
+  }
 
   const deleteDetalleRequisicion = (idItem) => {
     const nuevaDataDetalleRequisicion = reqSelDet.filter((element) => {
       if (element.idMatPri !== idItem) {
-        return element;
+        return element
       } else {
-        return false;
+        return false
       }
-    });
+    })
 
     setRequisicion({
       ...requisicion,
-      reqSelDet: nuevaDataDetalleRequisicion,
-    });
-  };
+      reqSelDet: nuevaDataDetalleRequisicion
+    })
+  }
 
   const handledFormularioDetalle = ({ target }, idItem) => {
-    const { value, name } = target;
+    const { value, name } = target
     const editFormDetalle = reqSelDet.map((element) => {
       if (element.idMatPri === idItem) {
         return {
           ...element,
-          [name]: value,
-        };
+          [name]: value
+        }
       } else {
-        return element;
+        return element
       }
-    });
+    })
 
     setRequisicion({
       ...requisicion,
-      reqSelDet: editFormDetalle,
-    });
-  };
+      reqSelDet: editFormDetalle
+    })
+  }
 
   // FUNCION ASINCRONA PARA CREAR LA REQUISICION CON SU DETALLE
   const crearRequisicion = async () => {
     // el codigo es de 3 digitos.
-    requisicion.codLotSel = requisicion.codLotSel.padStart(3, "0");
-    console.log(requisicion);
-    const { message_error, description_error, result } =
-      await createRequisicionSeleccionWithDetalle(requisicion);
+    requisicion.codLotSel = requisicion.codLotSel.padStart(3, '0')
+    console.log(requisicion)
+    const { message_error, description_error } =
+      await createRequisicionSeleccionWithDetalle(requisicion)
 
     // console.log(requisicion, result)
     if (message_error.length === 0) {
       // retornamos a la anterior vista
-      onNavigateBack();
+      onNavigateBack()
     } else {
       setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error,
-      });
-      handleClickFeeback();
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
     }
-    setdisableButton(false);
-  };
+    setdisableButton(false)
+  }
 
   // SUBMIT FORMULARIO DE REQUISICION (M-D)
   const handleSubmitRequisicion = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    let handleErrors = "";
+    let handleErrors = ''
 
-    //return;
+    // return;
     if (codLotSel.length === 0 || reqSelDet.length === 0) {
       if (codLotSel.length === 0) {
-        handleErrors += "No se proporciono un codigo de lote\n";
+        handleErrors += 'No se proporciono un codigo de lote\n'
       }
       if (reqSelDet.length === 0) {
         handleErrors +=
-          "No hay ninguna materia prima en el detalle del requerimiento\n";
+          'No hay ninguna materia prima en el detalle del requerimiento\n'
       }
 
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: handleErrors,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: handleErrors
+      })
+      handleClickFeeback()
     } else {
-      setdisableButton(true);
+      setdisableButton(true)
       // LLAMAMOS A LA FUNCION CREAR REQUISICION
-      crearRequisicion();
+      crearRequisicion()
       // RESETEAMOS LOS VALORES
     }
-  };
+  }
 
   // AGREGAR MATERIA PRIMA A DETALLE DE REQUISICION
   const handleAddNewMateriPrimaDetalle = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // PRIMERO VERIFICAMOS QUE LOS INPUTS TENGAN DATOS
     if (idMateriaPrima !== 0 && cantidadMateriaPrima > 0) {
       // PRIMERO VERIFICAMOS SI EXISTE ALGUNA COINCIDENCIA DE LO INGRESADO
       const itemFound = reqSelDet.find(
         (elemento) => elemento.idMatPri === idMateriaPrima
-      );
+      )
       if (itemFound) {
         setfeedbackMessages({
-          style_message: "warning",
-          feedback_description_error: "Ya se agrego esta materia prima",
-        });
-        handleClickFeeback();
+          style_message: 'warning',
+          feedback_description_error: 'Ya se agrego esta materia prima'
+        })
+        handleClickFeeback()
       } else {
         // HACEMOS UNA CONSULTA A LA MATERIA PRIMA Y DESESTRUCTURAMOS
-        const resultPeticion = await getMateriaPrimaById(idMateriaPrima);
-        const { message_error, description_error, result } = resultPeticion;
+        const resultPeticion = await getMateriaPrimaById(idMateriaPrima)
+        const { message_error, description_error, result } = resultPeticion
 
         if (message_error.length === 0) {
-          const { id, codProd, desCla, desSubCla, nomProd, simMed } = result[0];
+          const { id, codProd, desCla, desSubCla, nomProd, simMed } = result[0]
           // GENERAMOS NUESTRO DETALLE DE FORMULA DE MATERIA PRIMA
           const detalleFormulaMateriaPrima = {
             idMatPri: id,
-            codProd: codProd,
-            desCla: desCla,
-            desSubCla: desSubCla,
-            nomProd: nomProd,
-            simMed: simMed,
+            codProd,
+            desCla,
+            desSubCla,
+            nomProd,
+            simMed,
             canMatPriFor: parseFloat(cantidadMateriaPrima).toFixed(3),
-            fechaRequisicion,
-          };
+            fechaRequisicion
+          }
           // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
           const dataMateriaPrimaDetalle = [
             ...reqSelDet,
-            detalleFormulaMateriaPrima,
-          ];
-          //console.log(dataMateriaPrimaDetalle)
+            detalleFormulaMateriaPrima
+          ]
+          // console.log(dataMateriaPrimaDetalle)
           setRequisicion({
             ...requisicion,
-            reqSelDet: dataMateriaPrimaDetalle,
-          });
+            reqSelDet: dataMateriaPrimaDetalle
+          })
         } else {
           setfeedbackMessages({
-            style_message: "error",
-            feedback_description_error: description_error,
-          });
-          handleClickFeeback();
+            style_message: 'error',
+            feedback_description_error: description_error
+          })
+          handleClickFeeback()
         }
       }
       setmateriaPrimaDetalle({
         idMateriaPrima: 0,
         cantidadMateriaPrima: 0,
-        fechaRequisicion: FormatDateTimeMYSQLNow(),
-      });
+        fechaRequisicion: FormatDateTimeMYSQLNow()
+      })
     } else {
-      let handleErrors = "";
+      let handleErrors = ''
 
       if (idMateriaPrima === 0) {
-        handleErrors += "Debes seleccionar una materia prima\n";
+        handleErrors += 'Debes seleccionar una materia prima\n'
       }
       if (cantidadMateriaPrima <= 0) {
-        handleErrors += "Debes ingresar una cantidad\n";
+        handleErrors += 'Debes ingresar una cantidad\n'
       }
       setfeedbackMessages({
-        style_message: "warning",
-        feedback_description_error: handleErrors,
-      });
-      handleClickFeeback();
+        style_message: 'warning',
+        feedback_description_error: handleErrors
+      })
+      handleClickFeeback()
     }
-  };
+  }
 
   return (
     <>
@@ -367,10 +365,10 @@ export const AgregarRequisicionSeleccion = () => {
                     <TableHead>
                       <TableRow
                         sx={{
-                          "& th": {
-                            color: "rgba(96, 96, 96)",
-                            backgroundColor: "#f5f5f5",
-                          },
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
                         }}
                       >
                         <TableCell align="left" width={200}>
@@ -447,7 +445,7 @@ export const AgregarRequisicionSeleccion = () => {
       </div>
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={feedbackCreate}
         autoHideDuration={6000}
         onClose={handleCloseFeedback}
@@ -455,13 +453,13 @@ export const AgregarRequisicionSeleccion = () => {
         <Alert
           onClose={handleCloseFeedback}
           severity={style_message}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
-          <Typography whiteSpace={"pre-line"}>
+          <Typography whiteSpace={'pre-line'}>
             {feedback_description_error}
           </Typography>
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}

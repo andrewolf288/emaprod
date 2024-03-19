@@ -1,13 +1,13 @@
-import { ListOrdenesIrradiacion } from "./ListOrdenesIrradiacion";
-import { ViewOrdenIrradiacion } from "./ViewOrdenIrradiacion";
+import { ListOrdenesIrradiacion } from './ListOrdenesIrradiacion'
+import { ViewOrdenIrradiacion } from './ViewOrdenIrradiacion'
 
 export const RouterOrdenIrradiacion = [
   {
-    path: "",
+    path: '',
     element: <ListOrdenesIrradiacion />
   },
   {
-    path: "view/:id",
+    path: 'view/:id',
     element: <ViewOrdenIrradiacion />
   }
-];
+]

@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react'
 
 export const ActualizarProductosLoteProduccion = () => {
-  return <div>ActualizarProductosLoteProduccion</div>;
-};
+  return <div>ActualizarProductosLoteProduccion</div>
+}

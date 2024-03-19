@@ -1,21 +1,21 @@
-import React from "react";
-import { RowRequisicionDetalleLoteProduccion } from "../../../almacen/components/componentes-lote-produccion/RowRequisicionDetalleLoteProduccion";
+import React from 'react'
+import { RowRequisicionDetalleLoteProduccion } from '../../../almacen/components/componentes-lote-produccion/RowRequisicionDetalleLoteProduccion'
 // IMPORTACIONES PARA TABLE MUI
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 
 export const RowRequisicionLoteProduccion = ({
   requisicion,
   onCreateSalidasStock,
   onUpdateDetalleRequisicion,
-  show,
+  show
 }) => {
-  //console.log("REQUISICIONES:  ",requisicion);
+  // console.log("REQUISICIONES:  ",requisicion);
   return (
     <>
       <div className="card-body">
@@ -83,10 +83,10 @@ export const RowRequisicionLoteProduccion = ({
         <div
           className={`card ${
             requisicion.idAre === 5
-              ? "text-bg-success"
+              ? 'text-bg-success'
               : requisicion.idAre === 6
-              ? "text-bg-warning"
-              : "text-bg-primary"
+                ? 'text-bg-warning'
+                : 'text-bg-primary'
           } d-flex`}
         >
           <h6 className="card-header">Detalle</h6>
@@ -97,10 +97,10 @@ export const RowRequisicionLoteProduccion = ({
                   <TableHead>
                     <TableRow
                       sx={{
-                        "& th": {
-                          color: "rgba(96, 96, 96)",
-                          backgroundColor: "#f5f5f5",
-                        },
+                        '& th': {
+                          color: 'rgba(96, 96, 96)',
+                          backgroundColor: '#f5f5f5'
+                        }
                       }}
                     >
                       <TableCell align="left" width={200}>
@@ -127,12 +127,12 @@ export const RowRequisicionLoteProduccion = ({
                           key={row.id}
                           detalle={{ ...row, idAre: requisicion.idAre }}
                           onCreateSalidasStock={onCreateSalidasStock}
-                          //onUpdateDetalleRequisicion={
+                          // onUpdateDetalleRequisicion={
                           //  onUpdateDetalleRequisicion
                           // }
                           show={show}
                         />
-                      );
+                      )
                     })}
                   </TableBody>
                 </Table>
@@ -142,5 +142,5 @@ export const RowRequisicionLoteProduccion = ({
         </div>
       </div>
     </>
-  );
-};
+  )
+}

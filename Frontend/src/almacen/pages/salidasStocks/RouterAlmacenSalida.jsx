@@ -1,18 +1,18 @@
-import ListSalidaStock from "./ListSalidaStock";
-import { AgregarSalidaStock } from "./AgregarSalidaStock";
-import ActualizarSalidaStock from "./ActualizarSalidaStock";
+import ListSalidaStock from './ListSalidaStock'
+import { AgregarSalidaStock } from './AgregarSalidaStock'
+import ActualizarSalidaStock from './ActualizarSalidaStock'
 
 export const RouterAlmacenSalidasStock = [
   {
-    path: "",
-    element: <ListSalidaStock />,
+    path: '',
+    element: <ListSalidaStock />
   },
   {
-    path: "crear",
-    element: <AgregarSalidaStock />,
+    path: 'crear',
+    element: <AgregarSalidaStock />
   },
   {
-    path: "actualizar",
-    element: <ActualizarSalidaStock />,
-  },
-];
+    path: 'actualizar',
+    element: <ActualizarSalidaStock />
+  }
+]

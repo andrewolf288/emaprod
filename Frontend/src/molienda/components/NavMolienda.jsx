@@ -1,19 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import logo from "../../assets/logo-oficial.png";
-import { useAuth } from "../../hooks/useAuth";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../../assets/logo-oficial.png'
+import { useAuth } from '../../hooks/useAuth'
 
 const NavMolienda = () => {
-  const { logout } = useAuth();
+  const { logout } = useAuth()
   const logoutUser = () => {
     // cerramos sesion
-    logout();
-  };
+    logout()
+  }
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={"/molienda"}>
+          <Link className="navbar-brand" to={'/molienda'}>
             <img
               src={logo}
               alt="Logo"
@@ -50,7 +50,7 @@ const NavMolienda = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/molienda/requisicion"}
+                      to={'/molienda/requisicion'}
                     >
                       Administrar
                     </Link>
@@ -58,7 +58,7 @@ const NavMolienda = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/molienda/requisicion/crear"}
+                      to={'/molienda/requisicion/crear'}
                     >
                       Crear
                     </Link>
@@ -77,7 +77,7 @@ const NavMolienda = () => {
         </div>
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default NavMolienda;
+export default NavMolienda

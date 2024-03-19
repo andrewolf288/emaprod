@@ -1,6 +1,6 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import NavProduccion from "./../produccion/components/NavProduccion";
+import React from 'react'
+import { Outlet } from 'react-router-dom'
+import NavProduccion from './../produccion/components/NavProduccion'
 
 const LayoutProduccionNav = () => {
   return (
@@ -11,7 +11,7 @@ const LayoutProduccionNav = () => {
       </main>
       <footer></footer>
     </>
-  );
-};
+  )
+}
 
-export default LayoutProduccionNav;
+export default LayoutProduccionNav

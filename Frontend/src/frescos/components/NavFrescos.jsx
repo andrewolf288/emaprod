@@ -1,19 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import logo from "../../assets/logo-oficial.png";
-import { useAuth } from "../../hooks/useAuth";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../../assets/logo-oficial.png'
+import { useAuth } from '../../hooks/useAuth'
 
 const NavFrescos = () => {
-  const { logout } = useAuth();
+  const { logout } = useAuth()
   const logoutUser = () => {
     // cerramos sesion
-    logout();
-  };
+    logout()
+  }
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={"/frescos"}>
+          <Link className="navbar-brand" to={'/frescos'}>
             <img
               src={logo}
               alt="Logo"
@@ -48,14 +48,14 @@ const NavFrescos = () => {
                 </Link>
                 <ul className="dropdown-menu">
                   <li>
-                    <Link className="dropdown-item" to={"/frescos/requisicion"}>
+                    <Link className="dropdown-item" to={'/frescos/requisicion'}>
                       Administrar
                     </Link>
                   </li>
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={"/frescos/requisicion/crear"}
+                      to={'/frescos/requisicion/crear'}
                     >
                       Crear
                     </Link>
@@ -74,7 +74,7 @@ const NavFrescos = () => {
         </div>
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default NavFrescos;
+export default NavFrescos

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { getReporteEntradas } from "../../helpers/reportes/getReporteEntradas";
-import { exportJSONtoExcel } from "../../utils/exportJSONtoExcel";
-import { FilterEstadoEntrada } from "../../../components/ReferencialesFilters/EstadoEntradaStock/FilterEstadoEntrada";
-import { FilterProveedor } from "../../../components/ReferencialesFilters/Proveedor/FilterProveedor";
-import { FilterMateriaPrima } from "../../../components/ReferencialesFilters/Producto/FilterMateriaPrima";
-import FechaPicker2 from "../../../components/Fechas/FechaPicker2";
+import React, { useState } from 'react'
+import { getReporteEntradas } from '../../helpers/reportes/getReporteEntradas'
+import { exportJSONtoExcel } from '../../utils/exportJSONtoExcel'
+import { FilterEstadoEntrada } from '../../../components/ReferencialesFilters/EstadoEntradaStock/FilterEstadoEntrada'
+import { FilterProveedor } from '../../../components/ReferencialesFilters/Proveedor/FilterProveedor'
+import { FilterMateriaPrima } from '../../../components/ReferencialesFilters/Producto/FilterMateriaPrima'
+import FechaPicker2 from '../../../components/Fechas/FechaPicker2'
 
 export const ReporteEntradas = () => {
   // ESTADO DE LOS FILTROS SUBMIT
@@ -12,179 +12,145 @@ export const ReporteEntradas = () => {
     filterMateriaPrima: {},
     filterProveedor: [],
     filterFecha: {
-      fechaInicio: "",
-      fechaFin: "",
+      fechaInicio: '',
+      fechaFin: ''
     },
     filterEntrada: {
-      estado: 0,
-    },
-  });
+      estado: 0
+    }
+  })
 
   // DESESTRUCTURACION
-  const { filterMateriaPrima, filterProveedor, filterFecha, filterEntrada } =
-    filterReporte;
-  const { fechaInicio, fechaFin } = filterFecha;
-  const { estado } = filterEntrada;
+  const { filterProveedor, filterFecha, filterEntrada } =
+    filterReporte
 
   // ESTADOS DE LOS FILTROS MATERIA PRIMA
   const [materiaPrimaBadges, setmateriaPrimaBadges] = useState({
     materiaPrima: [],
-    categoriaMateriaPrima: [],
-  });
+    categoriaMateriaPrima: []
+  })
 
-  const { materiaPrima, categoriaMateriaPrima } = materiaPrimaBadges;
+  const { materiaPrima } = materiaPrimaBadges
 
   // <----------- PARA AÑADIR EL FILTRO ----------->
 
   // MANEJADOR DE ESTABLECER TIEMPO DESDE
   const handledTiempoDesde = (date) => {
-    console.log("TIEMPO DESDE: ", date);
-    let auxFecha = { ...filterFecha, fechaInicio: date };
+    console.log('TIEMPO DESDE: ', date)
+    const auxFecha = { ...filterFecha, fechaInicio: date }
     setfilterReporte({
       ...filterReporte,
-      filterFecha: auxFecha,
-    });
-  };
+      filterFecha: auxFecha
+    })
+  }
 
   // MANEJADOR DE ESTABLECER TIEMPO HASTA
   const handledTiempoHasta = (date) => {
-    console.log("TIEMPO HASTA: ", date);
-    let auxFecha = { ...filterFecha, fechaFin: date };
+    console.log('TIEMPO HASTA: ', date)
+    const auxFecha = { ...filterFecha, fechaFin: date }
     setfilterReporte({
       ...filterReporte,
-      filterFecha: auxFecha,
-    });
-  };
+      filterFecha: auxFecha
+    })
+  }
 
   // MANEJADOR PARA OBTENER EL ESTADO
   const handledEstadoEntrada = (value) => {
-    console.log(value);
-    let auxEntrada = { ...filterEntrada, estado: value.id };
+    console.log(value)
+    const auxEntrada = { ...filterEntrada, estado: value.id }
     setfilterReporte({
       ...filterReporte,
-      filterEntrada: auxEntrada,
-    });
-  };
+      filterEntrada: auxEntrada
+    })
+  }
 
   // MANEJADOR DE AÑADIR FILTRO DE MATERIA PRIMA
   const handledMateriPrima = (value) => {
     // comprobamos que el item no exista
-    let foundItem = materiaPrima.find((element) => element.id === value.id);
+    const foundItem = materiaPrima.find((element) => element.id === value.id)
 
-    let auxMateriaPrima = [...materiaPrima];
+    const auxMateriaPrima = [...materiaPrima]
     if (!foundItem) {
-      auxMateriaPrima.push(value);
+      auxMateriaPrima.push(value)
       setmateriaPrimaBadges({
         ...materiaPrimaBadges,
-        materiaPrima: auxMateriaPrima,
-      });
+        materiaPrima: auxMateriaPrima
+      })
     } else {
-      console.log("Ya se agrego este filtro");
+      console.log('Ya se agrego este filtro')
     }
-  };
-
-  // MANEJADOR DE AÑADIR CATEGORIA DE MATERIA PRIMA
-  const handledCategoriaMateriaPrima = (value) => {
-    let foundItem = categoriaMateriaPrima.find(
-      (element) => element.id === value.id
-    );
-    let auxCategoriaMateriaPrima = [...categoriaMateriaPrima];
-    if (!foundItem) {
-      auxCategoriaMateriaPrima.push(value);
-      setmateriaPrimaBadges({
-        ...materiaPrimaBadges,
-        categoriaMateriaPrima: auxCategoriaMateriaPrima,
-      });
-    } else {
-      console.log("Ya se agrego este filtro");
-    }
-  };
+  }
 
   // MANEJADOR DE AÑADIR PROVEEDOR
   const handledProveedor = (value) => {
-    let foundItem = filterProveedor.find((element) => element.id === value.id);
-    let auxProveedores = [...filterProveedor];
+    const foundItem = filterProveedor.find((element) => element.id === value.id)
+    const auxProveedores = [...filterProveedor]
     if (!foundItem) {
-      auxProveedores.push(value);
+      auxProveedores.push(value)
       setfilterReporte({
         ...filterReporte,
-        filterProveedor: auxProveedores,
-      });
+        filterProveedor: auxProveedores
+      })
     } else {
-      console.log("Ya se agrego este filtro");
+      console.log('Ya se agrego este filtro')
     }
-  };
+  }
 
   // <----------- PARA ELIMINAR EL FILTRO ----------->
 
   // MANEJADOR PARA ELIMINAR FILTRO DE MATERIA PRIMA
   const deleteFilterMateriaPrima = (value) => {
-    let auxMateriaPrima = materiaPrima.filter((element) => {
+    const auxMateriaPrima = materiaPrima.filter((element) => {
       if (element.id === value.id) {
-        return false;
+        return false
       } else {
-        return true;
+        return true
       }
-    });
+    })
     setmateriaPrimaBadges({
       ...materiaPrimaBadges,
-      materiaPrima: auxMateriaPrima,
-    });
-  };
-
-  // MANEJADOR PARA ELIMINAR FILTRO DE CATEGORIA DE MATERIA PRIMA
-  const deleteFilterCategoriaMateriaPrima = (value) => {
-    let auxCategoriaMateriaPrima = categoriaMateriaPrima.filter((element) => {
-      if (element.id === value.id) {
-        return false;
-      } else {
-        return true;
-      }
-    });
-    setmateriaPrimaBadges({
-      ...materiaPrimaBadges,
-      categoriaMateriaPrima: auxCategoriaMateriaPrima,
-    });
-  };
+      materiaPrima: auxMateriaPrima
+    })
+  }
 
   // MANEJADORES PARA ELIMINAR FILTRO DE PROVEEDOR
   const deleteFilterProveedorMateriaPrima = (value) => {
-    let auxProveedor = filterProveedor.filter((element) => {
+    const auxProveedor = filterProveedor.filter((element) => {
       if (element.id === value.id) {
-        return false;
+        return false
       } else {
-        return true;
+        return true
       }
-    });
+    })
     setfilterReporte({
       ...filterReporte,
-      filterProveedor: auxProveedor,
-    });
-  };
+      filterProveedor: auxProveedor
+    })
+  }
 
-  //FUNCION PARA EXPORTAR EN EXCEL
+  // FUNCION PARA EXPORTAR EN EXCEL
   const exportExcel = (dataJSON, fileName) => {
-    exportJSONtoExcel({ dataJSON, fileName });
-  };
+    exportJSONtoExcel({ dataJSON, fileName })
+  }
 
   // ENVIAMOS LA DATA DE LOS FILTERS PARA FILTRAR LA DATA
   const submitDataFilterToExcel = async () => {
-    let dataFilter = {
+    const dataFilter = {
       ...filterReporte,
-      filterMateriaPrima: materiaPrimaBadges,
-    };
-    const { message_error, description_error, result } =
-      await getReporteEntradas(dataFilter);
-    if (message_error.length === 0) {
-      exportExcel(result, "reporte-entrada");
-    } else {
-      console.log("No se pudo exportar");
+      filterMateriaPrima: materiaPrimaBadges
     }
-  };
+    const { message_error, description_error, result } =
+      await getReporteEntradas(dataFilter)
+    if (message_error.length === 0) {
+      exportExcel(result, 'reporte-entrada')
+    } else {
+      alert(description_error)
+    }
+  }
 
   const submitDataFilterToPdf = () => {
-    console.log("exportar data en pdf");
-  };
+    console.log('exportar data en pdf')
+  }
 
   return (
     <>
@@ -338,5 +304,5 @@ export const ReporteEntradas = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { FormatDateMYSQL } from "../../../utils/functions/FormatDate";
-import FechaPickerMonth from "../../../components/Fechas/FechaPickerMonth";
+import React, { useEffect, useState } from 'react'
+import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
+import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
 import {
   Paper,
   Table,
@@ -11,164 +11,153 @@ import {
   TablePagination,
   TableRow,
   TextField
-} from "@mui/material";
-import { getOrdenesIrradiacion } from "../../helpers/orden-irradiacion/getOrdenesIrradiacion";
-import { FilterEstadoOrdenIrradiacion } from "../../../components/ReferencialesFilters/EstadoOrdenIrradiacion/FilterEstadoOrdenIrradiacion";
+} from '@mui/material'
+import { getOrdenesIrradiacion } from '../../helpers/orden-irradiacion/getOrdenesIrradiacion'
+import { FilterEstadoOrdenIrradiacion } from '../../../components/ReferencialesFilters/EstadoOrdenIrradiacion/FilterEstadoOrdenIrradiacion'
 
 export const ListOrdenesIrradiacion = () => {
-  const [dataOrdenIrradiacion, setdataOrdenIrradiacion] = useState([]);
-  const [dataOrdenIrradiacionTemp, setdataOrdenIrradiacionTemp] = useState([]);
+  const [dataOrdenIrradiacion, setdataOrdenIrradiacion] = useState([])
+  const [dataOrdenIrradiacionTemp, setdataOrdenIrradiacionTemp] = useState([])
 
   // filtros
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
     fechaFin: FormatDateMYSQL()
-  });
+  })
 
   // ESTADOS PARA LA PAGINACIÓN
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackDelete, setfeedbackDelete] = useState(false);
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: "",
-    feedback_description_error: ""
-  });
-  const { style_message, feedback_description_error } = feedbackMessages;
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackDelete(true);
-  };
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // MANEJADORES DE LA PAGINACION
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   // Filtros generales que hacen nuevas consultas
   const handleFechaInicioChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaInicio: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaInicio: dateFormat
-    };
-    obtenerdataOrdenIrradiacion(body);
-  };
+    }
+    obtenerdataOrdenIrradiacion(body)
+  }
 
   const handleFechaFinChange = (newfecEntSto) => {
-    let dateFormat = newfecEntSto.split(" ")[0];
+    const dateFormat = newfecEntSto.split(' ')[0]
     setformState({
       ...formState,
       fechaFin: dateFormat
-    });
+    })
 
     // armamos el body
-    let body = {
+    const body = {
       ...formState,
       fechaFin: dateFormat
-    };
-    obtenerdataOrdenIrradiacion(body);
-  };
+    }
+    obtenerdataOrdenIrradiacion(body)
+  }
 
   const [dataFilter, setDataFilter] = useState({
-    invSerFac: "",
-    invNumFac: "",
+    invSerFac: '',
+    invNumFac: '',
     idOrdIrraEst: 0
-  });
-  const { invSerFac, invNumFac, idOrdIrraEst } = dataFilter;
+  })
+  const { invSerFac, invNumFac } = dataFilter
 
   const handleChangeInputValue = ({ target }) => {
-    const { value, name } = target;
+    const { value, name } = target
     setDataFilter({
       ...dataFilter,
       [name]: value
-    });
-    filter(value, name);
-  };
+    })
+    filter(value, name)
+  }
 
   const handleChangeSelectValue = (value) => {
-    const { id, label } = value;
+    const { id, label } = value
     setDataFilter({
       ...dataFilter,
       idOrdIrraEst: id
-    });
-    filter(label, "idOrdIrraEst");
-  };
+    })
+    filter(label, 'idOrdIrraEst')
+  }
 
   const filter = (terminoBusqueda, name) => {
-    if (name == "invSerFac") {
-      let resultadoBusqueda = dataOrdenIrradiacion.filter((element) => {
+    if (name == 'invSerFac') {
+      const resultadoBusqueda = dataOrdenIrradiacion.filter((element) => {
         if (
           element.invSerFac
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
+        } else {
+          return false
         }
-      });
-      setdataOrdenIrradiacionTemp(resultadoBusqueda);
+      })
+      setdataOrdenIrradiacionTemp(resultadoBusqueda)
     }
-    if (name == "invNumFac") {
-      let resultadoBusqueda = dataOrdenIrradiacion.filter((element) => {
+    if (name == 'invNumFac') {
+      const resultadoBusqueda = dataOrdenIrradiacion.filter((element) => {
         if (
           element.invNumFac
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
+        } else {
+          return false
         }
-      });
-      setdataOrdenIrradiacionTemp(resultadoBusqueda);
+      })
+      setdataOrdenIrradiacionTemp(resultadoBusqueda)
     }
-    if (name == "idOrdIrraEst") {
-      let resultadoBusqueda = dataOrdenIrradiacion.filter((element) => {
+    if (name == 'idOrdIrraEst') {
+      const resultadoBusqueda = dataOrdenIrradiacion.filter((element) => {
         if (
           element.desOrdIrraEst
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
         ) {
-          return element;
+          return element
+        } else {
+          return false
         }
-      });
-      setdataOrdenIrradiacionTemp(resultadoBusqueda);
+      })
+      setdataOrdenIrradiacionTemp(resultadoBusqueda)
     }
-  };
+  }
 
-  //FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
+  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerdataOrdenIrradiacion = async (formState) => {
-    const resultPeticion = await getOrdenesIrradiacion(formState);
-    const { message_error, description_error, result } = resultPeticion;
+    const resultPeticion = await getOrdenesIrradiacion(formState)
+    const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
-      setdataOrdenIrradiacion(result);
-      setdataOrdenIrradiacionTemp(result);
+      setdataOrdenIrradiacion(result)
+      setdataOrdenIrradiacionTemp(result)
     } else {
-      setfeedbackMessages({
-        style_message: "error",
-        feedback_description_error: description_error
-      });
-      handleClickFeeback();
+      alert(description_error)
     }
-  };
+  }
 
   // ****** TRAEMOS LA DATA DE REQUISICION MOLIENDA ******
   useEffect(() => {
-    obtenerdataOrdenIrradiacion();
-  }, []);
+    obtenerdataOrdenIrradiacion()
+  }, [])
 
   return (
     <>
@@ -199,9 +188,9 @@ export const ListOrdenesIrradiacion = () => {
                 <TableHead>
                   <TableRow
                     sx={{
-                      "& th": {
-                        color: "rgba(96, 96, 96)",
-                        backgroundColor: "#f5f5f5"
+                      '& th': {
+                        color: 'rgba(96, 96, 96)',
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
@@ -246,33 +235,41 @@ export const ListOrdenesIrradiacion = () => {
                       <TableRow
                         key={row.id}
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 }
+                          '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
                         <TableCell align="left">{row.invSerFac}</TableCell>
                         <TableCell align="left">{row.invNumFac}</TableCell>
                         <TableCell align="center">
-                          {row.idOrdIrraEst === 1 ? (
-                            <span className={"badge text-bg-danger"}>
-                              {row.desOrdIrraEst}
-                            </span>
-                          ) : row.idOrdIrraEst === 2 ? (
-                            <span className={"badge text-bg-warning"}>
-                              {row.desOrdIrraEst}
-                            </span>
-                          ) : row.idOrdIrraEst === 3 ? (
-                            <span className={"badge text-bg-danger"}>
-                              {row.desOrdIrraEst}
-                            </span>
-                          ) : row.idOrdIrraEst === 3 ? (
-                            <span className={"badge text-bg-warning"}>
-                              {row.desOrdIrraEst}
-                            </span>
-                          ) : (
-                            <span className={"badge text-bg-success"}>
-                              {row.desOrdIrraEst}
-                            </span>
-                          )}
+                          {row.idOrdIrraEst === 1
+                            ? (
+                              <span className={'badge text-bg-danger'}>
+                                {row.desOrdIrraEst}
+                              </span>
+                            )
+                            : row.idOrdIrraEst === 2
+                              ? (
+                                <span className={'badge text-bg-warning'}>
+                                  {row.desOrdIrraEst}
+                                </span>
+                              )
+                              : row.idOrdIrraEst === 3
+                                ? (
+                                  <span className={'badge text-bg-danger'}>
+                                    {row.desOrdIrraEst}
+                                  </span>
+                                )
+                                : row.idOrdIrraEst === 3
+                                  ? (
+                                    <span className={'badge text-bg-warning'}>
+                                      {row.desOrdIrraEst}
+                                    </span>
+                                  )
+                                  : (
+                                    <span className={'badge text-bg-success'}>
+                                      {row.desOrdIrraEst}
+                                    </span>
+                                  )}
                         </TableCell>
                         <TableCell align="left">{row.fecCreOrdIrra}</TableCell>
                         <TableCell align="left">
@@ -281,8 +278,8 @@ export const ListOrdenesIrradiacion = () => {
                               onClick={() => {
                                 window.open(
                                   `/almacen/orden-irradiacion/view/${row.id}`,
-                                  "_blank"
-                                );
+                                  '_blank'
+                                )
                               }}
                               className="btn btn-primary me-2 btn"
                               data-toggle="modal"
@@ -320,5 +317,5 @@ export const ListOrdenesIrradiacion = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 const HomeSeleccion = () => {
   return (
@@ -46,13 +46,9 @@ const HomeSeleccion = () => {
             </div>
           </div>
         </section>
-
-        {/* <h2 className="mt-4 p-2 bg-success-subtle text-emphasis-success">
-          Acciones administrativas
-        </h2>*/}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default HomeSeleccion;
+export default HomeSeleccion

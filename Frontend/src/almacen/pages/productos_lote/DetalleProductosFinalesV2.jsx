@@ -1,40 +1,40 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import * as React from 'react'
+import Button from '@mui/material/Button'
+import { styled } from '@mui/material/styles'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
+  '& .MuiDialogContent-root': {
     padding: theme.spacing(2)
   },
-  "& .MuiDialogActions-root": {
+  '& .MuiDialogActions-root': {
     padding: theme.spacing(1)
   }
-}));
+}))
 
-export function DetalleProductosFinalesV2({ detalleProductoFinal }) {
-  const [open, setOpen] = React.useState(false);
-  const { entradas_parciales, idProdt } = detalleProductoFinal;
+export function DetalleProductosFinalesV2 ({ detalleProductoFinal }) {
+  const [open, setOpen] = React.useState(false)
+  const { entradas_parciales } = detalleProductoFinal
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <div>
@@ -48,7 +48,7 @@ export function DetalleProductosFinalesV2({ detalleProductoFinal }) {
       </IconButton>
 
       <BootstrapDialog
-        maxWidth={"lg"}
+        maxWidth={'lg'}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -68,11 +68,11 @@ export function DetalleProductosFinalesV2({ detalleProductoFinal }) {
         </DialogActions>
       </BootstrapDialog>
     </div>
-  );
+  )
 }
 
 // detalle del producto final programado
-function TableProductoProduccion({ productoFinal }) {
+function TableProductoProduccion ({ productoFinal }) {
   return (
     <TableContainer component={Paper}>
       <br />
@@ -104,7 +104,7 @@ function TableProductoProduccion({ productoFinal }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+          <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell align="center">{productoFinal.id}</TableCell>
             <TableCell align="left">{productoFinal.codProd2}</TableCell>
             <TableCell align="left">{productoFinal.nomProd}</TableCell>
@@ -119,11 +119,11 @@ function TableProductoProduccion({ productoFinal }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }
 
 // detalle de tabla de entradas
-function TableEntradas({ entradas }) {
+function TableEntradas ({ entradas }) {
   return (
     <TableContainer component={Paper}>
       <br />
@@ -150,7 +150,7 @@ function TableEntradas({ entradas }) {
           {entradas.map((entrada, index) => (
             <TableRow
               key={index}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row">
                 {index + 1}
@@ -163,5 +163,5 @@ function TableEntradas({ entradas }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react'
 
 export const AgregarTransferenciaAlmacen = () => {
-  return <div>AgregarTransferenciaAlmacen</div>;
-};
+  return <div>AgregarTransferenciaAlmacen</div>
+}
