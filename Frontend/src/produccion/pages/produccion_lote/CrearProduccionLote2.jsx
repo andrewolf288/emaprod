@@ -552,7 +552,7 @@ export const CrearProduccionLote2 = () => {
           const { nomProd, simMed, reqDet, canForProInt } =
             formulaProductoFinal
 
-          console.log(canForProInt)
+          console.log(canForProInt, reqDet)
 
           // primero verificamos si la cantidad nueva ingresada supera nuestro limite de peso de lote
           // total de kilogramos de orden de produccion hasta el momento
@@ -607,8 +607,9 @@ export const CrearProduccionLote2 = () => {
                 ).toFixed(5)
               })
             })
+            console.log(detalleRequisicionesFormula)
 
-            detalleRequisicionesFormula.foreach((obj) => {
+            detalleRequisicionesFormula.forEach((obj) => {
               obj.canReqProdLot = _parseInt(obj)
             })
 

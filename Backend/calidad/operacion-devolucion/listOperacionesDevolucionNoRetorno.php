@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($totalCompletos == 0) {
                 $idEstOpeDevCal = 1; // incompleto
             }
-            if ($totalCompletos == $totalDetalle) {
+            if ($totalCompletos!= 0 && $totalCompletos == $totalDetalle) {
                 $idEstOpeDevCal = 3; // completo
             }
             if ($totalCompletos != 0 && $totalCompletos != $totalDetalle) {
