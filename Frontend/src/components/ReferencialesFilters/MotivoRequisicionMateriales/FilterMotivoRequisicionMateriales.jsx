@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react'
 
 import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
-import { getMotivoDevolucionesCalidad } from '../../../helpers/Referenciales/motivo_devoluciones_calidad/getMotivoDevolucionesCalidad'
+import { getMotivoRequisicionMateriales } from '../../../helpers/Referenciales/motivo_requisicion_materiales/getMotivoDevolucionesCalidad'
 
 const defaultOption = {
   value: null,
-  label: 'Selecciona un motivo de devolucion',
+  label: 'Selecciona un motivo de requisición',
   id: null
 }
 
-export const FilterMotivoDevolucionCalidad = ({
+export const FilterMotivoRequisicionMateriales = ({
   defaultValue = null,
   onNewInput
 }) => {
@@ -18,13 +18,13 @@ export const FilterMotivoDevolucionCalidad = ({
   const [value, setValue] = useState(defaultOption)
 
   const obtenerDataProducto = async () => {
-    const result = await getMotivoDevolucionesCalidad()
+    const result = await getMotivoRequisicionMateriales()
     const formatSelect = [
       defaultOption,
       ...result.map((element) => {
         return {
           value: element.id,
-          label: element.desMotDevCal,
+          label: element.desMotReqMat,
           id: element.id
         }
       })
