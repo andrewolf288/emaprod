@@ -1,7 +1,6 @@
-import { IconButton, TableCell, TableRow } from '@mui/material'
+import { TableCell, TableRow } from '@mui/material'
 import React from 'react'
 import iconDevoluciones from '../../../../src/assets/icons/devoluciones.png'
-import MoveToInboxIcon from '@mui/icons-material/MoveToInbox'
 
 export const RowRequisicionReproceso = ({ detalle }) => {
   return (
@@ -38,6 +37,7 @@ export const RowRequisicionReproceso = ({ detalle }) => {
         <TableCell>{detalle.fecCreOpeDevCalDet}</TableCell>
         <TableCell>
           <div className="btn-toolbar">
+            {/* BOTON DE DEVOLUCION */}
             <div
               className="btn btn-outline-secondary me-2"
               title="Devoluciones"
@@ -55,19 +55,22 @@ export const RowRequisicionReproceso = ({ detalle }) => {
                 width={25}
               />
             </div>
-            <IconButton
-              aria-label="view"
-              size="large"
-              color="primary"
-              onClick={() => {
-                window.open(
-                  `/produccion/requisicion-reproceso/reproceso/${detalle.id}`,
-                  '_blank'
-                )
-              }}
+            {/* BOTON DE REGISTRAR LOTES DESTINOS */}
+            <button
+              className="btn btn-primary"
+              onClick={
+                () => {
+                  window.open(
+                    `/produccion/requisicion-reproceso/reproceso/${detalle.id}`,
+                    '_blank'
+                  )
+                }
+              }
             >
-              <MoveToInboxIcon fontSize="medium" />
-            </IconButton>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
+                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0"/>
+              </svg>
+            </button>
           </div>
         </TableCell>
       </TableRow>

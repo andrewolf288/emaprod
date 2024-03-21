@@ -14,34 +14,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $idClaMatPri = 2;
     $idClaEnvEnc = 5;
-    $sql_select_producto_with_atributos =
-        "SELECT 
-    p.id,
-    p.nomProd,
-    p.idSubCla,
-    sc.desSubCla,
-    me.simMed,
-    p.codProd,
-    p.codProd2
-    FROM producto as p
-    JOIN medida as me on me.id = p.idMed
-    JOIN sub_clase as sc on sc.id = p.idSubCla";
-    $stmt_selet_producto_with_atributos = $pdo->prepare($sql_select_producto_with_atributos);
-    $stmt_selet_producto_with_atributos->execute();
 
-    while ($row_atributos_producto = $stmt_selet_producto_with_atributos->fetch(PDO::FETCH_ASSOC)) {
-        $idProdt = $row_atributos_producto["id"];
+    if ($pdo) {
+        $sql_select_producto_with_atributos =
+            "SELECT 
+        p.id,
+        p.nomProd,
+        p.idSubCla,
+        sc.desSubCla,
+        me.simMed,
+        p.codProd,
+        p.codProd2
+        FROM producto as p
+        JOIN medida as me on me.id = p.idMed
+        JOIN sub_clase as sc on sc.id = p.idSubCla";
+        $stmt_selet_producto_with_atributos = $pdo->prepare($sql_select_producto_with_atributos);
+        $stmt_selet_producto_with_atributos->execute();
 
-        $sql_select_atributos_calidad =
-            "SELECT * FROM producto_atributo_calidad
-        WHERE idProdt = ?";
-        $stmt_select_atributos_calidad = $pdo->prepare($sql_select_atributos_calidad);
-        $stmt_select_atributos_calidad->bindParam(1, $idProdt, PDO::PARAM_INT);
-        $stmt_select_atributos_calidad->execute();
+        while ($row_atributos_producto = $stmt_selet_producto_with_atributos->fetch(PDO::FETCH_ASSOC)) {
+            $idProdt = $row_atributos_producto["id"];
 
-        $row_atributos_producto["detAtrCal"] = $stmt_select_atributos_calidad->fetchAll(PDO::FETCH_ASSOC);
+            $sql_select_atributos_calidad =
+                "SELECT * FROM producto_atributo_calidad
+            WHERE idProdt = ?";
+            $stmt_select_atributos_calidad = $pdo->prepare($sql_select_atributos_calidad);
+            $stmt_select_atributos_calidad->bindParam(1, $idProdt, PDO::PARAM_INT);
+            $stmt_select_atributos_calidad->execute();
 
-        array_push($result, $row_atributos_producto);
+            $row_atributos_producto["detAtrCal"] = $stmt_select_atributos_calidad->fetchAll(PDO::FETCH_ASSOC);
+
+            array_push($result, $row_atributos_producto);
+        }
+    } else {
+        $message_error = "Error con la conexion a la base de datos";
+        $description_error = "Error con la conexion a la base de datos a traves de PDO";
     }
 
     // Retornamos el resultado

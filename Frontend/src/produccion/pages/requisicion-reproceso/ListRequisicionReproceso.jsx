@@ -135,7 +135,7 @@ export const ListRequisicionReproceso = () => {
                 <TableCell align="left" width={100}>
                   <b>Fecha creación</b>
                 </TableCell>
-                <TableCell align="left" width={100}>
+                <TableCell align="center" width={150}>
                   <b>Acciones</b>
                 </TableCell>
               </TableRow>

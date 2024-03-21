@@ -6,6 +6,7 @@ import { RouterFormulaPorProducto } from './../pages/formulas_por_productos/Rout
 import { RouterRequisicionMateriales } from '../pages/requisicion-materiales/RouterRequisicionMateriales'
 import { RouterRequisicionTransformacion } from '../pages/requisicion-transformacion/RouterRequisicionTransformacion'
 import { RouterRequisicionReproceso } from '../pages/requisicion-reproceso/RouterRequisicionReproceso'
+import { RouterRequisionGeneralMateriales } from '../../general/pages/requisicion_general_materiales/RouterRequisionGeneralMateriales'
 
 export const RouterProduccion = [
   {
@@ -41,5 +42,10 @@ export const RouterProduccion = [
     path: 'requisicion-reproceso',
     element: <LayoutModulo />,
     children: RouterRequisicionReproceso
+  },
+  {
+    path: 'requisicion-general',
+    element: <LayoutModulo />,
+    children: RouterRequisionGeneralMateriales
   }
 ]

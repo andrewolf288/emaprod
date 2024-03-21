@@ -143,8 +143,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // tenemos que registrar la trazabilidad de la devolucion
                         $sql_insert_trazabilidad_devolucion_entrada =
                             "INSERT INTO trazabilidad_devolucion_entrada
-                        (idReqDevDet, idEntSto, canReqDevDet)
-                        VALUES(?, ?, $cantSalPorIteracion)";
+                            (idReqDevDet, idEntSto, canReqDevDet)
+                            VALUES(?, ?, $cantSalPorIteracion)";
                         $stmt_insert_trazabilidad_devolucion_entrada = $pdo->prepare($sql_insert_trazabilidad_devolucion_entrada);
                         $stmt_insert_trazabilidad_devolucion_entrada->bindParam(1, $idReqDevDet, PDO::PARAM_INT);
                         $stmt_insert_trazabilidad_devolucion_entrada->bindParam(2, $idEntSto, PDO::PARAM_INT);
