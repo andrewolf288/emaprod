@@ -1,8 +1,10 @@
 import React from 'react'
 import { useCreateRequisicionGeneralMateriales } from '../../hooks/requisicion-general-materiales/useCreateRequisicionGeneralMateriales'
 import { FilterMotivoRequisicionMateriales } from '../../../components/ReferencialesFilters/MotivoRequisicionMateriales/FilterMotivoRequisicionMateriales'
-import { FilterAllProductosDynamic } from '../../../components/ReferencialesFilters/Producto/FilterAllProductosDynamic'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { FilterAllProductosFilters } from '../../../components/ReferencialesFilters/Producto/FilterAllProductosFilters'
+import { RowRequisicionGeneralMaterialesEdit } from '../../components/requisicion-materiales/RowRequisicionGeneralMaterialesEdit'
+import { CustomActionsView } from '../../../components/CustomComponents/CustomActionsView'
 
 export const CreateRequisicionGeneralMateriales = () => {
   const {
@@ -14,7 +16,8 @@ export const CreateRequisicionGeneralMateriales = () => {
     handleChangeProductoRequisicionMateriales,
     handleAddProductoDetalleRequisicionMateriales,
     handleChangeProductoDetalleRequisicionMateriales,
-    handleDeleteProductoDetalleRequisicionMateriales
+    handleDeleteProductoDetalleRequisicionMateriales,
+    handleCreateRequisicionMateriales
   } = useCreateRequisicionGeneralMateriales()
 
   return (
@@ -57,18 +60,18 @@ export const CreateRequisicionGeneralMateriales = () => {
             <div className="card-body">
               <form className="row mb-4 mt-4 d-flex flex-row justify-content-start align-items-end">
                 {/* AGREGAR MATERIA PRIMA */}
-                <div className="col-md-3">
+                <div className="col-md-6">
                   <label htmlFor="inputPassword4" className="form-label">
                     Material
                   </label>
-                  <FilterAllProductosDynamic
+                  <FilterAllProductosFilters
                     onNewInput={handleChangeProductoRequisicionMateriales}
                     defaultValue={produtSelected.idProdt}
                   />
                 </div>
 
                 {/* AGREGAR CANTIDAD */}
-                <div className="col-md-4">
+                <div className="col-md-3">
                   <label htmlFor="inputPassword4" className="form-label">
                     Cantidad
                   </label>
@@ -134,19 +137,16 @@ export const CreateRequisicionGeneralMateriales = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {/* {detReqMat
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((row, i) => (
-                          <RowDetalleFormula
-                            key={row.idMatPri}
-                            detalle={row}
-                            onDeleteDetalleFormula={deleteDetalleRequisicion}
-                            onChangeFormulaDetalle={handleRequisicionDetalle}
+                      {
+                        requisicionMateriales.detReqMat.map((item) => (
+                          <RowRequisicionGeneralMaterialesEdit
+                            key={item.idProdt}
+                            item={item}
+                            onEdit={handleChangeProductoDetalleRequisicionMateriales}
+                            onDelete={handleDeleteProductoDetalleRequisicionMateriales}
                           />
-                        ))} */}
+                        ))
+                      }
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -154,6 +154,10 @@ export const CreateRequisicionGeneralMateriales = () => {
             </div>
           </div>
         </div>
+        {/* ACCIONES DE BOTONES */}
+        < CustomActionsView
+          onSaveOperation={handleCreateRequisicionMateriales}
+        />
       </div>
     </>
   )

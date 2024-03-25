@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { getRequisicionGeneralMaterialesByArea } from '../../helpers/requisicion-materiales/getRequisicionGeneralMaterialesByArea'
 import { useAuth } from '../../../hooks/useAuth'
+import { createRoot } from 'react-dom/client'
+import { getRequisicionGeneralMaterialById } from '../../helpers/requisicion-materiales/getRequisicionGeneralMaterialById'
+import { alertError } from '../../../utils/alerts/alertsCustoms'
+import { PDFRequisicionMateriales } from '../../components/requisicion-materiales/PDFRequisicionMateriales'
 
 export function useRequisicionGeneralMateriales () {
   const { user } = useAuth()
@@ -21,18 +25,39 @@ export function useRequisicionGeneralMateriales () {
         ...body
       }
     }
-    console.log(formatData)
     const resultPeticion = await getRequisicionGeneralMaterialesByArea(formatData)
     try {
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
-        console.log(result)
         setRequisicionMateriales(result)
       } else {
-        alert(description_error)
+        alertError(description_error)
       }
     } catch (e) {
-      alert(e)
+      alertError(e.message)
+    }
+  }
+
+  // funcion para mostrar pdf
+  const generatePDFRequisicionMateriales = async (idReqMat) => {
+    const resultPeticion = await getRequisicionGeneralMaterialById(idReqMat)
+    const { message_error, description_error, result } = resultPeticion
+    if (message_error.length === 0) {
+      const formatData = {
+        requisicion: result
+      }
+      const newWindow = window.open(
+        '',
+        'Requisicion materiales',
+        'fullscreen=yes'
+      )
+      // Crear un contenedor específico para tu aplicación
+      const appContainer = newWindow.document.createElement('div')
+      newWindow.document.body.appendChild(appContainer)
+      const root = createRoot(appContainer)
+      root.render(<PDFRequisicionMateriales data={formatData} />)
+    } else {
+      alertError(description_error)
     }
   }
 
@@ -40,5 +65,9 @@ export function useRequisicionGeneralMateriales () {
     traerDataRequisicionesGeneralesMateriales()
   }, [])
 
-  return { requisicionMateriales, traerDataRequisicionesGeneralesMateriales }
+  return {
+    requisicionMateriales,
+    traerDataRequisicionesGeneralesMateriales,
+    generatePDFRequisicionMateriales
+  }
 }

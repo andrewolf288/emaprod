@@ -43,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             rmd.idReqMat,
             rmd.idProdt,
             p.nomProd,
+            p.codProd,
             p.codProd2,
             cl.desCla,
             sc.desSubCla,

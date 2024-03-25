@@ -35,7 +35,6 @@ export const ViewRequisicionGeneralMateriales = () => {
 
   const traerInformacionRequisicionMaterial = async () => {
     const resultPeticion = await getRequisicionGeneralMaterialById(idReqMat)
-    console.log(resultPeticion)
     const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
       setRequisicionMaterial(result)
@@ -111,7 +110,7 @@ export const ViewRequisicionGeneralMateriales = () => {
                 <label htmlFor="nombre" className="form-label">
                   <b>Nota requisición</b>
                 </label>
-                <textarea className="form-control" name="notReqMat" rows="2" disabled readOnly>{notReqMat}</textarea>
+                <textarea className="form-control" name="notReqMat" rows="2" disabled readOnly value={notReqMat}></textarea>
               </div>
             </div>
           </div>

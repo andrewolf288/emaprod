@@ -7,7 +7,11 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import { RowRequisicionGeneralMateriales } from '../../components/requisicion-materiales/RowRequisicionGeneralMateriales'
 
 export const ListRequisicionGeneralMateriales = () => {
-  const { requisicionMateriales, traerDataRequisicionesGeneralesMateriales } = useRequisicionGeneralMateriales()
+  const {
+    requisicionMateriales,
+    traerDataRequisicionesGeneralesMateriales,
+    generatePDFRequisicionMateriales
+  } = useRequisicionGeneralMateriales()
   // filtros
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
@@ -103,7 +107,7 @@ export const ListRequisicionGeneralMateriales = () => {
                 <TableCell align="center" width={50}>
                   <b>Fecha requerimiento</b>
                 </TableCell>
-                <TableCell align="left" width={100}>
+                <TableCell align="left" width={150}>
                   <b>Acciones</b>
                 </TableCell>
               </TableRow>
@@ -111,7 +115,10 @@ export const ListRequisicionGeneralMateriales = () => {
             <TableBody>
               {
                 requisicionMateriales.map((item) => (
-                  <RowRequisicionGeneralMateriales key={item.id} item={item}/>
+                  <RowRequisicionGeneralMateriales key={item.id}
+                    item={item}
+                    onGeneratePDF={generatePDFRequisicionMateriales}
+                  />
                 ))
               }
             </TableBody>

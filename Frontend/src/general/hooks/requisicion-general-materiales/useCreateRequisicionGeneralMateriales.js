@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import { useAuth } from '../../../hooks/useAuth'
+import { getMateriaPrimaById } from '../../../helpers/Referenciales/producto/getMateriaPrimaById'
+import { alertError, alertSuccess, alertWarning } from '../../../utils/alerts/alertsCustoms'
+import { createRequisicionGeneralMaterialWithDetalle } from '../../helpers/requisicion-materiales/createRequisicionGeneralMaterialWithDetalle'
+import { useNavigate } from 'react-router-dom'
 
 export function useCreateRequisicionGeneralMateriales () {
   const { user } = useAuth()
@@ -7,12 +11,13 @@ export function useCreateRequisicionGeneralMateriales () {
     idAre: user.idAre,
     idMotReqMat: 0,
     notReqMat: '',
-    detReq: []
+    detReqMat: []
   })
   const [produtSelected, setProductSelected] = useState({
     idProdt: 0,
     cantReqMatDet: 0
   })
+  const navigate = useNavigate()
 
   // handle change atributos requisicion
   const handleChangeAtributoRequisicionMateriales = ({ target }) => {
@@ -50,11 +55,10 @@ export function useCreateRequisicionGeneralMateriales () {
     })
   }
 
-  // handle añadir producto al detalle
-  const handleAddProductoDetalleRequisicionMateriales = (e) => {
+  // handle añadir item al detalle requisicion materiales
+  const handleAddProductoDetalleRequisicionMateriales = async (e) => {
     e.preventDefault()
-    const formatCantidad = isNaN(produtSelected.cantReqMatDet) || produtSelected.cantReqMatDet.trim() === '' ? 0 : parseFloat(produtSelected.cantReqMatDet)
-    console.log(formatCantidad)
+    const formatCantidad = isNaN(produtSelected.cantReqMatDet) ? 0 : parseFloat(produtSelected.cantReqMatDet)
     let handleErrors = ''
     if (produtSelected.idProdt === 0 || formatCantidad <= 0) {
       if (produtSelected.idProdt === 0) {
@@ -63,20 +67,108 @@ export function useCreateRequisicionGeneralMateriales () {
       if (formatCantidad <= 0) {
         handleErrors += 'Debes ingresar una cantidad mayor a 0'
       }
-      console.log(handleErrors)
+      alertWarning(handleErrors)
     } else {
-      console.log('peticion')
+      // si ya se ingreso el producto
+      const findElementDetalle = requisicionMateriales.detReqMat.some((element) => element.idProdt === produtSelected.idProdt)
+      if (!findElementDetalle) {
+        const resultPeticion = await getMateriaPrimaById(produtSelected.idProdt)
+        const { message_error, description_error, result } = resultPeticion
+
+        if (message_error.length === 0) {
+          const { id, codProd, codProd2, desCla, desSubCla, nomProd, simMed } =
+              result[0]
+          // GENERAMOS NUESTRO DETALLE DE FORMULA DE MATERIA PRIMA
+          const detalleFormulaMateriaPrima = {
+            idProdt: id,
+            codProd,
+            codProd2,
+            desCla,
+            desSubCla,
+            nomProd,
+            simMed,
+            canMatPriFor: formatCantidad
+          }
+
+          // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
+          const dataMateriaPrimaDetalle = [
+            ...requisicionMateriales.detReqMat,
+            detalleFormulaMateriaPrima
+          ]
+          setRequisicionMateriales({
+            ...requisicionMateriales,
+            detReqMat: dataMateriaPrimaDetalle
+          })
+        } else {
+          alertError(description_error)
+        }
+      } else {
+        alertWarning('¡Ya agregaste este producto al detalle!')
+      }
     }
   }
 
-  // handle delete producto al detalle
-  const handleDeleteProductoDetalleRequisicionMateriales = () => {
+  // handle delete detalle requisicion materiales
+  const handleDeleteProductoDetalleRequisicionMateriales = (idItem) => {
+    // FILTRAMOS EL ELEMENTO ELIMINADO
+    const nuevaDataDetalleRequisicion = requisicionMateriales.detReqMat.filter((element) => {
+      if (element.idProdt !== idItem) {
+        return element
+      } else {
+        return false
+      }
+    })
 
+    // VOLVEMOS A SETEAR LA DATA
+    setRequisicionMateriales({
+      ...requisicionMateriales,
+      detReqMat: nuevaDataDetalleRequisicion
+    })
   }
 
-  // handle change detalle de producto
-  const handleChangeProductoDetalleRequisicionMateriales = () => {
+  // handle change detalle requisicion materiales
+  const handleChangeProductoDetalleRequisicionMateriales = ({ target }, idItem) => {
+    const { value } = target
+    const editFormDetalle = requisicionMateriales.detReqMat.map((element) => {
+      if (element.idProdt === idItem) {
+        return {
+          ...element,
+          canMatPriFor: value
+        }
+      } else {
+        return element
+      }
+    })
 
+    setRequisicionMateriales({
+      ...requisicionMateriales,
+      detReqMat: editFormDetalle
+    })
+  }
+
+  // handle create requisicion materiales
+  const handleCreateRequisicionMateriales = async () => {
+    let handleErrors = ''
+    if (requisicionMateriales.idMotReqMat === 0 || requisicionMateriales.detReqMat.length === 0) {
+      if (requisicionMateriales.idMotReqMat === 0) {
+        handleErrors += 'Debes agregar un motivo de requisición de materiales\n'
+      }
+      if (requisicionMateriales.detReqMat.length === 0) {
+        handleErrors += 'Debes agregar productos al detalle\n'
+      }
+      alertWarning(handleErrors)
+    } else {
+      const resultPeticion = await createRequisicionGeneralMaterialWithDetalle(requisicionMateriales)
+      const { message_error, description_error } = resultPeticion
+      if (message_error.length === 0) {
+        // mostramos mensaje de exito
+        alertSuccess()
+        // regresamos a la vista de lista de requisicion de materiales
+        navigate(-1)
+      } else {
+        alertError(description_error)
+      }
+    }
   }
 
   return {
@@ -88,6 +180,7 @@ export function useCreateRequisicionGeneralMateriales () {
     handleChangeCantidadRequisicionMateriales,
     handleAddProductoDetalleRequisicionMateriales,
     handleDeleteProductoDetalleRequisicionMateriales,
-    handleChangeProductoDetalleRequisicionMateriales
+    handleChangeProductoDetalleRequisicionMateriales,
+    handleCreateRequisicionMateriales
   }
 }
