@@ -27,8 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
     $idAre = $data["idAre"];
-    //die(json_encode($idAre));
-
     $data_requsicion_molienda = [];
 
     if ($pdo) {
@@ -40,41 +38,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             r.idProdt,
             r.idAre,
             a.desAre,
-            pc.codLotProd,
-            pc.idProdTip,
-            pct.desProdTip,
-            pc.klgLotProd,
-            pc.canLotProd,
-            re.desReqEst,
-            p.nomProd,
-            r.fecPedReq, 
-            r.codReq
-            FROM requisicion r
-            JOIN producto as p on p.id = r.idProdt
-            RIGHT JOIN produccion pc  on pc.id = r.idProdc
-            JOIN produccion_tipo pct on pct.id = pc.idProdTip
-            JOIN area a on a.id = r.idAre
-            JOIN requisicion_estado as re on re.id = r.idReqEst
-            WHERE r.idAre = ?  
-            #DATE(r.fecPedReq) BETWEEN '$fechaInicio' AND '$fechaFin'
-            ORDER BY r.fecPedReq DESC
-            ";
-
-        $sql =
-            "SELECT
-            r.id,
-            r.idProdc,
-            r.idReqEst,
-            r.idProdt,
-            r.idAre,
-            a.desAre,
             r.codLotProd,
-            '' AS idProdTip,
-            '' AS desProdTip,
             r.cantProg AS canLotProd,
             re.desReqEst,
             p.nomProd,
-            r.fecPedReq, 
+            r.fecPedReq,
+            r.fecEntReq,
             r.codReq
             FROM requisicion r
             JOIN producto as p on p.id = r.idProdt
@@ -85,13 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ORDER BY r.fecPedReq DESC
             ";
 
-
-        //die(json_encode($fechaInicio));
-
         try {
-
-            //die(json_encode("test"));
-
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(1, $idAre, PDO::PARAM_INT);
             $stmt->execute();

@@ -217,6 +217,7 @@ export const ListRequisicionesMolienda = () => {
   // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
   const obtenerDataRequisicionMolienda = async (body = formState) => {
     const resultPeticion = await getRequisicionMoliendaWithDetalle(body)
+    console.log(resultPeticion)
     const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
       setdataRequisicion(result)
@@ -345,12 +346,6 @@ export const ListRequisicionesMolienda = () => {
                         }}
                       />
                     </TableCell>
-                    {/* <TableCell align="left" width={100}>
-                      <b>Tipo</b>
-                      <FilterTipoProduccion
-                        onNewInput={onChangeTipoProduccion}
-                      />
-                    </TableCell> */}
                     <TableCell align="left" width={140}>
                       <b>Producto</b>
                       <FilterProductoProduccion onNewInput={onChangeProducto} />
@@ -371,7 +366,7 @@ export const ListRequisicionesMolienda = () => {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="left" width={100}>
+                    <TableCell align="center" width={100}>
                       <b>Estado</b>
                     </TableCell>
                     <TableCell align="left" width={140}>
@@ -379,9 +374,6 @@ export const ListRequisicionesMolienda = () => {
                     </TableCell>
                     <TableCell align="left" width={140}>
                       <b>Fecha terminado</b>
-                    </TableCell>
-                    <TableCell align="left" width={100}>
-                      <b>Acciones</b>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -409,13 +401,11 @@ export const ListRequisicionesMolienda = () => {
                         <TableCell align="center">
                           <span
                             className={
-                              row.idReqMolEst === 1
+                              row.idReqEst === 1
                                 ? 'badge text-bg-danger'
-                                : row.idReqMolEst === 2
+                                : row.idReqEst === 2
                                   ? 'badge text-bg-warning'
-                                  : row.idReqMolEst === 3
-                                    ? 'badge text-bg-primary'
-                                    : 'badge text-bg-success'
+                                  : 'badge text-bg-success'
                             }
                           >
                             {row.desReqEst}
@@ -423,33 +413,9 @@ export const ListRequisicionesMolienda = () => {
                         </TableCell>
                         <TableCell align="left">{row.fecPedReq}</TableCell>
                         <TableCell align="left">
-                          {row.fecTerReqMol === null
+                          {row.fecEntReq === null
                             ? 'Aun no terminado'
-                            : row.fecTerReqMol}
-                        </TableCell>
-                        <TableCell align="left">
-                          <div className="btn-toolbar">
-                            {/* <button
-                              onClick={() => {
-                                showRequisicionMoliendaDetalle(i);
-                              }}
-                              className="btn btn-primary me-2 btn"
-                              data-toggle="modal"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-eye-fill"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
-                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
-                              </svg>
-                            </button> */}
-                            Sin acciones
-                          </div>
+                            : row.fecEntReq}
                         </TableCell>
                       </TableRow>
                     ))}

@@ -42,6 +42,7 @@ export const ViewLoteMolienda = () => {
       klgLotProd: '',
       canLotProd: '',
       fecVenLotProd: '',
+      esSubProd: false,
       prodLotReq: []
     })
 
@@ -54,6 +55,7 @@ export const ViewLoteMolienda = () => {
     canLotProd,
     fecVenLotProd,
     prodLotReq,
+    esSubProd,
     numop
   } = produccionRequisicionDetalle
 
@@ -279,6 +281,7 @@ export const ViewLoteMolienda = () => {
     const resultPeticion = await viewMoliendaRequisicionId(idReq)
 
     const { message_error, description_error, result } = resultPeticion
+    console.log(result[0])
 
     if (message_error.length === 0) {
       if (!result[0].desProdTip) {
@@ -291,6 +294,7 @@ export const ViewLoteMolienda = () => {
       result[0].canLotProd = result[0].prodLotReq[0].cantProg
       result[0].nomProd = result[0].prodLotReq[0].nomProd
       result[0].idProdEst = result[0].prodLotReq[0].idReqEst
+      result[0].esSubProd = result[0].prodLotReq[0].esSubProd
       // ordenamos la requisicion
       result[0].prodLotReq[0].reqDet.sort(function (a, b) {
         if (a.nomProd < b.nomProd) {
@@ -321,21 +325,15 @@ export const ViewLoteMolienda = () => {
         <h1 className="mt-4 text-center"> Orden Molienda</h1>
         <div className="row mt-4 mx-4">
           {/* Acciones */}
-          {user.idAre === 4 && (
+          {esSubProd && (
             <div className="card d-flex mb-4">
               <h6 className="card-header">Acciones</h6>
               <div className="card-body align-self-center">
                 <Link
-                  to={
-                    idProdEst !== 3
-                      ? '#'
-                      : `/almacen/requisicion-molienda/agregar?idReq=${idReq}`
-                  }
-                  className={`btn btn-primary ${
-                    idProdEst !== 3 ? 'pointer-events-none opacity-50' : ''
-                  }`}
+                  to={`/almacen/requisicion-molienda/agregar-subproducto/${idReq}`}
+                  className={'btn btn-primary'}
                 >
-                  Registrar producto intermedio
+                  Ingresar producto intermedio
                 </Link>
               </div>
             </div>

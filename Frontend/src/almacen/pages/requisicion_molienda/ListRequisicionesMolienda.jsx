@@ -405,9 +405,7 @@ export const ListRequisicionesMolienda = () => {
                                 ? 'badge text-bg-danger'
                                 : row.idReqEst === 2
                                   ? 'badge text-bg-warning'
-                                  : row.idReqEst === 3
-                                    ? 'badge text-bg-success'
-                                    : 'badge text-bg-success'
+                                  : 'badge text-bg-success'
                             }
                           >
                             {row.desReqEst}
@@ -415,9 +413,9 @@ export const ListRequisicionesMolienda = () => {
                         </TableCell>
                         <TableCell align="left">{row.fecPedReq}</TableCell>
                         <TableCell align="left">
-                          {row.fecTerReqMol === null
+                          {row.fecEntReq === null
                             ? 'Aun no terminado'
-                            : row.fecTerReqMol}
+                            : row.fecEntReq}
                         </TableCell>
                         <TableCell align="left">
                           <div className="btn-toolbar">

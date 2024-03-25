@@ -12,11 +12,11 @@ $description_error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
-    $idProdc = 0; // id de produccion
     $idProdt = $data["idProdt"]; // id de producto
     $klgLotProd = $data["klgLotProd"]; // peso de requisicion
     $codLotProd = $data["codLotProd"]; // codigo de lote de produccion
     $canLotProd = $data["canLotProd"]; // cantidad de lote de produccion
+    $esSubProd = $data["esSubProd"]; // signal si es subproducto
 
     $codArea = "ML"; // codigo de area
     $reqMolDet = $data["reqMolDet"]; // detalle de requisicion
@@ -61,11 +61,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql =
                 "INSERT INTO
                     requisicion
-                    (idReqEst, idProdt, codReq, idAre, cantProg, codLotProd, canLotProd, idReqTip)
-                    VALUES (?,?,?,?,?,?,?,?)";
+                    (idReqEst, idProdt, codReq, idAre, cantProg, codLotProd, canLotProd, idReqTip, esSubProd)
+                    VALUES (?,?,?,?,?,?,?,?,?)";
             // PREPARAMOS LA CONSULTA
             $stmt = $pdo->prepare($sql);
-            //$stmt->bindParam(1, $idProdc, PDO::PARAM_INT);
             $stmt->bindParam(1, $idReqEst, PDO::PARAM_INT); // estaod de requisicion
             $stmt->bindParam(2, $idProdt, PDO::PARAM_INT); // id de producto
             $stmt->bindParam(3, $codReq, PDO::PARAM_STR); // codigo de requisicon
@@ -74,6 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(6, $codLotProd, PDO::PARAM_STR); // codigo de lote de produccion
             $stmt->bindParam(7, $canLotProd, PDO::PARAM_STR); // cantidad de lote de produccion
             $stmt->bindParam(8, $idReqTip, PDO::PARAM_INT); // requisicion de producto intermedio
+            $stmt->bindParam(9, $esSubProd, PDO::PARAM_BOOL); // es sub producto
 
             try {
                 $pdo->beginTransaction();

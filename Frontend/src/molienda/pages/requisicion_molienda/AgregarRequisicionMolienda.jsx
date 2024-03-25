@@ -18,7 +18,7 @@ import { FilterMateriaPrima } from './../../../components/ReferencialesFilters/P
 import { RowDetalleFormula } from '../../components/RowDetalleFormula'
 import { getFormulaWithDetalleByPrioridad } from './../../helpers/formula/getFormulaWithDetalleByPrioridad'
 import { FilterProductoProduccion } from './../../../components/ReferencialesFilters/Producto/FilterProductoProduccion'
-import { Typography } from '@mui/material'
+import { Checkbox, FormControlLabel, Typography } from '@mui/material'
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert (props, ref) {
@@ -32,9 +32,10 @@ export const AgregarRequisicionMolienda = () => {
     codLotProd: '', // codigo del lote
     klgLotProd: '', // kilogramos del lote
     canLotProd: '', // cantidad de lotes
+    esSubProd: false, // es subproducto
     nomProd: '' // nombre del producto
   })
-  const { codLotProd, klgLotProd, canLotProd } = produccionLote
+  const { codLotProd, klgLotProd, canLotProd, esSubProd } = produccionLote
 
   // ESTADOS PARA LOS DATOS DE REQUISICION
   const [requisicion, setRequisicion] = useState({
@@ -91,6 +92,14 @@ export const AgregarRequisicionMolienda = () => {
   }
 
   /* Manejadores de detalles de requisicion y agregado de materia prima */
+
+  // cambiar tipo de produccion
+  const onChangeCheckboxSubProducto = (event) => {
+    setProduccionLote({
+      ...produccionLote,
+      esSubProd: event.target.checked
+    })
+  }
 
   // Añadir una materia prima
   const onMateriaPrimaId = ({ id }) => {
@@ -339,12 +348,14 @@ export const AgregarRequisicionMolienda = () => {
 
   // Funcion asyncrona para crear requisicion de molienda con su detalle
   const crearRequisicion = async () => {
-    requisicion.klgLotProd = produccionLote.klgLotProd
-    requisicion.codLotProd = produccionLote.codLotProd.padStart(3, '0')
-    requisicion.canLotProd = produccionLote.canLotProd
+    const formatData = {
+      ...produccionLote,
+      codLotProd: produccionLote.codLotProd.padStart(3, '0'),
+      reqMolDet: requisicion.reqMolDet,
+      idProdt: requisicion.idProdt
+    }
 
-    console.log(requisicion)
-    const response = await createRequisicionWithDetalle(requisicion)
+    const response = await createRequisicionWithDetalle(formatData)
 
     const { message_error, description_error } = response
 
@@ -442,6 +453,19 @@ export const AgregarRequisicionMolienda = () => {
                     onWheel={(e) => e.target.blur()}
                   />
                 </div>
+              </div>
+              <div className="mb-3">
+                <FormControlLabel
+                  label="¿Es lote de subproducto?"
+                  labelPlacement='start'
+                  className='me-0 ms-0'
+                  control={
+                    <Checkbox
+                      checked={esSubProd}
+                      onChange={onChangeCheckboxSubProducto}
+                    />
+                  }
+                />
               </div>
             </div>
           </div>

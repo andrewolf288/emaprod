@@ -1,5 +1,6 @@
 import { ViewLoteMolienda } from './ViewLoteMolienda'
 import { ListRequisicionesMolienda } from './ListRequisicionesMolienda'
+import { AgregarSubProducto } from './AgregarSubProducto'
 
 export const RouterRequisicionMolienda = [
   {
@@ -9,5 +10,9 @@ export const RouterRequisicionMolienda = [
   {
     path: 'view/:idProdc/:idReq',
     element: <ViewLoteMolienda />
+  },
+  {
+    path: 'agregar-subproducto/:idReq',
+    element: <AgregarSubProducto />
   }
 ]

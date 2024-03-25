@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getRequisicionGeneralMaterialById } from '../../helpers/requisicion-materiales/getRequisicionGeneralMaterialById'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { alertError } from '../../../utils/alerts/alertsCustoms'
 
 export const ViewRequisicionGeneralMateriales = () => {
   const { idReqMat } = useParams()
@@ -39,7 +40,7 @@ export const ViewRequisicionGeneralMateriales = () => {
     if (message_error.length === 0) {
       setRequisicionMaterial(result)
     } else {
-      alert(description_error)
+      alertError(description_error)
     }
   }
 
