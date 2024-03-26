@@ -476,7 +476,8 @@ export const CreateRequisicionTransformacion = () => {
       })
 
       detalleRequisicionMateriales.forEach((obj) => {
-        obj.canReqProdLot = _parseInt(obj.canReqProdLot)
+        // obj.canReqProdLot = _parseInt(obj.canReqProdLot)
+        obj.canReqProdLot = _parseInt(obj)
       })
 
       setRequisicionMaterialesTransformacion({
