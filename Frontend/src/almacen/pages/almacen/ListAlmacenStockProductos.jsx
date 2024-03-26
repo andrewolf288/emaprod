@@ -346,19 +346,6 @@ export const ListAlmacenStockProductos = () => {
                         autoComplete="off"
                       />
                     </TableCell>
-                    <TableCell align="left" width={110}>
-                      <b>Disponible</b>
-                      <TextField
-                        onChange={handleFormFilter}
-                        name="filterCantidadTotalDisponible"
-                        size="small"
-                        type="number"
-                        autoComplete="off"
-                      />
-                    </TableCell>
-                    <TableCell align="left" width={120}>
-                      <b>Acciones</b>
-                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

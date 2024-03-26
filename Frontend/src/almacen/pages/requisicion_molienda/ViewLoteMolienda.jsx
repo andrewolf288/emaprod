@@ -51,7 +51,6 @@ export const ViewLoteMolienda = () => {
     desEstPro,
     desProdTip,
     codLotProd,
-    idProdEst,
     canLotProd,
     fecVenLotProd,
     prodLotReq,
@@ -325,7 +324,7 @@ export const ViewLoteMolienda = () => {
         <h1 className="mt-4 text-center"> Orden Molienda</h1>
         <div className="row mt-4 mx-4">
           {/* Acciones */}
-          {esSubProd && (
+          {esSubProd !== 0 && (
             <div className="card d-flex mb-4">
               <h6 className="card-header">Acciones</h6>
               <div className="card-body align-self-center">

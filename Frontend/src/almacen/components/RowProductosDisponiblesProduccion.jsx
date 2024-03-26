@@ -6,10 +6,7 @@ import FechaPicker from '../../../src/components/Fechas/FechaPicker'
 import FechaPickerYear from '../../../src/components/Fechas/FechaPickerYear'
 export const RowProductosDisponiblesProduccion = ({
   detalle,
-  onDeleteDetalle,
-  onChangeDetalle,
-  showButtonDelete,
-  DetProdIntermdio
+  onChangeDetalle
 }) => {
   return (
     <TableRow

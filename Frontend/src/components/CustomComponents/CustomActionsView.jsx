@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export const CustomActionsView = ({ onSaveOperation }) => {
+export const CustomActionsView = ({ onSaveOperation = () => {}, onShowCreateButton = true }) => {
   const navigate = useNavigate()
 
   const navigateBack = () => {
@@ -14,12 +14,12 @@ export const CustomActionsView = ({ onSaveOperation }) => {
 
   return (
     <div className="btn-toolbar ms-4 mt-3">
-      <button
+      {onShowCreateButton && <button
         type='button'
         onClick={onSaveOperation}
         className='btn btn-primary me-2'>
             Guardar
-      </button>
+      </button>}
       <button
         type="button"
         onClick={handleGoBack}

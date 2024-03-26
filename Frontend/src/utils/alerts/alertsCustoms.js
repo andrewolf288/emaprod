@@ -53,3 +53,12 @@ export function alertSuccess () {
     }
   )
 }
+
+export function alertLoading (message) {
+  return toast.loading(message, {
+    iconTheme: {
+      primary: 'rgba(0, 0, 0, 0.7)',
+      secondary: '#fff'
+    }
+  })
+}
