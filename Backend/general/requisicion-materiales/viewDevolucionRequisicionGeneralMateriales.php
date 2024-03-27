@@ -64,12 +64,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_select_requisicion_materiales_detalle->execute();
 
             $row_requisicion_materiales["detReq"] = $stmt_select_requisicion_materiales_detalle->fetchAll(PDO::FETCH_ASSOC);
-            
+
             // devoluciones
-            // $sql_select_devolucion
+            $sql_select_devolucion =
+                "SELECT 
+            rdm.id,
+            rdm.correlativo,
+            rdm.idProdt,
+            p.nomProd,
+            rdm.idReqEst,
+            rdm.fecCreReqDevMat,
+            rdm.fecComReqDevMat
+            FROM requisicion_devolucion_materiales AS rdm
+            JOIN producto AS p ON p.id = rdm.idProdt
+            WHERE rdm.idReqMat = ?";
+            $stmt_select_devolucion = $pdo->prepare($sql_select_devolucion);
+            $stmt_select_devolucion->bindParam(1, $idReqMat, PDO::PARAM_INT);
+            $stmt_select_devolucion->execute();
+
+            while ($row_select_devolucion = $stmt_select_devolucion->fetch(PDO::FETCH_ASSOC)) {
+                $idReqDevMat = $row_select_devolucion["id"];
+                $sql_select_devolucion_detalle = 
+                "SELECT 
+                rdmd.id,
+                rd
+                FROM requisicion_devolucion_materiales_detalle AS rdmd";
+            }
+
             $result = $row_requisicion_materiales;
         }
-
     } else {
         $message_error = "Error con la conexion a la base de datos";
         $description_error = "Error con la conexion a la base de datos a traves de PDO";

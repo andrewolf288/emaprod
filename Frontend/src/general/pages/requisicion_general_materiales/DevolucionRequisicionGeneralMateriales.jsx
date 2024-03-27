@@ -83,7 +83,16 @@ export const DevolucionRequisicionGeneralMateriales = () => {
         <div className="row mt-4 mx-4">
           <div className="card d-flex">
             <h6 className="card-header">
-            Detalle de la requisicion
+            Devoluciones registradas
+            </h6>
+
+          </div>
+        </div>
+        {/* DETALLE DE REQUISICION */}
+        <div className="row mt-4 mx-4">
+          <div className="card d-flex">
+            <h6 className="card-header">
+            Detalle de devoluciones
             </h6>
 
           </div>
