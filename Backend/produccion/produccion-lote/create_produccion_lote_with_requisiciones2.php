@@ -95,26 +95,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $pdo->query($sql);
         $lastInsertId = $stmt->fetchColumn();
 
+        $numop = $op . $anio . $mes . $lastInsertId;
         $sql_insert_produccion =
             "INSERT INTO
-                    produccion
-                    (idProdt, 
-                    idProdEst, 
-                    idProdTip, 
-                    idProdFinProgEst, 
-                    idProdIniProgEst,
-                    codProd, 
-                    codLotProd,
-                    klgLotProd, 
-                    canLotProd,
-                    obsProd,
-                    fecProdIniProg,
-                    fecProdFinProg,
-                    fecVenLotProd,
-                    numop,
-                    totalUnidadesLoteProduccion,
-                    klgTotalLoteProduccion)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        produccion
+        (idProdt, 
+        idProdEst, 
+        idProdTip, 
+        idProdFinProgEst, 
+        idProdIniProgEst,
+        codProd, 
+        codLotProd,
+        klgLotProd, 
+        canLotProd,
+        obsProd,
+        fecProdIniProg,
+        fecProdFinProg,
+        fecVenLotProd,
+        numop,
+        totalUnidadesLoteProduccion,
+        klgTotalLoteProduccion,
+        idReqLot)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try {
             $stmt_insert_produccion = $pdo->prepare($sql_insert_produccion);
             $stmt_insert_produccion->bindParam(1, $idProdt, PDO::PARAM_INT);
@@ -133,8 +135,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_insert_produccion->bindParam(14, $numop, PDO::PARAM_STR);
             $stmt_insert_produccion->bindParam(15, $totalUnidadesLoteProduccion);
             $stmt_insert_produccion->bindParam(16, $klgTotalLoteProduccion);
+            $stmt_insert_produccion->bindParam(17, $idReq, PDO::PARAM_INT);
 
-            $numop = $op . $anio . $mes . $lastInsertId;
             $stmt_insert_produccion->execute();
 
             // verificamos si se realizo la insercion del lote de produccion
@@ -152,12 +154,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     $sql_insert_producto_lote_produccion =
                         "INSERT INTO 
-                            produccion_producto_final
-                            (idProdc,
-                            idProdcProdtFinEst,
-                            idProdt,
-                            canTotProgProdFin)
-                            VALUES (?,?,?,?)";
+                    produccion_producto_final
+                    (idProdc,
+                    idProdcProdtFinEst,
+                    idProdt,
+                    canTotProgProdFin)
+                    VALUES (?,?,?,?)";
 
                     $stmt_insert_producto_lote_produccion = $pdo->prepare($sql_insert_producto_lote_produccion);
                     $stmt_insert_producto_lote_produccion->bindParam(1, $idLastInsert, PDO::PARAM_INT);
@@ -204,9 +206,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // requisicion de envasado
                     $sql_insert_requisicion_envasado =
                         "INSERT INTO
-                                requisicion
-                                (idProdc, idReqEst, idAre, idReqTip, codLotProd)
-                                VALUES (?, ?, ?, ?, ?)";
+                    requisicion
+                    (idProdc, idReqEst, idAre, idReqTip, codLotProd)
+                    VALUES (?, ?, ?, ?, ?)";
                     try {
                         $pdo->beginTransaction(); // iniciamos una transaccion
                         $stmt_insert_requisicion_envasado = $pdo->prepare($sql_insert_requisicion_envasado);
@@ -240,9 +242,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     // generamos la query
                                     $sql_insert_requisicion_envasado_detalle =
                                         "INSERT INTO
-                                                requisicion_detalle
-                                                (idProdt, idReq, idReqDetEst, canReqDet, idProdFin)
-                                                VALUES (?, ?, ?, $canReqDet, $idProdFinFlag)";
+                                    requisicion_detalle
+                                    (idProdt, idReq, idReqDetEst, canReqDet, idProdFin)
+                                    VALUES (?, ?, ?, $canReqDet, $idProdFinFlag)";
 
                                     $stmt_insert_requisicion_envasado_detalle = $pdo->prepare($sql_insert_requisicion_envasado_detalle);
                                     $stmt_insert_requisicion_envasado_detalle->bindParam(1, $idProdtEnv, PDO::PARAM_INT);
@@ -273,9 +275,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // requisicion de envasado
                     $sql_insert_requisicion_encajonado =
                         "INSERT INTO
-                                requisicion
-                                (idProdc, idReqEst, idAre, idReqTip, codLotProd)
-                                VALUES (?, ?, ?, ?, ?)";
+                    requisicion
+                    (idProdc, idReqEst, idAre, idReqTip, codLotProd)
+                    VALUES (?, ?, ?, ?, ?)";
                     try {
                         $pdo->beginTransaction(); // iniciamos una transaccion
                         $stmt_insert_requisicion_encajonado = $pdo->prepare($sql_insert_requisicion_encajonado);
@@ -307,9 +309,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 // generamos la query
                                 $sql_insert_requisicion_encajonado_detalle =
                                     "INSERT INTO
-                                            requisicion_detalle
-                                            (idProdt, idReq, idReqDetEst, canReqDet, idProdFin)
-                                            VALUES (?, ?, ?, $canReqDet, $idProdFinFlag)";
+                                requisicion_detalle
+                                (idProdt, idReq, idReqDetEst, canReqDet, idProdFin)
+                                VALUES (?, ?, ?, $canReqDet, $idProdFinFlag)";
 
                                 $stmt_insert_requisicion_encajonado_detalle = $pdo->prepare($sql_insert_requisicion_encajonado_detalle);
                                 $stmt_insert_requisicion_encajonado_detalle->bindParam(1, $idProdtEnc, PDO::PARAM_INT);

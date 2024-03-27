@@ -724,7 +724,6 @@ export const CrearProduccionLote2 = () => {
       totalUnidadesLoteProduccion,
       klgTotalLoteProduccion
     }
-    console.log(formatProduccionLote)
 
     const resultPeticion = await createProduccionLoteWithRequisiciones2(
       formatProduccionLote

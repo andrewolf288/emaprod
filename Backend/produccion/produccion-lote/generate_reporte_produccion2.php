@@ -21,6 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $spreadsheet = new Spreadsheet();
     // generamos hoja de calculo de datos de produccion
     sheetDatosProduccion($pdo, $idLotProd, $spreadsheet);
+    // generamos hoja de calculo de salidas de materias primas
+    sheetDatosRequisicionMateriasPrimas($pdo, $idLotProd, $spreadsheet);
     // generamos hoja de calculo de datos de requerimientos
     sheetDatosRequerimientosEnvEncProduccion($pdo, $idLotProd, $spreadsheet);
     // generamos hoja de calculo de datos de ingreso
@@ -35,8 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $writer->save('php://output');
     exit;
 }
-
-
 
 // funcion para mostrar datos de produccion
 function sheetDatosProduccion(PDO $pdo, int $idLotProd, Spreadsheet $spreadsheet)
@@ -225,8 +225,6 @@ function sheetDatosProduccion(PDO $pdo, int $idLotProd, Spreadsheet $spreadsheet
         $row++;
     }
 }
-
-
 // funcion para mostrar requerimientos de env. y enc.
 function sheetDatosRequerimientosEnvEncProduccion(PDO $pdo, int $idLotProd, Spreadsheet $spreadsheet)
 {
@@ -240,9 +238,10 @@ function sheetDatosRequerimientosEnvEncProduccion(PDO $pdo, int $idLotProd, Spre
         "tipoDato" => [],
         "data" => []
     );
-    $result["header"] = ["ID", "EMAPROD", "Producto", "Medida", "Estado", "Cantidad", "Fecha creación"];
-    $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "numero", "texto"];
-    $result["columnWidths"] = [10, 12, 80, 10, 15, 12, 20];
+    // $result["header"] = ["ID", "Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Cantidad", "Fecha creación"];
+    $result["header"] = ["ID", "Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Cantidad", "Fecha salida"];
+    $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "numero", "texto"];
+    $result["columnWidths"] = [10, 25, 12, 80, 10, 15, 12, 20];
 
     $requisicion_envasado = array();
     $requisicion_encajado = array();
@@ -260,20 +259,41 @@ function sheetDatosRequerimientosEnvEncProduccion(PDO $pdo, int $idLotProd, Spre
     while ($row_requisicion = $stmt_select_requisiciones_produccion->fetch(PDO::FETCH_ASSOC)) {
         $idReq = $row_requisicion["id"];
         $idAre = $row_requisicion["idAre"];
-        $sql_requisicion_detalle =
-            "SELECT
+        // $sql_requisicion_detalle =
+        //     "SELECT
+        // rd.idProdFin,
+        // pt.codProd2,
+        // pt.nomProd,
+        // me.simMed,
+        // rde.desReqDetEst,
+        // rd.canReqDet,
+        // rd.fecCreReqDet
+        // FROM requisicion_detalle AS rd
+        // JOIN producto AS pt ON pt.id = rd.idProdt
+        // JOIN medida AS me ON me.id = pt.idMed
+        // JOIN requisicion_detalle_estado AS rde ON rde.id = rd.idReqDetEst
+        // WHERE rd.idReq = ?";
+        // $stmt_requisicion_detalle = $pdo->prepare($sql_requisicion_detalle);
+        // $stmt_requisicion_detalle->bindParam(1, $idReq, PDO::PARAM_INT);
+        // $stmt_requisicion_detalle->execute();
+
+        $sql_requisicion_detalle = 
+        "SELECT
         rd.idProdFin,
-        pt.codProd2,
-        pt.nomProd,
+        es.codEntSto,
+        p.codProd2,
+        p.nomProd,
         me.simMed,
         rde.desReqDetEst,
-        rd.canReqDet,
-        rd.fecCreReqDet
-        FROM requisicion_detalle AS rd
-        JOIN producto AS pt ON pt.id = rd.idProdt
-        JOIN medida AS me ON me.id = pt.idMed
+        ss.canSalStoReq,
+        ss.fecSalStoReq
+        FROM salida_stock AS ss
+        JOIN entrada_stock AS es ON es.id = ss.idEntSto
+        JOIN producto AS p ON p.id = ss.idProdt
+        JOIN medida AS me ON me.id = p.idMed
+        JOIN requisicion_detalle AS rd ON rd.id = ss.idReqDet
         JOIN requisicion_detalle_estado AS rde ON rde.id = rd.idReqDetEst
-        WHERE rd.idReq = ?";
+        WHERE ss.idReq = ?";
         $stmt_requisicion_detalle = $pdo->prepare($sql_requisicion_detalle);
         $stmt_requisicion_detalle->bindParam(1, $idReq, PDO::PARAM_INT);
         $stmt_requisicion_detalle->execute();
@@ -804,4 +824,98 @@ function sheetDatosAgregacionesProduccion(PDO $pdo, int $idLotProd, Spreadsheet 
 
         $INDEX = $row_detalle + 1;
     }
+}
+// funcion para mostrar detalle de salida de materia prima
+function sheetDatosRequisicionMateriasPrimas(PDO $pdo, int $idLotProd, Spreadsheet $spreadsheet)
+{
+    // primero debemos consultar la requisicion de lote origen
+    // creamos la hoja de calculo
+    $sheet = $spreadsheet->createSheet();
+    $sheet->setTitle('Datos materias primas');
+
+    $result = array(
+        "header" => [],
+        "columnWidths" => [],
+        "tipoDato" => [],
+        "data" => []
+    );
+    $result["header"] = ["Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Cantidad", "Fecha salida"];
+    $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "numero", "texto"];
+    $result["columnWidths"] = [25, 12, 80, 10, 15, 12, 20];
+
+    $sql_select_produccion = 
+    "SELECT idReqLot FROM produccion
+    WHERE id = ?";
+    $stmt_select_produccion = $pdo->prepare($sql_select_produccion);
+    $stmt_select_produccion->bindParam(1, $idLotProd, PDO::PARAM_INT);
+    $stmt_select_produccion->execute();
+
+    $row_requisicion_lote = $stmt_select_produccion->fetch(PDO::FETCH_ASSOC);
+
+    $detalle_salidas = array();
+    $sql_salida_stock = 
+    "SELECT
+    es.codEntSto,
+    p.codProd2,
+    p.nomProd,
+    me.simMed,
+    rde.desReqDetEst,
+    ss.canSalStoReq,
+    ss.fecSalStoReq
+    FROM salida_stock AS ss
+    JOIN entrada_stock AS es ON es.id = ss.idEntSto
+    JOIN producto AS p ON p.id = ss.idProdt
+    JOIN medida AS me ON me.id = p.idMed
+    JOIN requisicion_detalle AS rd ON rd.id = ss.idReqDet
+    JOIN requisicion_detalle_estado AS rde ON rde.id = rd.idReqDetEst
+    WHERE ss.idReq = ?";
+    $stmt_salida_stock = $pdo->prepare($sql_salida_stock);
+    $stmt_salida_stock->bindParam(1, $row_requisicion_lote["idReqLot"], PDO::PARAM_INT);
+    $stmt_salida_stock->execute();
+    $detalle_salidas = $stmt_salida_stock->fetchAll(PDO::FETCH_ASSOC);
+    // print_r($detalle_salidas);
+
+    // ---ESTABLECEMOS EL ANCHO DE LAS COLUMNAS---
+    foreach ($result["columnWidths"] as $columnIndex => $width) {
+        $sheet->getColumnDimensionByColumn($columnIndex + 1)->setWidth($width);
+    }
+
+    $START_FILA_REQUISICION_MATERIA_PRIMA = 2;
+    // ----ESTABLECEMOS ENCABEZADOS CON FORMATOS----
+    foreach ($result["header"] as $columnIndex => $header) {
+        $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
+
+        // Dar color al fondo del encabezado
+        $sheet->getStyle("{$columnLetter}{$START_FILA_REQUISICION_MATERIA_PRIMA}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('c7cdd6');
+
+        // Poner el texto en negrita
+        $sheet->getStyle("{$columnLetter}{$START_FILA_REQUISICION_MATERIA_PRIMA}")->getFont()->setBold(true);
+
+        // Establecer el valor en la celda
+        $sheet->setCellValue("{$columnLetter}{$START_FILA_REQUISICION_MATERIA_PRIMA}", $header);
+    }
+
+    // ----ESTABLECEMOS TIPOS DE DATOS----
+    $START_TYPE_VARIABLE_REQUISICION = $START_FILA_REQUISICION_MATERIA_PRIMA + 1;
+    $END_TYPE_VARIABLE_REQUISICION = $START_FILA_REQUISICION_MATERIA_PRIMA + sizeof($detalle_salidas);
+    foreach ($result["tipoDato"] as $columnIndex => $tipoDato) {
+        $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
+        $sheet->getStyle("{$columnLetter}{$START_TYPE_VARIABLE_REQUISICION}:{$columnLetter}{$END_TYPE_VARIABLE_REQUISICION}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+        if ($tipoDato === "numero") {
+            $sheet->getStyle("{$columnLetter}{$START_TYPE_VARIABLE_REQUISICION}:{$columnLetter}{$END_TYPE_VARIABLE_REQUISICION}")->getNumberFormat()->setFormatCode('0.000');
+        }
+    }
+
+    // ----MOSTRAMOS LOS DATOS DE REQUISICION DE MATERIA PRIMA----
+    $row = 3;
+    $columnIndex = 0;  // Asegurémonos de que $columnIndex se inicialice en algún lugar
+    foreach ($detalle_salidas as $rowData) {
+        $columnNames = array_keys($rowData);
+        foreach ($columnNames as $columnIndex => $value) {
+            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex + 1);
+            $sheet->setCellValue("{$columnLetter}{$row}", $rowData[$value]);
+        }
+        $row++;
+    }
+
 }
