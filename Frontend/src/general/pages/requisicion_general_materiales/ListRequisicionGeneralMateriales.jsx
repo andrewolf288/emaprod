@@ -72,7 +72,7 @@ export const ListRequisicionGeneralMateriales = () => {
           <div className="col-6 d-flex justify-content-end align-items-center">
             <div className="row me-4">
               <Link
-                to={'/produccion/requisicion-general/crear'}
+                to={'crear'}
                 className="btn btn-primary"
               >
                 Crear requisición

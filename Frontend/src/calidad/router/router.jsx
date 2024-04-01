@@ -5,6 +5,7 @@ import { RouterOperacionDevolucionCalidad } from '../pages/operacion-reproceso-c
 import { RouterReportesCalidad } from '../pages/reportes/RouterReportesCalidad'
 import LayoutModulo from './../../layout/LayoutModulo'
 import HomeCalidad from './../pages/HomeCalidad'
+import { RouterRequisionGeneralMateriales } from '../../general/pages/requisicion_general_materiales/RouterRequisionGeneralMateriales'
 
 export const RouterCalidad = [
   {
@@ -35,5 +36,10 @@ export const RouterCalidad = [
     path: 'operacion-devolucion',
     element: <LayoutModulo />,
     children: RouterOperacionDevolucionCalidad
+  },
+  {
+    path: 'requisicion-general',
+    element: <LayoutModulo />,
+    children: RouterRequisionGeneralMateriales
   }
 ]

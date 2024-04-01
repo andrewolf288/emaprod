@@ -36,7 +36,7 @@ export const RowRequisicionGeneralMateriales = ({ item, onGeneratePDF }) => {
 
           {/* BOTON DE VISTA DE DETALLE */}
           <Link
-            to={`/produccion/requisicion-general/view/${item.id}`}
+            to={`view/${item.id}`}
             className='btn btn-primary me-2'
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-eye-fill" viewBox="0 0 16 16">
