@@ -36,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_select_requisicion_materiales->bindParam(1, $idReqMat, PDO::PARAM_INT);
         $stmt_select_requisicion_materiales->execute();
 
+        // REQUISICION DE MATERIALES
         while ($row_requisicion_materiales = $stmt_select_requisicion_materiales->fetch(PDO::FETCH_ASSOC)) {
             $sql_select_requisicion_materiales_detalle =
                 "SELECT 
@@ -64,34 +65,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_select_requisicion_materiales_detalle->execute();
 
             $row_requisicion_materiales["detReq"] = $stmt_select_requisicion_materiales_detalle->fetchAll(PDO::FETCH_ASSOC);
-
-            // devoluciones
-            $sql_select_devolucion =
-                "SELECT 
-            rdm.id,
-            rdm.correlativo,
-            rdm.idProdt,
-            p.nomProd,
-            rdm.idReqEst,
-            rdm.fecCreReqDevMat,
-            rdm.fecComReqDevMat
-            FROM requisicion_devolucion_materiales AS rdm
-            JOIN producto AS p ON p.id = rdm.idProdt
-            WHERE rdm.idReqMat = ?";
-            $stmt_select_devolucion = $pdo->prepare($sql_select_devolucion);
-            $stmt_select_devolucion->bindParam(1, $idReqMat, PDO::PARAM_INT);
-            $stmt_select_devolucion->execute();
-
-            while ($row_select_devolucion = $stmt_select_devolucion->fetch(PDO::FETCH_ASSOC)) {
-                $idReqDevMat = $row_select_devolucion["id"];
-                $sql_select_devolucion_detalle = 
-                "SELECT 
-                rdmd.id,
-                rd
-                FROM requisicion_devolucion_materiales_detalle AS rdmd";
-            }
-
             $result = $row_requisicion_materiales;
+        }
+
+        $result["detDev"] = array();
+
+        // devoluciones
+        $sql_select_devolucion =
+            "SELECT 
+        rdm.id,
+        rdm.correlativo,
+        rdm.idReqEst,
+        re.desReqEst,
+        rdm.fecCreReqDevMat,
+        rdm.fecComReqDevMat
+        FROM requisicion_devolucion_materiales AS rdm
+        JOIN requisicion_estado AS re ON re.id = rdm.idReqEst
+        WHERE rdm.idReqMat = ?";
+        $stmt_select_devolucion = $pdo->prepare($sql_select_devolucion);
+        $stmt_select_devolucion->bindParam(1, $idReqMat, PDO::PARAM_INT);
+        $stmt_select_devolucion->execute();
+
+        while ($row_select_devolucion = $stmt_select_devolucion->fetch(PDO::FETCH_ASSOC)) {
+            $idReqDevMat = $row_select_devolucion["id"];
+            $sql_select_devolucion_detalle =
+                "SELECT 
+            rdmd.id,
+            rdmd.idProdt,
+            rdmd.idMotDev,
+            pdm.desProdDevMot,
+            p.nomProd,
+            p.codProd2,
+            me.simMed,
+            rdmd.canReqDevMatDet,
+            rdmd.esComReqDevMatDet,
+            rdmd.fecCreReqDevMatDet,
+            rdmd.fecActReqDevMatDet,
+            rdmd.fecComReqDevMatDet
+            FROM requisicion_devolucion_materiales_detalle AS rdmd
+            JOIN producto AS p ON p.id = rdmd.idProdt
+            JOIN medida AS me ON me.id = p.idMed
+            JOIN produccion_devolucion_motivo AS pdm ON pdm.id = rdmd.idMotDev
+            WHERE rdmd.idReqDevMat = ?";
+            $stmt_select_devolucion_detalle = $pdo->prepare($sql_select_devolucion_detalle);
+            $stmt_select_devolucion_detalle->bindParam(1, $idReqDevMat, PDO::PARAM_INT);
+            $stmt_select_devolucion_detalle->execute();
+            $row_select_devolucion["detDev"] = $stmt_select_devolucion_detalle->fetchAll(PDO::FETCH_ASSOC);
+
+            array_push($result["detDev"], $row_select_devolucion);
         }
     } else {
         $message_error = "Error con la conexion a la base de datos";

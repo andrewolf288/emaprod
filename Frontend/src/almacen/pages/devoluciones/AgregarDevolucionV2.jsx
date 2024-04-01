@@ -777,38 +777,37 @@ export const AgregarDevolucionV2 = () => {
                   </button>
                 </div>
               </form>
-              <div>
-                <Paper>
-                  <TableContainer>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow
-                          sx={{
-                            '& th': {
-                              color: 'rgba(96, 96, 96)',
-                              backgroundColor: '#f5f5f5'
-                            }
-                          }}
-                        >
-                          <TableCell align="left" width={200}>
-                            <b>Presentación final</b>
-                          </TableCell>
-                          <TableCell align="left" width={50}>
-                            <b>Medida</b>
-                          </TableCell>
-                          <TableCell align="left" width={100}>
-                            <b>Recomendado</b>
-                          </TableCell>
-                          <TableCell align="left" width={120}>
-                            <b>Total</b>
-                          </TableCell>
-                          <TableCell align="left" width={120}>
-                            <b>Acciones</b>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {detalleProductosDevueltos.length !== 0 &&
+              <Paper>
+                <TableContainer>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow
+                        sx={{
+                          '& th': {
+                            color: 'rgba(96, 96, 96)',
+                            backgroundColor: '#f5f5f5'
+                          }
+                        }}
+                      >
+                        <TableCell align="left" width={200}>
+                          <b>Presentación final</b>
+                        </TableCell>
+                        <TableCell align="left" width={50}>
+                          <b>Medida</b>
+                        </TableCell>
+                        <TableCell align="left" width={100}>
+                          <b>Recomendado</b>
+                        </TableCell>
+                        <TableCell align="left" width={120}>
+                          <b>Total</b>
+                        </TableCell>
+                        <TableCell align="left" width={120}>
+                          <b>Acciones</b>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {detalleProductosDevueltos.length !== 0 &&
                           detalleProductosDevueltos.map((detalle, index) => (
                             <RowDevolucionLoteProduccionEdit
                               key={index}
@@ -819,11 +818,10 @@ export const AgregarDevolucionV2 = () => {
                               onDeleteItemDetalle={handleDeleteProductoDevuelto}
                             />
                           ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Paper>
-              </div>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
             </div>
           </div>
           {/* BOTONES DE CANCELAR Y GUARDAR */}
