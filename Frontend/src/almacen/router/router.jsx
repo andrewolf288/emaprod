@@ -20,6 +20,7 @@ import { RouterRetornoVenta } from '../pages/retorno_venta/RouterRetornoVenta'
 import { RouterOrdenIrradiacion } from '../pages/orden_irradiacion/RouterOrdenIrradiacion'
 import { RouterOrdenTransformacion } from '../pages/orden-transformacion/RouterOrdenTransformacion'
 import { RouterOrdenReproceso } from '../pages/orden-reproceso/RouterOrdenReproceso'
+import { RouterRequisicionMaterialesAlmacen } from '../pages/requisicion_general/RouterRequisicionMaterialesAlmacen'
 
 export const RouterAlmacen = [
   {
@@ -91,10 +92,15 @@ export const RouterAlmacen = [
     element: <LayoutModulo />,
     children: RouterAlmacenStock
   },
+  // {
+  //   path: 'requisicion-materiales',
+  //   element: <LayoutModulo />,
+  //   children: RouterRequisicionMateriales
+  // },
   {
     path: 'requisicion-materiales',
     element: <LayoutModulo />,
-    children: RouterRequisicionMateriales
+    children: RouterRequisicionMaterialesAlmacen
   },
   {
     path: 'salida-venta',

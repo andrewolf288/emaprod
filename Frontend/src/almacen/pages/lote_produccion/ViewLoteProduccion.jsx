@@ -413,31 +413,6 @@ export const ViewLoteProduccion = () => {
                     className="form-control"
                   />
                 </div>
-
-                {/* KILOGRAMOS DE LOTE
-                <div className="col-md-2">
-                  <label htmlFor="nombre" className="form-label">
-                    <b>Peso de Lote</b>
-                  </label>
-                  <input
-                    type="number"
-                    disabled={true}
-                    value={klgLotProd}
-                    className="form-control"
-                  />
-                </div> */}
-                {/* CANTIDAD DE LOTE
-                <div className="col-md-2">
-                  <label htmlFor="nombre" className="form-label">
-                    <b>Cantidad</b>
-                  </label>
-                  <input
-                    type="number"
-                    disabled={true}
-                    value={canLotProd}
-                    className="form-control"
-                  />
-                </div> */}
               </div>
               <div className="mb-3 row d-flex align-items-center">
                 {/* TIPO DE PRODUCCION */}

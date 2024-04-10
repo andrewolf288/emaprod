@@ -48,11 +48,11 @@ export const DialogDeleteDetalleRequisicionDevolucion = ({
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Actualizar detalle requisicion devolucion
+          Eliminar detalle requisicion devolucion
         </DialogTitle>
         <DialogContent dividers>
           <b className="fw-bolder text-danger d-block mb-2">
-            ¿Quieres actualizar este detalle?
+            ¿Quieres eliminar este detalle?
           </b>
           <b className="me-2 d-block">Producto:</b>
           {itemDelete.nomProd}

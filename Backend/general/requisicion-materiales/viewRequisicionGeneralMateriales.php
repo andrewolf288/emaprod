@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql_select_requisicion_materiales =
             "SELECT 
         rm.id,
+        rm.codReqMat,
         rm.idReqEst,
         re.desReqEst,
         rm.idMotReqMat,

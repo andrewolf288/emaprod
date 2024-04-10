@@ -137,7 +137,7 @@ const HomeAlmacen = () => {
                     <div className="feature bg-primary bg-gradient text-white rounded-3 mb-4 mt-n4">
                       <i className="bi bi-collection"></i>
                     </div>
-                    <h2 className="fs-4 fw-bold">Requisición materiales</h2>
+                    <h2 className="fs-4 fw-bold">Requisición general</h2>
                     <Link
                       to="/almacen/requisicion-materiales"
                       className="btn btn-primary"

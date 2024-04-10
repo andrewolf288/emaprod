@@ -91,6 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql_select_devolucion_detalle =
                 "SELECT 
             rdmd.id,
+            rdmd.idReqDevMat,
             rdmd.idProdt,
             rdmd.idMotDev,
             pdm.desProdDevMot,
