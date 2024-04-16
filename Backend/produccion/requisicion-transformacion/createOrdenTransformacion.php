@@ -118,16 +118,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idLastCreationProduccionProductoFinal = $pdo->lastInsertId();
         }
 
-        // d. Registramos la trazabilidad
-        $sql_create_trazabilidad_transformacion_producto_final =
-            "INSERT INTO trazabilidad_transformacion_producto_final 
-        (idOrdTrans, idProdProdtFin)
-        VALUES (?, ?)";
-        $stmt_create_trazabilidad_transformacion_producto_final = $pdo->prepare($sql_create_trazabilidad_transformacion_producto_final);
-        $stmt_create_trazabilidad_transformacion_producto_final->bindParam(1, $idLastCreationOrdenTransformacion, PDO::PARAM_INT);
-        $stmt_create_trazabilidad_transformacion_producto_final->bindParam(2, $idLastCreationProduccionProductoFinal, PDO::PARAM_INT);
-        $stmt_create_trazabilidad_transformacion_producto_final->execute();
-
         // 3. Creacion de las requisiciones
         /* 
             a. Crear requisicion 

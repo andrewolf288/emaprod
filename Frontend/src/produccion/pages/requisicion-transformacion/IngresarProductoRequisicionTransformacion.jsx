@@ -4,7 +4,6 @@ import { RowIngresoProductoOrdenTransformacion } from '../../components/componen
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
 import { FilterProductosProgramados } from '../../../components/ReferencialesFilters/Producto/FilterProductosProgramados'
 import FechaPicker from '../../../components/Fechas/FechaPicker'
-import FechaPickerYear from '../../../components/Fechas/FechaPickerYear'
 import { RowEditIngresoProductoOrdenTransformacion } from '../../components/componentes-transdormacion/RowEditIngresoProductoOrdenTransformacion'
 import { CustomActionsView } from '../../../components/CustomComponents/CustomActionsView'
 
@@ -14,7 +13,6 @@ export const IngresarProductoRequisicionTransformacion = () => {
     productoFinal,
     detalleProductosFinales,
     onAddFecEntSto,
-    onAddFecVenSto,
     onAddProductoFinalSubProducto,
     handledFormCantidadIngresada,
     handleAddProductoFinal,
@@ -213,14 +211,6 @@ export const IngresarProductoRequisicionTransformacion = () => {
                   <label className="form-label">Fecha de entrada</label>
                   <FechaPicker
                     onNewfecEntSto={onAddFecEntSto}
-                  />
-                </div>
-
-                <div className="col-md-2">
-                  <label className="form-label">Fecha de vencimiento</label>
-                  <FechaPickerYear
-                    onNewfecEntSto={onAddFecVenSto}
-                    date={productoFinal.fecVenSto}
                   />
                 </div>
 

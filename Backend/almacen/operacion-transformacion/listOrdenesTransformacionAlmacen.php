@@ -110,26 +110,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // consultamos trazabilidad de producto final
             $sql_consult_trazabilidad_produccion_producto_final =
-                "SELECT * FROM trazabilidad_transformacion_producto_final
+                "SELECT
+                COALESCE(SUM(CASE WHEN esComProdIng = 0 THEN 1 ELSE 0 END), 0) AS requerido,
+                COALESCE(SUM(CASE WHEN esComProdIng = 1 THEN 1 ELSE 0 END), 0) AS terminado
+                FROM orden_transformacion_ingreso_producto
             WHERE idOrdTrans = ?";
             $stmt_consult_trazabilidad_produccion_producto_final = $pdo->prepare($sql_consult_trazabilidad_produccion_producto_final);
             $stmt_consult_trazabilidad_produccion_producto_final->bindParam(1, $idOrdTrans, PDO::PARAM_INT);
             $stmt_consult_trazabilidad_produccion_producto_final->execute();
-            $trazabilidadProduccionProductoFinal = $stmt_consult_trazabilidad_produccion_producto_final->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach ($trazabilidadProduccionProductoFinal as $traProdProdtFin) {
-                $idProdProdtFin = $traProdProdtFin["idProdProdtFin"];
-                $sql_select_requisicion_ingreso_producto =
-                    "SELECT
-                COALESCE(SUM(CASE WHEN pip.esComProdIng = 0 THEN 1 ELSE 0 END), 0) AS requerido,
-                COALESCE(SUM(CASE WHEN pip.esComProdIng = 1 THEN 1 ELSE 0 END), 0) AS terminado
-                FROM produccion_ingreso_producto AS pip
-                WHERE pip.refProdtProg = ?";
-                $stmt_select_requisicion_ingreso_producto = $pdo->prepare($sql_select_requisicion_ingreso_producto);
-                $stmt_select_requisicion_ingreso_producto->bindParam(1, $idProdProdtFin, PDO::PARAM_INT);
-                $stmt_select_requisicion_ingreso_producto->execute();
-                $row_orden_transformacion["req_ing_prod"] = $stmt_select_requisicion_ingreso_producto->fetchAll(PDO::FETCH_ASSOC);
-            }
+            $row_orden_transformacion["req_ing_prod"] = $stmt_consult_trazabilidad_produccion_producto_final->fetchAll(PDO::FETCH_ASSOC);
 
             array_push($result, $row_orden_transformacion);
         }

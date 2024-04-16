@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $idProdt = $row["idProdt"];
                 $idProdc = $row["idProdc"];
                 $canProdFin = $row["canProdFin"];
-                $fecVenSto = $row["fecVenSto"];
+                $fecVenSto = $row["fecVenLotProd"];
                 $fecEntSto = $row["fecEntSto"];
 
                 $sql_insert_ingreso_orden_transformacion = 

@@ -76,6 +76,7 @@ export const ListRequisicionTransformacion = () => {
   const obtenerdataOrdenTransformacion = async (formState) => {
     const resultPeticion = await getOrdenesTransformacion(formState)
     const { message_error, description_error, result } = resultPeticion
+    console.log(result)
     if (message_error.length === 0) {
       setdataOrdenTransformacion(result)
     } else {

@@ -36,7 +36,7 @@ export const RowEditIngresoProductoOrdenTransformacion = ({
       </TableCell>
       <TableCell>{detalle.nomProd}</TableCell>
       <TableCell>{detalle.fecEntSto}</TableCell>
-      <TableCell>{detalle.fecVenSto}</TableCell>
+      <TableCell>{detalle.fecVenLotProd.length === 0 ? 'Asigne un lote' : detalle.fecVenLotProd}</TableCell>
       <TableCell>
         <input
           type='number'

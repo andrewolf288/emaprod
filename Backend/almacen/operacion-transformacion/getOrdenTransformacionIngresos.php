@@ -40,33 +40,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_select_orden_transformacion->execute();
 
     while ($row_orden_transformacion = $stmt_select_orden_transformacion->fetch(PDO::FETCH_ASSOC)) {
-        $idProdtDes = $row_orden_transformacion["idProdtDes"];
-        $idProdc = $row_orden_transformacion["idProdc"];
-
         $sql_requisicion_ingreso =
-            "SELECT 
-        pip.id,
-        pip.idProdc,
-        pip.codLot,
-        pip.idProdt,
+        "SELECT 
+        otip.id,
+        otip.idProdc,
+        pc.codLotProd,
+        pc.fecVenLotProd,
+        otip.idProdt,
         p.nomProd,
         p.codProd2,
         p.manLotProd,
         p.lotPorDef,
         p.entMixAlm,
-        pip.refProdtProg,
-        pip.canProdIng,
-        pip.fecProdIng,
-        pip.fecProdVen,
-        pip.esComProdIng
-        FROM produccion_ingreso_producto AS pip
-        JOIN producto AS p ON p.id = pip.idProdt
-        WHERE pip.idProdt = ? AND pip.idProdc = ?
-        ORDER BY pip.id DESC";
-
+        otip.canProdIng,
+        otip.fecProdIng,
+        otip.fecProdVen,
+        otip.esComProdIng
+        FROM orden_transformacion_ingreso_producto AS otip
+        JOIN producto AS p ON p.id = otip.idProdt
+        JOIN produccion AS pc ON pc.id = otip.idProdc
+        WHERE otip.idOrdTrans = ?
+        ORDER BY otip.id DESC";
         $stmt_requisicion_ingreso = $pdo->prepare($sql_requisicion_ingreso);
-        $stmt_requisicion_ingreso->bindParam(1, $idProdtDes, PDO::PARAM_INT);
-        $stmt_requisicion_ingreso->bindParam(2, $idProdc, PDO::PARAM_INT);
+        $stmt_requisicion_ingreso->bindParam(1, $idOrdTrans, PDO::PARAM_INT);
         $stmt_requisicion_ingreso->execute();
 
         $row_orden_transformacion["prodDetIng"] = $stmt_requisicion_ingreso->fetchAll(PDO::FETCH_ASSOC);

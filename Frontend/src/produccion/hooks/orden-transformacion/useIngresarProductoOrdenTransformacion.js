@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getIngresosProductoOrdenTransformacionById } from '../../helpers/requisicion-transformacion/getIngresosProductoOrdenTransformacionById'
 import { alertError, alertSuccess, alertWarning } from '../../../utils/alerts/alertsCustoms'
-import { FormatDateTimeMYSQLNow, FormatDateTimeMYSQLNowPlusYears } from '../../../utils/functions/FormatDate'
+import { FormatDateTimeMYSQLNow } from '../../../utils/functions/FormatDate'
 import { getMateriaPrimaById } from '../../../helpers/Referenciales/producto/getMateriaPrimaById'
 import { createIngresosOrdenTransformacion } from '../../helpers/requisicion-transformacion/createIngresosOrdenTransformacion'
 
@@ -36,8 +36,7 @@ export function useIngresarProductoOrdenTransformacion () {
   const [productoFinal, setproductoFinal] = useState({
     idProdFin: 0,
     cantidadIngresada: 0.0,
-    fecEntSto: FormatDateTimeMYSQLNow(),
-    fecVenSto: ''
+    fecEntSto: FormatDateTimeMYSQLNow()
   })
 
   const [detalleProductosFinales, setdetalleProductosFinales] = useState([])
@@ -53,47 +52,17 @@ export function useIngresarProductoOrdenTransformacion () {
 
   // MANEJADOR DE PRODUCTO
   const onAddProductoFinalSubProducto = (value) => {
-    let year = 0
-    // si la UM de al presentacion final es LTS, entonces year = 1
-    if (ordenTransformacion.idSubCla === 50) {
-      year = 1 // frescos
-    } else {
-      year = 4 // otros
-    }
-
-    // Calculamos automaticamente su fecha de vencimiento
-    const fecVenEntProdFin = FormatDateTimeMYSQLNowPlusYears(year)
     setproductoFinal({
       ...productoFinal,
-      idProdFin: value.id, // id de de la presentacion final
-      fecVenSto: fecVenEntProdFin // fecha de vencimiento
+      idProdFin: value.id // id de de la presentacion final
     })
   }
 
   // Manejador de fecha de ingreso de presentacion final
   const onAddFecEntSto = (newfecEntSto) => {
-    let year = 0
-    // si la UM de al presentacion final es LTS, entonces year = 1
-    if (ordenTransformacion.idSubCla === 50) {
-      year = 1 // frescos
-    } else {
-      year = 4 // otros
-    }
-
-    const newfecVenEnt = FormatDateTimeMYSQLNowPlusYears(year, newfecEntSto)
-
     setproductoFinal({
       ...productoFinal,
-      fecEntSto: newfecEntSto,
-      fecVenSto: newfecVenEnt
-    })
-  }
-
-  // Manejador de fecha de vencimiento de presentacion final
-  const onAddFecVenSto = (newfecEntSto) => {
-    setproductoFinal({
-      ...productoFinal,
-      fecVenSto: newfecEntSto
+      fecEntSto: newfecEntSto
     })
   }
 
@@ -115,7 +84,6 @@ export function useIngresarProductoOrdenTransformacion () {
           codLotProd: '',
           fecVenLotProd: '',
           fecEntSto: productoFinal.fecEntSto,
-          fecVenSto: productoFinal.fecVenSto,
           canProdFin: productoFinal.cantidadIngresada
         }
         const dataDetalle = [...detalleProductosFinales, formatData]
@@ -140,8 +108,7 @@ export function useIngresarProductoOrdenTransformacion () {
     setproductoFinal({
       idProdFin: 0,
       cantidadIngresada: 0.0,
-      fecEntSto: FormatDateTimeMYSQLNow(),
-      fecVenSto: ''
+      fecEntSto: FormatDateTimeMYSQLNow()
     })
   }
 
@@ -256,7 +223,6 @@ export function useIngresarProductoOrdenTransformacion () {
     detalleProductosFinales,
     onAddProductoFinalSubProducto,
     onAddFecEntSto,
-    onAddFecVenSto,
     handledFormCantidadIngresada,
     handleAddProductoFinal,
     editarDetalleIngresoOrdenTransformacion,

@@ -12,11 +12,11 @@ import {
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
 
-import { CardRequisicionIngresoProductos } from '../../components/componentes-productos-lote/CardRequisicionIngresoProductos'
-import { deleteRequisicionIngresoProductoDetalleById } from '../../helpers/producto-produccion/deleteRequisicionIngresoProductoDetalleById'
-import { updateRequisicionIngresoProductoDetalleById } from '../../helpers/producto-produccion/updateRequisicionIngresoProductoDetalleById'
 import { getIngresosOrdenTransformacion } from '../../helpers/orden-transformacion/getIngresosOrdenTransformacion'
 import { createIngresoOrdenTransformacion } from '../../helpers/orden-transformacion/createIngresoOrdenTransformacion'
+import { updateIngresoOrdenTransformacion } from '../../helpers/orden-transformacion/updateIngresoOrdenTransformacion'
+import { deleteIngresoOrdenTransformacion } from '../../helpers/orden-transformacion/deleteIngresoOrdenTransformacion'
+import { CardRequisicionIngresoOrdenTransformacion } from '../../components/componentes-transformacion/CardRequisicionIngresoOrdenTransformacion'
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert (props, ref) {
@@ -96,7 +96,7 @@ export const ViewIngresosOrdenTransformacion = () => {
     // abrimos el loader
     openLoader()
     const { message_error, description_error } =
-      await deleteRequisicionIngresoProductoDetalleById(detalle)
+      await deleteIngresoOrdenTransformacion(detalle)
     if (message_error.length === 0) {
       // llamamos a la data
       traerDatosProduccionLoteWithIngresosProducto()
@@ -118,7 +118,7 @@ export const ViewIngresosOrdenTransformacion = () => {
     openLoader()
     // canReqAgrDetNew
     const { message_error, description_error } =
-      await updateRequisicionIngresoProductoDetalleById(detalle, inputValue)
+      await updateIngresoOrdenTransformacion(detalle, inputValue)
     if (message_error.length === 0) {
       // llamamos a la data
       traerDatosProduccionLoteWithIngresosProducto()
@@ -162,6 +162,7 @@ export const ViewIngresosOrdenTransformacion = () => {
   const traerDatosProduccionLoteWithIngresosProducto = async () => {
     if (id.length !== 0) {
       const resultPeticion = await getIngresosOrdenTransformacion(id)
+      console.log(resultPeticion)
       const { message_error, description_error, result } = resultPeticion
       console.log(result)
 
@@ -278,7 +279,7 @@ export const ViewIngresosOrdenTransformacion = () => {
           <div className="card d-flex mt-4">
             <h6 className="card-header">Requisiciones</h6>
             {prodDetIng.map((requisicion) => (
-              <CardRequisicionIngresoProductos
+              <CardRequisicionIngresoOrdenTransformacion
                 key={requisicion.id}
                 requisicion={requisicion}
                 onDeleteRequisicionAgregacionDetalle={
