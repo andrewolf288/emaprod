@@ -358,8 +358,6 @@ export const AgregarProductosLoteProduccionV2 = () => {
       obj.diaJulEntSto = DiaJuliano(obj.fecEntSto)
     })
 
-    console.log(detalleProductosFinales, datosProduccion)
-
     const resultPeticion = await createProductosFinalesLoteProduccion(
       detalleProductosFinales,
       datosProduccion

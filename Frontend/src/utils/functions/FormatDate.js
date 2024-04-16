@@ -164,6 +164,13 @@ const DiaJuliano = (fecha) => {
       : `${diaJulianoToString}`
 }
 
+function mostrarMesYAnio (fechaString) {
+  const fecha = new Date(fechaString)
+  const mes = fecha.toLocaleString('default', { month: 'long' })
+  const año = fecha.getFullYear()
+  return `${mes} ${año}`
+}
+
 export {
   FormatDateTimeMYSQL,
   FormatDateTimeMYSQLNow,
@@ -171,5 +178,6 @@ export {
   DiaJuliano,
   letraAnio,
   FormatDateMYSQL,
-  _parseInt
+  _parseInt,
+  mostrarMesYAnio
 }

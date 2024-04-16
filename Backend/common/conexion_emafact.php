@@ -2,17 +2,10 @@
 
 function getPDOEMAFACT()
 {
-    // $password = obtenerVariableDelEntorno("MYSQL_PASSWORD");
-    // $user = obtenerVariableDelEntorno("MYSQL_USER");
-    // $dbName = obtenerVariableDelEntorno("MYSQL_DATABASE_NAME");
-    $user = "emafact";
+    $user = "sistemasR";
     $dbName = "emaran";
-    $password = "%Dz8y6i3";
-    $database = new PDO('mysql:host=45.77.80.71;dbname=' . $dbName, $user, $password);
-    // $user = "emaprod";
-    // $dbName = "emaprod";
-    // $password = "Sm~18jn57";
-    // $database = new PDO('mysql:host=45.77.80.71;dbname=' . $dbName, $user, $password);
+    $password = "@5pn2W2m1";
+    $database = new PDO('mysql:host=45.32.170.27;dbname=' . $dbName, $user, $password);
     $database->query("set names utf8;");
     $database->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
     $database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

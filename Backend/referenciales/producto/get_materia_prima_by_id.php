@@ -32,8 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             JOIN clase c ON p.idCla = c.id
             JOIN sub_clase sc ON p.idSubCla = sc.id
             JOIN medida me ON p.idMed = me.id
-            WHERE p.id = ?
-            ";
+            WHERE p.id = ?";
 
             try {
                 // Preparamos la consulta

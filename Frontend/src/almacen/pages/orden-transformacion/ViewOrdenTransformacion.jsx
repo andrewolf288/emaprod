@@ -96,12 +96,10 @@ export const ViewOrdenTransformacion = () => {
   const onCreateSalidaTotalRequisicionDetalle = async (requisicion_detalle) => {
     // abrimos el loader
     openLoader()
-    console.log(requisicion_detalle)
     const resultPeticion = await createSalidasStockAutomaticas(
       requisicion_detalle
     )
 
-    console.log(resultPeticion)
     const { message_error, description_error } = resultPeticion
 
     if (message_error.length === 0) {

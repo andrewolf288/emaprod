@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getRequisicionDevolucionesGeneralMateriales } from '../../helpers/requisicion-materiales-almacen/getRequisicionDevolucionesGeneralMateriales'
-import { alertError, alertWarning } from '../../../utils/alerts/alertsCustoms'
+import { alertError } from '../../../utils/alerts/alertsCustoms'
 import { createEntradaRequisicionGeneralMaterialesDetalle } from '../../helpers/requisicion-materiales-almacen/createEntradaRequisicionGeneralMaterialesDetalle'
 import { updateRequisicionGeneralDevolucionMaterialesDetalle } from '../../helpers/requisicion-materiales-almacen/updateRequisicionGeneralDevolucionMaterialesDetalle'
 import { deleteRequisicionGeneralDevolucionMaterialesDetalle } from '../../helpers/requisicion-materiales-almacen/deleteRequisicionGeneralDevolucionMaterialesDetalle'
@@ -39,7 +39,6 @@ export function useRequisicionMaterialesAtencionDevolucion () {
       ...detalle,
       idReqMat: requisicionMaterial.id
     }
-    console.log(formatData)
     // abrimos el loader
     handleOpenDialogLoading()
     const { message_error, description_error } = await createEntradaRequisicionGeneralMaterialesDetalle(formatData)
@@ -89,7 +88,7 @@ export function useRequisicionMaterialesAtencionDevolucion () {
     if (message_error.length === 0) {
       setRequisicionMaterial(result)
     } else {
-      alertWarning(description_error)
+      alertError(description_error)
     }
   }
 

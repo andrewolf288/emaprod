@@ -13,11 +13,11 @@ import {
 } from '@mui/material'
 import { getOrdenesTransformacion } from '../../helpers/requisicion-transformacion/getOrdenesTransformacion'
 import { Link } from 'react-router-dom'
-import iconProductosFinales from '../../../../src/assets/icons/productos-finales.png'
 import config from '../../../config'
 import axios from 'axios'
 import { createRoot } from 'react-dom/client'
 import { PDFTransformacion } from '../../components/componentes-transdormacion/PDFTransformacion'
+import UnarchiveIcon from '@mui/icons-material/Unarchive'
 
 export const ListRequisicionTransformacion = () => {
   const [dataOrdenTransformacion, setdataOrdenTransformacion] = useState([])
@@ -209,22 +209,13 @@ export const ListRequisicionTransformacion = () => {
                         <TableCell align="left">{row.fecCreOrdTrans}</TableCell>
                         <TableCell align="left">
                           <div className="btn-toolbar">
-                            <div
-                              className="btn btn-outline-secondary me-2"
+                            <Link
+                              className="btn btn-warning me-2"
                               title="Presentaciones finales"
-                              onClick={() => {
-                                window.open(
-                                  `/almacen/productos-lote/crear?idLotProdc=${row.idProdc}`,
-                                  '_blank'
-                                )
-                              }}
+                              to={`ingreso-productos/${row.id}`}
                             >
-                              <img
-                                src={iconProductosFinales}
-                                height={25}
-                                width={25}
-                              />
-                            </div>
+                              <UnarchiveIcon />
+                            </Link>
                             <button
                               className="btn btn-danger"
                               onClick={() =>
