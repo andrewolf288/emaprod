@@ -49,6 +49,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_select_ordenes_transformacion = $pdo->prepare($sql_select_ordenes_transformacion);
         $stmt_select_ordenes_transformacion->execute();
         while ($row_orden_transformacion = $stmt_select_ordenes_transformacion->fetch(PDO::FETCH_ASSOC)) {
+            $idOrdTrans = $row_orden_transformacion["id"];
+            $row_orden_transformacion["trazabilidadRequisicion"] = array();
+            $row_orden_transformacion["trazabilidadDevolucion"] = array();
+
+            // consultamos trazabilidad de requisicion
+            $sql_consult_trazabilidad_requisicion =
+                "SELECT * FROM trazabilidad_transformacion_requisicion
+            WHERE idOrdTrans = ?";
+            $stmt_consult_trazabilidad_requisicion = $pdo->prepare($sql_consult_trazabilidad_requisicion);
+            $stmt_consult_trazabilidad_requisicion->bindParam(1, $idOrdTrans, PDO::PARAM_INT);
+            $stmt_consult_trazabilidad_requisicion->execute();
+            $row_orden_transformacion["trazabilidadRequisicion"] = $stmt_consult_trazabilidad_requisicion->fetch(PDO::FETCH_ASSOC);
+
+            // consultamos trazabilidad de devolucion
+            $sql_consult_trazabilidad_devolucion =
+                "SELECT * FROM trazabilidad_transformacion_devolucion
+            WHERE idOrdTrans = ?";
+            $stmt_consult_trazabilidad_devolucion = $pdo->prepare($sql_consult_trazabilidad_devolucion);
+            $stmt_consult_trazabilidad_devolucion->bindParam(1, $idOrdTrans, PDO::PARAM_INT);
+            $stmt_consult_trazabilidad_devolucion->execute();
+            $row_orden_transformacion["trazabilidadDevolucion"] = $stmt_consult_trazabilidad_devolucion->fetch(PDO::FETCH_ASSOC);
             array_push($result, $row_orden_transformacion);
         }
     } else {

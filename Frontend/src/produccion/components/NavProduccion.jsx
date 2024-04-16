@@ -81,82 +81,6 @@ const NavProduccion = () => {
                 </ul>
               </li>
 
-              {/* REQUISICION MOLIENDA */}
-              {/* <li className="nav-item dropdown">
-                <button
-                  className="btn btn-lg dropdown-toggle"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Requisicion molienda
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={"/almacen/requisicion-molienda"}
-                    >
-                      Administrar
-                    </Link>
-                  </li>
-                </ul>
-              </li> */}
-
-              {/* REQUISICION FRESCOS */}
-              {/* <li className="nav-item dropdown">
-                <button
-                  className="btn btn-lg dropdown-toggle"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Requisicion frescos
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={"/almacen/requisicion-frescos"}
-                    >
-                      Administrar
-                    </Link>
-                  </li>
-                </ul>
-              </li> */}
-
-              {/* ENTRADAS STOCK */}
-              {/**
-                <li className="nav-item dropdown">
-                <button
-                  className="btn btn-lg dropdown-toggle"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Entradas Stock
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={"/almacen/entradas-stock"}
-                    >
-                      Administrar
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={"/almacen/entradas-stock/crear"}
-                    >
-                      Crear
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-                */}
-
               {/* REQUISICIONES MATERIALES */}
               <li className="nav-item dropdown">
                 <button
@@ -165,13 +89,13 @@ const NavProduccion = () => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Requisicion materiales
+                  Requisiciones generales
                 </button>
                 <ul className="dropdown-menu">
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={'/produccion/requisicion-materiales'}
+                      to={'/produccion/requisicion-general'}
                     >
                       Administrar
                     </Link>
@@ -179,7 +103,7 @@ const NavProduccion = () => {
                   <li>
                     <Link
                       className="dropdown-item"
-                      to={'/produccion/requisicion-materiales/crear'}
+                      to={'/produccion/requisicion-general/crear'}
                     >
                       Crear
                     </Link>
