@@ -1,8 +1,22 @@
-import { TableCell, TableRow, TextField } from '@mui/material'
+import { IconButton, TableCell, TableRow, TextField } from '@mui/material'
 import React, { useState } from 'react'
+import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
+import { SearchCreationLoteProduccionDestino } from '../../../components/CommonComponents/LoteProduccion/SearchCreationLoteProduccionDestino'
 
-export const RowRequisicionGeneralMaterialesEdit = ({ item, onEdit, onDelete }) => {
+export const RowRequisicionGeneralMaterialesEdit = ({
+  item,
+  onEdit,
+  onDelete,
+  onAgregarLoteProduccion,
+  onQuitarLoteProduccion
+}) => {
   const [disabledInput, setdisabledInput] = useState(true)
+
+  const { codLotProd, fecVenLotProd, idProdc } = item
+  const textInfoLote = idProdc
+    ? `${codLotProd} - ${mostrarMesYAnio(fecVenLotProd)}`
+    : 'No asignado'
 
   return (
     <TableRow
@@ -11,13 +25,30 @@ export const RowRequisicionGeneralMaterialesEdit = ({ item, onEdit, onDelete }) 
       }}
     >
       <TableCell component="th" scope="row">
+        <span className='me-2'>{textInfoLote}</span>
+        {
+          idProdc === null
+            ? (
+              <SearchCreationLoteProduccionDestino
+                dataDetalle={item}
+                handleConfirm={onAgregarLoteProduccion}
+              />
+            )
+            : (
+              <IconButton
+                color="error"
+                onClick={() => { onQuitarLoteProduccion(item.index) }}
+              >
+                <CancelRoundedIcon fontSize="large" />
+              </IconButton>
+            )
+        }
+      </TableCell>
+      <TableCell component="th" scope="row">
         {item.codProd2}
       </TableCell>
       <TableCell component="th" scope="row">
         {item.desCla}
-      </TableCell>
-      <TableCell component="th" scope="row">
-        {item.desSubCla}
       </TableCell>
       <TableCell align="left">{item.nomProd}</TableCell>
       <TableCell align="left">

@@ -43,7 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         JOIN requisicion_estado AS re ON re.id = rm.idReqEst
         JOIN motivo_requisicion_materiales AS mrm ON mrm.id = rm.idMotReqMat
         JOIN area AS ar ON ar.id = rm.idAre
-        WHERE (DATE(rm.fecCreReqMat) BETWEEN ? AND ?)";
+        WHERE (DATE(rm.fecCreReqMat) BETWEEN ? AND ?)
+        ORDER BY rm.fecCreReqMat DESC";
         $stmt_select_requisicion_materiales = $pdo->prepare($sql_select_requisicion_materiales);
         $stmt_select_requisicion_materiales->bindParam(1, $fechaInicio, PDO::PARAM_STR);
         $stmt_select_requisicion_materiales->bindParam(2, $fechaFin, PDO::PARAM_STR);

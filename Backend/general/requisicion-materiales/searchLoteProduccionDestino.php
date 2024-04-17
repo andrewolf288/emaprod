@@ -63,49 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // SI EXISTE LA PRODUCCION
     if ($row_produccion) {
-        $obsProd = $row_produccion["obsProd"];
-        $idProdc = $row_produccion["id"];
-
-        // SI ES UN LOTE ANTIGUO , NO SABEMOS SI ESE PRODUCTO FUE PROGRAMADO
-        if ($obsProd == "LOTE ANTERIOR" || $obsProd == "CREADO POR REPROCESO") {
-            $sql_select_producto_for_comprobacion =
-                "SELECT proRef FROM producto
-            WHERE id = ?";
-            $stmt_select_producto_for_comprobacion = $pdo->prepare($sql_select_producto_for_comprobacion);
-            $stmt_select_producto_for_comprobacion->bindParam(1, $idProdt, PDO::PARAM_INT);
-            $stmt_select_producto_for_comprobacion->execute();
-            $row_producto_comprobacion = $stmt_select_producto_for_comprobacion->fetch(PDO::FETCH_ASSOC);
-
-            if ($row_producto_comprobacion["proRef"] == $row_produccion["idProdt"]) {
-                $result = $row_produccion;
-            } else {
-                $message_error = "Error en los datos";
-                $description_error = "El producto final no esta asociado al producto intermedio del lote. Revisar con sistemas";
-            }
-        } else {
-            // DEBEMOS VERIFICAR QUE SE HAYA PROGRAMADO ESE PRODUCTO
-            $sql_find_producto_programado_produccion =
-                "SELECT id 
-            FROM produccion_producto_final
-            WHERE idProdc = ? AND idProdt = ?";
-            $stmt_find_producto_programado_produccion = $pdo->prepare($sql_find_producto_programado_produccion);
-            $stmt_find_producto_programado_produccion->bindParam(1, $idProdc, PDO::PARAM_INT);
-            $stmt_find_producto_programado_produccion->bindParam(2, $idProdt, PDO::PARAM_INT);
-            $stmt_find_producto_programado_produccion->execute();
-            $row_producto_programado_produccion = $stmt_find_producto_programado_produccion->fetch(PDO::FETCH_ASSOC);
-
-            if ($row_producto_programado_produccion) {
-                $result = $row_produccion;
-            } else {
-                // si se indica una creación automática
-                if($creacionAutomatica){
-                    $result = $row_produccion;
-                } else {
-                    $message_error = "No se programó";
-                    $description_error = "El lote existe, pero no se programo el producto final correspondiente";
-                }
-            }
-        }
+        $result = $row_produccion;
     } else {
         // SI HA ELEGIDO CREAR AUTOMATICAMENTE
         if ($creacionAutomatica) {

@@ -68,15 +68,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             foreach($detReqMat as $row_detalle_requisicion_materiales){
                 $idProdt = $row_detalle_requisicion_materiales["idProdt"];
+                $idProdc = $row_detalle_requisicion_materiales["idProdc"];
                 $canReqMatDet = $row_detalle_requisicion_materiales["canMatPriFor"];
                 
                 $sql_create_requisicion_materiales_detalle = 
                 "INSERT INTO requisicion_materiales_detalle
-                (idReqMat, idProdt, canReqMatDet)
-                VALUES(?, ?, $canReqMatDet)";
+                (idReqMat, idProdt, canReqMatDet, idProdc)
+                VALUES(?, ?, $canReqMatDet, ?)";
                 $stmt_create_requisicion_materiales_detalle = $pdo->prepare($sql_create_requisicion_materiales_detalle);
                 $stmt_create_requisicion_materiales_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
                 $stmt_create_requisicion_materiales_detalle->bindParam(2, $idProdt, PDO::PARAM_INT);
+                $stmt_create_requisicion_materiales_detalle->bindParam(3, $idProdc, PDO::PARAM_INT);
                 $stmt_create_requisicion_materiales_detalle->execute();
             }
 

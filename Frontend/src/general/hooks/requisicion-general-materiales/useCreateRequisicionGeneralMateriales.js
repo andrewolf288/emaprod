@@ -80,6 +80,10 @@ export function useCreateRequisicionGeneralMateriales () {
               result[0]
           // GENERAMOS NUESTRO DETALLE DE FORMULA DE MATERIA PRIMA
           const detalleFormulaMateriaPrima = {
+            index: id,
+            idProdc: null,
+            codLotProd: '',
+            fecVenLotProd: '',
             idProdt: id,
             codProd,
             codProd2,
@@ -171,6 +175,46 @@ export function useCreateRequisicionGeneralMateriales () {
     }
   }
 
+  // agregar lote produccion detalle
+  const agregarLoteProduccionDetalleRequisicionMateriales = (idProdt, result) => {
+    const findElementIndex = requisicionMateriales.detReqMat.findIndex((element) => element.idProdt === idProdt)
+    if (findElementIndex !== -1) {
+      const updatedDetalleProductosFinales = [...requisicionMateriales.detReqMat]
+      updatedDetalleProductosFinales[findElementIndex] = {
+        ...updatedDetalleProductosFinales[findElementIndex],
+        idProdc: result.id,
+        codLotProd: result.codLotProd,
+        fecVenLotProd: result.fecVenLotProd
+      }
+      setRequisicionMateriales(
+        {
+          ...requisicionMateriales,
+          detReqMat: updatedDetalleProductosFinales
+        }
+      )
+    }
+  }
+
+  // delete lote produccion detalle
+  const quitarLoteProduccionDetalleRequisicionMateriales = (idProdt) => {
+    const findElementIndex = requisicionMateriales.detReqMat.findIndex((element) => element.idProdt === idProdt)
+    if (findElementIndex !== -1) {
+      const updatedDetalleProductosFinales = [...requisicionMateriales.detReqMat]
+      updatedDetalleProductosFinales[findElementIndex] = {
+        ...updatedDetalleProductosFinales[findElementIndex],
+        idProdc: 0,
+        codLotProd: '',
+        fecVenLotProd: ''
+      }
+      setRequisicionMateriales(
+        {
+          ...requisicionMateriales,
+          detReqMat: updatedDetalleProductosFinales
+        }
+      )
+    }
+  }
+
   return {
     requisicionMateriales,
     handleChangeAtributoRequisicionMateriales,
@@ -181,6 +225,8 @@ export function useCreateRequisicionGeneralMateriales () {
     handleAddProductoDetalleRequisicionMateriales,
     handleDeleteProductoDetalleRequisicionMateriales,
     handleChangeProductoDetalleRequisicionMateriales,
-    handleCreateRequisicionMateriales
+    handleCreateRequisicionMateriales,
+    agregarLoteProduccionDetalleRequisicionMateriales,
+    quitarLoteProduccionDetalleRequisicionMateriales
   }
 }

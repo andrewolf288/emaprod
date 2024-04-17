@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getRequisicionGeneralMaterialById } from '../../helpers/requisicion-materiales/getRequisicionGeneralMaterialById'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { alertError } from '../../../utils/alerts/alertsCustoms'
+import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
+import { getRequisicionGeneralMaterialesByIdView } from '../../helpers/requisicion-materiales/getRequisicionGeneralMaterialesByIdView'
 
 export const ViewRequisicionGeneralMateriales = () => {
   const { idReqMat } = useParams()
@@ -35,9 +36,10 @@ export const ViewRequisicionGeneralMateriales = () => {
   }
 
   const traerInformacionRequisicionMaterial = async () => {
-    const resultPeticion = await getRequisicionGeneralMaterialById(idReqMat)
+    const resultPeticion = await getRequisicionGeneralMaterialesByIdView(idReqMat)
     const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
+      console.log(result)
       setRequisicionMaterial(result)
     } else {
       alertError(description_error)
@@ -135,32 +137,32 @@ export const ViewRequisicionGeneralMateriales = () => {
                           }
                         }}
                       >
-                        <TableCell align="left" width={70}>
-                          <b>Codigo</b>
+                        <TableCell align="left" width={120} sx={{ fontWeight: 'bold' }}>
+                          Lote
                         </TableCell>
-                        <TableCell align="left" width={120}>
-                          <b>Clase</b>
+                        <TableCell align="left" width={70} sx={{ fontWeight: 'bold' }}>
+                          Código
                         </TableCell>
-                        <TableCell align="left" width={120}>
-                          <b>Sub clase</b>
+                        <TableCell align="left" width={120} sx={{ fontWeight: 'bold' }}>
+                          Clase
                         </TableCell>
-                        <TableCell align="left" width={200}>
-                          <b>Nombre</b>
+                        <TableCell align="left" width={200} sx={{ fontWeight: 'bold' }}>
+                          Nombre
                         </TableCell>
-                        <TableCell align="center" width={100}>
-                          <b>Cantidad</b>
+                        <TableCell align="center" width={100} sx={{ fontWeight: 'bold' }}>
+                          Cantidad
                         </TableCell>
-                        <TableCell align="left" width={50}>
-                          <b>Medida</b>
+                        <TableCell align="left" width={50} sx={{ fontWeight: 'bold' }}>
+                          Medida
                         </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {detReq.map((row) => (
                         <TableRow key={row.id}>
+                          <TableCell>{row.idProdc ? `${row.codLotProd} - ${mostrarMesYAnio(row.fecVenLotProd)}` : 'No asignado'}</TableCell>
                           <TableCell>{row.codProd2}</TableCell>
                           <TableCell>{row.desCla}</TableCell>
-                          <TableCell>{row.desSubCla}</TableCell>
                           <TableCell>{row.nomProd}</TableCell>
                           <TableCell align='center'>{row.canReqMatDet}</TableCell>
                           <TableCell>{row.simMed}</TableCell>

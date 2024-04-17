@@ -17,7 +17,9 @@ export const CreateRequisicionGeneralMateriales = () => {
     handleAddProductoDetalleRequisicionMateriales,
     handleChangeProductoDetalleRequisicionMateriales,
     handleDeleteProductoDetalleRequisicionMateriales,
-    handleCreateRequisicionMateriales
+    handleCreateRequisicionMateriales,
+    agregarLoteProduccionDetalleRequisicionMateriales,
+    quitarLoteProduccionDetalleRequisicionMateriales
   } = useCreateRequisicionGeneralMateriales()
 
   return (
@@ -116,23 +118,23 @@ export const CreateRequisicionGeneralMateriales = () => {
                           }
                         }}
                       >
-                        <TableCell align="left" width={100}>
-                          <b>Codigo</b>
+                        <TableCell align='left' width={120} sx={{ fontWeight: 'bold' }}>
+                          Lote
                         </TableCell>
-                        <TableCell align="left" width={120}>
-                          <b>Clase</b>
+                        <TableCell align="left" width={100} sx={{ fontWeight: 'bold' }}>
+                          Codigo
                         </TableCell>
-                        <TableCell align="left" width={140}>
-                          <b>Sub clase</b>
+                        <TableCell align="left" width={120} sx={{ fontWeight: 'bold' }}>
+                          Clase
                         </TableCell>
-                        <TableCell align="left" width={200}>
-                          <b>Nombre</b>
+                        <TableCell align="left" width={200} sx={{ fontWeight: 'bold' }}>
+                          Nombre
                         </TableCell>
-                        <TableCell align="left" width={150}>
-                          <b>Cantidad</b>
+                        <TableCell align="left" width={150} sx={{ fontWeight: 'bold' }}>
+                          Cantidad
                         </TableCell>
-                        <TableCell align="left" width={150}>
-                          <b>Acciones</b>
+                        <TableCell align="left" width={150} sx={{ fontWeight: 'bold' }}>
+                          Acciones
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -144,6 +146,8 @@ export const CreateRequisicionGeneralMateriales = () => {
                             item={item}
                             onEdit={handleChangeProductoDetalleRequisicionMateriales}
                             onDelete={handleDeleteProductoDetalleRequisicionMateriales}
+                            onAgregarLoteProduccion={agregarLoteProduccionDetalleRequisicionMateriales}
+                            onQuitarLoteProduccion={quitarLoteProduccionDetalleRequisicionMateriales}
                           />
                         ))
                       }
