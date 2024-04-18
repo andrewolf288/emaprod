@@ -6,6 +6,7 @@ import { RouterReportesCalidad } from '../pages/reportes/RouterReportesCalidad'
 import LayoutModulo from './../../layout/LayoutModulo'
 import HomeCalidad from './../pages/HomeCalidad'
 import { RouterRequisionGeneralMateriales } from '../../general/pages/requisicion_general_materiales/RouterRequisionGeneralMateriales'
+import { RouterOperacionReprocesoMasivo } from '../pages/operacion-reproceso-masivo/RouterOperacionReprocesoMasivo'
 
 export const RouterCalidad = [
   {
@@ -41,5 +42,10 @@ export const RouterCalidad = [
     path: 'requisicion-general',
     element: <LayoutModulo />,
     children: RouterRequisionGeneralMateriales
+  },
+  {
+    path: 'requisicion-devolucion-masiva',
+    element: <LayoutModulo />,
+    children: RouterOperacionReprocesoMasivo
   }
 ]

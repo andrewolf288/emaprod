@@ -1,13 +1,12 @@
+import { useState } from 'react'
 import AddCircle from '@mui/icons-material/AddCircle'
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, IconButton, Typography } from '@mui/material'
-import { useState } from 'react'
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 import FechaPickerYearAndMonthDynamic from '../../Fechas/FechaPickerYearAndMonthDynamic'
 import { alertWarning } from '../../../utils/alerts/alertsCustoms'
-import { searchAndCreateLoteProduccion } from './searchAndCreateLoteProduccion'
+import { buscarLoteProduccionInformacion } from './buscarLoteProduccionInformacion'
 
-// DIALOGO DE CREACION/BUSQUEDA DE LOTES DE PRODUCCION
-export const SearchCreationLoteProduccion = ({ dataDetalle, handleConfirm }) => {
+export const BuscarLoteProduccion = ({ handleConfirm }) => {
   // manejador de dialog
   const [open, setOpen] = useState(false)
   // manejador de datos
@@ -15,7 +14,6 @@ export const SearchCreationLoteProduccion = ({ dataDetalle, handleConfirm }) => 
     codLotProd: '',
     fecProdIni: '',
     fecVenLotProd: '',
-    creacionAutomatica: false,
     sensibleMes: false
   })
 
@@ -23,14 +21,12 @@ export const SearchCreationLoteProduccion = ({ dataDetalle, handleConfirm }) => 
     codLotProd,
     fecProdIni,
     fecVenLotProd,
-    creacionAutomatica,
     sensibleMes
   } = dataProduccion
 
   const [flagDateChange, setFlagDateChange] = useState(true)
 
   const handleFlagDateChange = () => {
-    console.log(dataProduccion)
     // hablamos de fecha de inicio
     setDataProduccion((prevData) => {
       if (flagDateChange) {
@@ -80,15 +76,6 @@ export const SearchCreationLoteProduccion = ({ dataDetalle, handleConfirm }) => 
     })
   }
 
-  // handle check creacion automatica
-  const handleChangeCheckCreacionAutomatica = ({ target }) => {
-    const { name, checked } = target
-    setDataProduccion({
-      ...dataProduccion,
-      [name]: checked
-    })
-  }
-
   // handle check sensible mes
   const handleChangeCheckSensibleMes = ({ target }) => {
     const { name, checked } = target
@@ -119,16 +106,11 @@ export const SearchCreationLoteProduccion = ({ dataDetalle, handleConfirm }) => 
       }
       alertWarning(handleErrors)
     } else {
-      const formatData = {
-        idProdt: dataDetalle.idProdt,
-        ...dataProduccion
-      }
-      const resultPeticion = await searchAndCreateLoteProduccion(formatData)
+      const resultPeticion = await buscarLoteProduccionInformacion(dataProduccion)
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
-        console.log(result)
         // llamamos al handleConfirm
-        handleConfirm(dataDetalle.index, result)
+        handleConfirm(result)
         // cerramos el dialogo
         handleClose()
       } else {
@@ -195,19 +177,6 @@ export const SearchCreationLoteProduccion = ({ dataDetalle, handleConfirm }) => 
                   </IconButton>
                 </div>
               </div>
-            </div>
-            <div className="d-flex justify-content-start pe-0 ps-0 mt-2">
-              <FormControlLabel
-                labelPlacement="start"
-                control={
-                  <Checkbox
-                    name="creacionAutomatica"
-                    checked={creacionAutomatica}
-                    onChange={handleChangeCheckCreacionAutomatica}
-                  />
-                }
-                label="Crear si no se encuentra"
-              />
             </div>
             <div className="d-flex justify-content-start pe-0 ps-0 mt-2">
               <FormControlLabel

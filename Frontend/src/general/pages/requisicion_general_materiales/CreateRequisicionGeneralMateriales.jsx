@@ -140,10 +140,11 @@ export const CreateRequisicionGeneralMateriales = () => {
                     </TableHead>
                     <TableBody>
                       {
-                        requisicionMateriales.detReqMat.map((item) => (
+                        requisicionMateriales.detReqMat.map((item, index) => (
                           <RowRequisicionGeneralMaterialesEdit
                             key={item.idProdt}
                             item={item}
+                            index={index}
                             onEdit={handleChangeProductoDetalleRequisicionMateriales}
                             onDelete={handleDeleteProductoDetalleRequisicionMateriales}
                             onAgregarLoteProduccion={agregarLoteProduccionDetalleRequisicionMateriales}

@@ -70,83 +70,66 @@ export function useCreateRequisicionGeneralMateriales () {
       alertWarning(handleErrors)
     } else {
       // si ya se ingreso el producto
-      const findElementDetalle = requisicionMateriales.detReqMat.some((element) => element.idProdt === produtSelected.idProdt)
-      if (!findElementDetalle) {
-        const resultPeticion = await getMateriaPrimaById(produtSelected.idProdt)
-        const { message_error, description_error, result } = resultPeticion
+      const resultPeticion = await getMateriaPrimaById(produtSelected.idProdt)
+      const { message_error, description_error, result } = resultPeticion
 
-        if (message_error.length === 0) {
-          const { id, codProd, codProd2, desCla, desSubCla, nomProd, simMed } =
+      if (message_error.length === 0) {
+        const { id, codProd, codProd2, desCla, desSubCla, nomProd, simMed } =
               result[0]
-          // GENERAMOS NUESTRO DETALLE DE FORMULA DE MATERIA PRIMA
-          const detalleFormulaMateriaPrima = {
-            index: id,
-            idProdc: null,
-            codLotProd: '',
-            fecVenLotProd: '',
-            idProdt: id,
-            codProd,
-            codProd2,
-            desCla,
-            desSubCla,
-            nomProd,
-            simMed,
-            canMatPriFor: formatCantidad
-          }
-
-          // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
-          const dataMateriaPrimaDetalle = [
-            ...requisicionMateriales.detReqMat,
-            detalleFormulaMateriaPrima
-          ]
-          setRequisicionMateriales({
-            ...requisicionMateriales,
-            detReqMat: dataMateriaPrimaDetalle
-          })
-        } else {
-          alertError(description_error)
+        // GENERAMOS NUESTRO DETALLE DE FORMULA DE MATERIA PRIMA
+        const detalleFormulaMateriaPrima = {
+          idProdc: null,
+          codLotProd: '',
+          fecVenLotProd: '',
+          idProdt: id,
+          codProd,
+          codProd2,
+          desCla,
+          desSubCla,
+          nomProd,
+          simMed,
+          canMatPriFor: formatCantidad
         }
+
+        // SETEAMOS SU ESTADO PARA QUE PUEDA SER MOSTRADO EN LA TABLA DE DETALLE
+        const dataMateriaPrimaDetalle = [
+          ...requisicionMateriales.detReqMat,
+          detalleFormulaMateriaPrima
+        ]
+        setRequisicionMateriales({
+          ...requisicionMateriales,
+          detReqMat: dataMateriaPrimaDetalle
+        })
       } else {
-        alertWarning('¡Ya agregaste este producto al detalle!')
+        alertError(description_error)
       }
     }
   }
 
   // handle delete detalle requisicion materiales
-  const handleDeleteProductoDetalleRequisicionMateriales = (idItem) => {
+  const handleDeleteProductoDetalleRequisicionMateriales = (index) => {
     // FILTRAMOS EL ELEMENTO ELIMINADO
-    const nuevaDataDetalleRequisicion = requisicionMateriales.detReqMat.filter((element) => {
-      if (element.idProdt !== idItem) {
-        return element
-      } else {
-        return false
-      }
-    })
+    const auxData = [...requisicionMateriales.detReqMat]
+    auxData.splice(index, 1)
 
     // VOLVEMOS A SETEAR LA DATA
     setRequisicionMateriales({
       ...requisicionMateriales,
-      detReqMat: nuevaDataDetalleRequisicion
+      detReqMat: auxData
     })
   }
 
   // handle change detalle requisicion materiales
-  const handleChangeProductoDetalleRequisicionMateriales = ({ target }, idItem) => {
+  const handleChangeProductoDetalleRequisicionMateriales = ({ target }, index) => {
     const { value } = target
-    const editFormDetalle = requisicionMateriales.detReqMat.map((element) => {
-      if (element.idProdt === idItem) {
-        return {
-          ...element,
-          canMatPriFor: value
-        }
-      } else {
-        return element
-      }
-    })
+
+    const auxElement = { ...requisicionMateriales.detReqMat[index], canMatPriFor: value }
+    const auxData = [...requisicionMateriales.detReqMat]
+    auxData[index] = auxElement
 
     setRequisicionMateriales({
       ...requisicionMateriales,
-      detReqMat: editFormDetalle
+      detReqMat: auxData
     })
   }
 
@@ -176,43 +159,37 @@ export function useCreateRequisicionGeneralMateriales () {
   }
 
   // agregar lote produccion detalle
-  const agregarLoteProduccionDetalleRequisicionMateriales = (idProdt, result) => {
-    const findElementIndex = requisicionMateriales.detReqMat.findIndex((element) => element.idProdt === idProdt)
-    if (findElementIndex !== -1) {
-      const updatedDetalleProductosFinales = [...requisicionMateriales.detReqMat]
-      updatedDetalleProductosFinales[findElementIndex] = {
-        ...updatedDetalleProductosFinales[findElementIndex],
-        idProdc: result.id,
-        codLotProd: result.codLotProd,
-        fecVenLotProd: result.fecVenLotProd
-      }
-      setRequisicionMateriales(
-        {
-          ...requisicionMateriales,
-          detReqMat: updatedDetalleProductosFinales
-        }
-      )
+  const agregarLoteProduccionDetalleRequisicionMateriales = (index, result) => {
+    const updatedDetalleProductosFinales = [...requisicionMateriales.detReqMat]
+    updatedDetalleProductosFinales[index] = {
+      ...updatedDetalleProductosFinales[index],
+      idProdc: result.id,
+      codLotProd: result.codLotProd,
+      fecVenLotProd: result.fecVenLotProd
     }
+    setRequisicionMateriales(
+      {
+        ...requisicionMateriales,
+        detReqMat: updatedDetalleProductosFinales
+      }
+    )
   }
 
   // delete lote produccion detalle
-  const quitarLoteProduccionDetalleRequisicionMateriales = (idProdt) => {
-    const findElementIndex = requisicionMateriales.detReqMat.findIndex((element) => element.idProdt === idProdt)
-    if (findElementIndex !== -1) {
-      const updatedDetalleProductosFinales = [...requisicionMateriales.detReqMat]
-      updatedDetalleProductosFinales[findElementIndex] = {
-        ...updatedDetalleProductosFinales[findElementIndex],
-        idProdc: 0,
-        codLotProd: '',
-        fecVenLotProd: ''
-      }
-      setRequisicionMateriales(
-        {
-          ...requisicionMateriales,
-          detReqMat: updatedDetalleProductosFinales
-        }
-      )
+  const quitarLoteProduccionDetalleRequisicionMateriales = (index) => {
+    const updatedDetalleProductosFinales = [...requisicionMateriales.detReqMat]
+    updatedDetalleProductosFinales[index] = {
+      ...updatedDetalleProductosFinales[index],
+      idProdc: null,
+      codLotProd: '',
+      fecVenLotProd: ''
     }
+    setRequisicionMateriales(
+      {
+        ...requisicionMateriales,
+        detReqMat: updatedDetalleProductosFinales
+      }
+    )
   }
 
   return {

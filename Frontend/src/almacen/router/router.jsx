@@ -14,13 +14,13 @@ import { RouterAlmacenLoteProduccion } from '../pages/lote_produccion/RouterAlma
 import { RouterAlmacenDevoluciones } from './../pages/devoluciones/RouterAlmacenDevoluciones'
 import { RouterAlmacenAgregaciones } from './../pages/agregaciones/RouterAlmacenAgregaciones'
 import { RouterAlmacenStock } from './../pages/almacen/RouterAlmacenStock'
-import { RouterRequisicionMateriales } from '../pages/requisicion_materiales/RouterRequisicionMateriales'
 import { RouterSalidaVenta } from '../pages/salida_venta/RouterSalidaVenta'
 import { RouterRetornoVenta } from '../pages/retorno_venta/RouterRetornoVenta'
 import { RouterOrdenIrradiacion } from '../pages/orden_irradiacion/RouterOrdenIrradiacion'
 import { RouterOrdenTransformacion } from '../pages/orden-transformacion/RouterOrdenTransformacion'
 import { RouterOrdenReproceso } from '../pages/orden-reproceso/RouterOrdenReproceso'
 import { RouterRequisicionMaterialesAlmacen } from '../pages/requisicion_general/RouterRequisicionMaterialesAlmacen'
+import { RouterRequisionGeneralMateriales } from '../../general/pages/requisicion_general_materiales/RouterRequisionGeneralMateriales'
 
 export const RouterAlmacen = [
   {
@@ -92,13 +92,8 @@ export const RouterAlmacen = [
     element: <LayoutModulo />,
     children: RouterAlmacenStock
   },
-  // {
-  //   path: 'requisicion-materiales',
-  //   element: <LayoutModulo />,
-  //   children: RouterRequisicionMateriales
-  // },
   {
-    path: 'requisicion-materiales',
+    path: 'atencion-requisicion-general',
     element: <LayoutModulo />,
     children: RouterRequisicionMaterialesAlmacen
   },
@@ -126,5 +121,10 @@ export const RouterAlmacen = [
     path: 'orden-reproceso',
     element: <LayoutModulo />,
     children: RouterOrdenReproceso
+  },
+  {
+    path: 'requisicion-general',
+    element: <LayoutModulo />,
+    children: RouterRequisionGeneralMateriales
   }
 ]

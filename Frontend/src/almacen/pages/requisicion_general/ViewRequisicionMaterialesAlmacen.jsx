@@ -28,7 +28,7 @@ export const ViewRequisicionMaterialesAlmacen = () => {
               <div
                 onClick={() => {
                   navigate(
-                    `/almacen/requisicion-materiales/atender-devolucion/${idReqMat}`
+                    `/almacen/atencion-requisicion-general/atender-devolucion/${idReqMat}`
                   )
                 }}
                 className="btn btn-warning ms-3"

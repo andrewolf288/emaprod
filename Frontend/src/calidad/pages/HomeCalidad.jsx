@@ -11,7 +11,7 @@ const HomeCalidad = () => {
         <section className="pt-4">
           <div className="container px-lg-5">
             <div className="row gx-lg-5">
-              {/* ENTRADAS DE STOCK */}
+              {/* ENTRADAS DE STOCK CALIDAD */}
               <div className="col-lg-6 col-xxl-4 mb-5">
                 <div className="card bg-light border-0 h-100">
                   <div className="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
@@ -28,6 +28,7 @@ const HomeCalidad = () => {
                   </div>
                 </div>
               </div>
+              {/* REPORTES DE CALIDAD */}
               <div className="col-lg-6 col-xxl-4 mb-5">
                 <div className="card bg-light border-0 h-100">
                   <div className="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
@@ -44,6 +45,7 @@ const HomeCalidad = () => {
                   </div>
                 </div>
               </div>
+              {/* OPERACION DE DEVOLUCION */}
               <div className="col-lg-6 col-xxl-4 mb-5">
                 <div className="card bg-light border-0 h-100">
                   <div className="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
@@ -60,6 +62,7 @@ const HomeCalidad = () => {
                   </div>
                 </div>
               </div>
+              {/* REQUISICION GENERAL */}
               <div className="col-lg-6 col-xxl-4 mb-5">
                 <div className="card bg-light border-0 h-100">
                   <div className="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
@@ -76,52 +79,23 @@ const HomeCalidad = () => {
                   </div>
                 </div>
               </div>
-              {/* <div className="col-lg-6 col-xxl-4 mb-5">
+              {/* REPROCESO MASIVO */}
+              <div className="col-lg-6 col-xxl-4 mb-5">
                 <div className="card bg-light border-0 h-100">
                   <div className="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
                     <div className="feature bg-primary bg-gradient text-white rounded-3 mb-4 mt-n4">
                       <i className="bi bi-collection"></i>
                     </div>
-                    <h2 className="fs-4 fw-bold">Almacen calidad</h2>
-                    <Link to="/calidad/almacen" className="btn btn-primary">
-                      Ingresar
-                    </Link>
-                  </div>
-                </div>
-              </div> */}
-              {/* <div className="col-lg-6 col-xxl-4 mb-5">
-                <div className="card bg-light border-0 h-100">
-                  <div className="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
-                    <div className="feature bg-primary bg-gradient text-white rounded-3 mb-4 mt-n4">
-                      <i className="bi bi-collection"></i>
-                    </div>
-                    <h2 className="fs-4 fw-bold">Salida requerimiento</h2>
+                    <h2 className="fs-4 fw-bold">Operacion reproceso masivo</h2>
                     <Link
-                      to="/calidad/salida-requerimiento"
+                      to="/calidad/requisicion-devolucion-masiva"
                       className="btn btn-primary"
                     >
                       Ingresar
                     </Link>
                   </div>
                 </div>
-              </div> */}
-              {/* PRODUCTOS ATRIBUTOS CALIDAD */}
-              {/* <div className="col-lg-6 col-xxl-4 mb-5">
-                <div className="card bg-light border-0 h-100">
-                  <div className="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
-                    <div className="feature bg-primary bg-gradient text-white rounded-3 mb-4 mt-n4">
-                      <i className="bi bi-collection"></i>
-                    </div>
-                    <h2 className="fs-4 fw-bold">Atributos calidad</h2>
-                    <Link
-                      to="/calidad/atributos-calidad"
-                      className="btn btn-primary"
-                    >
-                      Ingresar
-                    </Link>
-                  </div>
-                </div>
-              </div> */}
+              </div>
             </div>
           </div>
         </section>

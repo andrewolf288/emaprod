@@ -4,7 +4,7 @@ import { useState } from 'react'
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 import FechaPickerYearAndMonthDynamic from '../../Fechas/FechaPickerYearAndMonthDynamic'
 import { alertWarning } from '../../../utils/alerts/alertsCustoms'
-import { searchLoteProduccionDestino } from './searchLoteProduccionDestino'
+import { searchAndCreateLoteProduccionDestino } from './searchAndCreateLoteProduccionDestino'
 
 // DIALOGO DE CREACION/BUSQUEDA DE LOTES DE PRODUCCION
 export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm }) => {
@@ -123,7 +123,7 @@ export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm
         idProdt: dataDetalle.idProdt,
         ...dataProduccion
       }
-      const resultPeticion = await searchLoteProduccionDestino(formatData)
+      const resultPeticion = await searchAndCreateLoteProduccionDestino(formatData)
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
         console.log(result)

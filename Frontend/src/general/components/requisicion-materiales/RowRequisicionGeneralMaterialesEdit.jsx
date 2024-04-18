@@ -6,6 +6,7 @@ import { SearchCreationLoteProduccionDestino } from '../../../components/CommonC
 
 export const RowRequisicionGeneralMaterialesEdit = ({
   item,
+  index,
   onEdit,
   onDelete,
   onAgregarLoteProduccion,
@@ -17,6 +18,10 @@ export const RowRequisicionGeneralMaterialesEdit = ({
   const textInfoLote = idProdc
     ? `${codLotProd} - ${mostrarMesYAnio(fecVenLotProd)}`
     : 'No asignado'
+
+  const auxAgregarLoteProduccion = (indexFix, result) => {
+    onAgregarLoteProduccion(index, result)
+  }
 
   return (
     <TableRow
@@ -31,13 +36,13 @@ export const RowRequisicionGeneralMaterialesEdit = ({
             ? (
               <SearchCreationLoteProduccionDestino
                 dataDetalle={item}
-                handleConfirm={onAgregarLoteProduccion}
+                handleConfirm={auxAgregarLoteProduccion}
               />
             )
             : (
               <IconButton
                 color="error"
-                onClick={() => { onQuitarLoteProduccion(item.index) }}
+                onClick={() => { onQuitarLoteProduccion(index) }}
               >
                 <CancelRoundedIcon fontSize="large" />
               </IconButton>
@@ -56,7 +61,7 @@ export const RowRequisicionGeneralMaterialesEdit = ({
           <TextField
             size="small"
             onChange={(e) => {
-              onEdit(e, item.idProdt)
+              onEdit(e, index)
             }}
             type="number"
             name="inputCantidad"
@@ -87,7 +92,7 @@ export const RowRequisicionGeneralMaterialesEdit = ({
           </button>
           <button
             onClick={() => {
-              onDelete(item.idProdt)
+              onDelete(index)
             }}
             className="btn btn-danger"
           >
