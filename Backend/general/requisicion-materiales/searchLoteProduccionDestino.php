@@ -18,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $codLotProd = $data["codLotProd"];
     $fecProdIni = $data["fecProdIni"];
     $fecVenLotProd = $data["fecVenLotProd"];
-    $creacionAutomatica = $data["creacionAutomatica"];
     $sensibleMes = $data["sensibleMes"];
     $formatCodLotProd = strlen($codLotProd) === 3 ? $codLotProd : STR_PAD($codLotProd, 3, "0", STR_PAD_LEFT);
     $year = "";
@@ -63,103 +62,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // SI EXISTE LA PRODUCCION
     if ($row_produccion) {
-        $result = $row_produccion;
-    } else {
-        // SI HA ELEGIDO CREAR AUTOMATICAMENTE
-        if ($creacionAutomatica) {
-            try {
-                $pdo->beginTransaction();
-                // consultamos las caracteristicas del producto final
-                $sql_select_producto =
-                    "SELECT id, proRef 
-                FROM producto
-                WHERE id = ?";
-                $stmt_select_producto = $pdo->prepare($sql_select_producto);
-                $stmt_select_producto->bindParam(1, $idProdt, PDO::PARAM_INT);
-                $stmt_select_producto->execute();
-                $row_producto = $stmt_select_producto->fetch(PDO::FETCH_ASSOC);
+        // si es un producto final debemos hacer una evaluacion mas detallada
+        $sql_consult_product =
+            "SELECT proRef, esProFin FROM producto
+        WHERE id = ?";
+        $stmt_consult_product = $pdo->prepare($sql_consult_product);
+        $stmt_consult_product->bindParam(1, $idProdt, PDO::PARAM_INT);
+        $stmt_consult_product->execute();
+        $row_consult_producto = $stmt_consult_product->fetch(PDO::FETCH_ASSOC);
 
-                // si no existe la referencia de producto intermedio lanzamos error
-                if ($row_producto["proRef"] == 0 || $row_producto["proRef"] == null) {
-                    $message_error = "Error en los datos";
-                    $description_error = "El producto final no esta asociado a un producto intermedio. Revisar con sistemas";
+        if ($row_consult_producto) {
+            $proRef = $row_consult_producto["proRef"];
+            $esProFin = $row_consult_producto["esProFin"];
+            $idProdtInt = $row_produccion["idProdt"];
+
+            if($esProFin == 1){
+                // toma el lote como origen
+                if($proRef != 0){
+                    if($proRef == $idProdtInt){
+                        $result = $row_produccion;
+                    } else {
+                        $message_error = "El producto no pertenece al subproducto";
+                        $description_error = "El lote encontrado no es del subproducto del producto";
+                    }
                 } else {
-                    $idProdInt = $row_producto["proRef"];
-                    // traemos informacion del subproducto
-                    $sql_consult_producto_intermedio =
-                        "SELECT idSubCla FROM producto WHERE id = ?";
-                    $stmt_consult_producto_intermedio = $pdo->prepare($sql_consult_producto_intermedio);
-                    $stmt_consult_producto_intermedio->bindParam(1, $idProdInt, PDO::PARAM_INT);
-                    $stmt_consult_producto_intermedio->execute();
-                    $row_producto_intermedio = $stmt_consult_producto_intermedio->fetch(PDO::FETCH_ASSOC);
-                    // extraemos la informacion correspondiente
-                    $idLastInsertion = 0;
-                    $idSubClaProdt = $row_producto_intermedio["idSubCla"];
-                    $idProdEst = 6; // produccion terminada
-                    $idProdTip = 6; // de tipo envasado y encajado
-                    $idProdFinProgEst = 1;
-                    $idProdIniProgEst = 1;
-                    $obsProd = "CREADO POR REPROCESO";
-                    $fecProdIniNew = strlen($fecProdIni) != 0 ? $fecProdIni : obtenerFechaLoteProduccion("DISMINUIR", $fecVenLotProd, $idSubClaProdt);
-                    $fecVenLotProdNew = strlen($fecVenLotProd) != 0 ? $fecVenLotProd : obtenerFechaLoteProduccion("AUMENTAR", $fecProdIni, $idSubClaProdt);
-                    $totalUnidadesLoteProduccion = 0;
-                    $klgTotalLoteProduccion = 0;
-
-                    $sql_create_produccion =
-                        "INSERT INTO produccion
-                    (idProdt, 
-                    idProdEst, 
-                    idProdTip, 
-                    idProdFinProgEst, 
-                    idProdIniProgEst, 
-                    codLotProd, 
-                    obsProd,
-                    fecProdIni,
-                    fecVenLotProd,
-                    totalUnidadesLoteProduccion,
-                    klgTotalLoteProduccion)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                    $stmt_create_produccion = $pdo->prepare($sql_create_produccion);
-                    $stmt_create_produccion->bindParam(1, $idProdInt, PDO::PARAM_INT);
-                    $stmt_create_produccion->bindParam(2, $idProdEst, PDO::PARAM_INT);
-                    $stmt_create_produccion->bindParam(3, $idProdTip, PDO::PARAM_INT);
-                    $stmt_create_produccion->bindParam(4, $idProdFinProgEst, PDO::PARAM_INT);
-                    $stmt_create_produccion->bindParam(5, $idProdIniProgEst, PDO::PARAM_INT);
-                    $stmt_create_produccion->bindParam(6, $formatCodLotProd, PDO::PARAM_STR);
-                    $stmt_create_produccion->bindParam(7, $obsProd, PDO::PARAM_STR);
-                    $stmt_create_produccion->bindParam(8, $fecProdIniNew, PDO::PARAM_STR);
-                    $stmt_create_produccion->bindParam(9, $fecVenLotProdNew, PDO::PARAM_STR);
-                    $stmt_create_produccion->bindParam(10, $totalUnidadesLoteProduccion, PDO::PARAM_INT);
-                    $stmt_create_produccion->bindParam(11, $klgTotalLoteProduccion, PDO::PARAM_INT);
-                    $stmt_create_produccion->execute();
-
-                    $idLastInsertion = $pdo->lastInsertId();
-                    $formatDataCreated = array(
-                        "id" => $idLastInsertion,
-                        "idProdt" => $idProdInt,
-                        "idProdEst" => $idProdEst,
-                        "idProdTip" => $idProdTip,
-                        "idProdFinProgEst" => $idProdFinProgEst,
-                        "idProdIniProgEst" => $idProdIniProgEst,
-                        "codLotProd" => $formatCodLotProd,
-                        "obsProd" => $obsProd,
-                        "fecProdIni" => $fecProdIniNew,
-                        "fecVenLotProd" => $fecVenLotProdNew,
-                    );
-
-                    $result = $formatDataCreated;
+                    $message_error = "El producto no tiene referencia";
+                    $description_error = "El producto no tiene referencia a subproducto";
                 }
-
-                $pdo->commit();
-            } catch (PDOException $e) {
-                $pdo->rollBack();
-                $message_error = "Error al crear";
-                $description_error = "Ocurrio un error al intentar crear el lote de produccion";
+            } else {
+                // toma el lote como destino
+                $result = $row_produccion;
             }
         } else {
-            $message_error = "No se encontro";
-            $description_error = "No se encontro un lote de producción con los datos proporcionados";
+            $message_error = "No se encontró el producto";
+            $description_error = "No se encontró el producto ingresado";
         }
+    } else {
+        $message_error = "No se encontró el lote";
+        $description_error = "No se encontró el lote especificado";
     }
 
     $return['message_error'] = $message_error;

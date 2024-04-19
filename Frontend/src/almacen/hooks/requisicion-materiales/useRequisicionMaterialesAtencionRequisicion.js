@@ -5,6 +5,7 @@ import { alertError } from '../../../utils/alerts/alertsCustoms'
 import { updateRequisicionGeneralMaterialesDetalle } from '../../helpers/requisicion-materiales-almacen/updateRequisicionGeneralMaterialesDetalle'
 import { deleteRequisicionGeneralMaterialesDetalle } from '../../helpers/requisicion-materiales-almacen/deleteRequisicionGeneralMaterialesDetalle'
 import { createSalidaRequisicionGeneralMaterialesDetalle } from '../../helpers/requisicion-materiales-almacen/createSalidaRequisicionGeneralMaterialesDetalle'
+import { updateLoteProduccionRequisicionGeneralMaterialesDetalle } from '../../helpers/requisicion-materiales-almacen/updateLoteProduccionRequisicionGeneralMaterialesDetalle'
 
 export function useRequisicionMaterialesAtencionRequisicion () {
   const { idReqMat } = useParams()
@@ -66,6 +67,21 @@ export function useRequisicionMaterialesAtencionRequisicion () {
     handleCloseDialogLoading()
   }
 
+  const editarLoteProduccionOrigenDestinoRequisicionMaterialesDetalle = async (detalle, data) => {
+    const { id: idProdc } = data
+    // abrimos el loader
+    handleOpenDialogLoading()
+    const { message_error, description_error } = await updateLoteProduccionRequisicionGeneralMaterialesDetalle(detalle, idProdc)
+    if (message_error.length === 0) {
+      // llamamos a la data
+      traerRequisicionMaterialesById()
+    } else {
+      alertError(description_error)
+    }
+    // cerramos el loader
+    handleCloseDialogLoading()
+  }
+
   const eliminarRequisicionMaterialesDetalle = async (detalle) => {
     // abrimos el loader
     handleOpenDialogLoading()
@@ -101,6 +117,7 @@ export function useRequisicionMaterialesAtencionRequisicion () {
     crearSalidaRequisicionMateriales,
     editarRequisicionMaterialesDetalle,
     eliminarRequisicionMaterialesDetalle,
+    editarLoteProduccionOrigenDestinoRequisicionMaterialesDetalle,
     loading
   }
 }

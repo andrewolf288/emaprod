@@ -15,7 +15,6 @@ export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm
     codLotProd: '',
     fecProdIni: '',
     fecVenLotProd: '',
-    creacionAutomatica: false,
     sensibleMes: false
   })
 
@@ -23,14 +22,12 @@ export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm
     codLotProd,
     fecProdIni,
     fecVenLotProd,
-    creacionAutomatica,
     sensibleMes
   } = dataProduccion
 
   const [flagDateChange, setFlagDateChange] = useState(true)
 
   const handleFlagDateChange = () => {
-    console.log(dataProduccion)
     // hablamos de fecha de inicio
     setDataProduccion((prevData) => {
       if (flagDateChange) {
@@ -80,15 +77,6 @@ export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm
     })
   }
 
-  // handle check creacion automatica
-  const handleChangeCheckCreacionAutomatica = ({ target }) => {
-    const { name, checked } = target
-    setDataProduccion({
-      ...dataProduccion,
-      [name]: checked
-    })
-  }
-
   // handle check sensible mes
   const handleChangeCheckSensibleMes = ({ target }) => {
     const { name, checked } = target
@@ -126,7 +114,6 @@ export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm
       const resultPeticion = await searchAndCreateLoteProduccionDestino(formatData)
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
-        console.log(result)
         // llamamos al handleConfirm
         handleConfirm(dataDetalle.index, result)
         // cerramos el dialogo
@@ -195,19 +182,6 @@ export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm
                   </IconButton>
                 </div>
               </div>
-            </div>
-            <div className="d-flex justify-content-start pe-0 ps-0 mt-2">
-              <FormControlLabel
-                labelPlacement="start"
-                control={
-                  <Checkbox
-                    name="creacionAutomatica"
-                    checked={creacionAutomatica}
-                    onChange={handleChangeCheckCreacionAutomatica}
-                  />
-                }
-                label="Crear si no se encuentra"
-              />
             </div>
             <div className="d-flex justify-content-start pe-0 ps-0 mt-2">
               <FormControlLabel

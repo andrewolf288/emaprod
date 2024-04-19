@@ -13,7 +13,8 @@ export const ViewRequisicionMaterialesAlmacen = () => {
     loading,
     crearSalidaRequisicionMateriales,
     editarRequisicionMaterialesDetalle,
-    eliminarRequisicionMaterialesDetalle
+    eliminarRequisicionMaterialesDetalle,
+    editarLoteProduccionOrigenDestinoRequisicionMaterialesDetalle
   } = useRequisicionMaterialesAtencionRequisicion()
 
   return (
@@ -118,20 +119,23 @@ export const ViewRequisicionMaterialesAlmacen = () => {
                           }
                         }}
                       >
-                        <TableCell align="left" width={200}>
-                          <b>Nombre</b>
+                        <TableCell align="left" width={70} sx={{ fontWeight: 'bold' }}>
+                          Lote origen/destino
                         </TableCell>
-                        <TableCell align="left" width={120}>
-                          <b>Estado</b>
+                        <TableCell align="left" width={200} sx={{ fontWeight: 'bold' }}>
+                          Nombre
                         </TableCell>
-                        <TableCell align="left" width={20}>
-                          <b>U.M</b>
+                        <TableCell align="left" width={70} sx={{ fontWeight: 'bold' }}>
+                          Estado
                         </TableCell>
-                        <TableCell align="left" width={120}>
-                          <b>Can. Requisicion</b>
+                        <TableCell align="left" width={20} sx={{ fontWeight: 'bold' }}>
+                          U.M
                         </TableCell>
-                        <TableCell align="center" width={180}>
-                          <b>Acciones</b>
+                        <TableCell align="center" width={100} sx={{ fontWeight: 'bold' }}>
+                          Cantidad
+                        </TableCell>
+                        <TableCell align="center" width={150} sx={{ fontWeight: 'bold' }}>
+                          Acciones
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -144,6 +148,7 @@ export const ViewRequisicionMaterialesAlmacen = () => {
                             onCreateSalida={crearSalidaRequisicionMateriales}
                             onUpdateDetalleRequisicion={editarRequisicionMaterialesDetalle}
                             onDeleteDetalleRequisicion={eliminarRequisicionMaterialesDetalle}
+                            onChangeLoteProduccion={editarLoteProduccionOrigenDestinoRequisicionMaterialesDetalle}
                           />
                         ))
                       }

@@ -21,6 +21,7 @@ import { RouterOrdenTransformacion } from '../pages/orden-transformacion/RouterO
 import { RouterOrdenReproceso } from '../pages/orden-reproceso/RouterOrdenReproceso'
 import { RouterRequisicionMaterialesAlmacen } from '../pages/requisicion_general/RouterRequisicionMaterialesAlmacen'
 import { RouterRequisionGeneralMateriales } from '../../general/pages/requisicion_general_materiales/RouterRequisionGeneralMateriales'
+import { RouterAlmacenTransferenciaAlmacen } from '../pages/transferencia-almacen/RouterAlmacenTransferenciaAlmacen'
 
 export const RouterAlmacen = [
   {
@@ -126,5 +127,10 @@ export const RouterAlmacen = [
     path: 'requisicion-general',
     element: <LayoutModulo />,
     children: RouterRequisionGeneralMateriales
+  },
+  {
+    path: 'transferencia-almacen',
+    element: <LayoutModulo />,
+    children: RouterAlmacenTransferenciaAlmacen
   }
 ]

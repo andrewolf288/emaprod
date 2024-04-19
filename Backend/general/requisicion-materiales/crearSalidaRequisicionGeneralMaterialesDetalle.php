@@ -15,7 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // OBTENEMOS LOS DATOS
     $idReqMat = $data["idReqMat"]; // requisicion
     $idReqMatDet = $data["id"]; // requisicion detalle
+    $idProdc = $data["idProdc"]; // dato de produccion
     $idProdt = $data["idProdt"]; // producto (materia prima, material, insumo, etc)
+    $esProFin = $data["esProFin"]; // es producto final
     $idAre = $data["idAre"]; // area
     $idAlmacenPrincipal = 1; // almacen principal
     $idAlmDes = 0; // almacen destino
@@ -38,12 +40,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             DATE(es.fecEntSto) AS fecEntSto,
             es.canTotDis 
             FROM entrada_stock AS es
-            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0 AND idAlm = ?
-            ORDER BY es.fecEntSto ASC";
+            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0 AND idAlm = ?";
+            if($esProFin == 1){
+                $sql_consult_entradas_disponibles .= " AND refProdc = ?";
+            }
+            $sql_consult_entradas_disponibles .= " ORDER BY es.fecEntSto ASC";
             $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);
             $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
             $stmt_consult_entradas_disponibles->bindParam(3, $idAlmacenPrincipal, PDO::PARAM_INT);
+            if($esProFin == 1){
+                $stmt_consult_entradas_disponibles->bindParam(4, $idProdc, PDO::PARAM_INT);
+            }
             $stmt_consult_entradas_disponibles->execute();
             // agregamos las entradas disponibles
             $array_entradas_disponibles = $stmt_consult_entradas_disponibles->fetchAll(PDO::FETCH_ASSOC);

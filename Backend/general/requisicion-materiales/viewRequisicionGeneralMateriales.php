@@ -52,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             cl.desCla,
             sc.desSubCla,
             me.simMed,
+            p.esProFin,
             rmd.canReqMatDet,
             rmd.fueCom,
             rmd.fecComReqMatDet,

@@ -1,5 +1,9 @@
 import React from 'react'
 
 export const AgregarTransferenciaAlmacen = () => {
-  return <div>AgregarTransferenciaAlmacen</div>
+  return <>
+    <div className='cotainer-fluid'>
+
+    </div>
+  </>
 }

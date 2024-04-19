@@ -3,6 +3,8 @@ import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { styled } from '@mui/material/styles'
+import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
+import { SearchCreationLoteProduccionDestino } from '../../../components/CommonComponents/LoteProduccion/SearchCreationLoteProduccionDestino'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -17,10 +19,22 @@ export const RowRequisicionMaterialesDetalleAlmacen = ({
   detalle,
   onUpdateDetalleRequisicion,
   onDeleteDetalleRequisicion,
-  onCreateSalida
+  onCreateSalida,
+  onChangeLoteProduccion
 }) => {
+  const { idProdc, codLotProd, fecVenLotProd } = detalle
+  const parseLote = idProdc === null ? 'Sin lote' : `${codLotProd} - ${mostrarMesYAnio(fecVenLotProd)}`
+
+  const auxChangeLoteProduccion = (index, data) => {
+    onChangeLoteProduccion(detalle, data)
+  }
+
   return (
     <TableRow>
+      <TableCell>
+        {parseLote}
+        <SearchCreationLoteProduccionDestino dataDetalle={detalle} handleConfirm={auxChangeLoteProduccion}/>
+      </TableCell>
       <TableCell>{detalle.nomProd}</TableCell>
       <TableCell>
         <span
