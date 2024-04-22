@@ -22,6 +22,7 @@ import { RouterOrdenReproceso } from '../pages/orden-reproceso/RouterOrdenReproc
 import { RouterRequisicionMaterialesAlmacen } from '../pages/requisicion_general/RouterRequisicionMaterialesAlmacen'
 import { RouterRequisionGeneralMateriales } from '../../general/pages/requisicion_general_materiales/RouterRequisionGeneralMateriales'
 import { RouterAlmacenTransferenciaAlmacen } from '../pages/transferencia-almacen/RouterAlmacenTransferenciaAlmacen'
+import { RouterRequisicionEmpaquetado } from '../pages/requisicion-empaquetado/RouterRequisicionEmpaquetado'
 
 export const RouterAlmacen = [
   {
@@ -132,5 +133,10 @@ export const RouterAlmacen = [
     path: 'transferencia-almacen',
     element: <LayoutModulo />,
     children: RouterAlmacenTransferenciaAlmacen
+  },
+  {
+    path: 'requisicion-empaquetado',
+    element: <LayoutModulo />,
+    children: RouterRequisicionEmpaquetado
   }
 ]

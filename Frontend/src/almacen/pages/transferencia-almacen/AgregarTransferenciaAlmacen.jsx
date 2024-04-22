@@ -7,7 +7,13 @@ import { useCreateTransferenciaAlmacenes } from '../../hooks/transferencia-almac
 import { RowEditTransferenciaAlmacenDetalle } from '../../components/componentes-transferencia-almacenes/RowEditTransferenciaAlmacenDetalle'
 
 export const AgregarTransferenciaAlmacen = () => {
-  const { transferenciaAlmacen } = useCreateTransferenciaAlmacenes()
+  const {
+    transferenciaAlmacen,
+    produtSelected,
+    handleAddProductoDetalleRequisicionMateriales,
+    handleChangeCantidadRequisicionMateriales,
+    handleChangeProductoRequisicionMateriales
+  } = useCreateTransferenciaAlmacenes()
   return <>
     <div className='cotainer-fluid'>
       <p className='text-center fs-3 fw-bold'>Transferencia entre almacenes</p>
@@ -17,11 +23,11 @@ export const AgregarTransferenciaAlmacen = () => {
           <div className='row mb-2 mb-md-2'>
             <div className='col-md-3 col-12 mb-2'>
               <label className="form-label fw-semibold">Almacen origen</label>
-              <FilterAlmacenDynamic />
+              <FilterAlmacenDynamic defaultValue={transferenciaAlmacen.idAlmOri}/>
             </div>
             <div className='col-md-3 col-12'>
               <label className="form-label fw-semibold">Almacen destino</label>
-              <FilterAlmacenDynamic />
+              <FilterAlmacenDynamic defaultValue={transferenciaAlmacen.idAlmDes}/>
             </div>
             <div className='col-md-4 col-12'>
               <label className="form-label fw-semibold">Motivo transferencia</label>
@@ -41,7 +47,10 @@ export const AgregarTransferenciaAlmacen = () => {
           <div className='d-flex flex-row justify-content-start align-items-center'>
             <div className='col-md-6 col-12'>
               <label className="form-label fw-semibold">Producto</label>
-              <FilterProductosDynamic />
+              <FilterProductosDynamic
+                defaultValue={produtSelected.idProdt}
+                onNewInput={handleChangeProductoRequisicionMateriales}
+              />
             </div>
             <div className='col-md-2 col-12 ms-4'>
               <label className="form-label fw-semibold">Cantidad</label>
@@ -49,13 +58,16 @@ export const AgregarTransferenciaAlmacen = () => {
                 autoComplete='off'
                 type='number'
                 size='small'
+                value={produtSelected.cantReqMatDet}
                 onWheel={(e) => { e.target.blur() }}
+                onChange={handleChangeCantidadRequisicionMateriales}
               >
               </TextField>
             </div>
             <div className="col-md-3 col-12 d-flex justify-content-end ms-auto">
               <button
                 className="btn btn-primary"
+                onClick={handleAddProductoDetalleRequisicionMateriales}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +117,10 @@ export const AgregarTransferenciaAlmacen = () => {
                 </TableHead>
                 <TableBody>
                   {transferenciaAlmacen.detTranAlm.map((element, index) => (
-                    <RowEditTransferenciaAlmacenDetalle key={index} detalle={element}/>
+                    <RowEditTransferenciaAlmacenDetalle key={index}
+                      index={index}
+                      detalle={element}
+                    />
                   ))}
                 </TableBody>
               </Table>

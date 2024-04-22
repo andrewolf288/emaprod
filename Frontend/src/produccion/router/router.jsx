@@ -8,6 +8,8 @@ import { RouterRequisicionTransformacion } from '../pages/requisicion-transforma
 import { RouterRequisicionReproceso } from '../pages/requisicion-reproceso/RouterRequisicionReproceso'
 import { RouterRequisionGeneralMateriales } from '../../general/pages/requisicion_general_materiales/RouterRequisionGeneralMateriales'
 import { RouterRequisicionSubProducto } from '../pages/requisicion-subproducto/RouterRequisicionSubProducto'
+import { RouterFormulaEmpaquetadoPromocional } from '../pages/formulas_empaquetado_promocional/RouterFormulaEmpaquetadoPromocional'
+import { RouterRequisicionEmpaquetadoPromocional } from '../pages/requisicion-empaquetado-promocional/RouterRequisicionEmpaquetadoPromocional'
 
 export const RouterProduccion = [
   {
@@ -53,5 +55,15 @@ export const RouterProduccion = [
     path: 'requisicion-subproducto',
     element: <LayoutModulo />,
     children: RouterRequisicionSubProducto
+  },
+  {
+    path: 'formula-empaquetado-promocional',
+    element: <LayoutModulo />,
+    children: RouterFormulaEmpaquetadoPromocional
+  },
+  {
+    path: 'requisicion-empaquetado-promocional',
+    element: <LayoutModulo />,
+    children: RouterRequisicionEmpaquetadoPromocional
   }
 ]

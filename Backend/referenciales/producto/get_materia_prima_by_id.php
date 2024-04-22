@@ -27,11 +27,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             sc.desSubCla,
             p.idMed,
             me.simMed,
-            p.nomProd
+            p.nomProd,
+            p.esProFin,
+            p.esMatPri,
+            p.esProProd,
+            p.esEnvEnc,
+            p.esMerProm,
+            p.esProdProm
             FROM producto p
-            JOIN clase c ON p.idCla = c.id
-            JOIN sub_clase sc ON p.idSubCla = sc.id
-            JOIN medida me ON p.idMed = me.id
+            LEFT JOIN clase c ON p.idCla = c.id
+            LEFT JOIN sub_clase sc ON p.idSubCla = sc.id
+            LEFT JOIN medida me ON p.idMed = me.id
             WHERE p.id = ?";
 
             try {
