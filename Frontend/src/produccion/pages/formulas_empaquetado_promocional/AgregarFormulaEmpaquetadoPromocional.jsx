@@ -2,8 +2,11 @@ import React from 'react'
 import { useCreateFormulaEmpaquetadoPromocional } from '../../hooks/formula-empaquetado-promocional/useCreateFormulaEmpaquetadoPromocional'
 import { FilterProductosCombos } from '../../../components/ReferencialesFilters/Producto/FilterProductosCombos'
 import { FilterPresentacionFinalDynamic } from '../../../components/ReferencialesFilters/Producto/FilterPresentacionFinalDynamic'
-import { FilterMateriaPrimaDynamic } from '../../../components/ReferencialesFilters/Producto/FilterMateriaPrimaDynamic'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { RowEditProductoFinalFormulaEmpaquetadoPromocional } from '../../components/componentes-formula-empaquetado-promocional/RowEditProductoFinalFormulaEmpaquetadoPromocional'
+import { FilterEnvaseEmbalaje } from '../../../components/ReferencialesFilters/Producto/FilterEnvaseEmbalaje'
+import { RowEditMaterialRequisicionFormulaEmpaquetadoPromocional } from '../../components/componentes-formula-empaquetado-promocional/RowEditMaterialRequisicionFormulaEmpaquetadoPromocional'
+import { CustomActionsView } from '../../../components/CustomComponents/CustomActionsView'
 
 export const AgregarFormulaEmpaquetadoPromocional = () => {
   const {
@@ -97,7 +100,7 @@ export const AgregarFormulaEmpaquetadoPromocional = () => {
               <form className="row mb-4 mt-2 d-flex flex-row justify-content-start align-items-end">
                 {/* AGREGAR MATERIA PRIMA */}
                 <div className="col-md-6">
-                  <label htmlFor="inputPassword4" className="form-label">
+                  <label htmlFor="inputPassword4" className="form-label fw-medium">
                     Producto final
                   </label>
                   <FilterPresentacionFinalDynamic
@@ -108,7 +111,7 @@ export const AgregarFormulaEmpaquetadoPromocional = () => {
 
                 {/* AGREGAR CANTIDAD */}
                 <div className="col-md-3">
-                  <label htmlFor="inputPassword4" className="form-label">
+                  <label htmlFor="inputPassword4" className="form-label fw-medium">
                     Cantidad
                   </label>
                   <input
@@ -164,13 +167,20 @@ export const AgregarFormulaEmpaquetadoPromocional = () => {
                         <TableCell align="left" width={150} sx={{ fontWeight: 'bold' }}>
                           Cantidad
                         </TableCell>
-                        <TableCell align="left" width={150} sx={{ fontWeight: 'bold' }}>
+                        <TableCell align="center" width={150} sx={{ fontWeight: 'bold' }}>
                           Acciones
                         </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-
+                      {formulaEmpaquetadorPromocional.detProdFinForEmpProm.map((element) => (
+                        <RowEditProductoFinalFormulaEmpaquetadoPromocional
+                          key={element.id}
+                          item={element}
+                          onEdit={onUpdateProductoFinalFormulaEmpaquetadoPromocional}
+                          onDelete={onDeleteProductoFinalFormulaEmpaquetadoPromocional}
+                        />
+                      )) }
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -181,16 +191,16 @@ export const AgregarFormulaEmpaquetadoPromocional = () => {
           {/* REQUISICION */}
           <div className="card d-flex mt-4">
             <h6 className="card-header fw-semibold">
-              Detalle de requisición
+              Detalle de materiales requisición
             </h6>
             <div className='card-body'>
               <form className="row mb-4 mt-2 d-flex flex-row justify-content-start align-items-end">
                 {/* AGREGAR MATERIA PRIMA */}
                 <div className="col-md-6">
-                  <label htmlFor="inputPassword4" className="form-label">
+                  <label htmlFor="inputPassword4" className="form-label fw-medium">
                     Producto final
                   </label>
-                  <FilterMateriaPrimaDynamic
+                  <FilterEnvaseEmbalaje
                     onNewInput={onChangeRequisicionFormulaEmpaquetadoPromocional}
                     defaultValue={materialSelected.idProdt}
                   />
@@ -198,13 +208,13 @@ export const AgregarFormulaEmpaquetadoPromocional = () => {
 
                 {/* AGREGAR CANTIDAD */}
                 <div className="col-md-3">
-                  <label htmlFor="inputPassword4" className="form-label">
+                  <label htmlFor="inputPassword4" className="form-label fw-medium">
                     Cantidad
                   </label>
                   <input
                     type="number"
                     onChange={onChangeCantidadRequisicionFormulaEmpaquetadoPromocional}
-                    value={productoFinalSelected.canForProdtFin}
+                    value={materialSelected.canForMatReq}
                     name="cantidadMateriaPrima"
                     className="form-control"
                   />
@@ -260,7 +270,14 @@ export const AgregarFormulaEmpaquetadoPromocional = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-
+                      {formulaEmpaquetadorPromocional.detReqMatForEmpProm.map((element) => (
+                        <RowEditMaterialRequisicionFormulaEmpaquetadoPromocional
+                          key={element.id}
+                          item={element}
+                          onDelete={onDeleteMaterialFormulaEmpaquetadorPromocional}
+                          onEdit={onUpdateMaterialFormulaEmpaquetadorPromocional}
+                        />
+                      ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -268,6 +285,9 @@ export const AgregarFormulaEmpaquetadoPromocional = () => {
             </div>
           </div>
         </div>
+        <CustomActionsView
+          onSaveOperation={onCreateFormulaEmpaquetadoPromocional}
+        />
       </div>
     </>
   )

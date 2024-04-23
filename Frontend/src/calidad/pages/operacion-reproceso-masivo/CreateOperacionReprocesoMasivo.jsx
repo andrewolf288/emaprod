@@ -9,7 +9,6 @@ import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
 export const CreateOperacionReprocesoMasivo = () => {
   const {
     informacionLoteProduccion,
-    detalleReprocesoMasivo,
     buscarLoteProduccion,
     quitarLoteProduccion
   } = useCreateOperacionReprocesoMasivo()
@@ -17,7 +16,7 @@ export const CreateOperacionReprocesoMasivo = () => {
     <>
       <div className='container-flex m-4'>
         <h1 className='text-center fs-2 mt-4 mb-4'>Creación de operación de reproceso masivo</h1>
-        <div className='card mb-4 '>
+        <div className='card mb-4'>
           <div className='card-header fw-bold'>Información de lote de producción</div>
           <div className='card-body'>
             {/* SECCION DE SELECCION DE LOTE DE PRODUCCION */}

@@ -241,7 +241,7 @@ const HomeAlmacen = () => {
                     </div>
                     <h2 className="fs-4 fw-bold">Requisición empaquetado promocional</h2>
                     <Link
-                      to="/almacen/requisicion-empaquetado"
+                      to="/almacen/requisicion-empaquetado-promocional"
                       className="btn btn-primary"
                     >
                       Ingresar

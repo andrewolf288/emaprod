@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $codReqMat = "RM" . strtoupper($row_area["desAre"]) . "0000001";
         } else {
             $numberRequisicion = (intval($row_requisicion_materiales["numCodReq"]) + 1);
-            $codReqMat = "RM" . strtoupper($row_requisicion_materiales["desAre"]) . str_pad(strval($numberRequisicion), 7, "0", STR_PAD_LEFT) ;
+            $codReqMat = "RM" . strtoupper($row_requisicion_materiales["desAre"]) . str_pad(strval($numberRequisicion), 7, "0", STR_PAD_LEFT);
         }
 
         try {
