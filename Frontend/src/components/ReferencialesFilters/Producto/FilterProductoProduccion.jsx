@@ -6,7 +6,6 @@ import { getProductosProduccion } from './../../../helpers/Referenciales/product
 
 export const FilterProductoProduccion = ({
   onNewInput,
-  inputs,
   idFrescos,
   idSalPar,
   idMol

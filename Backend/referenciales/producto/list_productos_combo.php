@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "SELECT
         p.id,
         p.idMed,
-        ME.simMed,
+        me.simMed,
         p.nomProd,
         p.codProd2,
         p.esProdProm,

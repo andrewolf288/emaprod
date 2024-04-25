@@ -27,24 +27,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $fechaFin = $data["fecProdLotFin"];
             }
         }
-        //die(json_encode($data["fecProdLotFin"]));
 
         $sql =
             "SELECT
-            pd.id,
-            pd.idProdt,
-            p.nomProd,
-            pd.idProdEst,
-            pde.desEstPro,
-            pd.idProdIniProgEst,
-            pdipe.desProdIniProgEst,
-            pd.esEnv,
-            pd.codLotProd,
-            pd.klgLotProd,
-            pd.fecProdIni,
-            pd.fecProdIniProg,
-            pd.fecVenLotProd,
-            pd.numop
+        pd.id,
+        pd.idProdt,
+        p.nomProd,
+        pd.idProdEst,
+        pde.desEstPro,
+        pd.idProdIniProgEst,
+        pdipe.desProdIniProgEst,
+        pd.esEnv,
+        pd.codLotProd,
+        pd.klgLotProd,
+        DATE(pd.fecProdIni) AS fecProdIni,
+        pd.fecProdIniProg,
+        DATE(pd.fecVenLotProd) AS fecVenLotProd,
+        pd.numop
         FROM produccion pd
         JOIN producto p ON pd.idProdt = p.id
         JOIN produccion_estado pde ON pd.idProdEst = pde.id

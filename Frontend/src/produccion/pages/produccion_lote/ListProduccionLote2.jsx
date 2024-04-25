@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-// IMPORTACIONES PARA TABLE MUI
+import React, { useState } from 'react'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -7,99 +6,34 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-// IMPORTACIONES PARA EL FEEDBACK
-import MuiAlert from '@mui/material/Alert'
-import { Snackbar, TextField, Typography } from '@mui/material'
-// IMPORTACIONES DE PETICIONES
-import { getProduccionLote } from './../../helpers/produccion_lote/getProduccionLote'
-import { getProduccionSumaryData } from '../../helpers/produccion_lote/getProduccionSumaryData'
-// IMPORTACIONES DE FILTROS
+import { TextField } from '@mui/material'
 import { FilterProductoProduccion } from './../../../components/ReferencialesFilters/Producto/FilterProductoProduccion'
 import FechaPickerMonth from './../../../components/Fechas/FechaPickerMonth'
-import { useForm } from './../../../hooks/useForm'
-// IMPORTACIONES DE NAVEGACION
 import { Link } from 'react-router-dom'
-// COMPONENTES
-import ReactDOM from 'react-dom'
-import { PDFExample } from '../../components/pdf-components/PDFExample'
-// ICONOS
 import iconProductosFinales from '../../../../src/assets/icons/productos-finales.png'
 import iconAgregaciones from '../../../../src/assets/icons/agregaciones.png'
 import iconDevoluciones from '../../../../src/assets/icons/devoluciones.png'
-import config from '../../../config'
-import axios from 'axios'
+import { useProduccionLote } from '../../hooks/produccion-lote/useProduccionLote'
 
-const generatePDF = (data) => {
-  const windowName = data.produccion.numop
-  const newWindow = window.open('', windowName, 'fullscreen=yes')
-  ReactDOM.render(<PDFExample result={data} />, newWindow.document.body)
-}
-
-// CONFIGURACION DE FEEDBACK
-const Alert = React.forwardRef(function Alert (props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
-})
-
-export const ListProduccionLote = () => {
-  // ESTADOS PARA LOS FILTROS PERSONALIZADOS
-  const [dataProduccionLote, setdataProduccionLote] = useState([])
-  const [dataProduccionLoteTemp, setdataProduccionLoteTemp] = useState([])
-
-  const [inputs, setInputs] = useState({
-    producto: { label: '' },
-    provedor: { label: '' },
-    estado: { label: '' },
-    tipoProduccion: { label: '' },
-    estadoInicio: { label: '' },
-    numeroOP: '',
-    lotePrduccion: ''
-  })
-
+export const ListProduccionLote2 = () => {
   const {
+    produccionLoteTemp,
+    filterData,
+    exportarReporte,
+    handleButtonPDF,
+    handleFormFilter,
+    onChangeProducto,
+    obtenerDataProduccionLote
+  } = useProduccionLote()
+
+  const [
     formState,
     setFormState
-  } = useForm({
+  ] = useState({
     fecProdLotIni: '',
     fecProdLotFin: ''
   })
 
-  // ESTADO PARA CONTROLAR EL FEEDBACK
-  const [feedbackCreate, setfeedbackCreate] = useState(false)
-  const [feedbackMessages, setfeedbackMessages] = useState({
-    style_message: '',
-    feedback_description_error: ''
-  })
-  const { style_message, feedback_description_error } = feedbackMessages
-
-  // MANEJADORES DE FEEDBACK
-  const handleClickFeeback = () => {
-    setfeedbackCreate(true)
-  }
-
-  const handleCloseFeedback = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    setfeedbackCreate(false)
-  }
-
-  // Manejadores de cambios
-  const handleFormFilter = ({ target }) => {
-    const { name, value } = target
-    setInputs({
-      ...inputs,
-      [name]: value
-    })
-  }
-
-  const onChangeProducto = (obj) => {
-    setInputs({
-      ...inputs,
-      producto: obj
-    })
-  }
-
-  // Filtros generales que hacen nuevas consultas
   const onChangeDateStartData = (newDate) => {
     const dateFormat = newDate.split(' ')[0]
     setFormState({ ...formState, fecProdLotIni: dateFormat })
@@ -120,145 +54,6 @@ export const ListProduccionLote = () => {
     obtenerDataProduccionLote(body)
   }
 
-  // boton de creacion de PDF sumary
-  const handleButtonPDF = async (id) => {
-    try {
-      const { result } = await getProduccionSumaryData(id)
-      console.log(result)
-
-      // recorremos las requisiciones del proceso de produccion
-      result?.requisiciones?.forEach((req) => {
-        // esta variable guardara los totales: {idProdt: cantidad, idProdt: cantidad}
-        const totales = {}
-        // esta variable guardara los repetidos: {idProdt: {item}, idProdt: {item}}
-        const repetidos = {}
-
-        // recorremos el detalle de requisicion
-        req.detalles.forEach((item) => {
-          // obtenemos id y cantidad
-          const { idProdt, canReqDet } = item
-          // si aun no existe en totales, lo agregamos
-          if (!totales[idProdt]) {
-            totales[idProdt] = 0
-          } else {
-            // caso contrario chancamos repetios[idProdt] cada vez que se repita
-            repetidos[idProdt] = { ...item }
-          }
-
-          // sumamos el total en totales[idProdt]
-          totales[idProdt] += parseFloat(canReqDet)
-          // añadimos la propiedad acu (acumulado parcial) al item
-          item.acu = totales[idProdt]
-        })
-
-        // aqui obtenemos todos los repetidos y le establecemos el acumulado final
-        const totalesFinales = Object.keys(repetidos).map((item) => {
-          return {
-            ...repetidos[item],
-            acu: totales[item]
-          }
-        })
-
-        // agregamos el resumen de productos acumulados
-        req.resumenProductos = totalesFinales
-        // }
-      })
-      generatePDF(result)
-    } catch (error) {
-      // Mostramos una alerta
-      setfeedbackMessages({
-        style_message: 'warning',
-        feedback_description_error: 'Error al obtener los datos: ' + error
-      })
-      handleClickFeeback()
-    }
-  }
-
-  // funcion para descargar
-  const exportarReporte = (idLotProd) => {
-    console.log(idLotProd)
-    const domain = config.API_URL
-    const path = '/produccion/produccion-lote/generate_reporte_produccion.php'
-    axios({
-      url: domain + path,
-      data: { idLotProd },
-      method: 'POST',
-      responseType: 'blob' // Importante para recibir datos binarios (Blob)
-    })
-      .then((response) => {
-        // Crear un enlace temporal para descargar el archivo
-        const url = window.URL.createObjectURL(new Blob([response.data]))
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `reporte-produccion-${idLotProd}.xlsx`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        window.URL.revokeObjectURL(url)
-      })
-      .catch((error) => alert('Error al descargar el archivo', error))
-  }
-
-  // MANEJO DE FILTROS
-  useEffect(() => {
-    const resultSearch = []
-    dataProduccionLote.forEach((data) => {
-      if (
-        (inputs.estado.label.includes(data.desEstPro) ||
-          inputs.estado.label.length === 0) &&
-        (inputs.tipoProduccion.label.includes(data.desProdTip) ||
-          inputs.tipoProduccion.label.length === 0) &&
-        (inputs.producto.label.includes(data.nomProd) ||
-          inputs.producto.label.length === 0) &&
-        (inputs.estadoInicio.label.includes(data.desProdIniProgEst) ||
-          inputs.estadoInicio.label.length === 0) &&
-        (data.numop.includes(inputs.numeroOP) || inputs.numeroOP.length === 0) &&
-        (data.codLotProd?.includes(inputs.lotePrduccion) ||
-          inputs.lotePrduccion.length === 0)
-      ) {
-        resultSearch.push({ ...data })
-      }
-    })
-    setdataProduccionLoteTemp(resultSearch)
-  }, [inputs, dataProduccionLote])
-
-  // reset filtros
-  const resetData = () => {
-    setdataProduccionLoteTemp(dataProduccionLote)
-    setInputs({
-      producto: { label: '' },
-      provedor: { label: '' },
-      estado: { label: '' },
-      tipoProduccion: { label: '' },
-      estadoInicio: { label: '' },
-      numeroOP: '',
-      lotePrduccion: ''
-    })
-  }
-
-  // FUNCION PARA TRAER LA DATA DE REQUISICION MOLIENDA
-  const obtenerDataProduccionLote = async (body = {}) => {
-    const resultPeticion = await getProduccionLote(body)
-    const { message_error, description_error, result } = resultPeticion
-
-    if (message_error.length === 0) {
-      console.log(result)
-      setdataProduccionLote(result)
-      setdataProduccionLoteTemp(result)
-    } else {
-      setfeedbackMessages({
-        style_message: 'error',
-        feedback_description_error: description_error
-      })
-      handleClickFeeback()
-    }
-  }
-
-  // TRAEMOS LOS DATOS DE ORDENES DE PRODUCCION
-  useEffect(() => {
-    obtenerDataProduccionLote()
-  }, [])
-
   return (
     <>
       <div className="container-fluid">
@@ -273,25 +68,6 @@ export const ListProduccionLote = () => {
               <div className="col-4">
                 Hasta
                 <FechaPickerMonth onNewfecEntSto={onChangeDateEndData} />
-              </div>
-
-              <div className="col-2 d-flex align-items-end">
-                <button onClick={resetData} className="btn btn-success">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-arrow-clockwise"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"
-                    />
-                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
-                  </svg>
-                </button>
               </div>
             </div>
           </div>
@@ -332,12 +108,12 @@ export const ListProduccionLote = () => {
                       }
                     }}
                   >
-                    <TableCell align="left" width={60}>
+                    <TableCell align="left" width={50}>
                       <div className='d-flex flex-column align-items-start'>
                         <span className='fw-bold mb-1'>Lote</span>
                         <TextField
-                          name="lotePrduccion"
-                          value={inputs.lotePrduccion}
+                          name="codLotProd"
+                          value={filterData.codLotProd}
                           onChange={handleFormFilter}
                           type="number"
                           size="small"
@@ -348,15 +124,16 @@ export const ListProduccionLote = () => {
                               background: 'white'
                             }
                           }}
+                          onWheel={(e) => { e.target.blur() }}
                         />
                       </div>
                     </TableCell>
-                    <TableCell align="left" width={90}>
+                    <TableCell align="left" width={80}>
                       <div className='d-flex flex-column align-items-start'>
                         <span className='fw-bold mb-1'>Número OP</span>
                         <TextField
-                          name="numeroOP"
-                          value={inputs.numeroOP}
+                          name="numop"
+                          value={filterData.numop}
                           onChange={handleFormFilter}
                           type="text"
                           size="small"
@@ -378,17 +155,13 @@ export const ListProduccionLote = () => {
                       <span className='fw-bold mb-1'>Producto</span>
                       <FilterProductoProduccion
                         onNewInput={onChangeProducto}
-                        inputs={inputs}
                       />
                     </TableCell>
                     <TableCell align="center" width={100}>
                       <b>Estado</b>
                     </TableCell>
-                    <TableCell align="center" width={70}>
-                      <b>Fecha Inicio</b>
-                    </TableCell>
-                    <TableCell align="center" width={70}>
-                      <b>Fecha vencimiento</b>
+                    <TableCell align="center" width={100}>
+                      <b>Inicio</b>
                     </TableCell>
                     <TableCell align="center" width={100}>
                       <b>Estado Inicio</b>
@@ -399,7 +172,7 @@ export const ListProduccionLote = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataProduccionLoteTemp
+                  {produccionLoteTemp
                     .map((row, i) => (
                       <TableRow
                         key={row.id}
@@ -411,8 +184,7 @@ export const ListProduccionLote = () => {
                         <TableCell align="left">{row.nomProd}</TableCell>
                         <TableCell align="left">{row.desEstPro}</TableCell>
                         <TableCell align="center">{row.fecProdIni}</TableCell>
-                        <TableCell align="center">{row.fecVenLotProd}</TableCell>
-                        <TableCell align="center">
+                        <TableCell align="left">
                           {row.desProdIniProgEst}
                         </TableCell>
                         <TableCell align="center">
@@ -524,24 +296,6 @@ export const ListProduccionLote = () => {
           </Paper>
         </div>
       </div>
-      {/* DIALOG DE SUMARY */}
-      {/* FEEDBACK AGREGAR MATERIA PRIMA */}
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={feedbackCreate}
-        autoHideDuration={6000}
-        onClose={handleCloseFeedback}
-      >
-        <Alert
-          onClose={handleCloseFeedback}
-          severity={style_message}
-          sx={{ width: '100%' }}
-        >
-          <Typography whiteSpace={'pre-line'}>
-            {feedback_description_error}
-          </Typography>
-        </Alert>
-      </Snackbar>
     </>
   )
 }
