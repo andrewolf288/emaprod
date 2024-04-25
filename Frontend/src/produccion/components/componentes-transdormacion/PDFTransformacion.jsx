@@ -112,6 +112,24 @@ export const PDFTransformacion = ({ data }) => {
                   </Text>
                   <View
                     style={{
+                      ...styles.row,
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Text
+                      style={{
+                        // ...styles.gridContent,
+                        marginLeft: 20,
+                        marginTop: 10
+                      }}
+                    >
+                      {requisicion.correlativo}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
                       ...styles.sectionWithBorder,
                       marginTop: 25,
                       backgroundColor: '#d8dbe3',

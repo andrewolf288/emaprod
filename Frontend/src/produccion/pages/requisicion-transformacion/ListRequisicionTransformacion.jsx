@@ -165,26 +165,29 @@ export const ListRequisicionTransformacion = () => {
                       }
                     }}
                   >
-                    <TableCell align="left" width={50}>
-                      <strong>Codigo lote</strong>
+                    <TableCell align='left' width={70} sx={{ fontWeight: 'bold' }}>
+                      Correlativo
                     </TableCell>
-                    <TableCell align="left" width={120}>
-                      <strong>Producto a transformar</strong>
+                    <TableCell align="left" width={50} sx={{ fontWeight: 'bold' }}>
+                      Código lote
                     </TableCell>
-                    <TableCell align="center" width={70}>
-                      <strong>Cantidad a transformar</strong>
+                    <TableCell align="left" width={120} sx={{ fontWeight: 'bold' }}>
+                      Producto a transformar
                     </TableCell>
-                    <TableCell align="left" width={120}>
-                      <strong>Producto transformado</strong>
+                    <TableCell align="center" width={70} sx={{ fontWeight: 'bold' }}>
+                      Cantidad a transformar
                     </TableCell>
-                    <TableCell align="center" width={70}>
-                      <strong>Cantidad transformada</strong>
+                    <TableCell align="left" width={120} sx={{ fontWeight: 'bold' }}>
+                      Producto transformado
                     </TableCell>
-                    <TableCell align="left" width={140}>
-                      <strong>Fecha creación</strong>
+                    <TableCell align="center" width={70} sx={{ fontWeight: 'bold' }}>
+                      Cantidad transformada
                     </TableCell>
-                    <TableCell align="left" width={70}>
-                      <strong>Acciones</strong>
+                    <TableCell align="left" width={140} sx={{ fontWeight: 'bold' }}>
+                      Fecha creación
+                    </TableCell>
+                    <TableCell align="left" width={70} sx={{ fontWeight: 'bold' }}>
+                      Acciones
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -198,6 +201,8 @@ export const ListRequisicionTransformacion = () => {
                           '&:last-child td, &:last-child th': { border: 0 }
                         }}
                       >
+
+                        <TableCell>{row.correlativo}</TableCell>
                         <TableCell align="left">{row.codLotProd}</TableCell>
                         <TableCell align="left">{row.nomProd1}</TableCell>
                         <TableCell align="center">

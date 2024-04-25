@@ -30,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql_select_ordenes_transformacion =
             "SELECT 
         ot.id,
+        ot.correlativo,
         ot.idProdtInt,
         ot.idProdc,
         ot.codLotProd,

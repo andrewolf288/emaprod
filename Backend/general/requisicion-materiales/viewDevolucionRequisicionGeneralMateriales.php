@@ -43,6 +43,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             rmd.id,
             rmd.idReqMat,
             rmd.idProdt,
+            rmd.idProdc,
+            pc.codLotProd,
+            pc.fecVenLotProd,
             p.nomProd,
             p.codProd,
             p.codProd2,
@@ -59,6 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             JOIN medida AS me ON me.id = p.idMed
             JOIN clase AS cl ON cl.id = p.idCla
             JOIN sub_clase AS sc ON sc.id = p.idSubCla
+            LEFT JOIN produccion AS pc ON pc.id = rmd.idProdc
             WHERE rmd.idReqMat = ?";
             $stmt_select_requisicion_materiales_detalle = $pdo->prepare($sql_select_requisicion_materiales_detalle);
             $stmt_select_requisicion_materiales_detalle->bindParam(1, $idReqMat, PDO::PARAM_INT);

@@ -9,13 +9,13 @@ import {
 } from '@react-pdf/renderer'
 import logo from '../emaran.png'
 import { stylesPDF } from '../stylePDF'
+import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
 
 const styles = stylesPDF
 
 export const PDFRequisicionMateriales = ({ data }) => {
   const { requisicion } = data
   const { detReq } = requisicion
-  console.log(requisicion)
 
   return (
     <PDFViewer width="100%" height="100%">
@@ -138,6 +138,7 @@ export const PDFRequisicionMateriales = ({ data }) => {
               <View style={styles.gridContainer}>
                 <View style={[styles.gridHeader, styles.green_]}>
                   <Text style={{ ...styles.gridTitle, flex: 0.7 }}>SIIGO</Text>
+                  <Text style={{ ...styles.gridTitle, flex: 0.7 }}>LOTE</Text>
                   <Text
                     style={{
                       flex: 1,
@@ -180,57 +181,64 @@ export const PDFRequisicionMateriales = ({ data }) => {
                     Cantidad
                   </Text>
                 </View>
-                {detReq.map((detalle, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.gridRow,
-                      index % 2 === 0 ? { backgroundColor: '#a4a8b0' } : {}
-                    ]}
-                  >
-                    <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
-                      {detalle.codProd}
-                    </Text>
-                    <Text
-                      style={{
-                        flex: 2,
-                        textAlign: 'center',
-                        fontSize: 5.5,
-                        maxWidth: '40px'
-                      }}
+                {detReq.map((detalle, index) => {
+                  const { codLotProd, fecVenLotProd, idProdc } = detalle
+                  const textInfoLote = idProdc === null ? 'Sin lote' : `${codLotProd} - ${mostrarMesYAnio(fecVenLotProd)}`
+                  return (
+                    <View
+                      key={index}
+                      style={[
+                        styles.gridRow,
+                        index % 2 === 0 ? { backgroundColor: '#a4a8b0' } : {}
+                      ]}
                     >
-                      {detalle.codProd2}
-                    </Text>
-                    <Text
-                      style={{
-                        ...styles.gridContent_p,
-                        flex: 4
-                      }}
-                    >
-                      {detalle.nomProd}
-                    </Text>
-                    <Text
-                      style={{
-                        flex: 1,
-                        textAlign: 'center',
-                        fontSize: 5.5,
-                        maxWidth: '25px'
-                      }}
-                    >
-                      {detalle.simMed}
-                    </Text>
-                    <Text
-                      style={{
-                        flex: 1,
-                        textAlign: 'center',
-                        fontSize: 6.5,
-                        maxWidth: '40px'
-                      }}
-                    >
-                      {detalle.canReqMatDet}
-                    </Text>
-                  </View>
-                ))}
+                      <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                        {detalle.codProd}
+                      </Text>
+                      <Text style={{ ...styles.gridContent_p, flex: 0.7 }}>
+                        {textInfoLote}
+                      </Text>
+                      <Text
+                        style={{
+                          flex: 2,
+                          textAlign: 'center',
+                          fontSize: 5.5,
+                          maxWidth: '40px'
+                        }}
+                      >
+                        {detalle.codProd2}
+                      </Text>
+                      <Text
+                        style={{
+                          ...styles.gridContent_p,
+                          flex: 4
+                        }}
+                      >
+                        {detalle.nomProd}
+                      </Text>
+                      <Text
+                        style={{
+                          flex: 1,
+                          textAlign: 'center',
+                          fontSize: 5.5,
+                          maxWidth: '25px'
+                        }}
+                      >
+                        {detalle.simMed}
+                      </Text>
+                      <Text
+                        style={{
+                          flex: 1,
+                          textAlign: 'center',
+                          fontSize: 6.5,
+                          maxWidth: '40px'
+                        }}
+                      >
+                        {detalle.canReqMatDet}
+                      </Text>
+                    </View>
+                  )
+                })}
               </View>
             </View>
           </View>
