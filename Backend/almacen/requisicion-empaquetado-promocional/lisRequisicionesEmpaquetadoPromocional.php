@@ -53,6 +53,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         while($row_requisicion_empaquetado_promocional = $stmt_requisiciones_empaquetado_promocional->fetch(PDO::FETCH_ASSOC)){
             $idReqEmpProm = $row_requisicion_empaquetado_promocional["id"];
 
+            $sql_select_ingresos_requisicion_empaquetado_promocional =
+                "SELECT
+            COALESCE(SUM(CASE WHEN esComProdIng = 0 THEN 1 ELSE 0 END), 0) AS requerido,
+            COALESCE(SUM(CASE WHEN esComProdIng = 1 THEN 1 ELSE 0 END), 0) AS terminado
+            FROM requisicion_empaquetado_promocional_ingreso
+            WHERE idReqEmpProm = ?";
+            $stmt_select_ingresos_requisicion_empaquetado_promocional = $pdo->prepare($sql_select_ingresos_requisicion_empaquetado_promocional);
+            $stmt_select_ingresos_requisicion_empaquetado_promocional->bindParam(1, $idReqEmpProm, PDO::PARAM_INT);
+            $stmt_select_ingresos_requisicion_empaquetado_promocional->execute();
+
+            $row_requisicion_empaquetado_promocional["req_ing_prod"] = $stmt_select_ingresos_requisicion_empaquetado_promocional->fetchAll(PDO::FETCH_ASSOC);
+            array_push($result, $row_requisicion_empaquetado_promocional);
         }
 
     } else {

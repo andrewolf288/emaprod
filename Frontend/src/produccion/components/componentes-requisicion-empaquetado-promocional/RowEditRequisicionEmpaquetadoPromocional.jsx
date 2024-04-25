@@ -1,12 +1,51 @@
-import { TableCell, TableRow, TextField } from '@mui/material'
+import { IconButton, TableCell, TableRow, TextField } from '@mui/material'
 import React, { useState } from 'react'
+import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
+import { SearchCreationLoteProduccion } from '../../../components/CommonComponents/LoteProduccion/SearchCreationLoteProduccion'
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
 
-export const RowEditRequisicionEmpaquetadoPromocional = ({ item, onEdit, onDelete }) => {
+export const RowEditRequisicionEmpaquetadoPromocional = (
+  {
+    item,
+    onEdit,
+    onDelete,
+    onAddLoteProduccion,
+    onRemoveLoteProduccion
+  }
+) => {
   const [disabledInput, setdisabledInput] = useState(true)
+  const { codLotProd, fecVenLotProd, idProdc } = item
+  const textInfoLote = codLotProd.length === 0 && fecVenLotProd.length === 0 ? 'FIFO' : `${codLotProd} - ${mostrarMesYAnio(fecVenLotProd)}`
+
+  const auxAddLoteProduccion = (index, result) => {
+    onAddLoteProduccion(item.idProdt, result)
+  }
+
   return (
     <TableRow>
       <TableCell>{item.codProd2}</TableCell>
       <TableCell>{item.desCla}</TableCell>
+      {item.esMatReq === 0 &&
+      <TableCell>
+        <span className='me-2'>{textInfoLote}</span>
+        {
+          idProdc === null
+            ? (
+              <SearchCreationLoteProduccion
+                dataDetalle={item}
+                handleConfirm={auxAddLoteProduccion}/>
+            )
+            : (
+              <IconButton
+                color="error"
+                onClick={() => { onRemoveLoteProduccion(item.idProdt) }}
+              >
+                <CancelRoundedIcon fontSize="large" />
+              </IconButton>
+            )
+        }
+      </TableCell>
+      }
       <TableCell>{item.nomProd}</TableCell>
       <TableCell align='center'>{item.canReqEmpPromUnd}</TableCell>
       <TableCell>

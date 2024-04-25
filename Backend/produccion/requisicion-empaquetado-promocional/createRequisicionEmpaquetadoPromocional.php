@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $correlativo = "RQEP" . "0000001";
             } else {
                 $numberRequisicion = (intval($row_consult_requisicion_empaquetado_promocional["numCodReq"]) + 1);
-                $codReqMat = "RQEP" . str_pad(strval($numberRequisicion), 7, "0", STR_PAD_LEFT);
+                $correlativo = "RQEP" . str_pad(strval($numberRequisicion), 7, "0", STR_PAD_LEFT);
             }
     
             // debemos registrar el detalle de la requisicion de presentaciones finales
@@ -55,32 +55,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // debemos registrar el detalle de la requisicion de materiales
             foreach($detReqEmpProm as $detalle){
                 $idProdt = $detalle["idProdt"];
+                $idProdc = $detalle["idProdc"];
                 $canReqEmpPromDet = $detalle["canReqEmpPromDet"];
                 $esMatReq = $detalle["esMatReq"];
                 $esProdFin = $detalle["esProdFin"];
 
                 $sql_create_requisicion_empaquetado_promocional = 
                 "INSERT INTO requisicion_empaquetado_promocional_detalle 
-                (idReqEmpProm, idProdt, canReqEmpPromDet, esProdFin, esMatReq)
-                VALUES(?, ?, $canReqEmpPromDet, ?, ?)";
+                (idReqEmpProm, idProdt, idProdc ,canReqEmpPromDet, esProdFin, esMatReq)
+                VALUES(?, ?, ?, $canReqEmpPromDet, ?, ?)";
                 $stmt_create_requisicion_empaquetado_promocional = $pdo->prepare($sql_create_requisicion_empaquetado_promocional);
                 $stmt_create_requisicion_empaquetado_promocional->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
                 $stmt_create_requisicion_empaquetado_promocional->bindParam(2, $idProdt, PDO::PARAM_INT);
-                $stmt_create_requisicion_empaquetado_promocional->bindParam(3, $esProdFin, PDO::PARAM_BOOL);
-                $stmt_create_requisicion_empaquetado_promocional->bindParam(4, $esMatReq, PDO::PARAM_BOOL);
+                $stmt_create_requisicion_empaquetado_promocional->bindParam(3, $idProdc, PDO::PARAM_INT);
+                $stmt_create_requisicion_empaquetado_promocional->bindParam(4, $esProdFin, PDO::PARAM_BOOL);
+                $stmt_create_requisicion_empaquetado_promocional->bindParam(5, $esMatReq, PDO::PARAM_BOOL);
                 $stmt_create_requisicion_empaquetado_promocional->execute();
             }
-
-            // debemos registrar el detalle de los ingresos
-            $sql_create_requisicion_empaquetado_promocional_ingreso = 
-            "INSERT INTO requisicion_empaquetado_promocional_ingreso
-            (idReqEmpProm, idProdt, canProdIng, fecProdIng)
-            VALUES(?, ?, $canReqEmpPro, ?)";
-            $stmt_create_requisicion_empaquetado_promocional_ingreso = $pdo->prepare($sql_create_requisicion_empaquetado_promocional_ingreso);
-            $stmt_create_requisicion_empaquetado_promocional_ingreso->bindParam(1, $idLastInsertion, PDO::PARAM_INT);
-            $stmt_create_requisicion_empaquetado_promocional_ingreso->bindParam(2, $idProdtReq, PDO::PARAM_INT);
-            $stmt_create_requisicion_empaquetado_promocional_ingreso->bindParam(3, $fechaActual, PDO::PARAM_STR);
-            $stmt_create_requisicion_empaquetado_promocional_ingreso->execute();
 
             $pdo->commit();
         } catch(PDOException $e){

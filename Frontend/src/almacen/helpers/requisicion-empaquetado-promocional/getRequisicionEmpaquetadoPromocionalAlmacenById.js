@@ -2,7 +2,7 @@
 import axios from 'axios'
 import config from '../.././../config'
 
-export const viewRequisicionEmpaquetadoPromocional = async (idReqEmpProm) => {
+export const getRequisicionEmpaquetadoPromocionalAlmacenById = async (idReqEmpProm) => {
   const domain = config.API_URL
   const path = '/almacen/requisicion-empaquetado-promocional/viewRequisicionEmpaquetadoPromocional.php'
   const url = domain + path

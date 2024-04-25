@@ -13,7 +13,9 @@ export const CreateRequisicionEmpaquetadoPromocional = () => {
     traerFormulaProductoEmpaquetadoPromocional,
     onDeleteRequisicionEmpaquetadoPromocionalDetalle,
     onUpdateRequisicionEmpaquetadoPromocionalDetalle,
-    crearRequisicionEmpaquetadoPromocional
+    crearRequisicionEmpaquetadoPromocional,
+    agregarLoteProduccionIngresoRequisicionEmpaquetadoPromocional,
+    quitarLoteProduccionIngresoRequisicionEmpaquetadoPromocional
   } = useCreateRequisicionEmpaquetadoPromocional()
 
   return (
@@ -75,10 +77,13 @@ export const CreateRequisicionEmpaquetadoPromocional = () => {
                           Clase
                           </TableCell>
                           <TableCell align="left" width={200} sx={{ fontWeight: 'bold' }}>
+                            Lote
+                          </TableCell>
+                          <TableCell align="left" width={200} sx={{ fontWeight: 'bold' }}>
                           Nombre
                           </TableCell>
                           <TableCell align='center' width={80} sx={{ fontWeight: 'bold' }}>
-                            Unidad
+                          Unidad
                           </TableCell>
                           <TableCell align="center" width={80} sx={{ fontWeight: 'bold' }}>
                           Total
@@ -96,6 +101,8 @@ export const CreateRequisicionEmpaquetadoPromocional = () => {
                               item={element}
                               onEdit={onUpdateRequisicionEmpaquetadoPromocionalDetalle}
                               onDelete={onDeleteRequisicionEmpaquetadoPromocionalDetalle}
+                              onAddLoteProduccion={agregarLoteProduccionIngresoRequisicionEmpaquetadoPromocional}
+                              onRemoveLoteProduccion={quitarLoteProduccionIngresoRequisicionEmpaquetadoPromocional}
                             />
                             )
                           } else {
@@ -151,6 +158,8 @@ export const CreateRequisicionEmpaquetadoPromocional = () => {
                               item={element}
                               onEdit={onUpdateRequisicionEmpaquetadoPromocionalDetalle}
                               onDelete={onDeleteRequisicionEmpaquetadoPromocionalDetalle}
+                              onAddLoteProduccion={agregarLoteProduccionIngresoRequisicionEmpaquetadoPromocional}
+                              onRemoveLoteProduccion={quitarLoteProduccionIngresoRequisicionEmpaquetadoPromocional}
                             />
                             )
                           } else {

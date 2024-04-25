@@ -30,7 +30,6 @@ export const SearchCreationLoteProduccion = ({ dataDetalle, handleConfirm }) => 
   const [flagDateChange, setFlagDateChange] = useState(true)
 
   const handleFlagDateChange = () => {
-    console.log(dataProduccion)
     // hablamos de fecha de inicio
     setDataProduccion((prevData) => {
       if (flagDateChange) {
@@ -126,7 +125,6 @@ export const SearchCreationLoteProduccion = ({ dataDetalle, handleConfirm }) => 
       const resultPeticion = await searchAndCreateLoteProduccion(formatData)
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
-        console.log(result)
         // llamamos al handleConfirm
         handleConfirm(dataDetalle.index, result)
         // cerramos el dialogo

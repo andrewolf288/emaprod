@@ -42,7 +42,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pdo) {
         $codEntSto = ""; // codigo de entrada
         $refNumIngEntSto = 0; // numero de referencia de ingreso
-        $idAlm = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 8 : 1;
+        if($idAlm != 8){
+            $idAlm = ($idProd == 167 || $idProd == 168 || $idProd == 169 || $idProd == 170) ? 8 : 1;
+        }
 
         // si se proporciona informacion de las entradas parciales
         if (isset($entradasParciales)) {

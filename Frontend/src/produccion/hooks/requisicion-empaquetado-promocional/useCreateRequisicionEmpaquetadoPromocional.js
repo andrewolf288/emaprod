@@ -58,6 +58,9 @@ export function useCreateRequisicionEmpaquetadoPromocional () {
           const totalCantidad = parseInt(canEmpPromDet) * formatCantidad
           const auxElement = {
             ...element,
+            idProdc: null,
+            codLotProd: '',
+            fecVenLotProd: '',
             canReqEmpPromUnd: canEmpPromDet,
             canReqEmpPromDet: totalCantidad,
             esProdFin: 1,
@@ -71,6 +74,9 @@ export function useCreateRequisicionEmpaquetadoPromocional () {
           const totalCantidad = parserQuantityRequisicion(element.simMed, (canForEmpPromReq * formatCantidad))
           const auxElement = {
             ...element,
+            idProdc: null,
+            codLotProd: '',
+            fecVenLotProd: '',
             canReqEmpPromUnd: canForEmpPromReq,
             canReqEmpPromDet: totalCantidad,
             esProdFin: 0,
@@ -115,6 +121,44 @@ export function useCreateRequisicionEmpaquetadoPromocional () {
     })
   }
 
+  // agregar lote produccion detalle
+  const agregarLoteProduccionIngresoRequisicionEmpaquetadoPromocional = (idProdt, result) => {
+    console.log(idProdt, result)
+    const findElementIndex = requisicionEmpaquetadoPromocional.detReqEmpProm.findIndex((element) => element.idProdt === idProdt)
+    if (findElementIndex !== -1) {
+      const updatedDetalleProductosFinales = [...requisicionEmpaquetadoPromocional.detReqEmpProm]
+      updatedDetalleProductosFinales[findElementIndex] = {
+        ...updatedDetalleProductosFinales[findElementIndex],
+        idProdc: result.id,
+        codLotProd: result.codLotProd,
+        fecVenLotProd: result.fecVenLotProd
+      }
+      setRequisicionEmpaquetadoPromocional({
+        ...requisicionEmpaquetadoPromocional,
+        detReqEmpProm: updatedDetalleProductosFinales
+      })
+    }
+  }
+
+  // delete lote produccion detalle
+  const quitarLoteProduccionIngresoRequisicionEmpaquetadoPromocional = (idProdt) => {
+    console.log(idProdt)
+    const findElementIndex = requisicionEmpaquetadoPromocional.detReqEmpProm.findIndex((element) => element.idProdt === idProdt)
+    if (findElementIndex !== -1) {
+      const updatedDetalleProductosFinales = [...requisicionEmpaquetadoPromocional.detReqEmpProm]
+      updatedDetalleProductosFinales[findElementIndex] = {
+        ...updatedDetalleProductosFinales[findElementIndex],
+        idProdc: null,
+        codLotProd: '',
+        fecVenLotProd: ''
+      }
+      setRequisicionEmpaquetadoPromocional({
+        ...requisicionEmpaquetadoPromocional,
+        detReqEmpProm: updatedDetalleProductosFinales
+      })
+    }
+  }
+
   // crear requisicion empaquetado promocional
   const crearRequisicionEmpaquetadoPromocional = async () => {
     console.log(requisicionEmpaquetadoPromocional)
@@ -135,6 +179,8 @@ export function useCreateRequisicionEmpaquetadoPromocional () {
     traerFormulaProductoEmpaquetadoPromocional,
     onUpdateRequisicionEmpaquetadoPromocionalDetalle,
     onDeleteRequisicionEmpaquetadoPromocionalDetalle,
-    crearRequisicionEmpaquetadoPromocional
+    crearRequisicionEmpaquetadoPromocional,
+    agregarLoteProduccionIngresoRequisicionEmpaquetadoPromocional,
+    quitarLoteProduccionIngresoRequisicionEmpaquetadoPromocional
   }
 }

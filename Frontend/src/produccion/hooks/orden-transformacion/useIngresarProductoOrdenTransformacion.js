@@ -87,7 +87,6 @@ export function useIngresarProductoOrdenTransformacion () {
           canProdFin: productoFinal.cantidadIngresada
         }
         const dataDetalle = [...detalleProductosFinales, formatData]
-        console.log(dataDetalle)
         setdetalleProductosFinales(dataDetalle)
       } else {
         alertError(description_error)

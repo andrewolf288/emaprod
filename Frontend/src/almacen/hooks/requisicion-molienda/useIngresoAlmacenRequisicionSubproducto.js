@@ -94,7 +94,6 @@ export function useIngresoAlmacenRequisicionSubproducto () {
 
   // funcion para cumplir la requisicion de agregacion
   const onCheckDetalleRequisicionIngresoProducto = async (detalle) => {
-    // console.log(detalle)
     const letAniEntSto = letraAnio(detalle.fecProdIng)
     const diaJulEntSto = DiaJuliano(detalle.fecProdIng)
     const formatData = {
@@ -102,11 +101,9 @@ export function useIngresoAlmacenRequisicionSubproducto () {
       letAniEntSto,
       diaJulEntSto
     }
-    console.log(formatData)
     // // abrimos el loader
     const loadingToastId = alertLoading('Realizando operación...')
     const resultPeticion = await createIngresoAlmacenRequisicionSubproductoById(formatData)
-    console.log(resultPeticion)
     const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {
       alertSuccess()
