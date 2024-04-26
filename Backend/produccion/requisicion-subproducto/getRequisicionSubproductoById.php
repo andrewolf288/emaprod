@@ -42,8 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         JOIN sub_clase AS sc ON sc.id = p.idSubCla
         JOIN area AS a ON a.id = r.idAre
         JOIN requisicion_estado AS re ON re.id = r.idReqEst
-        WHERE r.id = ?
-        ORDER BY r.fecPedReq DESC";
+        WHERE r.id = ? ORDER BY r.fecPedReq DESC";
         $stmt_select_requisicion_subproducto = $pdo->prepare($sql_select_requisicion_subproducto);
         $stmt_select_requisicion_subproducto->bindParam(1, $idReq, PDO::PARAM_INT);
         $stmt_select_requisicion_subproducto->execute();

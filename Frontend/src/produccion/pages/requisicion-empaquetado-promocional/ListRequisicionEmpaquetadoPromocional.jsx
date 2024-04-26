@@ -7,7 +7,11 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import { RowRequisicionEmpaquetadoPromocional } from '../../components/componentes-requisicion-empaquetado-promocional/RowRequisicionEmpaquetadoPromocional'
 
 export const ListRequisicionEmpaquetadoPromocional = () => {
-  const { requisicionesEmpaquetadoPromocional, traerInformacionRequisicionesEmpaquetadoPromocional } = useRequisicionesEmpaquetadoPromocional()
+  const {
+    requisicionesEmpaquetadoPromocional,
+    traerInformacionRequisicionesEmpaquetadoPromocional,
+    exportPDFRequisicionTransformacion
+  } = useRequisicionesEmpaquetadoPromocional()
 
   const [formState, setformState] = useState({
     fechaInicio: FormatDateMYSQL(),
@@ -111,7 +115,11 @@ export const ListRequisicionEmpaquetadoPromocional = () => {
             <TableBody>
               {
                 requisicionesEmpaquetadoPromocional.map((item) => (
-                  <RowRequisicionEmpaquetadoPromocional key={item.id} item={item}/>
+                  <RowRequisicionEmpaquetadoPromocional
+                    key={item.id}
+                    item={item}
+                    exportPDFRequisicionTransformacion={exportPDFRequisicionTransformacion}
+                  />
                 ))
               }
             </TableBody>
