@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { alertError, alertWarning } from '../../../utils/alerts/alertsCustoms'
 import { getMateriaPrimaById } from '../../../helpers/Referenciales/producto/getMateriaPrimaById'
 
@@ -18,7 +17,6 @@ export function useCreateTransferenciaAlmacenes () {
     idProdt: 0,
     cantReqMatDet: 0
   })
-  const navigate = useNavigate()
 
   // handle añadir producto
   const handleChangeProductoRequisicionMateriales = (value) => {

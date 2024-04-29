@@ -1,31 +1,22 @@
 import { useEffect, useState } from 'react'
 import { alertError } from '../../../utils/alerts/alertsCustoms'
-import { getFormulasEmpaquetadoPromocional } from '../../helpers/formula-empaquetado-promocional/getFormulasEmpaquetadoPromocional'
+import { useDatePickerRange } from '../../../hooks/useDatePickerRange'
+import useAxiosWithLoading from '../../../api/useAxiosWithLoading'
 
 export function useFormulasEmpaquetadoPromocional () {
+  // estado
   const [formulasEmpaquetadoPromocional, setFormulasEmpaquetadoPromocional] = useState([])
+  // manejador de filtros de rango de fecha
+  const { dateState, handleEndDateChange, handleStartDateChange } = useDatePickerRange()
+  // manejar loading con instancia de axios
+  const { loading, axiosInstance } = useAxiosWithLoading()
 
-  const traerInformacionFormulasEmpaquetadoPromocional = async (body = null) => {
-    let formatData = {}
-    if (body === null) {
-      formatData = {
-        ...formatData,
-        fechaInicio: '',
-        fechaFin: ''
-      }
-    } else {
-      formatData = {
-        ...formatData,
-        ...body
-      }
-    }
-
-    const resultPeticion = await getFormulasEmpaquetadoPromocional(formatData)
-    console.log(resultPeticion)
+  const traerInformacionFormulasEmpaquetadoPromocional = async () => {
+    const URL = '/produccion/formula-empaquetado-promocional/listFormulaEmpaquetadoPromocional.php'
+    const { data } = await axiosInstance.post(URL, dateState)
     try {
-      const { message_error, description_error, result } = resultPeticion
+      const { message_error, description_error, result } = data
       if (message_error.length === 0) {
-        console.log(result)
         setFormulasEmpaquetadoPromocional(result)
       } else {
         alertError(description_error)
@@ -37,10 +28,13 @@ export function useFormulasEmpaquetadoPromocional () {
 
   useEffect(() => {
     traerInformacionFormulasEmpaquetadoPromocional()
-  }, [])
+  }, [dateState])
 
   return {
+    loading,
     formulasEmpaquetadoPromocional,
-    traerInformacionFormulasEmpaquetadoPromocional
+    dateState,
+    handleStartDateChange,
+    handleEndDateChange
   }
 }

@@ -9,10 +9,8 @@ const FechaPicker = ({ onNewfecEntSto, disabled = false, date }) => {
   const [value, setValue] = useState()
 
   const formatFechaMYSQL = (newValue) => {
-    console.log(newValue._d)
     setValue(newValue)
     const formatMYSQL = FormatDateTimeMYSQL(newValue._d)
-    console.log(formatMYSQL)
     onNewfecEntSto(formatMYSQL)
   }
 

@@ -1,49 +1,19 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useFormulasEmpaquetadoPromocional } from '../../hooks/formula-empaquetado-promocional/useFormulasEmpaquetadoPromocional'
-import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
-import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
 import { Link } from 'react-router-dom'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { RowFormulaEmpaquetadoPromocional } from '../../components/componentes-formula-empaquetado-promocional/RowFormulaEmpaquetadoPromocional'
+import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
+import { FechaFilterRangeDate } from '../../../components/Fechas/FechaFilterRangeDate'
 
 export const ListFormulaEmpaquetadoPromocional = () => {
-  const { formulasEmpaquetadoPromocional, traerInformacionFormulasEmpaquetadoPromocional } = useFormulasEmpaquetadoPromocional()
-
-  const [formState, setformState] = useState({
-    fechaInicio: FormatDateMYSQL(),
-    fechaFin: FormatDateMYSQL()
-  })
-
-  // Filtros generales que hacen nuevas consultas
-  const handleFechaInicioChange = (newfecEntSto) => {
-    const dateFormat = newfecEntSto.split(' ')[0]
-    setformState({
-      ...formState,
-      fechaInicio: dateFormat
-    })
-
-    // armamos el body
-    const body = {
-      ...formState,
-      fechaInicio: dateFormat
-    }
-    traerInformacionFormulasEmpaquetadoPromocional(body)
-  }
-
-  const handleFechaFinChange = (newfecEntSto) => {
-    const dateFormat = newfecEntSto.split(' ')[0]
-    setformState({
-      ...formState,
-      fechaFin: dateFormat
-    })
-
-    // armamos el body
-    const body = {
-      ...formState,
-      fechaFin: dateFormat
-    }
-    traerInformacionFormulasEmpaquetadoPromocional(body)
-  }
+  const {
+    formulasEmpaquetadoPromocional,
+    dateState,
+    handleEndDateChange,
+    handleStartDateChange,
+    loading
+  } = useFormulasEmpaquetadoPromocional()
 
   return (
     <>
@@ -52,14 +22,16 @@ export const ListFormulaEmpaquetadoPromocional = () => {
           <div className="col-6">
             <div className="row">
               <div className="col-4">
-                <FechaPickerMonth
-                  onNewfecEntSto={handleFechaInicioChange}
+                <FechaFilterRangeDate
+                  dateValue={dateState.fechaInicio}
+                  onNewfecEntSto={handleStartDateChange}
                   label="Desde"
                 />
               </div>
               <div className="col-4">
-                <FechaPickerMonth
-                  onNewfecEntSto={handleFechaFinChange}
+                <FechaFilterRangeDate
+                  dateValue={dateState.fechaFin}
+                  onNewfecEntSto={handleEndDateChange}
                   label="Hasta"
                 />
               </div>
@@ -118,6 +90,7 @@ export const ListFormulaEmpaquetadoPromocional = () => {
           </Table>
         </TableContainer>
       </div>
+      <CustomLoading open={loading}/>
     </>
   )
 }

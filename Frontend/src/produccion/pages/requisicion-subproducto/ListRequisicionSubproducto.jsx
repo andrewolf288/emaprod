@@ -1,48 +1,18 @@
-import React, { useState } from 'react'
-import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
+import React from 'react'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { useRequisicionSubProducto } from '../../hooks/requisicion-subproducto/useRequisicionSubProducto'
-import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
 import { Link } from 'react-router-dom'
+import { FechaFilterRangeDate } from '../../../components/Fechas/FechaFilterRangeDate'
+import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
 
 export const ListRequisicionSubproducto = () => {
-  const { requisicionSubproductos, traerDataRequisicionesSubproductos } = useRequisicionSubProducto()
-
-  const [formState, setformState] = useState({
-    fechaInicio: FormatDateMYSQL(),
-    fechaFin: FormatDateMYSQL()
-  })
-
-  // Filtros generales que hacen nuevas consultas
-  const handleFechaInicioChange = (newfecEntSto) => {
-    const dateFormat = newfecEntSto.split(' ')[0]
-    setformState({
-      ...formState,
-      fechaInicio: dateFormat
-    })
-
-    // armamos el body
-    const body = {
-      ...formState,
-      fechaInicio: dateFormat
-    }
-    traerDataRequisicionesSubproductos(body)
-  }
-
-  const handleFechaFinChange = (newfecEntSto) => {
-    const dateFormat = newfecEntSto.split(' ')[0]
-    setformState({
-      ...formState,
-      fechaFin: dateFormat
-    })
-
-    // armamos el body
-    const body = {
-      ...formState,
-      fechaFin: dateFormat
-    }
-    traerDataRequisicionesSubproductos(body)
-  }
+  const {
+    requisicionSubproductos,
+    dateState,
+    handleEndDateChange,
+    handleStartDateChange,
+    loading
+  } = useRequisicionSubProducto()
 
   return (
     <>
@@ -52,14 +22,16 @@ export const ListRequisicionSubproducto = () => {
           <div className="col-6">
             <div className="row">
               <div className="col-4">
-                <FechaPickerMonth
-                  onNewfecEntSto={handleFechaInicioChange}
+                <FechaFilterRangeDate
+                  dateValue={dateState.fechaInicio}
+                  onNewfecEntSto={handleStartDateChange}
                   label="Desde"
                 />
               </div>
               <div className="col-4">
-                <FechaPickerMonth
-                  onNewfecEntSto={handleFechaFinChange}
+                <FechaFilterRangeDate
+                  dateValue={dateState.fechaFin}
+                  onNewfecEntSto={handleEndDateChange}
                   label="Hasta"
                 />
               </div>
@@ -156,6 +128,8 @@ export const ListRequisicionSubproducto = () => {
           </Paper>
         </div>
       </div>
+      {/* LOADING */}
+      <CustomLoading open={loading}/>
     </>
   )
 }
