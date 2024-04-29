@@ -123,7 +123,6 @@ export function useCreateRequisicionEmpaquetadoPromocional () {
 
   // agregar lote produccion detalle
   const agregarLoteProduccionIngresoRequisicionEmpaquetadoPromocional = (idProdt, result) => {
-    console.log(idProdt, result)
     const findElementIndex = requisicionEmpaquetadoPromocional.detReqEmpProm.findIndex((element) => element.idProdt === idProdt)
     if (findElementIndex !== -1) {
       const updatedDetalleProductosFinales = [...requisicionEmpaquetadoPromocional.detReqEmpProm]
@@ -142,7 +141,6 @@ export function useCreateRequisicionEmpaquetadoPromocional () {
 
   // delete lote produccion detalle
   const quitarLoteProduccionIngresoRequisicionEmpaquetadoPromocional = (idProdt) => {
-    console.log(idProdt)
     const findElementIndex = requisicionEmpaquetadoPromocional.detReqEmpProm.findIndex((element) => element.idProdt === idProdt)
     if (findElementIndex !== -1) {
       const updatedDetalleProductosFinales = [...requisicionEmpaquetadoPromocional.detReqEmpProm]
@@ -161,7 +159,6 @@ export function useCreateRequisicionEmpaquetadoPromocional () {
 
   // crear requisicion empaquetado promocional
   const crearRequisicionEmpaquetadoPromocional = async () => {
-    console.log(requisicionEmpaquetadoPromocional)
     const resultPeticion = await createRequisicionEmpaquetadoPromocional(requisicionEmpaquetadoPromocional)
     const { message_error, description_error } = resultPeticion
     if (message_error.length === 0) {

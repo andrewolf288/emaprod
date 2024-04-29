@@ -13,9 +13,8 @@ export function useRequisicionSubProducto () {
   // traer informacion de requiscion de subproductos
   const traerDataRequisicionesSubproductos = async () => {
     const URL = '/produccion/requisicion-subproducto/listRequisicionSubproducto.php'
-    console.log(dateState)
-    const { data } = await axiosInstance.post(URL, dateState)
     try {
+      const { data } = await axiosInstance.post(URL, dateState)
       const { message_error, description_error, result } = data
       if (message_error.length === 0) {
         setRequisicionSubproductos(result)

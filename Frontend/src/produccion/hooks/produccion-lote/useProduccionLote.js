@@ -45,7 +45,6 @@ export function useProduccionLote () {
     const { message_error, description_error, result } = resultPeticion
 
     if (message_error.length === 0) {
-      console.log(result)
       setProduccionLote(result)
       setProduccionLoteTemp(result)
     } else {

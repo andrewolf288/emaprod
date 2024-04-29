@@ -263,7 +263,6 @@ export function useCreateFormulaEmpaquetadoPromocional () {
       }
       alertWarning(handleErrors)
     } else {
-      console.log(formulaEmpaquetadorPromocional)
       const resultPeticion = await createFormulaEmpaquetadoPromocional(formulaEmpaquetadorPromocional)
       const { message_error, description_error } = resultPeticion
       if (message_error.length === 0) {

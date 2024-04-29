@@ -1,74 +1,32 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useRequisicionesEmpaquetadoPromocional } from '../../hooks/requisicion-empaquetado-promocional/useRequisicionesEmpaquetadoPromocional.'
-import { FormatDateMYSQL } from '../../../utils/functions/FormatDate'
-import FechaPickerMonth from '../../../components/Fechas/FechaPickerMonth'
 import { Link } from 'react-router-dom'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { RowRequisicionEmpaquetadoPromocional } from '../../components/componentes-requisicion-empaquetado-promocional/RowRequisicionEmpaquetadoPromocional'
+import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
+import { CustomFilterDateRange } from '../../../components/CustomComponents/CustomFilterDateRange'
 
 export const ListRequisicionEmpaquetadoPromocional = () => {
   const {
     requisicionesEmpaquetadoPromocional,
-    traerInformacionRequisicionesEmpaquetadoPromocional,
-    exportPDFRequisicionTransformacion
+    exportPDFRequisicionTransformacion,
+    loading,
+    dateState,
+    handleEndDateChange,
+    handleStartDateChange
   } = useRequisicionesEmpaquetadoPromocional()
-
-  const [formState, setformState] = useState({
-    fechaInicio: FormatDateMYSQL(),
-    fechaFin: FormatDateMYSQL()
-  })
-
-  // Filtros generales que hacen nuevas consultas
-  const handleFechaInicioChange = (newfecEntSto) => {
-    const dateFormat = newfecEntSto.split(' ')[0]
-    setformState({
-      ...formState,
-      fechaInicio: dateFormat
-    })
-
-    // armamos el body
-    const body = {
-      ...formState,
-      fechaInicio: dateFormat
-    }
-    traerInformacionRequisicionesEmpaquetadoPromocional(body)
-  }
-
-  const handleFechaFinChange = (newfecEntSto) => {
-    const dateFormat = newfecEntSto.split(' ')[0]
-    setformState({
-      ...formState,
-      fechaFin: dateFormat
-    })
-
-    // armamos el body
-    const body = {
-      ...formState,
-      fechaFin: dateFormat
-    }
-    traerInformacionRequisicionesEmpaquetadoPromocional(body)
-  }
 
   return (
     <>
       <div className="container-fluid">
         <div className="row d-flex mt-4">
-          <div className="col-6">
-            <div className="row">
-              <div className="col-4">
-                <FechaPickerMonth
-                  onNewfecEntSto={handleFechaInicioChange}
-                  label="Desde"
-                />
-              </div>
-              <div className="col-4">
-                <FechaPickerMonth
-                  onNewfecEntSto={handleFechaFinChange}
-                  label="Hasta"
-                />
-              </div>
-            </div>
-          </div>
+          {/* custom filter date */}
+          <CustomFilterDateRange
+            dateState={dateState}
+            handleStartDateChange={handleStartDateChange}
+            handleEndDateChange={handleEndDateChange}
+          />
+          {/* seccion de creación de requisición */}
           <div className="col-6 d-flex justify-content-end align-items-center">
             <div className="row me-4">
               <Link
@@ -126,6 +84,7 @@ export const ListRequisicionEmpaquetadoPromocional = () => {
           </Table>
         </TableContainer>
       </div>
+      <CustomLoading open={loading}/>
     </>
   )
 }

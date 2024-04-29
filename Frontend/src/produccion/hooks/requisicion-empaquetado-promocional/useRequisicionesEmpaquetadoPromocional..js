@@ -1,32 +1,23 @@
 import { useEffect, useState } from 'react'
 import { alertError } from '../../../utils/alerts/alertsCustoms'
-import { getRequisicionEmpaquetadoPromocional } from '../../helpers/requisicion-empaquetado-promocional/getRequisicionEmpaquetadoPromocional'
-import config from '../../../config'
-import axios from 'axios'
 import { createRoot } from 'react-dom/client'
 import { PDFRequisicionEmpaquetadoPromocional } from '../../components/componentes-requisicion-empaquetado-promocional/PDFRequisicionEmpaquetadoPromocional'
+import { useDatePickerRange } from '../../../hooks/useDatePickerRange'
+import useAxiosWithLoading from '../../../api/useAxiosWithLoading'
 
 export function useRequisicionesEmpaquetadoPromocional () {
+  // estado de los datos
   const [requisicionesEmpaquetadoPromocional, setRequisicionesEmpaquetadoPromocional] = useState([])
+  // manejador de filtros de rango de fecha
+  const { dateState, handleEndDateChange, handleStartDateChange } = useDatePickerRange()
+  // manejar loading con instancia de axios
+  const { loading, axiosInstance } = useAxiosWithLoading()
 
-  const traerInformacionRequisicionesEmpaquetadoPromocional = async (body = null) => {
-    let formatData = {}
-    if (body === null) {
-      formatData = {
-        ...formatData,
-        fechaInicio: '',
-        fechaFin: ''
-      }
-    } else {
-      formatData = {
-        ...formatData,
-        ...body
-      }
-    }
-
-    const resultPeticion = await getRequisicionEmpaquetadoPromocional(formatData)
+  const traerInformacionRequisicionesEmpaquetadoPromocional = async () => {
+    const URL = '/produccion/requisicion-empaquetado-promocional/listRequisicionEmpaquetadoPromocional.php'
     try {
-      const { message_error, description_error, result } = resultPeticion
+      const { data } = await axiosInstance.post(URL, dateState)
+      const { message_error, description_error, result } = data
       if (message_error.length === 0) {
         setRequisicionesEmpaquetadoPromocional(result)
       } else {
@@ -40,16 +31,9 @@ export function useRequisicionesEmpaquetadoPromocional () {
   // EXPORT PDF REQUISICION
   const exportPDFRequisicionTransformacion = async (idReqEmpProm) => {
     // primero hacemos una requisicion para traer los datos necesarios
-    const domain = config.API_URL
-    const path =
+    const URL =
       '/produccion/requisicion-empaquetado-promocional/reportPDFRequisicionEmpaquetadoPromocional.php'
-    axios({
-      url: domain + path,
-      data: {
-        idReqEmpProm
-      },
-      method: 'POST'
-    })
+    axiosInstance.post(URL, { idReqEmpProm })
       .then((response) => {
         const { data } = response
         const { message_error, description_error, result } = data
@@ -70,11 +54,14 @@ export function useRequisicionesEmpaquetadoPromocional () {
 
   useEffect(() => {
     traerInformacionRequisicionesEmpaquetadoPromocional()
-  }, [])
+  }, [dateState])
 
   return {
     requisicionesEmpaquetadoPromocional,
-    traerInformacionRequisicionesEmpaquetadoPromocional,
-    exportPDFRequisicionTransformacion
+    exportPDFRequisicionTransformacion,
+    loading,
+    dateState,
+    handleEndDateChange,
+    handleStartDateChange
   }
 }

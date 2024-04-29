@@ -13,8 +13,8 @@ export function useFormulasEmpaquetadoPromocional () {
 
   const traerInformacionFormulasEmpaquetadoPromocional = async () => {
     const URL = '/produccion/formula-empaquetado-promocional/listFormulaEmpaquetadoPromocional.php'
-    const { data } = await axiosInstance.post(URL, dateState)
     try {
+      const { data } = await axiosInstance.post(URL, dateState)
       const { message_error, description_error, result } = data
       if (message_error.length === 0) {
         setFormulasEmpaquetadoPromocional(result)

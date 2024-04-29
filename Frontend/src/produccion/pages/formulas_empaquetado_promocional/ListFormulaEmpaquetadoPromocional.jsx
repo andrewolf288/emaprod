@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { RowFormulaEmpaquetadoPromocional } from '../../components/componentes-formula-empaquetado-promocional/RowFormulaEmpaquetadoPromocional'
 import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
-import { FechaFilterRangeDate } from '../../../components/Fechas/FechaFilterRangeDate'
+import { CustomFilterDateRange } from '../../../components/CustomComponents/CustomFilterDateRange'
 
 export const ListFormulaEmpaquetadoPromocional = () => {
   const {
@@ -19,24 +19,11 @@ export const ListFormulaEmpaquetadoPromocional = () => {
     <>
       <div className="container-fluid">
         <div className="row d-flex mt-4">
-          <div className="col-6">
-            <div className="row">
-              <div className="col-4">
-                <FechaFilterRangeDate
-                  dateValue={dateState.fechaInicio}
-                  onNewfecEntSto={handleStartDateChange}
-                  label="Desde"
-                />
-              </div>
-              <div className="col-4">
-                <FechaFilterRangeDate
-                  dateValue={dateState.fechaFin}
-                  onNewfecEntSto={handleEndDateChange}
-                  label="Hasta"
-                />
-              </div>
-            </div>
-          </div>
+          <CustomFilterDateRange
+            dateState={dateState}
+            handleStartDateChange={handleStartDateChange}
+            handleEndDateChange={handleEndDateChange}
+          />
           <div className="col-6 d-flex justify-content-end align-items-center">
             <div className="row me-4">
               <Link

@@ -2,8 +2,8 @@ import React from 'react'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { useRequisicionSubProducto } from '../../hooks/requisicion-subproducto/useRequisicionSubProducto'
 import { Link } from 'react-router-dom'
-import { FechaFilterRangeDate } from '../../../components/Fechas/FechaFilterRangeDate'
 import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
+import { CustomFilterDateRange } from '../../../components/CustomComponents/CustomFilterDateRange'
 
 export const ListRequisicionSubproducto = () => {
   const {
@@ -19,24 +19,11 @@ export const ListRequisicionSubproducto = () => {
       <div className="container-fluid">
         {/* FILTROS Y EXPORTACION */}
         <div className="row d-flex mt-4">
-          <div className="col-6">
-            <div className="row">
-              <div className="col-4">
-                <FechaFilterRangeDate
-                  dateValue={dateState.fechaInicio}
-                  onNewfecEntSto={handleStartDateChange}
-                  label="Desde"
-                />
-              </div>
-              <div className="col-4">
-                <FechaFilterRangeDate
-                  dateValue={dateState.fechaFin}
-                  onNewfecEntSto={handleEndDateChange}
-                  label="Hasta"
-                />
-              </div>
-            </div>
-          </div>
+          <CustomFilterDateRange
+            dateState={dateState}
+            handleStartDateChange={handleStartDateChange}
+            handleEndDateChange={handleEndDateChange}
+          />
         </div>
         {/* TABLA DE RESULTADOS */}
         <div className="mt-4">
