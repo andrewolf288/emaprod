@@ -1,30 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../hooks/useAuth'
 import { alertError } from '../../../utils/alerts/alertsCustoms'
-import { getRequisicionGeneralMaterialesAlmacen } from '../../helpers/requisicion-materiales-almacen/getRequisicionGeneralMaterialesAlmacen'
+import { useDatePickerRange } from '../../../hooks/useDatePickerRange'
+import useAxiosWithLoading from '../../../api/useAxiosWithLoading'
 
 export function useRequisicionMaterialesAlmacen () {
   const { user } = useAuth()
   const [requisicionMateriales, setRequisicionMateriales] = useState([])
+  // manejador de filtros de rango de fecha
+  const { dateState, handleEndDateChange, handleStartDateChange } = useDatePickerRange()
+  // manejar loading con instancia de axios
+  const { loading, axiosInstance } = useAxiosWithLoading()
 
   // funcion para traer requisicion general por área
-  const traerDataRequisicionesGeneralesMateriales = async (body = null) => {
-    let formatData = { idAre: user.idAre }
-    if (body === null) {
-      formatData = {
-        ...formatData,
-        fechaInicio: '',
-        fechaFin: ''
-      }
-    } else {
-      formatData = {
-        ...formatData,
-        ...body
-      }
-    }
-    const resultPeticion = await getRequisicionGeneralMaterialesAlmacen(formatData)
+  const traerDataRequisicionesGeneralesMateriales = async () => {
+    const URL = '/general/requisicion-materiales/listRequisicionGeneralMateriales.php'
     try {
-      const { message_error, description_error, result } = resultPeticion
+      const { data } = await axiosInstance.post(URL, { ...dateState, idAre: user.idAre })
+      const { message_error, description_error, result } = data
       if (message_error.length === 0) {
         setRequisicionMateriales(result)
       } else {
@@ -37,10 +30,13 @@ export function useRequisicionMaterialesAlmacen () {
 
   useEffect(() => {
     traerDataRequisicionesGeneralesMateriales()
-  }, [])
+  }, [dateState])
 
   return {
     requisicionMateriales,
-    traerDataRequisicionesGeneralesMateriales
+    loading,
+    dateState,
+    handleStartDateChange,
+    handleEndDateChange
   }
 }

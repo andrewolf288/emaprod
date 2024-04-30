@@ -1,28 +1,20 @@
 import { useEffect, useState } from 'react'
 import { alertError } from '../../../utils/alerts/alertsCustoms'
-import { getRequisicionEmpaquetadoPromocionalAlmacen } from '../../helpers/requisicion-empaquetado-promocional/getRequisicionEmpaquetadoPromocionalAlmacen'
+import { useDatePickerRange } from '../../../hooks/useDatePickerRange'
+import useAxiosWithLoading from '../../../api/useAxiosWithLoading'
 
 export function useRequisicionesEmpaquetadoPromocionalAlmacen () {
   const [requisicionesEmpaquetadoPromocional, setRequisicionesEmpaquetadoPromocional] = useState([])
+  // manejador de filtros de rango de fecha
+  const { dateState, handleEndDateChange, handleStartDateChange } = useDatePickerRange()
+  // manejar loading con instancia de axios
+  const { loading, axiosInstance } = useAxiosWithLoading()
 
-  const traerInformacionRequisicionesEmpaquetadoPromocional = async (body = null) => {
-    let formatData = {}
-    if (body === null) {
-      formatData = {
-        ...formatData,
-        fechaInicio: '',
-        fechaFin: ''
-      }
-    } else {
-      formatData = {
-        ...formatData,
-        ...body
-      }
-    }
-
-    const resultPeticion = await getRequisicionEmpaquetadoPromocionalAlmacen(formatData)
+  const traerInformacionRequisicionesEmpaquetadoPromocional = async () => {
+    const URL = '/almacen/requisicion-empaquetado-promocional/lisRequisicionesEmpaquetadoPromocional.php'
     try {
-      const { message_error, description_error, result } = resultPeticion
+      const { data } = await axiosInstance.post(URL, dateState)
+      const { message_error, description_error, result } = data
       if (message_error.length === 0) {
         setRequisicionesEmpaquetadoPromocional(result)
       } else {
@@ -35,10 +27,13 @@ export function useRequisicionesEmpaquetadoPromocionalAlmacen () {
 
   useEffect(() => {
     traerInformacionRequisicionesEmpaquetadoPromocional()
-  }, [])
+  }, [dateState])
 
   return {
     requisicionesEmpaquetadoPromocional,
-    traerInformacionRequisicionesEmpaquetadoPromocional
+    loading,
+    dateState,
+    handleStartDateChange,
+    handleEndDateChange
   }
 }

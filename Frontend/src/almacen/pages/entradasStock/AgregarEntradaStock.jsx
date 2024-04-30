@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 // IMPORT DE EFECHA PICKER
 import FechaPicker from './../../../components/Fechas/FechaPicker'
-import FechaPickerYear from './../../../components/Fechas/FechaPickerYear'
 // FUNCIONES UTILES
 import {
   DiaJuliano,
@@ -15,19 +14,19 @@ import MuiAlert from '@mui/material/Alert'
 import { useNavigate } from 'react-router-dom'
 import { createEntradaStock } from './../../helpers/entradas-stock/createEntradaStock'
 import { Typography } from '@mui/material'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
-import { useAuth } from '../../../hooks/useAuth'
 import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic'
 import { FilterProveedorDynamic } from '../../../components/ReferencialesFilters/Proveedor/FilterProveedorDynamic'
 import { FilterAllProductosDynamic } from '../../../components/ReferencialesFilters/Producto/FilterAllProductosDynamic'
+import { getEntradasParciales } from '../../helpers/entradas-stock/getEntradasParciales'
+import { DialogEntradasParciales } from '../../components/componentes-entradasStock/DialogEntradasParciales'
+import { DialogConfirmarEntradaParcial } from '../../components/componentes-entradasStock/DialogConfirmarEntradaParcial'
+import { alertSuccess } from '../../../utils/alerts/alertsCustoms'
 
 // CONFIGURACION DE FEEDBACK
 const Alert = React.forwardRef(function Alert (props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 })
-const AgregarEntradaStock = () => {
+export const AgregarEntradaStock = () => {
   const [formState, setFormState] = useState({
     idProd: 0,
     idProv: 0,
@@ -37,17 +36,11 @@ const AgregarEntradaStock = () => {
     canTotEnt: 0,
     canVar: 0,
     docEntSto: '',
-    fecVenEntSto: '',
     fecEntSto: '',
+    esEntPar: false,
     codProd: '',
     codProv: '',
     codAlm: '001',
-    prestProdt: '',
-    certCal: '',
-    lotProv: '',
-    resbEval: '',
-    fecProduccion: '',
-    humedad: '',
     obsEnt: '',
     ordCom: '',
     guiRem: ''
@@ -60,21 +53,86 @@ const AgregarEntradaStock = () => {
     canTotEnt,
     canVar,
     docEntSto,
-    fecVenEntSto,
     fecEntSto,
+    esEntPar,
     codProd,
     codProv,
     codAlm,
-    prestProdt,
-    certCal,
-    lotProv,
-    resbEval,
-    humedad,
-    obsEnt,
     ordCom,
     guiRem
   } = formState
 
+  // controlador de entradas parciales
+  const [entradasParciales, setEntradasParciales] = useState(null)
+
+  const [openDialogEntradasParciales, setOpenDialogEntradasParciales] =
+    useState(false)
+  const handleOpenDialogEntradasParciales = () => {
+    setOpenDialogEntradasParciales(true)
+  }
+
+  const handleCloseDialogEntradasParciales = () => {
+    setOpenDialogEntradasParciales(false)
+    setEntradasParciales(null)
+  }
+
+  // autocompletamos algunos campos que se repiten
+  const handleAcceptEntradasParciales = (data) => {
+    setFormState({
+      ...formState,
+      ordCom: data.ordCom,
+      idProv: data.idProv,
+      codProv: data.codProv,
+      canTotCom: data.canTotCom,
+      docEntSto: data.docEntSto
+    })
+    setOpenDialogEntradasParciales(false)
+  }
+
+  // controlador para dialog de confirmacion de entrada parcial
+  const [
+    openConfirmDialogEntradasParciales,
+    setOpenConfirmDialogEntradasParciales
+  ] = useState(false)
+
+  const handleOpenConfirmDialogEntradasParciales = () => {
+    setOpenConfirmDialogEntradasParciales(true)
+  }
+
+  const handleCloseConfirmDialogEntradasParciales = () => {
+    setOpenConfirmDialogEntradasParciales(false)
+    setdisableButton(false)
+  }
+
+  const handleFinEntradasParciales = () => {
+    // agregamos una nueva propiedad que indique que el final de las entradas parciales
+    const formatEntradasParciales = {
+      ...entradasParciales,
+      esEntTot: true // se termina las entradas parciales
+    }
+    // actualizamos
+    setEntradasParciales(formatEntradasParciales)
+    // cerramos cuadro
+    setOpenConfirmDialogEntradasParciales(false)
+    // creamos la entrada de stock
+    crearEntradaStock(formatEntradasParciales)
+  }
+
+  const handleCrearEntradaParcial = () => {
+    // agregamos una nueva propiedad que indique que el final de las entradas parciales
+    const formatEntradasParciales = {
+      ...entradasParciales,
+      esEntTot: false // solo ingreso de entrada parcial
+    }
+    // actualizamos
+    setEntradasParciales(formatEntradasParciales)
+    // cerramos cuadro
+    setOpenConfirmDialogEntradasParciales(false)
+    // creamos la entrada de stock
+    crearEntradaStock(formatEntradasParciales)
+  }
+
+  // inputs para manejar los inputs de texto
   const onInputChange = ({ target }) => {
     const { name, value } = target
     setFormState({
@@ -82,9 +140,6 @@ const AgregarEntradaStock = () => {
       [name]: value
     })
   }
-  const { user } = useAuth()
-
-  const users = [user.nomUsu + ' ' + user.apeUsu]
 
   // ESTADO PARA CONTROLAR EL FEEDBACK
   const [feedbackCreate, setfeedbackCreate] = useState(false)
@@ -93,17 +148,6 @@ const AgregarEntradaStock = () => {
     feedback_description_error: ''
   })
   const { style_message, feedback_description_error } = feedbackMessages
-
-  const _presProdt = [
-    'SACO X 50 KG',
-    'SACO X 25 KG',
-    'SACO X 20 KG',
-    'YUTE X25 KG',
-    'BALDE DE 20 L',
-    'SACO X 15 KG',
-    'SACO X 30 KG',
-    'SACO X 100 KG'
-  ]
 
   // MANEJADORES DE FEEDBACK
   const handleClickFeeback = () => {
@@ -126,6 +170,11 @@ const AgregarEntradaStock = () => {
     navigate(-1)
   }
 
+  // INPUT PARA EL INGRESO PARCIAL
+  const onCheckEsSalidaParcial = (event) => {
+    setFormState({ ...formState, esEntPar: event.target.checked })
+  }
+
   // INPUT CODIGO MATERIA PRIMA
   const onAddCodProd = ({ value, id }) => {
     setFormState({ ...formState, codProd: value, idProd: id })
@@ -142,22 +191,16 @@ const AgregarEntradaStock = () => {
     setFormState({ ...formState, codAlm: value, idAlm: id })
   }
 
-  // SET VALOR DE FECHA DE VENCIMIENTO
-  const onAddFecVenEntSto = (newfecVentEntSto) => {
-    setFormState({ ...formState, fecVenEntSto: newfecVentEntSto })
-  }
-
   // SET VALOR DE FECHA DE formState
   const onAddFecEntSto = (newfecEntSto) => {
-    setFormState({ ...formState, fecEntSto: newfecEntSto })
-  }
-
-  const onAddFecProduccion = (newfecEntSto) => {
-    setFormState({ ...formState, fecProduccion: newfecEntSto })
+    setFormState({
+      ...formState,
+      fecEntSto: newfecEntSto
+    })
   }
 
   // CREAR ENTRADA DE STOCK
-  const crearEntradaStock = async () => {
+  const crearEntradaStock = async (entradasParciales = null) => {
     let requestJSON = { ...formState }
 
     // verificamos si se ingreso una fecha de ingreso
@@ -174,15 +217,15 @@ const AgregarEntradaStock = () => {
       letAniEntSto: letraAnio(requestJSON.fecEntSto)
     }
 
-    console.log(requestJSON)
+    console.log('Informacion de la entrada: ', requestJSON)
+    console.log('Informacion de las entradas parciales: ', entradasParciales)
 
     const { message_error, description_error } = await createEntradaStock(
-      requestJSON
+      requestJSON,
+      entradasParciales
     )
 
     if (message_error.length === 0) {
-      // navegamos a la anterior vista
-      onNavigateBack()
       setfeedbackMessages({
         style_message: 'success',
         feedback_description_error: 'Creado con exito'
@@ -216,9 +259,9 @@ const AgregarEntradaStock = () => {
       idAlm === 0 ||
       docEntSto.length === 0 ||
       canTotEnt <= 0 ||
-      canTotCom <= 0
-      // ||
-      // fecVenEntSto.length === 0
+      canTotCom <= 0 ||
+      (esEntPar && ordCom.length === 0) ||
+      (esEntPar && parseFloat(canTotEnt) >= parseFloat(canTotCom))
     ) {
       if (idProd === 0) {
         advertenciaFormularioIncompleto +=
@@ -236,10 +279,6 @@ const AgregarEntradaStock = () => {
         advertenciaFormularioIncompleto +=
           'Falta llenar informacion del documento de entrada\n'
       }
-      if (fecVenEntSto.length === 0) {
-        // advertenciaFormularioIncompleto +=
-        //  "Falta llenar informacion de la fecha de vencimiento\n";
-      }
       if (canTotCom <= 0) {
         advertenciaFormularioIncompleto +=
           'Asegurarse de proporcionar informacion de la cantidad de compra\n'
@@ -249,6 +288,17 @@ const AgregarEntradaStock = () => {
           'Asegurarse de proporcionar informacion de la cantidad de entrada\n'
       }
 
+      if (esEntPar && ordCom.length === 0) {
+        advertenciaFormularioIncompleto +=
+          'Si es ingreso parcial, asegurate de ingresar la orden de compra\n'
+      }
+
+      if (esEntPar && parseFloat(canTotEnt) >= parseFloat(canTotCom)) {
+        console.log(canTotEnt, canTotCom)
+        advertenciaFormularioIncompleto +=
+          'Si es ingreso parcial, la cantidad ingresada no puede ser igual o mayor al total de la compra\n'
+      }
+
       // mostramos el error recepcionado del backend
       setfeedbackMessages({
         style_message: 'error',
@@ -256,10 +306,72 @@ const AgregarEntradaStock = () => {
       })
       handleClickFeeback()
     } else {
-      // DESABILTIAMOS EL BOTON DE ENVIAR
       setdisableButton(true)
-      // FUNCION DE ENVIAR
-      crearEntradaStock()
+      /*
+        -si se va a realizar una entrada parcial tomando en cuenta las demas entradas parciales
+        - mostramos un dialogo de confirmacion que nos permitira eligir si queremos terminar el ingreso parcial
+      */
+
+      if (entradasParciales !== null) {
+        // abrimos cuadro de dialogo de confirmacion de entradas parciales
+        handleOpenConfirmDialogEntradasParciales()
+      } else {
+        crearEntradaStock()
+        // alerta de satisfaccion
+        alertSuccess()
+        // regresamos
+        onNavigateBack()
+      }
+    }
+  }
+
+  const buscarEntradasParciales = async () => {
+    const { result, meesage_error, description_error } =
+      await getEntradasParciales(idProd, ordCom)
+    if (meesage_error.length === 0) {
+      if (result.detEntPar.length !== 0) {
+        setEntradasParciales(result)
+        handleOpenDialogEntradasParciales()
+      } else {
+        // mostramos el error recepcionado del backend
+        setfeedbackMessages({
+          style_message: 'error',
+          feedback_description_error:
+              'No hay ingresos parciales para los datos proporcionados'
+        })
+        handleClickFeeback()
+      }
+    } else {
+      // mostramos el error recepcionado del backend
+      setfeedbackMessages({
+        style_message: 'error',
+        feedback_description_error: description_error
+      })
+      handleClickFeeback()
+    }
+  }
+
+  const onClickBuscarEntradasParciales = () => {
+    let advertenciaFormularioIncompleto = ''
+
+    if (idProd === 0 || ordCom.length === 0) {
+      if (idProd === 0) {
+        advertenciaFormularioIncompleto +=
+          'Ingrese un producto para consultar\n'
+      }
+      if (ordCom.length === 0) {
+        advertenciaFormularioIncompleto +=
+          'Ingrese una orden de compra para consultar\n'
+      }
+
+      // mostramos el error recepcionado del backend
+      setfeedbackMessages({
+        style_message: 'warning',
+        feedback_description_error: advertenciaFormularioIncompleto
+      })
+      handleClickFeeback()
+    } else {
+      buscarEntradasParciales()
     }
   }
 
@@ -314,10 +426,6 @@ const AgregarEntradaStock = () => {
                 </div>
                 {/* SEARCH NAME PRODUCTO */}
                 <div className="col-md-8">
-                  {/* <FilterAllProductos
-                    onNewInput={onAddCodProd}
-                    mostrarCodigo={true}
-                  /> */}
                   <FilterAllProductosDynamic
                     onNewInput={onAddCodProd}
                     defaultValue={idProd}
@@ -340,10 +448,6 @@ const AgregarEntradaStock = () => {
                 </div>
                 {/* SEARCH NAME PROVEEDOR */}
                 <div className="col-md-8">
-                  {/* <FilterProveedor
-                    onNewInput={onAddCodProv}
-                    mostrarCodigo={true}
-                  /> */}
                   {
                     <FilterProveedorDynamic
                       onNewInput={onAddCodProv}
@@ -368,10 +472,6 @@ const AgregarEntradaStock = () => {
                 </div>
                 {/* SEARCH NAME PROVEEDOR */}
                 <div className="col-md-6">
-                  {/* <FilterAlmacen
-                    onNewInput={onAddCodAlm}
-                    mostrarCodigo={true}
-                  /> */}
                   <FilterAlmacenDynamic
                     onNewInput={onAddCodAlm}
                     defaultValue={idAlm}
@@ -407,6 +507,25 @@ const AgregarEntradaStock = () => {
                   />
                 </div>
               </div>
+
+              {/* INPUT Es ingreso parcial */}
+              <div className="mb-3 row">
+                <label
+                  htmlFor={'documento-formState'}
+                  className="col-sm-2 col-form-label"
+                >
+                  Es ingreso parcial
+                </label>
+                <div className="col-md-3">
+                  <Checkbox
+                    size="medium"
+                    checked={esEntPar}
+                    onChange={onCheckEsSalidaParcial}
+                  />
+                </div>
+              </div>
+
+              {/* INPUT ORDEN DE COMPRA */}
               <div className="mb-3 row">
                 <label
                   htmlFor={'documento-formState'}
@@ -414,14 +533,30 @@ const AgregarEntradaStock = () => {
                 >
                   Orden de compra
                 </label>
-                <div className="col-md-3">
-                  <input
-                    onChange={onInputChange}
-                    value={ordCom}
-                    type="text"
-                    name="ordCom"
-                    className="form-control"
-                  />
+                <div className="col-md-5">
+                  <div className="input-group">
+                    <input
+                      onChange={onInputChange}
+                      value={ordCom}
+                      type="text"
+                      name="ordCom"
+                      className="form-control"
+                    />
+                    <div className="input-group-append">
+                      <button
+                        className="btn btn-primary ms-4"
+                        type="button"
+                        onClick={onClickBuscarEntradasParciales}
+                        disabled={!esEntPar}
+                      >
+                        <span
+                          className="bi bi-search"
+                          aria-hidden="true"
+                        ></span>
+                        Buscar entradas parciales
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -449,7 +584,7 @@ const AgregarEntradaStock = () => {
                   htmlFor={'cantidad-ingresada'}
                   className="col-sm-2 col-form-label"
                 >
-                  Cantidad de la compra
+                  Cantidad total compra
                 </label>
                 <div className="col-md-2">
                   <input
@@ -458,6 +593,7 @@ const AgregarEntradaStock = () => {
                     type="number"
                     name="canTotCom"
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -477,6 +613,7 @@ const AgregarEntradaStock = () => {
                     type="number"
                     name="canTotEnt"
                     className="form-control"
+                    onWheel={(e) => e.target.blur()}
                   />
                 </div>
               </div>
@@ -506,137 +643,6 @@ const AgregarEntradaStock = () => {
           </div>
         </div>
 
-        <div className="row mt-4">
-          <div className="card d-flex">
-            <h6 className="card-header">Sección de Calidad</h6>
-            <div className="card-body">
-              <div className="mb-3 row">
-                <label className="col-md-2 col-form-label">
-                  Presentacion del producto
-                </label>
-                <div className="col-md-2">
-                  <FormControl fullWidth>
-                    <Select
-                      value={prestProdt || ''}
-                      name="prestProdt"
-                      size="small"
-                      onChange={onInputChange}
-                    >
-                      {_presProdt.map((item) => (
-                        <MenuItem key={item} value={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
-              </div>
-
-              <div className="mb-3 row">
-                <label className="col-md-2 col-form-label">
-                  Certificado de calidad
-                </label>
-                <div className="col-md-2">
-                  <Checkbox
-                    checked={Boolean(certCal)}
-                    name="certCal"
-                    onChange={(event) => {
-                      setFormState({
-                        ...formState,
-                        certCal: event.target.checked
-                      })
-                    }}
-                    sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                  />
-                </div>
-              </div>
-
-              <div className="mb-3 row">
-                <label className="col-md-2 col-form-label">
-                  Lote de provedor
-                </label>
-                <div className="col-md-2">
-                  <input
-                    onChange={onInputChange}
-                    value={lotProv}
-                    type="text"
-                    name="lotProv"
-                    className="form-control"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-3 row">
-                <label className="col-sm-2 col-form-label">
-                  Fecha de producción
-                </label>
-                <div className="col-md-2">
-                  <FechaPicker onNewfecEntSto={onAddFecProduccion} />
-                </div>
-              </div>
-
-              <div className="mb-3 row">
-                <label className="col-sm-2 col-form-label">
-                  Fecha de vencimiento
-                </label>
-                <div className="col-md-2">
-                  <FechaPickerYear onNewfecEntSto={onAddFecVenEntSto} />
-                </div>
-              </div>
-
-              <div className="mb-3 row">
-                <label className="col-md-2 col-form-label">% Humedad</label>
-                <div className="col-md-2">
-                  <input
-                    onChange={onInputChange}
-                    value={humedad}
-                    type="number"
-                    name="humedad"
-                    className="form-control"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-3 row">
-                <label className="col-md-2 col-form-label">
-                  Responsable de la evaluación
-                </label>
-                <div className="col-md-2">
-                  <FormControl fullWidth>
-                    <Select
-                      value={resbEval || ''}
-                      name="resbEval"
-                      size="small"
-                      onChange={onInputChange}
-                    >
-                      {users.map((item) => (
-                        <MenuItem key={item} value={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
-
-                <div className="mb-3 row">
-                  <label htmlFor="nombre" className="form-label">
-                    Observacion
-                  </label>
-                  <div className="col-md-4">
-                    <textarea
-                      value={obsEnt}
-                      name="obsEnt"
-                      onChange={onInputChange}
-                      className="form-control"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* BOTONES DE CANCELAR Y GUARDAR */}
         <div className="btn-toolbar mt-4">
           <button
@@ -649,13 +655,37 @@ const AgregarEntradaStock = () => {
           <button
             type="submit"
             disabled={disableButton}
-            onClick={(e) => onSubmitformState(e)}
+            onClick={onSubmitformState}
             className="btn btn-primary"
           >
             Guardar
           </button>
         </div>
       </div>
+      {/* DIALOG DE ENTRADAS PARCIALES */}
+      {entradasParciales && openDialogEntradasParciales && (
+        <DialogEntradasParciales
+          open={openDialogEntradasParciales}
+          handleClose={handleCloseDialogEntradasParciales}
+          data={entradasParciales}
+          handleAccept={handleAcceptEntradasParciales}
+        />
+      )}
+
+      {/* DIALOG DE CONFIRMACION DE ENTRADA PARCIAL */}
+      {entradasParciales &&
+        openConfirmDialogEntradasParciales &&
+        canTotEnt > 0 && (
+        <DialogConfirmarEntradaParcial
+          open={openConfirmDialogEntradasParciales}
+          handleClose={handleCloseConfirmDialogEntradasParciales}
+          data={entradasParciales}
+          handleAccept={handleCrearEntradaParcial}
+          handleAcceptFinEntPar={handleFinEntradasParciales}
+          canTotEnt={canTotEnt}
+        />
+      )}
+
       {/* FEEDBACK AGREGAR MATERIA PRIMA */}
       <Snackbar
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -676,5 +706,3 @@ const AgregarEntradaStock = () => {
     </>
   )
 }
-
-export default AgregarEntradaStock

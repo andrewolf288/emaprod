@@ -19,11 +19,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fechaFin = $fechasMes[1]; // fin del mes
 
     if (isset($data)) {
-        if (!empty($data["fecReqMolIni"])) {
-            $fechaInicio = $data["fecReqMolIni"];
+        if (!empty($data["fechaInicio"])) {
+            $fechaInicio = $data["fechaInicio"];
         }
-        if (!empty($data["fecReqMolFin"])) {
-            $fechaFin = $data["fecReqMolFin"];
+        if (!empty($data["fechaFin"])) {
+            $fechaFin = $data["fechaFin"];
         }
     }
     $idAre = $data["idAre"];

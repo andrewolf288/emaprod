@@ -95,35 +95,6 @@ const NavAlmacen = () => {
                   </li>
                 </ul>
               </li>
-              {/* REQUISICION SELECCION */}
-              <li className="nav-item dropdown">
-                <button
-                  className="btn btn-lg dropdown-toggle"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Requisicion seleccion
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={'/almacen/requisicion-seleccion'}
-                    >
-                      Administrar
-                    </Link>
-                  </li>
-                  {/* <li>
-                    <Link
-                      className="dropdown-item"
-                      to={"/almacen/entradas-stock/crear"}
-                    >
-                      Crear
-                    </Link>
-                  </li> */}
-                </ul>
-              </li>
               {/* REQUISICION MOLIENDA */}
               <li className="nav-item dropdown">
                 <button
@@ -167,62 +138,6 @@ const NavAlmacen = () => {
                   </li>
                 </ul>
               </li>
-              {/* MATERIAS PRIMAS */}
-              {/* <li className="nav-item dropdown">
-                <button
-                  className="btn btn-lg dropdown-toggle"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Materia Prima
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={"/almacen/materia-prima"}
-                    >
-                      Administrar
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={"/almacen/materia-prima/crear"}
-                    >
-                      Crear
-                    </Link>
-                  </li>
-                </ul>
-              </li> */}
-
-              {/* PROVEEDORES */}
-              {/* <li className="nav-item dropdown">
-                <button
-                  className="btn btn-lg dropdown-toggle"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Proveedor
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link className="dropdown-item" to={"/almacen/proveedor"}>
-                      Administrar
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={"/almacen/proveedor/crear"}
-                    >
-                      Crear
-                    </Link>
-                  </li>
-                </ul>
-              </li> */}
             </ul>
             <ul className="navbar-nav d-none d-lg-flex ml-2 order-3">
               <li className="nav-item">
