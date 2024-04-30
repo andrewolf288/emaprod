@@ -1,6 +1,5 @@
 import {
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -16,16 +15,7 @@ import {
 import React, { useState } from 'react'
 import { RowDetalleSalidasVentaDetalle } from './RowDetalleSalidasVentaDetalle'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import { styled } from '@mui/material/styles'
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2)
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1)
-  }
-}))
+import { BootstrapDialog } from '../../../components/BootstrapDialog'
 
 export const CardSalidaVentaDetalle = ({
   detalle,

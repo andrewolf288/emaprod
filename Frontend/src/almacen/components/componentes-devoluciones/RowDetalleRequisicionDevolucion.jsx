@@ -1,17 +1,8 @@
 import React from 'react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton
-} from '@mui/material'
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import { DialogUpdateDetalleRequisicionDevolucion } from './DialogUpdateDetalleRequisicionDevolucion'
-import { DialogDeleteDetalleRequisicionDevolucion } from './DialogDeleteDetalleRequisicionDevolucion'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
+import { CustomDialogUpdateOperation } from '../../../components/CustomComponents/CustomDialogUpdateOperation'
+import { CustomDialogDeleteOperation } from '../../../components/CustomComponents/CustomDialogDeleteOperation'
+import { CustomDialogConfirmOperation } from '../../../components/CustomComponents/CustomDialogConfirmOperation'
 
 export const RowDetalleRequisicionDevolucion = ({
   requisicion,
@@ -73,25 +64,36 @@ export const RowDetalleRequisicionDevolucion = ({
                 </TableCell>
                 <TableCell>
                   <div className="btn-toolbar">
-                    <DialogUpdateDetalleRequisicionDevolucion
-                      itemUpdate={detalle}
-                      onUpdateItemSelected={onUpdateDetalle}
-                    />
-                    <DialogDeleteDetalleRequisicionDevolucion
-                      itemDelete={detalle}
-                      onDeleteItemSelected={onDeleteDetalle}
-                    />
-                    <IconButton
-                      aria-label="delete"
-                      size="large"
-                      color="success"
+                    <CustomDialogUpdateOperation
+                      detalle={detalle}
                       disabled={detalle.esComReqDevDet === 1}
-                      onClick={() => {
-                        onCheckDetalle(detalle, requisicion)
+                      onUpdateOperation={onUpdateDetalle}
+                      formato={{
+                        nombre: 'nomProd',
+                        cantidad: 'canReqDevDet',
+                        medida: 'simMed'
                       }}
-                    >
-                      <CheckCircleRoundedIcon fontSize="inherit" />
-                    </IconButton>
+                    />
+                    <CustomDialogDeleteOperation
+                      detalle={detalle}
+                      disabled={detalle.esComReqDevDet === 1}
+                      onUpdateOperation={onDeleteDetalle}
+                      formato={{
+                        nombre: 'nomProd',
+                        cantidad: 'canReqDevDet',
+                        medida: 'simMed'
+                      }}
+                    />
+                    <CustomDialogConfirmOperation
+                      detalle={detalle}
+                      disabled={detalle.esComReqDevDet === 1}
+                      onUpdateOperation={onCheckDetalle}
+                      formato={{
+                        nombre: 'nomProd',
+                        cantidad: 'canReqDevDet',
+                        medida: 'simMed'
+                      }}
+                    />
                   </div>
                 </TableCell>
               </TableRow>

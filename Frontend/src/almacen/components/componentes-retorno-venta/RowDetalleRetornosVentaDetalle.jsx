@@ -1,35 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  TextField,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Dialog,
-  Button,
-  Box
-} from '@mui/material'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, DialogTitle, DialogContent, DialogActions, Button, Box } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { styled } from '@mui/material/styles'
 import { getRetornoLoteStock } from '../../helpers/retorno-venta/getRetornoLoteStock'
-// import { getSalidasLoteStockDisponibles } from "../../helpers/salida-venta/getSalidasLoteStockDisponibles";
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2)
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1)
-  }
-}))
+import { BootstrapDialog } from '../../../components/BootstrapDialog'
 
 function parseFecha (fecha) {
   const splitFecha = fecha.split(' ')

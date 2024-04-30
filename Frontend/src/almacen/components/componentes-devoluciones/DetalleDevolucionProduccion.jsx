@@ -1,7 +1,5 @@
 import * as React from 'react'
 import Button from '@mui/material/Button'
-import { styled } from '@mui/material/styles'
-import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
@@ -15,15 +13,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2)
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1)
-  }
-}))
+import { BootstrapDialog } from '../../../components/BootstrapDialog'
 
 export const DetalleDevolucionProduccion = ({
   correlativo,

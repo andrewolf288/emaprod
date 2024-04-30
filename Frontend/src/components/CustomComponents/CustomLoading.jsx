@@ -7,7 +7,7 @@ export const CustomLoading = ({ open }) => {
       <DialogTitle>Cargando...</DialogTitle>
       <DialogContent>
         <DialogContentText>
-              Por favor, espere mientras se procesa la solicitud.
+              Por favor, espere mientras se realiza la operación.
         </DialogContentText>
         <CircularProgress />
       </DialogContent>

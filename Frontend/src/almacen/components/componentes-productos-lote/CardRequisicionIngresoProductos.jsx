@@ -8,9 +8,9 @@ import {
   TableRow,
   Paper
 } from '@mui/material'
-import { DialogUpdateDetalleRequisicionIngresoProducto } from './DialogUpdateDetalleRequisicionIngresoProducto'
-import { DialogDeleteDetalleRequisicionIngresoProducto } from './DialogDeleteDetalleRequisicionIngresoProducto'
-import { DialogSalidaDetalleRequisicionIngresoProducto } from './DialogSalidaDetalleRequisicionIngresoProducto'
+import { CustomDialogUpdateOperation } from '../../../components/CustomComponents/CustomDialogUpdateOperation'
+import { CustomDialogDeleteOperation } from '../../../components/CustomComponents/CustomDialogDeleteOperation'
+import { CustomDialogConfirmOperation } from '../../../components/CustomComponents/CustomDialogConfirmOperation'
 
 export const CardRequisicionIngresoProductos = ({
   requisicion,
@@ -18,6 +18,7 @@ export const CardRequisicionIngresoProductos = ({
   onUpdateRequisicionAgregacionDetalle,
   onCheckRequisicionAgrgeacionDetalle
 }) => {
+  console.log(requisicion)
   return (
     <div className="card mt-4">
       <div className="card-header d-flex justify-content-between align-items-center">
@@ -67,21 +68,35 @@ export const CardRequisicionIngresoProductos = ({
                 </TableCell>
                 <TableCell>
                   <div className="btn-toolbar">
-                    <DialogUpdateDetalleRequisicionIngresoProducto
-                      itemUpdate={requisicion}
-                      onUpdateItemSelected={
-                        onUpdateRequisicionAgregacionDetalle
-                      }
+                    <CustomDialogUpdateOperation
+                      detalle={requisicion}
+                      disabled={requisicion.esComProdIng === 1}
+                      onUpdateOperation={onUpdateRequisicionAgregacionDetalle}
+                      formato={{
+                        nombre: 'nomProd',
+                        cantidad: 'canProdIng',
+                        medida: 'simMed'
+                      }}
                     />
-                    <DialogDeleteDetalleRequisicionIngresoProducto
-                      itemDelete={requisicion}
-                      onDeleteItemSelected={
-                        onDeleteRequisicionAgregacionDetalle
-                      }
+                    <CustomDialogDeleteOperation
+                      detalle={requisicion}
+                      disabled={requisicion.esComProdIng === 1}
+                      onDeleteOperation={onDeleteRequisicionAgregacionDetalle}
+                      formato={{
+                        nombre: 'nomProd',
+                        cantidad: 'canProdIng',
+                        medida: 'simMed'
+                      }}
                     />
-                    <DialogSalidaDetalleRequisicionIngresoProducto
-                      itemSalida={requisicion}
-                      onCheckItemSalida={onCheckRequisicionAgrgeacionDetalle}
+                    <CustomDialogConfirmOperation
+                      detalle={requisicion}
+                      disabled={requisicion.esComProdIng === 1}
+                      onDeleteOperation={onCheckRequisicionAgrgeacionDetalle}
+                      formato={{
+                        nombre: 'nomProd',
+                        cantidad: 'canProdIng',
+                        medida: 'simMed'
+                      }}
                     />
                   </div>
                 </TableCell>

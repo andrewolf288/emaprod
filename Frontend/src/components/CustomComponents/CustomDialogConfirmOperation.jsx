@@ -41,13 +41,13 @@ export const CustomDialogConfirmOperation = (
         aria-labelledby="customized-dialog-title"
         open={open}
       >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+        <DialogTitle sx={{ m: 0, p: 2, fontWeight: 'bold' }} id="customized-dialog-title">
             Confirmar operación
         </DialogTitle>
         <DialogContent dividers>
-          <b className="me-2 d-block">Producto:</b>
+          <span className="me-2 d-block fw-semibold">Producto:</span>
           {detalle[formato.nombre]}
-          <b className="me-2 d-block mt-2">Total requisicion:</b>
+          <span className="me-2 d-block mt-2 fw-semibold">Total requisicion:</span>
           {detalle[formato.cantidad]}
           <span className="ms-2">{detalle[formato.medida]}</span>
         </DialogContent>

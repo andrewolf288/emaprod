@@ -53,20 +53,6 @@ export const DialogUpdateDetalleRequisicion = ({
               type="number"
               autoComplete="off"
             />
-            {/* ¿Quieres actualizar este detalle?
-            <b className="me-2">Materia Prima:</b>
-              {itemUpdate.nomProd}
-              <b className="me-2">Cantidad:</b>
-              {itemUpdate.canReqDet}
-              <span className="ms-2">{itemUpdate.itemUpdateUM}</span>
-              <b className="me-2">Nueva cantidad</b>
-              <TextField
-                value={inputValue}
-                onChange={handleInputValue}
-                size="small"
-                type="number"
-                autoComplete="off"
-              /> */}
           </div>
           <div className="modal-footer">
             <button

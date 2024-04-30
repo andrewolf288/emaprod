@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   Paper,
   Table,
@@ -7,7 +8,6 @@ import {
   TableHead,
   TableRow
 } from '@mui/material'
-import React from 'react'
 
 export const CardRetornoSalidaDetalle = ({ detalle, index }) => {
   return (

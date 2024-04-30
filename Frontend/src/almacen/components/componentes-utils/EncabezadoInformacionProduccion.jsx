@@ -22,7 +22,7 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
           {/* NUMERO DE LOTE */}
           <div className="col-md-2">
             <label htmlFor="nombre" className="form-label">
-              <b>Numero de Lote</b>
+              <span className='fw-semibold'>Numero de Lote</span>
             </label>
             <input
               type="text"
@@ -34,7 +34,7 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
 
           <div className="col-md-2">
             <label htmlFor="nombre" className="form-label">
-              <b>Numero OP</b>
+              <span className='fw-semibold'>Numero OP</span>
             </label>
             <input
               type="text"
@@ -47,7 +47,7 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
           {/* PRODUCTO */}
           <div className="col-md-4 me-4">
             <label htmlFor="nombre" className="form-label">
-              <b>Producto</b>
+              <span className='fw-semibold'>Producto</span>
             </label>
             <input
               disabled={true}
@@ -59,7 +59,7 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
           {/* KILOGRAMOS DE LOTE */}
           <div className="col-md-2">
             <label htmlFor="nombre" className="form-label">
-              <b>Peso de Lote</b>
+              <span className='fw-semibold'>Peso de Lote</span>
             </label>
             <input
               type="number"
@@ -71,7 +71,7 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
           {/* CANTIDAD DE LOTE */}
           <div className="col-md-2">
             <label htmlFor="nombre" className="form-label">
-              <b>Cantidad</b>
+              <span className='fw-semibold'>Cantidad</span>
             </label>
             <input
               type="number"
@@ -85,7 +85,7 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
           {/* TIPO DE PRODUCCION */}
           <div className="col-md-2">
             <label htmlFor="nombre" className="form-label">
-              <b>Tipo de produccion</b>
+              <span className='fw-semibold'>Tipo de produccion</span>
             </label>
             <input
               type="text"
@@ -97,7 +97,7 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
           {/* ESTADO DE PRODUCCION */}
           <div className="col-md-2">
             <label htmlFor="nombre" className="form-label">
-              <b>Estado de produccion</b>
+              <span className='fw-semibold'>Estado de produccion</span>
             </label>
             <input
               type="text"
@@ -109,7 +109,7 @@ export const EncabezadoInformacionProduccion = ({ datosProduccion }) => {
           {/* FECHA DE VENCIMIENTO */}
           <div className="col-md-2">
             <label htmlFor="nombre" className="form-label">
-              <b>Fecha vencimiento lote</b>
+              <span className='fw-semibold'>Fecha vencimiento lote</span>
             </label>
             <input
               type="text"

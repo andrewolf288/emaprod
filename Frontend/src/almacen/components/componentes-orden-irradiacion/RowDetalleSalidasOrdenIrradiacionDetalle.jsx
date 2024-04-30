@@ -12,23 +12,13 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Dialog,
   Button,
   Checkbox,
   Box
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { styled } from '@mui/material/styles'
 import { getSalidasLoteStockDisponibles } from '../../helpers/salida-venta/getSalidasLoteStockDisponibles'
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2)
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1)
-  }
-}))
+import { BootstrapDialog } from '../../../components/BootstrapDialog'
 
 function parseFecha (fecha) {
   const splitFecha = fecha.split(' ')
