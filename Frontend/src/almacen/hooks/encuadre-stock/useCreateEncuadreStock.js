@@ -44,7 +44,22 @@ export function useCreateEncuadreStock () {
 
   const createEncuadreStock = () => {
     if (acceptedFiles.length !== 0) {
-      alertSuccess()
+      const formData = new FormData()
+      formData.append('encuadre_excel', acceptedFiles[0])
+      formData.append('idAlm', almacen)
+
+      const URL = '/almacen/encuadre-stock/createEncuadre.php'
+      axiosInstance.post(URL, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(function (response) {
+          alertSuccess()
+        })
+        .catch(function (error) {
+          alertError('Error al enviar archivo: ' + error)
+        })
     } else {
       alertWarning('Debes subir un archivo')
     }
