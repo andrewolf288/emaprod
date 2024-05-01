@@ -3,6 +3,7 @@ import { useCreateEncuadreStock } from '../../hooks/encuadre-stock/useCreateEncu
 import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
 import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic'
 import { CustomActionsView } from '../../../components/CustomComponents/CustomActionsView'
+import example from '../../../assets/example.png'
 
 export const CreateEncuadreStock = () => {
   const {
@@ -18,6 +19,7 @@ export const CreateEncuadreStock = () => {
   return (
     <>
       <div className='container'>
+        {/* DESCARGAR PLANTILLA DE ENCUADRE */}
         <section className='card mt-4'>
           <p className='card-header'>
             <span className='fw-bold'>Primer paso: </span>
@@ -42,12 +44,17 @@ export const CreateEncuadreStock = () => {
             </div>
           </div>
         </section>
+        {/* VISTA DE EJEMPLO */}
         <section className='card mt-4'>
           <p className='card-header'>
             <span className='fw-bold'>Segundo paso: </span>
             Modifica la columna H con el valor que deseas cuadrar. Si el valor es diferente a lo que se encuentra disponible, la celda se pintará de color rojo.
           </p>
+          <div className='card-body text-center'>
+            <img src={example}/>
+          </div>
         </section>
+        {/* SUBIDA DE ARCHIVO DE ENCUADRE */}
         <section className='card mt-4'>
           <p className='card-header'>
             <span className='fw-bold'>Tercer paso: </span>
