@@ -8,7 +8,6 @@ require '../../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
-use PhpOffice\PhpSpreadsheet\Style\Font;
 
 $pdo = getPDO();
 $result = array(
