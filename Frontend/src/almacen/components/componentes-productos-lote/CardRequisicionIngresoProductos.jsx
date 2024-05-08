@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import { CustomDialogUpdateOperation } from '../../../components/CustomComponents/CustomDialogUpdateOperation'
 import { CustomDialogDeleteOperation } from '../../../components/CustomComponents/CustomDialogDeleteOperation'
-import { CustomDialogConfirmOperation } from '../../../components/CustomComponents/CustomDialogConfirmOperation'
+import { DialogSalidaDetalleRequisicionIngresoProducto } from './DialogSalidaDetalleRequisicionIngresoProducto'
 
 export const CardRequisicionIngresoProductos = ({
   requisicion,
@@ -88,15 +88,9 @@ export const CardRequisicionIngresoProductos = ({
                         medida: 'simMed'
                       }}
                     />
-                    <CustomDialogConfirmOperation
-                      detalle={requisicion}
-                      disabled={requisicion.esComProdIng === 1}
-                      onDeleteOperation={onCheckRequisicionAgrgeacionDetalle}
-                      formato={{
-                        nombre: 'nomProd',
-                        cantidad: 'canProdIng',
-                        medida: 'simMed'
-                      }}
+                    <DialogSalidaDetalleRequisicionIngresoProducto
+                      itemSalida={requisicion}
+                      onCheckItemSalida={onCheckRequisicionAgrgeacionDetalle}
                     />
                   </div>
                 </TableCell>

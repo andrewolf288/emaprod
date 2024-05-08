@@ -22,8 +22,19 @@ $header = [
     "SIIGO", "EMAPROD", "Clase", "Sub clase", "Nombre producto", "U.M",
      "Cantidad disponible", "Cantidad encuadre"
 ];
+$headerProductoFinal = [
+    "SIIGO", "EMAPROD", "Clase", "Sub clase", "Nombre producto", "U.M",
+     "Cantidad disponible", "Cantidad encuadre", "Lote", "Fecha Vencimiento"
+];
 $widthColumn = [12, 12, 30, 30, 80, 7, 17, 17];
-$typeData = ["texto", "texto", "texto", "texto", "texto", "texto", "numero", "numero"];
+$widthColumnProductoFinal = [12, 12, 30, 30, 80, 7, 17, 17, 10, 17];
+$typeData = [
+    "texto", "texto", "texto", "texto", 
+    "texto", "texto", "numero", "numero"];
+$typeDataProductoFinal = [
+    "texto", "texto", "texto", "texto", "texto", 
+    "texto", "numero", "numero", "texto", "texto"
+];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');

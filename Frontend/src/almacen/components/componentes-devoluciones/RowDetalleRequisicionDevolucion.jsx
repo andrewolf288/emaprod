@@ -11,6 +11,10 @@ export const RowDetalleRequisicionDevolucion = ({
   onCheckDetalle
 }) => {
   const { detReqDev } = requisicion
+
+  const onCheckAuxDetalle = (detalle) => {
+    onCheckDetalle(detalle, requisicion)
+  }
   return (
     <div className="mt-2">
       <p>
@@ -77,7 +81,7 @@ export const RowDetalleRequisicionDevolucion = ({
                     <CustomDialogDeleteOperation
                       detalle={detalle}
                       disabled={detalle.esComReqDevDet === 1}
-                      onUpdateOperation={onDeleteDetalle}
+                      onDeleteOperation={onDeleteDetalle}
                       formato={{
                         nombre: 'nomProd',
                         cantidad: 'canReqDevDet',
@@ -87,7 +91,7 @@ export const RowDetalleRequisicionDevolucion = ({
                     <CustomDialogConfirmOperation
                       detalle={detalle}
                       disabled={detalle.esComReqDevDet === 1}
-                      onUpdateOperation={onCheckDetalle}
+                      onConfirmOperation={onCheckAuxDetalle}
                       formato={{
                         nombre: 'nomProd',
                         cantidad: 'canReqDevDet',

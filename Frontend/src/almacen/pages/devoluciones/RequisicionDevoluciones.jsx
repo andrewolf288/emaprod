@@ -137,6 +137,7 @@ export const RequisicionDevoluciones = () => {
 
   // funcion para cumplir la requisicion de agregacion
   const onCheckDetalleRequisicionDevolucion = async (detalle, requisicion) => {
+    console.log(detalle, requisicion)
     const { idProdFin } = requisicion
     const formatData = {
       ...detalle,

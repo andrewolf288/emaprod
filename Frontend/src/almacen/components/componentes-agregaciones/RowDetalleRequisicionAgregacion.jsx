@@ -72,7 +72,7 @@ export const RowDetalleRequisicionAgregacion = ({
                     <CustomDialogDeleteOperation
                       detalle={detalle}
                       disabled={detalle.esComReqAgrDet === 1}
-                      onUpdateOperation={onDeleteDetalle}
+                      onDeleteOperation={onDeleteDetalle}
                       formato={{
                         nombre: 'nomProd',
                         cantidad: 'canReqAgrDet',
@@ -82,7 +82,7 @@ export const RowDetalleRequisicionAgregacion = ({
                     <CustomDialogConfirmOperation
                       detalle={detalle}
                       disabled={detalle.esComReqAgrDet === 1}
-                      onUpdateOperation={onCheckDetalle}
+                      onConfirmOperation={onCheckDetalle}
                       formato={{
                         nombre: 'nomProd',
                         cantidad: 'canReqAgrDet',
