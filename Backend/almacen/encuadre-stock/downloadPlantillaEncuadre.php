@@ -9,6 +9,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Conditional;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Protection;
 
 $pdo = getPDO();
 $result = array(
@@ -20,20 +21,21 @@ $result = array(
 
 $header = [
     "SIIGO", "EMAPROD", "Clase", "Sub clase", "Nombre producto", "U.M",
-     "Cantidad disponible", "Cantidad encuadre"
+    "Cantidad disponible", "Cantidad encuadre", "Variacion"
 ];
 $headerProductoFinal = [
     "SIIGO", "EMAPROD", "Clase", "Sub clase", "Nombre producto", "U.M",
-     "Cantidad disponible", "Cantidad encuadre", "Lote", "Fecha Vencimiento"
+    "Cantidad disponible", "Cantidad encuadre", "Variacion", "Lote", "Año Vencimiento"
 ];
-$widthColumn = [12, 12, 30, 30, 80, 7, 17, 17];
-$widthColumnProductoFinal = [12, 12, 30, 30, 80, 7, 17, 17, 10, 17];
+$widthColumn = [12, 12, 30, 30, 80, 7, 18, 18, 18];
+$widthColumnProductoFinal = [12, 12, 30, 30, 80, 7, 18, 18, 18, 10, 18];
 $typeData = [
-    "texto", "texto", "texto", "texto", 
-    "texto", "texto", "numero", "numero"];
+    "texto", "texto", "texto", "texto",
+    "texto", "texto", "numero", "numero", "numero"
+];
 $typeDataProductoFinal = [
-    "texto", "texto", "texto", "texto", "texto", 
-    "texto", "numero", "numero", "texto", "texto"
+    "texto", "texto", "texto", "texto", "texto",
+    "texto", "numero", "numero", "numero", "texto", "texto"
 ];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -46,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $esMatPriData = array();
     $esEnvEncData = array();
     $esMerPromData = array();
+    $esProdFinData = array();
 
     $sql_almacen_principal =
         "SELECT
@@ -58,7 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     me.simMed,
     pd.esMatPri,
     pd.esEnvEnc,
-    pd.esMerProm
+    pd.esMerProm,
+    pd.esProFin
     FROM almacen_stock AS als
     JOIN producto AS pd ON pd.id = als.idProd
     LEFT JOIN clase AS cl ON cl.id = pd.idCla
@@ -80,6 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $esMatPri = $row_almacen_producto["esMatPri"];
         $esEnvEnc = $row_almacen_producto["esEnvEnc"];
         $esMerProm = $row_almacen_producto["esMerProm"];
+        $esProdFin = $row_almacen_producto["esProFin"];
 
         // consultamos los saldos de las entradas
         $sql_count_stock_entradas =
@@ -94,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $count_total_entrada_stock = $stmt_count_stock_entradas->fetch(PDO::FETCH_ASSOC);
 
         $total_stock = 0;
-        if(empty($count_total_entrada_stock['canTotDis'])){
+        if (empty($count_total_entrada_stock['canTotDis'])) {
             $total_stock = 0;
         } else {
             $total_stock = $count_total_entrada_stock['canTotDis'];
@@ -109,6 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "simMed" => $simMed,
             "canDis" =>  $total_stock,
             "canDisEnc" => $total_stock,
+            "variacion" => 0
         );
 
         if ($esMatPri == 1) {
@@ -120,20 +126,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($esMerProm == 1) {
             array_push($esMerPromData, $array_data);
         }
+        if ($esProdFin == 1) {
+            $array_data["codLotProd"] = "";
+            $array_data["fecVenLotProd"] = "";
+            array_push($esProdFinData, $array_data);
+        }
     }
 
     $spreadsheet = new Spreadsheet();
     // reporte de materia prima
-    if(!empty($esMatPriData)){
+    if (!empty($esMatPriData)) {
         generateSheetByName($spreadsheet, "Materia Prima", $esMatPriData, true, $header, $widthColumn, $typeData);
     }
     // reporte de embalajes y auxiliares
-    if(!empty($esEnvEncData)){
+    if (!empty($esEnvEncData)) {
         generateSheetByName($spreadsheet, "Embalajes-Auxiliares", $esEnvEncData, false, $header, $widthColumn, $typeData);
     }
     // reporte de promociones
-    if(!empty($esMerPromData)){
+    if (!empty($esMerPromData)) {
         generateSheetByName($spreadsheet, "Promociones", $esMerPromData, false, $header, $widthColumn, $typeData);
+    }
+    // reporte de productos finales
+    if (!empty($esProdFinData)) {
+        generateSheetByName($spreadsheet, "Producto final", $esProdFinData, false, $headerProductoFinal, $widthColumnProductoFinal, $typeDataProductoFinal);
     }
 
     // Guardar el archivo Excel
@@ -151,6 +166,9 @@ function generateSheetByName(Spreadsheet $spreadsheet, String $nameSheet, array 
         $sheet = $spreadsheet->createSheet();
         $sheet->setTitle($nameSheet);
     }
+
+    $sheet->getProtection()->setPassword('emaprod');
+    $sheet->getProtection()->setSheet(true);
 
     // // Establecer anchos de columna
     foreach ($widthColumn as $columnIndex => $width) {
@@ -204,6 +222,12 @@ function generateSheetByName(Spreadsheet $spreadsheet, String $nameSheet, array 
                 $conditionalStylesH[] = $conditional;
                 // Establecer los estilos condicionales para las celdas en la columna H
                 $spreadsheet->getActiveSheet()->getStyle("H{$row}")->setConditionalStyles($conditionalStylesH);
+            }
+            if ($columnLetter == "I") {
+                $sheet->setCellValue("I{$row}", "=H{$row}-G{$row}");
+            }
+            if ($columnLetter == "H" || $columnLetter == "J" || $columnLetter == "K") {
+                $sheet->getStyle("$columnLetter{$row}")->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
             }
         }
         $row++;

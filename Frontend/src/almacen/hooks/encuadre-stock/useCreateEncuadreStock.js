@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import useAxiosWithLoading from '../../../api/useAxiosWithLoading'
-import { alertError, alertSuccess, alertWarning } from '../../../utils/alerts/alertsCustoms'
+import { alertError, alertWarning } from '../../../utils/alerts/alertsCustoms'
 import { useDropzone } from 'react-dropzone'
+
+const almacenesAceptados = [1, 8]
 
 export function useCreateEncuadreStock () {
   // manejar loading con instancia de axios
@@ -42,8 +44,13 @@ export function useCreateEncuadreStock () {
     }
   }
 
+  const resetData = () => {
+    setAlmacen(0)
+    acceptedFiles.splice(0)
+  }
+
   const createEncuadreStock = () => {
-    if (acceptedFiles.length !== 0) {
+    if (acceptedFiles.length !== 0 && almacen !== 0) {
       const formData = new FormData()
       formData.append('encuadre_excel', acceptedFiles[0])
       formData.append('idAlm', almacen)
@@ -55,24 +62,48 @@ export function useCreateEncuadreStock () {
         }
       })
         .then(function (response) {
-          alertSuccess()
+        // Crear un objeto Blob con la respuesta del servidor
+          const blob = new Blob([response.data], { type: 'text/plain' })
+          // Crear una URL para el objeto Blob
+          const url = window.URL.createObjectURL(blob)
+          // Crear un enlace para descargar el archivo
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', 'respuesta.txt')
+          // Agregar el enlace al cuerpo del documento
+          document.body.appendChild(link)
+          // Hacer clic en el enlace para descargar el archivo
+          link.click()
+          // Limpiar la URL creada para el objeto Blob
+          window.URL.revokeObjectURL(url)
         })
         .catch(function (error) {
-          alertError('Error al enviar archivo: ' + error)
+          alertError('Error al procesar la solicitud:', error)
         })
+      resetData()
     } else {
-      alertWarning('Debes subir un archivo')
+      let handleErrors = ''
+      if (almacen === 0) {
+        handleErrors += 'Debes seleccionar un almacen'
+      }
+      if (acceptedFiles.length === 0) {
+        handleErrors += 'Debes subir un archivo'
+      }
+      alertWarning(handleErrors)
     }
   }
 
   return {
     loading,
     almacen,
+    almacenesAceptados,
+    acceptedFiles,
     onChangeValueAlmacen,
     generateReporteStock,
     files,
     getInputProps,
     getRootProps,
-    createEncuadreStock
+    createEncuadreStock,
+    resetData
   }
 }

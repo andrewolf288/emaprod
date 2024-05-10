@@ -52,14 +52,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $array_entradas_disponibles = [];
         $sql_consult_entradas_disponibles =
             "SELECT
-                es.id,
-                es.codEntSto,
-                es.refNumIngEntSto,
-                DATE(es.fecEntSto) AS fecEntSto,
-                es.canTotDis 
-            FROM entrada_stock AS es
-            WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
-            ORDER BY es.fecEntSto ASC";
+        es.id,
+        es.codEntSto,
+        es.refNumIngEntSto,
+        DATE(es.fecEntSto) AS fecEntSto,
+        es.canTotDis 
+        FROM entrada_stock AS es
+        WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0
+        ORDER BY es.fecEntSto ASC";
 
         try {
             $stmt_consult_entradas_disponibles = $pdo->prepare($sql_consult_entradas_disponibles);

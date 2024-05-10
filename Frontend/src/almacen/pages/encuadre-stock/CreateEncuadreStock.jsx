@@ -1,14 +1,16 @@
 import React from 'react'
 import { useCreateEncuadreStock } from '../../hooks/encuadre-stock/useCreateEncuadreStock'
 import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
-import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic'
 import { CustomActionsView } from '../../../components/CustomComponents/CustomActionsView'
 import example from '../../../assets/example.png'
+import { FilterAlmacenDynamicOnlyData } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamicOnlyData'
 
 export const CreateEncuadreStock = () => {
   const {
     loading,
     almacen,
+    acceptedFiles,
+    almacenesAceptados,
     onChangeValueAlmacen,
     generateReporteStock,
     files,
@@ -28,10 +30,12 @@ export const CreateEncuadreStock = () => {
           <div className="card-body row justify-content-center align-items-end">
             <div className="col-3">
               {/* filter */}
-              <label className="form-label fw-semibold">Almacen</label>
-              <FilterAlmacenDynamic
+              <label className="form-label fw-semibold">Almacén</label>
+              <FilterAlmacenDynamicOnlyData
                 onNewInput={onChangeValueAlmacen}
                 defaultValue={almacen}
+                onlyData={almacenesAceptados}
+                disabled={acceptedFiles.length !== 0}
               />
             </div>
             <div className='col-3'>
