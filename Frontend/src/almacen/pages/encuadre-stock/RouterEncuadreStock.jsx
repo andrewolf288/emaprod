@@ -1,5 +1,6 @@
 import { CreateEncuadreStock } from './CreateEncuadreStock'
 import { ListEncuadreStock } from './ListEncuadreStock'
+import { ViewEncuadreStock } from './ViewEncuadreStock'
 
 export const RouterEncuadreStock = [
   {
@@ -9,5 +10,9 @@ export const RouterEncuadreStock = [
   {
     path: 'crear',
     element: <CreateEncuadreStock />
+  },
+  {
+    path: 'view/:idOpeEnStock',
+    element: <ViewEncuadreStock />
   }
 ]
