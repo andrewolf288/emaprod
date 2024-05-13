@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import useAxiosWithLoading from '../../../api/useAxiosWithLoading'
-import { useDatePickerRange } from '../../../hooks/useDatePickerRange'
 import { alertError } from '../../../utils/alerts/alertsCustoms'
 import { useParams } from 'react-router-dom'
 

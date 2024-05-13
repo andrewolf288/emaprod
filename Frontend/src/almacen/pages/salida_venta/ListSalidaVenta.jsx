@@ -72,9 +72,10 @@ export const ListSalidaVenta = () => {
   const [dataFilter, setDataFilter] = useState({
     invSerFac: '',
     invNumFac: '',
-    idReqEst: 0
+    idReqEst: 0,
+    customer: ''
   })
-  const { invSerFac, invNumFac } = dataFilter
+  const { invSerFac, invNumFac, customer } = dataFilter
 
   const handleChangeInputValue = ({ target }) => {
     const { value, name } = target
@@ -114,6 +115,21 @@ export const ListSalidaVenta = () => {
       const resultadoBusqueda = dataSalidasVenta.filter((element) => {
         if (
           element.invNumFac
+            .toString()
+            .toLowerCase()
+            .includes(terminoBusqueda.toLowerCase())
+        ) {
+          return element
+        } else {
+          return false
+        }
+      })
+      setDataSalidasVentaTemp(resultadoBusqueda)
+    }
+    if (name === 'customer') {
+      const resultadoBusqueda = dataSalidasVenta.filter((element) => {
+        if (
+          element.customer
             .toString()
             .toLowerCase()
             .includes(terminoBusqueda.toLowerCase())
@@ -195,42 +211,55 @@ export const ListSalidaVenta = () => {
                     }}
                   >
                     <TableCell align="left" width={50}>
-                      <b>Serie</b>
+                      <strong>Serie</strong>
                       <TextField
                         size="small"
                         type="text"
+                        autoComplete='off'
                         onChange={handleChangeInputValue}
                         value={invSerFac}
                         name="invSerFac"
                       />
                     </TableCell>
                     <TableCell align="left" width={50}>
-                      <b>Numero</b>
+                      <strong>Numero</strong>
                       <TextField
                         size="small"
                         type="number"
+                        autoComplete='off'
                         onChange={handleChangeInputValue}
                         value={invNumFac}
                         name="invNumFac"
                       />
                     </TableCell>
+                    <TableCell align='left' width={180}>
+                      <strong>Cliente</strong>
+                      <TextField
+                        size="small"
+                        type="text"
+                        autoComplete='off'
+                        onChange={handleChangeInputValue}
+                        value={customer}
+                        name="customer"
+                      />
+                    </TableCell>
                     <TableCell align="center" width={50}>
-                      <b>Estado</b>
+                      <strong>Estado</strong>
                       <FilterEstadoRequisicion
                         onNewInput={handleChangeSelectValue}
                       />
                     </TableCell>
                     <TableCell align="center" width={40}>
-                      <b>Afectado</b>
+                      <strong>Afectado</strong>
                     </TableCell>
                     <TableCell align="center" width={40}>
-                      <b>Anulado</b>
+                      <strong>Anulado</strong>
                     </TableCell>
                     <TableCell align="left" width={140}>
-                      <b>Fecha creación</b>
+                      <strong>Fecha creación</strong>
                     </TableCell>
                     <TableCell align="left" width={100}>
-                      <b>Acciones</b>
+                      <strong>Acciones</strong>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -246,6 +275,7 @@ export const ListSalidaVenta = () => {
                       >
                         <TableCell align="left">{row.invSerFac}</TableCell>
                         <TableCell align="left">{row.invNumFac}</TableCell>
+                        <TableCell align="left">{row.customer}</TableCell>
                         <TableCell align="center">
                           {row.idReqEst === 1
                             ? (

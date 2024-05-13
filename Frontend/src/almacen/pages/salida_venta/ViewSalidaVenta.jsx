@@ -28,6 +28,7 @@ export const ViewSalidaVenta = () => {
     fueAfePorAnul: 0,
     fueAfePorDev: 0,
     fecCreOpeFac: '',
+    customer: '',
     detOpeFac: []
   })
 
@@ -38,7 +39,8 @@ export const ViewSalidaVenta = () => {
     fueAfePorAnul,
     fueAfePorDev,
     fecCreOpeFac,
-    detOpeFac
+    detOpeFac,
+    customer
   } = dataSalidaVenta
 
   // ***** FUNCIONES Y STATES PARA FEEDBACK *****
@@ -325,6 +327,19 @@ export const ViewSalidaVenta = () => {
                     <b>Afectado</b>
                   </label>
                   <p>{fueAfePorDev === 0 ? 'NO' : 'SI'}</p>
+                </div>
+              </div>
+              <div className="mb-3 row">
+                <div className="col-md-4">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>Cliente</b>
+                  </label>
+                  <input
+                    type="text"
+                    disabled={true}
+                    value={customer}
+                    className="form-control"
+                  />
                 </div>
               </div>
             </div>
