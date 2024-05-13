@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $cantidad = $item["quantity"]; // cantidad requerida
 
                         $sql_insert_orden_irradiacion_detalle =
-                            "INSERT INTO orden_irradiacion_detalle (idOpeIrra, idProdt, refProdt, canOpeIrra)
+                            "INSERT INTO orden_irradiacion_detalle (idOrdIrra, idProdt, refProdt, canOpeIrra)
                             VALUES(?, ?, ?, $cantidad)";
                         $stmt_insert_orden_irradiacion_detalle = $pdo->prepare($sql_insert_orden_irradiacion_detalle);
                         $stmt_insert_orden_irradiacion_detalle->bindParam(1, $idLastInsertion, PDO::PARAM_INT);

@@ -315,7 +315,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     WHERE pt.esMatPri = ? 
     AND (pt.id <> ? AND pt.id <> ? AND pt.id <> ? AND pt.id <> ?
     AND pt.id <> ? AND pt.id <> ? AND pt.id <> ? AND pt.id <> ? 
-    AND pt.id <> ?) AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'
+    AND pt.id <> ?) AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'
     ORDER BY es.fecEntSto DESC";
     $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
     $stmt_entradas_calidad->bindParam(1, $esMatPri, PDO::PARAM_BOOL);

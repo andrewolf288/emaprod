@@ -4,6 +4,7 @@ import { CustomFilterDateRange } from '../../../components/CustomComponents/Cust
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
 import { RowOperacionEncuadreStock } from '../../components/componentes-encuadre/RowOperacionEncuadreStock'
+import { Link } from 'react-router-dom'
 
 export const ListEncuadreStock = () => {
   const {
@@ -22,6 +23,16 @@ export const ListEncuadreStock = () => {
             handleStartDateChange={handleStartDateChange}
             handleEndDateChange={handleEndDateChange}
           />
+          <div className="col-6 d-flex justify-content-end align-items-center">
+            <div className="row me-4">
+              <Link
+                to={'crear'}
+                className="btn btn-primary"
+              >
+                Realizar encuadre
+              </Link>
+            </div>
+          </div>
         </div>
         {/* TABLA DE CONTENIDO */}
         <TableContainer component={Paper} className='mt-4'>

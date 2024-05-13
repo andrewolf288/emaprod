@@ -420,7 +420,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     JOIN producto AS pt ON pt.id = es.idProd
     LEFT JOIN entrada_calidad_estado AS ece ON ece.id = ec.idEntCalEst
     LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
-    WHERE es.idProd = ? AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'";
+    WHERE es.idProd = ? AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'";
     $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
     $stmt_entradas_calidad->bindParam(1, $producto, PDO::PARAM_INT);
     $stmt_entradas_calidad->execute();

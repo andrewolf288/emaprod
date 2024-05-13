@@ -522,7 +522,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         LEFT JOIN entrada_calidad_estado AS ece ON ece.id = ec.idEntCalEst
         LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
         WHERE pt.idSubCla = ?
-        AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'
+        AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'
         ORDER BY es.fecEntSto DESC";
         $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
         $stmt_entradas_calidad->bindParam(1, $isSubCla, PDO::PARAM_INT);
@@ -556,7 +556,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         LEFT JOIN entrada_calidad_estado AS ece ON ece.id = ec.idEntCalEst
         LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
         WHERE pt.idSubCla = ?
-        AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'
+        AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'
         ORDER BY es.fecEntSto DESC";
         $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
         $stmt_entradas_calidad->bindParam(1, $isSubCla, PDO::PARAM_INT);
@@ -594,7 +594,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         LEFT JOIN entrada_calidad_estado AS ece ON ece.id = ec.idEntCalEst
         LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
         WHERE (pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ?)
-        AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'
+        AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'
         ORDER BY es.fecEntSto DESC";
         $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
         $stmt_entradas_calidad->bindParam(1, $isSubCla, PDO::PARAM_INT);
@@ -636,7 +636,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         LEFT JOIN entrada_calidad_estado AS ece ON ece.id = ec.idEntCalEst
         LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
         WHERE (pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ?)
-        AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'
+        AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'
         ORDER BY es.fecEntSto DESC";
         $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
         $stmt_entradas_calidad->bindParam(1, $isSubCla, PDO::PARAM_INT);
@@ -683,7 +683,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
         WHERE (pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ? OR
         pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ? OR pt.idSubCla = ?)
-        AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'
+        AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'
         ORDER BY es.fecEntSto DESC";
         $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
         $stmt_entradas_calidad->bindParam(1, $isSubCla, PDO::PARAM_INT);
@@ -727,7 +727,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         LEFT JOIN entrada_calidad_estado AS ece ON ece.id = ec.idEntCalEst
         LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
         WHERE (pt.id = ? OR pt.id = ? OR pt.id = ?)
-        AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'
+        AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'
         ORDER BY es.fecEntSto DESC";
         $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
         $stmt_entradas_calidad->bindParam(1, $idProdt, PDO::PARAM_INT);
@@ -765,7 +765,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         LEFT JOIN entrada_calidad_estado AS ece ON ece.id = ec.idEntCalEst
         LEFT JOIN encargado_calidad AS enc ON enc.id = ec.idResEntCal
         WHERE (pt.id = ? OR pt.id = ?)
-        AND es.fecEntSto BETWEEN '$fechaDesde' AND '$fechaHasta'
+        AND DATE(es.fecEntSto) BETWEEN '$fechaDesde' AND '$fechaHasta'
         ORDER BY es.fecEntSto DESC";
         $stmt_entradas_calidad = $pdo->prepare($sql_entradas_calidad);
         $stmt_entradas_calidad->bindParam(1, $idProdt, PDO::PARAM_INT);
