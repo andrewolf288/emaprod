@@ -2,9 +2,11 @@
 include_once "../../common/cors.php";
 header('Content-Type: application/json; charset=utf-8');
 require('../../common/conexion.php');
+require('../../common/conexion_emafact.php');
 require_once('../../common/utils.php');
 
 $pdo = getPDO();
+$pdoEmafact = getPDOEMAFACT();
 $result = array();
 $message_error = "";
 $description_error = "";
@@ -41,6 +43,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             while ($row_operacion_facturacion = $stmt_select_operacion_facturacion->fetch(PDO::FETCH_ASSOC)) {
                 $row_operacion_facturacion["detOpeFac"] = [];
+                $idGuiRem = $row_operacion_facturacion["idGuiRem"];
+                // consultamos su cliente
+                $sql_select_referral_guide =
+                    "SELECT 
+                rg.customer_id,
+                cu.contact
+                FROM referral_guides AS rg
+                LEFT JOIN customers AS cu ON cu.id = rg.customer_id
+                WHERE rg.id = ?";
+                $stmt_select_referral_guide = $pdoEmafact->prepare($sql_select_referral_guide);
+                $stmt_select_referral_guide->bindParam(1, $idGuiRem, PDO::PARAM_INT);
+                $stmt_select_referral_guide->execute();
+                $row_referral_guide = $stmt_select_referral_guide->fetch(PDO::FETCH_ASSOC);
+
+                if ($row_referral_guide) {
+                    $row_operacion_facturacion["customer"] = $row_referral_guide["contact"];
+                } else {
+                    $row_operacion_facturacion["customer"] = "SIN CLIENTE";
+                }
 
                 $sql_select_operacion_facturacion_detalle =
                     "SELECT

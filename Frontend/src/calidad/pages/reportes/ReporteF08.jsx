@@ -3,6 +3,15 @@ import { useReporteFilter } from '../../hooks/reportes/useReporteFilter'
 import { CustomFilterDateRange } from '../../../components/CustomComponents/CustomFilterDateRange'
 import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
 
+const ENCABEZADO = {
+  titulo: 'EVALUACION DE MATERIA PRIMA E INSUMOS',
+  subtitulo1: 'EMACAL-F08',
+  subtitulo2: 'Emisión: 2023-01-02',
+  subtitulo3: 'Edición: 02',
+  subtitulo4: 'Revisión: 2024-03-04',
+  subtitulo5: 'Página 1 de 1'
+}
+
 export const ReporteF08 = () => {
   const {
     dateState,
@@ -13,8 +22,12 @@ export const ReporteF08 = () => {
   } = useReporteFilter()
 
   const exportDataExcel = () => {
+    const data = {
+      ...dateState,
+      ...ENCABEZADO
+    }
     const URL = '/calidad/reportes/reporte-emacal-F08.php'
-    submitDataFilterToExcel(URL, dateState, 'reporte-emacal-F08.xlsx')
+    submitDataFilterToExcel(URL, data, 'reporte-emacal-F08.xlsx')
   }
 
   return (

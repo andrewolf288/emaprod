@@ -34,6 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $fechaDesde = $data["fechaInicio"];
     $fechaHasta = $data["fechaFin"];
+    $titulo = $data["titulo"];
+    $subtitulo1 = $data["subtitulo1"];
+    $subtitulo2 = $data["subtitulo2"];
+    $subtitulo3 = $data["subtitulo3"];
+    $subtitulo4 = $data["subtitulo4"];
+    $subtitulo5 = $data["subtitulo5"];
     $producto = 138;
 
     if (empty($fechaDesde)) {
@@ -125,43 +131,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ),
     );
 
-    // ************ PRIMERO DEBEMOS DIBUJAR EL ENCABEZADO ***************
-    // informacion dle producto
-    $sql_datos_producto =
-        "SELECT idCla, idSubCla, nomProd 
-    FROM producto WHERE id = $producto";
-    $stmt_datos_producto = $pdo->prepare($sql_datos_producto);
-    $stmt_datos_producto->execute();
-    $row_datos_producto = $stmt_datos_producto->fetch(PDO::FETCH_ASSOC);
-    $idCla = $row_datos_producto["idCla"];
-    $idSubCla = $row_datos_producto["idSubCla"];
-    $nomProd = $row_datos_producto["nomProd"];
-    // informacion de reporte de calidad
-    $sql_atributos_reporte_calidad =
-        "SELECT 
-    rc.codRepCal,
-    rc.titRepCal,
-    rc.fecEmRepCal,
-    rc.ediReqCal,
-    rc.fecRevReqCal
-    FROM reporte_calidad_categoria AS rcc
-    JOIN reporte_calidad AS rc ON rc.id = rcc.idRepCal
-    WHERE rcc.idCla = $idCla";
-    if ($idSubCla == 1) {
-        $sql_atributos_reporte_calidad .= " AND idSubCla = $idSubCla";
-    }
-    $stmt_atrbiutos_reporte_calidad = $pdo->prepare($sql_atributos_reporte_calidad);
-    $stmt_atrbiutos_reporte_calidad->execute();
-    $row_atrbiutos_reporte_calidad = $stmt_atrbiutos_reporte_calidad->fetch(PDO::FETCH_ASSOC);
-    if ($row_atrbiutos_reporte_calidad) {
-        $codRepCal = $row_atrbiutos_reporte_calidad["codRepCal"];
-        $titRepCal = $row_atrbiutos_reporte_calidad["titRepCal"];
-        $fecEmRepCal = "Emisión: " . $row_atrbiutos_reporte_calidad["fecEmRepCal"];
-        $ediReqCal = "Edición: " . $row_atrbiutos_reporte_calidad["ediReqCal"];
-        $fecRevReqCal = "Revisión: " . $row_atrbiutos_reporte_calidad["fecRevReqCal"];
-        $array_leyenda = array($codRepCal, $fecEmRepCal, $ediReqCal, $fecRevReqCal, "Página 1 de 1");
-    }
-
     $filaInicio = 1;
     $filaFinEncabezado = 5;
     $totalColumnas = 0;
@@ -185,13 +154,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $letterFinTitulo = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumnas - 1);
     $sheet->mergeCells("C{$filaInicio}:$letterFinTitulo{$filaFinEncabezado}");
     $sheet->getStyle("C{$filaInicio}:$letterFinTitulo{$filaFinEncabezado}")->applyFromArray($styleArray);
-    $sheet->setCellValue("C{$filaInicio}", $titRepCal);
+    $sheet->setCellValue("C{$filaInicio}", $titulo);
     $sheet->getStyle('C1')->getFont()->setName('Arial')->setSize(16)->setBold(true);
     $sheet->getStyle('C1')->getAlignment()->setHorizontal(PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('C1')->getAlignment()->setVertical(PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
     // INFORMACION DE REPORTE EMACAL
     $letterFinLeyenda = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumnas);
+    $array_leyenda = array($subtitulo1, $subtitulo2, $subtitulo3, $subtitulo4, $subtitulo5);
     for ($i = 0; $i < count($array_leyenda); $i++) {
         $valueRow = $i + 1;
         $sheet->mergeCells("$letterFinLeyenda{$valueRow}");

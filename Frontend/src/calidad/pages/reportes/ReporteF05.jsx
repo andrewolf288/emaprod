@@ -3,6 +3,15 @@ import { CustomFilterDateRange } from '../../../components/CustomComponents/Cust
 import { useReporteFilter } from '../../hooks/reportes/useReporteFilter'
 import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
 
+const ENCABEZADO = {
+  titulo: 'CONTROL EN LA RECEPCION DE MATERIA PRIMA',
+  subtitulo1: 'EMACAL-F05',
+  subtitulo2: 'Emisión: 2023-01-02',
+  subtitulo3: 'Edición: 02',
+  subtitulo4: 'Revisión: 2024-03-04',
+  subtitulo5: 'Página 1 de 1'
+}
+
 export const ReporteF05 = () => {
   const {
     dateState,
@@ -14,7 +23,11 @@ export const ReporteF05 = () => {
 
   const exportDataExcel = () => {
     const URL = '/calidad/reportes/reporte-emacal-F05.php'
-    submitDataFilterToExcel(URL, dateState, 'reporte-emacal-F05.xlsx')
+    const data = {
+      ...dateState,
+      ...ENCABEZADO
+    }
+    submitDataFilterToExcel(URL, data, 'reporte-emacal-F05.xlsx')
   }
 
   return (

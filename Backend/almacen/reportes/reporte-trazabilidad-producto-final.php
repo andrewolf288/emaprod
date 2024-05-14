@@ -237,7 +237,112 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             array_push($result["data"], $aux_salida);
         }
 
-        // salidas por reproceso (pendiente)
+        // salidas por reproceso masivo (pendiente)
+
+        // ----salidas por empaquetado promocional----
+        $sql_salida_requisicion_empaquetado_promocional =
+            "SELECT 
+        srep.canSalReqEmpProm,
+        srep.fecCreSalReqEmpProm
+        FROM salida_requisicion_empaquetado_promocional AS srep
+        WHERE srep.idEntSto = ?";
+        $stmt_salida_requisicion_empaquetado_promocional = $pdo->prepare($sql_salida_requisicion_empaquetado_promocional);
+        $stmt_salida_requisicion_empaquetado_promocional->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_salida_requisicion_empaquetado_promocional->execute();
+
+        while ($row_salida_requisicion_empaquetado_promocional = $stmt_salida_requisicion_empaquetado_promocional->fetch(PDO::FETCH_ASSOC)) {
+            $canSalReqEmpProm = $row_salida_requisicion_empaquetado_promocional["canSalReqEmpProm"];
+            $fecCreSalReqEmpProm = $row_salida_requisicion_empaquetado_promocional["fecCreSalReqEmpProm"];
+
+            $aux_salida = array(
+                "docEntSto" => "EMPAQUETADO PROMOCIONAL",
+                "codEntSto" => $codEntSto,
+                "nomAlm" => $nomAlm,
+                "codProd" => $codProd,
+                "codProd2" => $codProd2,
+                "nomProd" => $nomProd,
+                "simMed" => $simMed,
+                "codLotProd" => $codLotProd,
+                "fecVenEntSto" => $fecVenEntSto,
+                "fecEntSto" => "",
+                "fecSalSto" => $fecCreSalReqEmpProm,
+                "motOpe" => "SL-EMPAQUETADO-PROMOCIONAL",
+                "canTotEnt" => "",
+                "canSalSto" => $canSalReqEmpProm,
+                "canTotDis" => ""
+            );
+            array_push($result["data"], $aux_salida);
+        }
+
+        // ----salidas por requisicion general----
+        $sql_salida_requisicion_materiales =
+            "SELECT 
+        srm.canSalReqMatDet,
+        srm.fecCreSalReqMat
+        FROM salida_requisicion_materiales AS srm
+        WHERE srm.idEntSto = ?";
+        $stmt_salida_requisicion_materiales = $pdo->prepare($sql_salida_requisicion_materiales);
+        $stmt_salida_requisicion_materiales->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_salida_requisicion_materiales->execute();
+
+        while ($row_salida_requisicion_materiales = $stmt_salida_requisicion_materiales->fetch(PDO::FETCH_ASSOC)) {
+            $canSalReqMatDet = $row_salida_requisicion_materiales["canSalReqMatDet"];
+            $fecCreSalReqMat = $row_salida_requisicion_materiales["fecCreSalReqMat"];
+
+            $aux_salida = array(
+                "docEntSto" => "REQUISICION GENERAL",
+                "codEntSto" => $codEntSto,
+                "nomAlm" => $nomAlm,
+                "codProd" => $codProd,
+                "codProd2" => $codProd2,
+                "nomProd" => $nomProd,
+                "simMed" => $simMed,
+                "codLotProd" => $codLotProd,
+                "fecVenEntSto" => $fecVenEntSto,
+                "fecEntSto" => "",
+                "fecSalSto" => $fecCreSalReqMat,
+                "motOpe" => "SL-REQUISICION-GENERAL",
+                "canTotEnt" => "",
+                "canSalSto" => $canSalReqMatDet,
+                "canTotDis" => ""
+            );
+            array_push($result["data"], $aux_salida);
+        }
+
+        // ----salidas por encuadre stock----
+        $sql_salida_operacion_encuadre_detalle =
+            "SELECT 
+        soed.canSalOpeEncDet,
+        soed.fecCreSalOpeEncDet
+        FROM salida_operacion_encuadre_detalle AS soed
+        WHERE soed.idEntSto = ?";
+        $stmt_salida_operacion_encuadre_detalle = $pdo->prepare($sql_salida_operacion_encuadre_detalle);
+        $stmt_salida_operacion_encuadre_detalle->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_salida_operacion_encuadre_detalle->execute();
+
+        while ($row_salida_operacion_encuadre_detalle = $stmt_salida_operacion_encuadre_detalle->fetch(PDO::FETCH_ASSOC)) {
+            $canSalOpeEncDet = $row_salida_operacion_encuadre_detalle["canSalOpeEncDet"];
+            $fecCreSalOpeEncDet = $row_salida_operacion_encuadre_detalle["fecCreSalOpeEncDet"];
+
+            $aux_salida = array(
+                "docEntSto" => "OPERACION ENCUADRE",
+                "codEntSto" => $codEntSto,
+                "nomAlm" => $nomAlm,
+                "codProd" => $codProd,
+                "codProd2" => $codProd2,
+                "nomProd" => $nomProd,
+                "simMed" => $simMed,
+                "codLotProd" => $codLotProd,
+                "fecVenEntSto" => $fecVenEntSto,
+                "fecEntSto" => "",
+                "fecSalSto" => $fecCreSalOpeEncDet,
+                "motOpe" => "SL-OPERACION-ENCUADRE",
+                "canTotEnt" => "",
+                "canSalSto" => $canSalOpeEncDet,
+                "canTotDis" => ""
+            );
+            array_push($result["data"], $aux_salida);
+        }
     }
 
     // Crear el libro de trabajo
