@@ -3,7 +3,7 @@ import useAxiosWithLoading from '../../../api/useAxiosWithLoading'
 import { alertError, alertWarning } from '../../../utils/alerts/alertsCustoms'
 import { useDropzone } from 'react-dropzone'
 
-const almacenesAceptados = [1, 8]
+const almacenesAceptados = [1, 8, 7]
 
 export function useCreateEncuadreStock () {
   // manejar loading con instancia de axios

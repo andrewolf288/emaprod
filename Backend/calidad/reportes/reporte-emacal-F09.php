@@ -199,12 +199,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "ancho" => 14,
             "formato" => "Numerico"
         ),
-        "FECHA VENCIMIENTO" => array(
-            "tipo" => "individual",
-            "numero_columnas" => 1,
-            "ancho" => 17,
-            "formato" => "Texto"
-        )
     );
 
     // recorremos los atributos de calidad
@@ -606,7 +600,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($categoria == 4) {
-        $isSubCla = 41;
+        $isSubCla = 27;
         $isSubCla2 = 29;
         $isSubCla3 = 63;
         $isSubCla4 = 41;
@@ -648,6 +642,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $entradas_calidad = $stmt_entradas_calidad->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // etiquetas
     if ($categoria == 5) {
         $isSubCla = 43;
         $isSubCla2 = 60;
@@ -805,9 +800,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $columnLetter = $grupos_plantilla["CANTIDAD"]["columna"];
         $sheet->setCellValue("{$columnLetter}{$filaIndex}", $canTotEnt);
         $sheet->getStyle("{$columnLetter}{$filaIndex}")->getNumberFormat()->setFormatCode('0.000');
-        // fecha vencimiento
-        $columnLetter = $grupos_plantilla["FECHA VENCIMIENTO"]["columna"];
-        $sheet->setCellValue("{$columnLetter}{$filaIndex}", $fecvenEntSto);
         // conformidad
         $columnLetter = $grupos_plantilla["CONFORMIDAD"]["columna"];
         $sheet->setCellValue("{$columnLetter}{$filaIndex}", strtoupper($desEntCalEst));

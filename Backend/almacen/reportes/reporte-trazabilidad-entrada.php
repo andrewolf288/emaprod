@@ -131,6 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         WHERE ss.idEntSto = $idEntSto AND ss.idAgre IS NULL";
         $stmt_salida = $pdo->prepare($sql_salida);
         $stmt_salida->execute();
+
         while ($row_salida = $stmt_salida->fetch(PDO::FETCH_ASSOC)) {
             $codLotProd = $row_salida["codLotProd"]; // codigo lote produccion
             $canSalStoReq = $row_salida["canSalStoReq"]; // cantidad salida
@@ -178,6 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         WHERE ss.idEntSto = $idEntSto";
         $stmt_salida = $pdo->prepare($sql_salida);
         $stmt_salida->execute();
+
         while ($row_agregacion = $stmt_salida->fetch(PDO::FETCH_ASSOC)) {
             $codLotProd = $row_agregacion["codLotProd"]; // codigo lote produccion
             $canSalStoReq = $row_agregacion["canSalStoReq"]; // cantidad salida
@@ -227,6 +229,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_devoluciones = $pdo->prepare($sql_devoluciones);
         $stmt_devoluciones->bindParam(1, $idEntSto, PDO::PARAM_INT);
         $stmt_devoluciones->execute();
+
         while ($row_devolucion = $stmt_devoluciones->fetch(PDO::FETCH_ASSOC)) {
             $codLotProd = $row_devolucion["codLotProd"]; // codigo lote produccion
             $fechaEntradaDevolucion = $row_devolucion["fecCreTraDevEnt"]; // fec. entrada devolucion
@@ -234,7 +237,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $motivo_devolucion = $row_devolucion["desProdDevMot"]; // motivo de devolucion
             $numopDev = $row_devolucion["correlativo"]; // numero operacion devolucion
 
-            // $aux_devolucion = [$docEntSto, $guiRem, $codEntSto, $nomAlm, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $numopDev, "", $fechaEntradaDevolucion, "", "DE - " . $motivo_devolucion, $canReqDevDet, "", ""];
             $aux_devolucion = array(
                 "docEntSto" => $docEntSto,
                 "guiRem" => $guiRem,
@@ -256,6 +258,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             );
             array_push($result["data"], $aux_devolucion);
         }
+
+        // ---- transformacion salida ----
+        $sql_transformacion_salida =
+            "SELECT 
+        sot.canSalOrdTrans,
+        sot.fecCreSalOrdTrans
+        FROM salida_orden_transformacion AS sot
+        JOIN 
+        WHERE sot.idEntSto = ?";
+        $stmt_transformacion_salida = $pdo->prepare($sql_transformacion_salida);
+        $stmt_transformacion_salida->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_transformacion_salida->execute();
+
+        while($row_salida_orden_transformacion = $stmt_transformacion_salida->fetch(PDO::FETCH_ASSOC)){
+                        
+        }
+
+        // ---- transformacion devolucion ----
+        // ---- reproceso devolucion ----
+        // ---- requisicion general salida ----
+        // ---- requisicion general devolucion ----
+        // ---- requisicion empaquetado salida ----
+        // ---- encuadre salida ----
     }
 
     // Crear el libro de trabajo
@@ -328,7 +353,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $sheet->getStyle("A{$row}:Q{$row}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('93d98d'); // Verde
             }
         }
-
         $row++;
     }
 

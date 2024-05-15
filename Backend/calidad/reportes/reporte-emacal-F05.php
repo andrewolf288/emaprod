@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $subtitulo3 = $data["subtitulo3"];
     $subtitulo4 = $data["subtitulo4"];
     $subtitulo5 = $data["subtitulo5"];
-    $producto = 138;
+    $producto = 138; // esto no es del todo correcto, deberia ser a nivel de la clase materia prima
 
     if (empty($fechaDesde)) {
         // inicio de mes
@@ -350,17 +350,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // numero ingreso
         $columnLetter = $grupos_plantilla["UND"]["columna"];
         $sheet->setCellValue("{$columnLetter}{$filaIndex}", $simMed);
-        // // proveedor
-        // $columnLetter = $grupos_plantilla["PROVEEDOR"]["columna"];
-        // $sheet->setCellValue("{$columnLetter}{$filaIndex}", $nomProv);
-        // $sheet->getStyle("{$columnLetter}{$filaIndex}")->getAlignment()->setWrapText(true);
         // cantidad
         $columnLetter = $grupos_plantilla["CANTIDAD"]["columna"];
         $sheet->setCellValue("{$columnLetter}{$filaIndex}", $canTotEnt);
         $sheet->getStyle("{$columnLetter}{$filaIndex}")->getNumberFormat()->setFormatCode('0.000');
-        // // fecha vencimiento
-        // $columnLetter = $grupos_plantilla["FECHA VENCIMIENTO"]["columna"];
-        // $sheet->setCellValue("{$columnLetter}{$filaIndex}", $fecvenEntSto);
         // conformidad
         $columnLetter = $grupos_plantilla["CONDICIONES DE HIGIENE DEL TRANSPORTE"]["columna"];
         $sheet->setCellValue("{$columnLetter}{$filaIndex}", strtoupper($desEntCalEst));
@@ -369,10 +362,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $columnLetter = $grupos_plantilla["V°B° RECEPCION"]["columna"];
         $sheet->setCellValue("{$columnLetter}{$filaIndex}", strtoupper($nomEncCal));
         $sheet->getStyle("{$columnLetter}{$filaIndex}")->getAlignment()->setWrapText(true);
-        // // observaciones
-        // $columnLetter = $grupos_plantilla["OBSERVACIONES/ACCIONES CORRECTIVAS"]["columna"];
-        // $sheet->setCellValue("{$columnLetter}{$filaIndex}", $obsAccEntCal);
-        // $sheet->getStyle("{$columnLetter}{$filaIndex}")->getAlignment()->setWrapText(true);
 
         // actualizamos el index
         $filaIndex++;

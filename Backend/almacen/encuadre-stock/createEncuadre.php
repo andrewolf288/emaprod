@@ -87,28 +87,55 @@ if (isset($_FILES['encuadre_excel']) && $_FILES['encuadre_excel']['error'] === U
                 $stmt_insert_operacion_encuadre_detalle->execute();
                 $idLastInsertionOpeEncDet = $pdo->lastInsertId();
 
-                // comprobamos si la diferencia es mayor a 0, realizamos una entrada
-                if ($diferencia > 0) {
-                    if ($esMat) {
-                        entradaDetalleEncuadre($row_producto["id"], $codProd2, $idAlmacen, $diferencia_valor_absoluto, $idLastInsertionOpeEncDet, $pdo);
+                // almacen que no es desmedro
+                if ($idAlmacen != 7) {
+                    // comprobamos si la diferencia es mayor a 0, realizamos una entrada
+                    if ($diferencia > 0) {
+                        if ($esMat) {
+                            entradaDetalleEncuadre($row_producto["id"], $codProd2, $idAlmacen, $diferencia_valor_absoluto, $idLastInsertionOpeEncDet, $pdo);
+                        }
+                        if ($esProFin) {
+                            entradaDetalleEncuadre($row_producto["id"], $codProd2, $idAlmacen, $diferencia_valor_absoluto, $idLastInsertionOpeEncDet, $pdo, $detalle["produccion"], $detalle["lote"]);
+                        }
                     }
-                    if ($esProFin) {
-                        entradaDetalleEncuadre($row_producto["id"], $codProd2, $idAlmacen, $diferencia_valor_absoluto, $idLastInsertionOpeEncDet, $pdo, $detalle["produccion"], $detalle["lote"]);
+                    // comprobampos si la diferencia es menor a 0, realizamos una salida
+                    else {
+                        $result_operacion = array();
+                        if ($esMat) {
+                            $result_operacion = salidaDetalleEncuadre($row_producto["id"], $diferencia_valor_absoluto, $idLastInsertionOpeEncDet, $idAlmacen, $pdo);
+                        }
+                        if ($esProFin) {
+                            $result_operacion = salidaDetalleEncuadre($row_producto["id"], $diferencia_valor_absoluto, $idLastInsertionOpeEncDet, $idAlmacen, $pdo, $detalle["produccion"]);
+                        }
+                        $message_error_operacion  = $result_operacion["message_error"];
+                        if (!empty($message_error_operacion)) {
+                            $errorParse = $message_error_operacion . " Código de producto: {$codProd2}. Nombre producto: {$row_producto["nomProd"]}";
+                            array_push($dataErrors, $errorParse);
+                        }
                     }
-                }
-                // comprobampos si la diferencia es menor a 0, realizamos una salida
+                } 
+                // almacen de desmedro
                 else {
-                    $result_operacion = array();
-                    if ($esMat) {
-                        $result_operacion = salidaDetalleEncuadre($row_producto["id"], $diferencia_valor_absoluto, $idLastInsertionOpeEncDet, $idAlmacen, $pdo);
-                    }
-                    if ($esProFin) {
-                        $result_operacion = salidaDetalleEncuadre($row_producto["id"], $diferencia_valor_absoluto, $idLastInsertionOpeEncDet, $idAlmacen, $pdo, $detalle["produccion"]);
-                    }
-                    $message_error_operacion  = $result_operacion["message_error"];
-                    if (!empty($message_error_operacion)) {
-                        $errorParse = $message_error_operacion . " Código de producto: {$codProd2}. Nombre producto: {$row_producto["nomProd"]}";
-                        array_push($dataErrors, $errorParse);
+                    if ($diferencia > 0) {
+                        $sql_update_almacen_stock_entrada =
+                            "UPDATE almacen_stock 
+                        SET canSto = canSto + $diferencia_valor_absoluto,
+                        canStoDis = canStoDis + $diferencia_valor_absoluto
+                        WHERE idProd = ? AND idAlm = ?";
+                        $stmt_update_almacen_stock_entrada = $pdo->prepare($sql_update_almacen_stock_entrada);
+                        $stmt_update_almacen_stock_entrada->bindParam(1, $row_producto["id"], PDO::PARAM_INT);
+                        $stmt_update_almacen_stock_entrada->bindParam(2, $idAlmacen, PDO::PARAM_INT);
+                        $stmt_update_almacen_stock_entrada->execute();
+                    } else {
+                        $sql_update_almacen_stock_entrada =
+                            "UPDATE almacen_stock 
+                        SET canSto = canSto - $diferencia_valor_absoluto,
+                        canStoDis = canStoDis - $diferencia_valor_absoluto
+                        WHERE idProd = ? AND idAlm = ?";
+                        $stmt_update_almacen_stock_entrada = $pdo->prepare($sql_update_almacen_stock_entrada);
+                        $stmt_update_almacen_stock_entrada->bindParam(1, $row_producto["id"], PDO::PARAM_INT);
+                        $stmt_update_almacen_stock_entrada->bindParam(2, $idAlmacen, PDO::PARAM_INT);
+                        $stmt_update_almacen_stock_entrada->execute();
                     }
                 }
             }

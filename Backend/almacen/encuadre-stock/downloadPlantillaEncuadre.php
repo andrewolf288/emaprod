@@ -62,7 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     pd.esMatPri,
     pd.esEnvEnc,
     pd.esMerProm,
-    pd.esProFin
+    pd.esProFin,
+    als.canStoDis
     FROM almacen_stock AS als
     JOIN producto AS pd ON pd.id = als.idProd
     LEFT JOIN clase AS cl ON cl.id = pd.idCla
@@ -85,24 +86,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $esEnvEnc = $row_almacen_producto["esEnvEnc"];
         $esMerProm = $row_almacen_producto["esMerProm"];
         $esProdFin = $row_almacen_producto["esProFin"];
+        $total_stock = $idAlm == 7 ? $row_almacen_producto["canStoDis"] : 0;
 
-        // consultamos los saldos de las entradas
-        $sql_count_stock_entradas =
-            "SELECT SUM(es.canTotDis) AS canTotDis
-        FROM entrada_stock AS es
-        WHERE es.idProd = ? AND es.idEntStoEst = ? AND es.canTotDis > 0 AND es.idAlm = ?";
-        $stmt_count_stock_entradas = $pdo->prepare($sql_count_stock_entradas);
-        $stmt_count_stock_entradas->bindParam(1, $idProdt, PDO::PARAM_INT);
-        $stmt_count_stock_entradas->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
-        $stmt_count_stock_entradas->bindParam(3, $idAlm, PDO::PARAM_INT);
-        $stmt_count_stock_entradas->execute();
-        $count_total_entrada_stock = $stmt_count_stock_entradas->fetch(PDO::FETCH_ASSOC);
+        if ($idAlm != 7) {
+            // consultamos los saldos de las entradas
+            $sql_count_stock_entradas =
+                "SELECT SUM(es.canTotDis) AS canTotDis
+            FROM entrada_stock AS es
+            WHERE es.idProd = ? AND es.idEntStoEst = ? AND es.canTotDis > 0 AND es.idAlm = ?";
+            $stmt_count_stock_entradas = $pdo->prepare($sql_count_stock_entradas);
+            $stmt_count_stock_entradas->bindParam(1, $idProdt, PDO::PARAM_INT);
+            $stmt_count_stock_entradas->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
+            $stmt_count_stock_entradas->bindParam(3, $idAlm, PDO::PARAM_INT);
+            $stmt_count_stock_entradas->execute();
+            $count_total_entrada_stock = $stmt_count_stock_entradas->fetch(PDO::FETCH_ASSOC);
 
-        $total_stock = 0;
-        if (empty($count_total_entrada_stock['canTotDis'])) {
-            $total_stock = 0;
-        } else {
-            $total_stock = $count_total_entrada_stock['canTotDis'];
+            if (empty($count_total_entrada_stock['canTotDis'])) {
+                $total_stock = 0;
+            } else {
+                $total_stock = $count_total_entrada_stock['canTotDis'];
+            }
         }
 
         $array_data = array(
@@ -140,15 +143,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     // reporte de embalajes y auxiliares
     if (!empty($esEnvEncData)) {
-        generateSheetByName($spreadsheet, "Embalajes-Auxiliares", $esEnvEncData, false, $header, $widthColumn, $typeData);
+        $creationFlag = empty($esMatPriData) ? true : false;
+        generateSheetByName($spreadsheet, "Embalajes-Auxiliares", $esEnvEncData, $creationFlag, $header, $widthColumn, $typeData);
     }
     // reporte de promociones
     if (!empty($esMerPromData)) {
-        generateSheetByName($spreadsheet, "Promociones", $esMerPromData, false, $header, $widthColumn, $typeData);
+        $creationFlag = empty($esMatPriData) && empty($esEnvEncData) ? true : false;
+        generateSheetByName($spreadsheet, "Promociones", $esMerPromData, $creationFlag, $header, $widthColumn, $typeData);
     }
     // reporte de productos finales
     if (!empty($esProdFinData)) {
-        generateSheetByName($spreadsheet, "Producto final", $esProdFinData, false, $headerProductoFinal, $widthColumnProductoFinal, $typeDataProductoFinal);
+        $creationFlag = empty($esMatPriData) && empty($esEnvEncData) && empty($esProdFinData) ? true : false;
+        generateSheetByName($spreadsheet, "Producto final", $esProdFinData, $creationFlag, $headerProductoFinal, $widthColumnProductoFinal, $typeDataProductoFinal);
     }
 
     // Guardar el archivo Excel

@@ -265,6 +265,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_descripcion_revision_producto = $pdo->prepare($sql_descripcion_revision_producto);
     $stmt_descripcion_revision_producto->execute();
     $row_descripcion_revision_producto = $stmt_descripcion_revision_producto->fetch(PDO::FETCH_ASSOC);
+    
     if ($row_descripcion_revision_producto) {
         $filaFinEncabezado = $filaFinEncabezado + 2;
         $desRevCalDet = $row_descripcion_revision_producto["desRevCalDet"];

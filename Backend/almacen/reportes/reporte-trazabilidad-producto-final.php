@@ -237,7 +237,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             array_push($result["data"], $aux_salida);
         }
 
-        // salidas por reproceso masivo (pendiente)
+        // ----salidas por reproceso masivo (pendiente)----
 
         // ----salidas por empaquetado promocional----
         $sql_salida_requisicion_empaquetado_promocional =
