@@ -3,21 +3,31 @@ import { FilterProductosDynamic } from '../../../components/ReferencialesFilters
 import config from '../../../config'
 import axios from 'axios'
 import FechaPickerMonthDynamic from '../../../components/Fechas/FechaPickerMonthDynamic'
+import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic'
+import { alertWarning } from '../../../utils/alerts/alertsCustoms'
 
 export const ReporteTrazabilidadProductoFinal = () => {
   const [filterData, setFilterData] = useState({
     producto: 0,
     fechaDesde: '',
-    fechaHasta: ''
+    fechaHasta: '',
+    almacen: ''
   })
 
-  const { producto, fechaDesde, fechaHasta } = filterData
+  const { producto, fechaDesde, fechaHasta, almacen } = filterData
 
   // controlador de producto
   const handleProducto = ({ id }) => {
     setFilterData({
       ...filterData,
       producto: id
+    })
+  }
+
+  const handleAlmacen = ({ id }) => {
+    setFilterData({
+      ...filterData,
+      almacen: id
     })
   }
 
@@ -42,7 +52,6 @@ export const ReporteTrazabilidadProductoFinal = () => {
 
     if (errors.length === 0) {
       // hacemos una peticion
-      console.log(filterData)
       exportarReporte()
     } else {
       const handleErrors = errors.join('\n')
@@ -54,24 +63,35 @@ export const ReporteTrazabilidadProductoFinal = () => {
   const exportarReporte = () => {
     const domain = config.API_URL
     const path = '/almacen/reportes/reporte-trazabilidad-producto-final.php'
-    axios({
-      url: domain + path,
-      data: filterData,
-      method: 'POST',
-      responseType: 'blob' // Importante para recibir datos binarios (Blob)
-    })
-      .then((response) => {
-        // Crear un enlace temporal para descargar el archivo
-        const url = window.URL.createObjectURL(new Blob([response.data]))
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'archivo_excel.xlsx'
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        window.URL.revokeObjectURL(url)
+    let handleErrors = ''
+    if (almacen === 0 || producto === 0) {
+      if (almacen === 0) {
+        handleErrors += '- Debes seleccionar un almacen\n'
+      }
+      if (producto === 0) {
+        handleErrors += '- Debes seleccionar un producto\n'
+      }
+      alertWarning(handleErrors)
+    } else {
+      axios({
+        url: domain + path,
+        data: filterData,
+        method: 'POST',
+        responseType: 'blob' // Importante para recibir datos binarios (Blob)
       })
-      .catch((error) => alert('Error al descargar el archivo', error))
+        .then((response) => {
+          // Crear un enlace temporal para descargar el archivo
+          const url = window.URL.createObjectURL(new Blob([response.data]))
+          const a = document.createElement('a')
+          a.href = url
+          a.download = 'archivo_excel.xlsx'
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          window.URL.revokeObjectURL(url)
+        })
+        .catch((error) => alert('Error al descargar el archivo', error))
+    }
   }
 
   return (
@@ -101,6 +121,14 @@ export const ReporteTrazabilidadProductoFinal = () => {
             <FilterProductosDynamic
               onNewInput={handleProducto}
               defaultValue={producto}
+            />
+          </div>
+          <div className="col-3">
+            {/* filter */}
+            <label className="form-label">Almacen</label>
+            <FilterAlmacenDynamic
+              onNewInput={handleAlmacen}
+              defaultValue={almacen}
             />
           </div>
         </div>

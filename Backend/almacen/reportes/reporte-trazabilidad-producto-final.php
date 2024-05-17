@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = json_decode($json, true);
 
     $producto = $data["producto"];
-    $almacenPrincipal = 1; // almacen principal
+    $almacen = $data["almacen"]; // almacen principal
     $fechaDesde = $data["fechaDesde"];
     $fechaHasta = $data["fechaHasta"];
 
@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_select_entradas_producto_final->bindParam(2, $idEntStoTipOrdTran, PDO::PARAM_INT);
     $stmt_select_entradas_producto_final->bindParam(3, $idEntStoTipOrdIrra, PDO::PARAM_INT);
     $stmt_select_entradas_producto_final->bindParam(4, $producto, PDO::PARAM_INT);
-    $stmt_select_entradas_producto_final->bindParam(5, $almacenPrincipal, PDO::PARAM_INT);
+    $stmt_select_entradas_producto_final->bindParam(5, $almacen, PDO::PARAM_INT);
     $stmt_select_entradas_producto_final->execute();
 
     while ($row_entrada = $stmt_select_entradas_producto_final->fetch(PDO::FETCH_ASSOC)) {
