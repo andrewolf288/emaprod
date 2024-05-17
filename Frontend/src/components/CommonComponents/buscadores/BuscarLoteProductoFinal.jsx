@@ -1,13 +1,13 @@
+import { useState } from 'react'
 import AddCircle from '@mui/icons-material/AddCircle'
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, IconButton, Typography } from '@mui/material'
-import { useState } from 'react'
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 import FechaPickerYearAndMonthDynamic from '../../Fechas/FechaPickerYearAndMonthDynamic'
 import { alertWarning } from '../../../utils/alerts/alertsCustoms'
-import { searchAndCreateLoteProduccionDestino } from './searchAndCreateLoteProduccionDestino'
+import { searchLoteProductoFinal } from './searchLoteProductoFinal'
 
 // DIALOGO DE CREACION/BUSQUEDA DE LOTES DE PRODUCCION
-export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm }) => {
+export const BuscarLoteProductoFinal = ({ dataDetalle, handleConfirm }) => {
   // manejador de dialog
   const [open, setOpen] = useState(false)
   // manejador de datos
@@ -111,11 +111,11 @@ export const SearchCreationLoteProduccionDestino = ({ dataDetalle, handleConfirm
         idProdt: dataDetalle.idProdt,
         ...dataProduccion
       }
-      const resultPeticion = await searchAndCreateLoteProduccionDestino(formatData)
+      const resultPeticion = await searchLoteProductoFinal(formatData)
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
         // llamamos al handleConfirm
-        handleConfirm(dataDetalle.index, result)
+        handleConfirm(dataDetalle.idProdt, result)
         // cerramos el dialogo
         handleClose()
       } else {

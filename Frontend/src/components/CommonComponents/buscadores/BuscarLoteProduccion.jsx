@@ -6,7 +6,7 @@ import FechaPickerYearAndMonthDynamic from '../../Fechas/FechaPickerYearAndMonth
 import { alertWarning } from '../../../utils/alerts/alertsCustoms'
 import { buscarLoteProduccionInformacion } from './buscarLoteProduccionInformacion'
 
-export const BuscarLoteProduccion = ({ handleConfirm }) => {
+export const BuscarLoteProduccion = ({ dataDetalle, handleConfirm }) => {
   // manejador de dialog
   const [open, setOpen] = useState(false)
   // manejador de datos
@@ -110,7 +110,7 @@ export const BuscarLoteProduccion = ({ handleConfirm }) => {
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
         // llamamos al handleConfirm
-        handleConfirm(result)
+        handleConfirm(dataDetalle.index, result)
         // cerramos el dialogo
         handleClose()
       } else {

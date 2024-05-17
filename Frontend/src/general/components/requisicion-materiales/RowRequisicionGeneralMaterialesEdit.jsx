@@ -2,7 +2,7 @@ import { IconButton, TableCell, TableRow, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
-import { SearchCreationLoteProduccionDestino } from '../../../components/CommonComponents/LoteProduccion/SearchCreationLoteProduccionDestino'
+import { BuscarLoteProductoFinal } from '../../../components/CommonComponents/buscadores/BuscarLoteProductoFinal'
 
 export const RowRequisicionGeneralMaterialesEdit = ({
   item,
@@ -34,7 +34,7 @@ export const RowRequisicionGeneralMaterialesEdit = ({
         {
           idProdc === null
             ? (
-              <SearchCreationLoteProduccionDestino
+              <BuscarLoteProductoFinal
                 dataDetalle={item}
                 handleConfirm={auxAgregarLoteProduccion}
               />

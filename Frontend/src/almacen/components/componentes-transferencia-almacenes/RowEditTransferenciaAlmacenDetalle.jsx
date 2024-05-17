@@ -1,24 +1,27 @@
-import { TableCell, TableRow, TextField } from '@mui/material'
 import React, { useState } from 'react'
-import { BuscarLoteProduccion } from '../../../components/CommonComponents/buscadores/BuscarLoteProduccion'
-import { BuscarEntradaStockByParteEntrada } from '../../../components/CommonComponents/buscadores/BuscarEntradaStockByParteEntrada'
+import { IconButton, TableCell, TableRow, TextField } from '@mui/material'
 import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
+import { BuscarEntradasStock } from '../../../components/CommonComponents/buscadores/BuscarEntradasStock'
+import { ViewDetalleEntradasStock } from '../../../components/CommonComponents/buscadores/ViewDetalleEntradasStock'
+import CancelIcon from '@mui/icons-material/Cancel'
+import { BuscarLoteProductoFinal } from '../../../components/CommonComponents/buscadores/BuscarLoteProductoFinal'
 
 export const RowEditTransferenciaAlmacenDetalle = (
   {
-    index,
     detalle,
     onEdit,
     onDelete,
-    onQuitarReferencia,
+    onQuitarReferenciaLoteProduccion,
+    onQuitarReferenciaEntrada,
     onAgregarReferenciaEntrada,
-    onAgregarReferenciaLoteProduccion
+    onAgregarReferenciaLoteProduccion,
+    idAlmacen
   }
 ) => {
-  const { esProFin, codLotProd, fecVenLotProd, idProdc, idEntSto, codEntSto } = detalle
+  const { esProFin, codLotProd, fecVenLotProd, idProdc, detEntSto } = detalle
   const [disabledInput, setdisabledInput] = useState(true)
 
-  const textReferenciaEntrada = idEntSto ? `${codEntSto}` : 'No asignado'
+  const textReferenciaEntrada = detEntSto.length !== 0 ? '' : 'No asignado'
   const textReferenciaLoteProduccion = idProdc
     ? `${codLotProd} - ${mostrarMesYAnio(fecVenLotProd)}`
     : 'No asignado'
@@ -30,11 +33,43 @@ export const RowEditTransferenciaAlmacenDetalle = (
           esProFin === 1
             ? <>
               <span className='me-2'>{textReferenciaLoteProduccion}</span>
-              <BuscarLoteProduccion />
+              {
+                idProdc
+                  ? (
+                    <IconButton onClick={() => onQuitarReferenciaLoteProduccion(detalle.idProdt)}>
+                      <CancelIcon color='error'/>
+                    </IconButton>
+                  )
+                  : (
+                    <BuscarLoteProductoFinal
+                      dataDetalle={detalle}
+                      handleConfirm={onAgregarReferenciaLoteProduccion}
+                    />
+                  )
+              }
             </>
             : <>
-              <span className='me-2'>{textReferenciaEntrada}</span>
-              <BuscarEntradaStockByParteEntrada />
+              {
+                detEntSto.length === 0
+                  ? (
+                    <>
+                      <span className='me-2'>{textReferenciaEntrada}</span>
+                      <BuscarEntradasStock
+                        detalle={detalle}
+                        idAlmacen={idAlmacen}
+                        handleConfirm={onAgregarReferenciaEntrada}
+                      />
+                    </>
+                  )
+                  : (
+                    <>
+                      <IconButton onClick={() => onQuitarReferenciaEntrada(detalle.idProdt)}>
+                        <CancelIcon color='error'/>
+                      </IconButton>
+                      <ViewDetalleEntradasStock dataEntradas={detEntSto} detalle={detalle}/>
+                    </>
+                  )
+              }
             </>
         }
       </TableCell>
@@ -48,17 +83,19 @@ export const RowEditTransferenciaAlmacenDetalle = (
         {detalle.nomProd}
       </TableCell>
       <TableCell>
-        <TextField
-          size="small"
-          onChange={(e) => {
-            onEdit(e, index)
-          }}
-          type="number"
-          name="inputCantidad"
-          value={detalle.canMatPriFor}
-          disabled={disabledInput}
-        />
-        <label className="ms-2">{detalle.simMed}</label>
+        <div className='d-flex align-items-center'>
+          <TextField
+            size="small"
+            onChange={(e) => {
+              onEdit(e, detalle)
+            }}
+            type="number"
+            name="inputCantidad"
+            value={detalle.canMatPriFor}
+            disabled={disabledInput}
+          />
+          <label className="ms-2">{detalle.simMed}</label>
+        </div>
       </TableCell>
       <TableCell align="left">
         <div className="btn-toolbar">
@@ -81,7 +118,7 @@ export const RowEditTransferenciaAlmacenDetalle = (
           </button>
           <button
             onClick={() => {
-              onDelete(index)
+              onDelete(detalle)
             }}
             className="btn btn-danger"
           >

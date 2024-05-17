@@ -1,10 +1,10 @@
 import React from 'react'
 import { CustomActionsView } from '../../../components/CustomComponents/CustomActionsView'
-import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic'
 import { FilterProductosDynamic } from '../../../components/ReferencialesFilters/Producto/FilterProductosDynamic'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
 import { useCreateTransferenciaAlmacenes } from '../../hooks/transferencia-almacenes/useCreateTransferenciaAlmacenes'
 import { RowEditTransferenciaAlmacenDetalle } from '../../components/componentes-transferencia-almacenes/RowEditTransferenciaAlmacenDetalle'
+import { FilterAlmacenDynamicOnlyData } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamicOnlyData'
 
 export const AgregarTransferenciaAlmacen = () => {
   const {
@@ -12,7 +12,17 @@ export const AgregarTransferenciaAlmacen = () => {
     produtSelected,
     handleAddProductoDetalleRequisicionMateriales,
     handleChangeCantidadRequisicionMateriales,
-    handleChangeProductoRequisicionMateriales
+    handleChangeProductoRequisicionMateriales,
+    almacenes,
+    handleChangeAlmacenDestino,
+    handleChangeAlmacenOrigen,
+    deleteDetalleTransferenciaAlmacenes,
+    updateDetalleTransferenciaAlmacenes,
+    onAddReferenciaEntradasSalidaTransferencia,
+    onAddReferenciaLoteProduccionSalidaTransferencia,
+    onRemoveReferenciaEntradasSalidaTransferencia,
+    onRemoveReferenciaLoteProduccionSalidaTransferencia,
+    crearTransferenciaAlmacenes
   } = useCreateTransferenciaAlmacenes()
   return <>
     <div className='cotainer-fluid'>
@@ -23,14 +33,19 @@ export const AgregarTransferenciaAlmacen = () => {
           <div className='row mb-2 mb-md-2'>
             <div className='col-md-3 col-12 mb-2'>
               <label className="form-label fw-semibold">Almacen origen</label>
-              <FilterAlmacenDynamic defaultValue={transferenciaAlmacen.idAlmOri}/>
+              <FilterAlmacenDynamicOnlyData
+                defaultValue={transferenciaAlmacen.idAlmOri}
+                onNewInput={handleChangeAlmacenOrigen}
+                onlyData={almacenes}
+              />
             </div>
             <div className='col-md-3 col-12'>
               <label className="form-label fw-semibold">Almacen destino</label>
-              <FilterAlmacenDynamic defaultValue={transferenciaAlmacen.idAlmDes}/>
-            </div>
-            <div className='col-md-4 col-12'>
-              <label className="form-label fw-semibold">Motivo transferencia</label>
+              <FilterAlmacenDynamicOnlyData
+                defaultValue={transferenciaAlmacen.idAlmDes}
+                onNewInput={handleChangeAlmacenDestino}
+                onlyData={almacenes}
+              />
             </div>
           </div>
           <div className='row'>
@@ -79,7 +94,7 @@ export const AgregarTransferenciaAlmacen = () => {
                 >
                   <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                 </svg>
-                    Agregar
+                Agregar
               </button>
             </div>
           </div>
@@ -96,30 +111,37 @@ export const AgregarTransferenciaAlmacen = () => {
                     }}
                   >
                     <TableCell align='left' width={70} sx={{ fontWeight: 'bold' }}>
-                          Referencia
+                      Referencia
                     </TableCell>
                     <TableCell align="left" width={100} sx={{ fontWeight: 'bold' }}>
-                          Codigo
+                      Codigo
                     </TableCell>
                     <TableCell align="left" width={120} sx={{ fontWeight: 'bold' }}>
-                          Clase
+                      Clase
                     </TableCell>
                     <TableCell align='left' width={200} sx={{ fontWeight: 'bold' }}>
-                          Nombre
+                      Nombre
                     </TableCell>
                     <TableCell align="left" width={150} sx={{ fontWeight: 'bold' }}>
-                          Cantidad
+                      Cantidad
                     </TableCell>
                     <TableCell align="left" width={150} sx={{ fontWeight: 'bold' }}>
-                          Acciones
+                      Acciones
                     </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {transferenciaAlmacen.detTranAlm.map((element, index) => (
-                    <RowEditTransferenciaAlmacenDetalle key={index}
-                      index={index}
+                    <RowEditTransferenciaAlmacenDetalle
+                      key={index}
                       detalle={element}
+                      idAlmacen={transferenciaAlmacen.idAlmOri}
+                      onDelete={deleteDetalleTransferenciaAlmacenes}
+                      onEdit={updateDetalleTransferenciaAlmacenes}
+                      onAgregarReferenciaEntrada={onAddReferenciaEntradasSalidaTransferencia}
+                      onAgregarReferenciaLoteProduccion={onAddReferenciaLoteProduccionSalidaTransferencia}
+                      onQuitarReferenciaEntrada={onRemoveReferenciaEntradasSalidaTransferencia}
+                      onQuitarReferenciaLoteProduccion={onRemoveReferenciaLoteProduccionSalidaTransferencia}
                     />
                   ))}
                 </TableBody>
@@ -128,7 +150,9 @@ export const AgregarTransferenciaAlmacen = () => {
           </Paper>
         </div>
       </div>
-      <CustomActionsView />
+      <CustomActionsView
+        onSaveOperation={crearTransferenciaAlmacenes}
+      />
     </div>
   </>
 }
