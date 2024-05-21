@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             es.canTotDis 
             FROM entrada_stock AS es
             WHERE idProd = ? AND idEntStoEst = ? AND canTotDis > 0 AND idAlm = ?";
-            if($esProFin == 1){
+            if($esProFin == 1 && !is_null($idProdc)){
                 $sql_consult_entradas_disponibles .= " AND refProdc = ?";
             }
             $sql_consult_entradas_disponibles .= " ORDER BY es.fecEntSto ASC";
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_consult_entradas_disponibles->bindParam(1, $idProdt, PDO::PARAM_INT);
             $stmt_consult_entradas_disponibles->bindParam(2, $idEntStoEst, PDO::PARAM_INT);
             $stmt_consult_entradas_disponibles->bindParam(3, $idAlmacenPrincipal, PDO::PARAM_INT);
-            if($esProFin == 1){
+            if($esProFin == 1 && !is_null($idProdc)){
                 $stmt_consult_entradas_disponibles->bindParam(4, $idProdc, PDO::PARAM_INT);
             }
             $stmt_consult_entradas_disponibles->execute();

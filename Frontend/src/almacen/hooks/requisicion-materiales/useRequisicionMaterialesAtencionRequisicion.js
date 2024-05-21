@@ -98,6 +98,7 @@ export function useRequisicionMaterialesAtencionRequisicion () {
 
   const traerRequisicionMaterialesById = async () => {
     const resultPeticion = await getRequisicionGeneralMaterialesAlmacenById(idReqMat)
+    console.log(resultPeticion)
     const { message_error, description_error, result } = resultPeticion
     if (message_error.length === 0) {
       setRequisicionMateriales(result)

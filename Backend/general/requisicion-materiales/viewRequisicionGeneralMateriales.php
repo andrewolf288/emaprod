@@ -49,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             p.nomProd,
             p.codProd,
             p.codProd2,
+            p.esProFin,
             cl.desCla,
             sc.desSubCla,
             me.simMed,

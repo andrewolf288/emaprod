@@ -210,55 +210,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             array_push($result["data"], $aux_agregacion);
         }
 
-        // devoluciones realizadas
-        $sql_devoluciones =
-            "SELECT
-            rd.correlativo,
-            tde.idReqDevDet,
-            tde.canReqDevDet,
-            pdm.desProdDevMot,
-            p.codLotProd,
-            p.numop,
-            DATE(tde.fecCreTraDevEnt) AS fecCreTraDevEnt
-            FROM trazabilidad_devolucion_entrada AS tde
-            JOIN requisicion_devolucion_detalle AS rdd ON rdd.id = tde.idReqDevDet
-            JOIN produccion_devolucion_motivo AS pdm ON rdd.idMotDev = pdm.id
-            JOIN requisicion_devolucion AS rd ON rd.id = rdd.idReqDev
-            JOIN produccion AS p ON p.id = rd.idProdc
-            WHERE idEntSto = ?";
-        $stmt_devoluciones = $pdo->prepare($sql_devoluciones);
-        $stmt_devoluciones->bindParam(1, $idEntSto, PDO::PARAM_INT);
-        $stmt_devoluciones->execute();
-
-        while ($row_devolucion = $stmt_devoluciones->fetch(PDO::FETCH_ASSOC)) {
-            $codLotProd = $row_devolucion["codLotProd"]; // codigo lote produccion
-            $fechaEntradaDevolucion = $row_devolucion["fecCreTraDevEnt"]; // fec. entrada devolucion
-            $canReqDevDet = $row_devolucion["canReqDevDet"]; // cantidad entrada
-            $motivo_devolucion = $row_devolucion["desProdDevMot"]; // motivo de devolucion
-            $numopDev = $row_devolucion["correlativo"]; // numero operacion devolucion
-
-            $aux_devolucion = array(
-                "docEntSto" => $docEntSto,
-                "guiRem" => $guiRem,
-                "codEntSto" => $codEntSto,
-                "nomAlm" => $nomAlm,
-                "codProd" => $codProd,
-                "codProd2" => $codProd2,
-                "nomProd" => $nomProd,
-                "simMed" => $simMed,
-                "codLotProd" => $codLotProd,
-                "numope" => $numopDev,
-                "fecVenEntSto" => "",
-                "fecEntSto" => $fechaEntradaDevolucion,
-                "fecSalSto" => "",
-                "motOpe" => "DV-" . $motivo_devolucion,
-                "canTotEnt" => $canReqDevDet,
-                "canSalSto" => "",
-                "canTotDis" => ""
-            );
-            array_push($result["data"], $aux_devolucion);
-        }
-
         // ---- transformacion salida ----
         $sql_transformacion_salida =
             "SELECT 
@@ -431,10 +382,138 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             array_push($result["data"], $aux_salida_encuadre);
         }
 
-        // ---- transformacion devolucion ----
-        // ---- reproceso devolucion ----
-        // ---- requisicion general devolucion ----
-        // ---- encuadre entrada ----
+        // devoluciones realizadas
+        $sql_devoluciones =
+            "SELECT
+        rd.correlativo,
+        tde.idReqDevDet,
+        tde.canReqDevDet,
+        pdm.desProdDevMot,
+        p.codLotProd,
+        p.numop,
+        DATE(tde.fecCreTraDevEnt) AS fecCreTraDevEnt
+        FROM trazabilidad_devolucion_entrada AS tde
+        JOIN requisicion_devolucion_detalle AS rdd ON rdd.id = tde.idReqDevDet
+        JOIN produccion_devolucion_motivo AS pdm ON rdd.idMotDev = pdm.id
+        JOIN requisicion_devolucion AS rd ON rd.id = rdd.idReqDev
+        JOIN produccion AS p ON p.id = rd.idProdc
+        WHERE idEntSto = ?";
+        $stmt_devoluciones = $pdo->prepare($sql_devoluciones);
+        $stmt_devoluciones->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_devoluciones->execute();
+
+        while ($row_devolucion = $stmt_devoluciones->fetch(PDO::FETCH_ASSOC)) {
+            $codLotProd = $row_devolucion["codLotProd"]; // codigo lote produccion
+            $fechaEntradaDevolucion = $row_devolucion["fecCreTraDevEnt"]; // fec. entrada devolucion
+            $canReqDevDet = $row_devolucion["canReqDevDet"]; // cantidad entrada
+            $motivo_devolucion = $row_devolucion["desProdDevMot"]; // motivo de devolucion
+            $numopDev = $row_devolucion["correlativo"]; // numero operacion devolucion
+
+            $aux_devolucion = array(
+                "docEntSto" => $docEntSto,
+                "guiRem" => $guiRem,
+                "codEntSto" => $codEntSto,
+                "nomAlm" => $nomAlm,
+                "codProd" => $codProd,
+                "codProd2" => $codProd2,
+                "nomProd" => $nomProd,
+                "simMed" => $simMed,
+                "codLotProd" => $codLotProd,
+                "numope" => $numopDev,
+                "fecVenEntSto" => "",
+                "fecEntSto" => $fechaEntradaDevolucion,
+                "fecSalSto" => "",
+                "motOpe" => "DV-" . $motivo_devolucion,
+                "canTotEnt" => $canReqDevDet,
+                "canSalSto" => "",
+                "canTotDis" => ""
+            );
+            array_push($result["data"], $aux_devolucion);
+        }
+
+        // ---- requisicion general devolucion (trazabilidad_requisicion_devolucion_materiales) ----
+        $sql_requisicion_general_devolucion =
+            "SELECT 
+        rm.codReqMat,
+        trdm.canReqDevMatDet,
+        DATE(trdm.fecCreTraReqDev) AS fecCreTraReqDev
+        FROM trazabilidad_requisicion_devolucion_materiales AS trdm
+        JOIN requisicion_devolucion_materiales_detalle AS rdmd ON rdmd.id = trdm.idReqDevMatDet
+        JOIN requisicion_devolucion_materiales AS rdm ON rdm.id = rdmd.idReqDevMat
+        JOIN requisicion_materiales AS rm ON rm.id = rdm.idReqMat
+        WHERE trdm.idEntSto = ?";
+        $stmt_requisicion_general_devolucion = $pdo->prepare($sql_requisicion_general_devolucion);
+        $stmt_requisicion_general_devolucion->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_requisicion_general_devolucion->execute();
+
+        while ($row_requisicion_general_devolucion = $stmt_requisicion_general_devolucion->fetch(PDO::FETCH_ASSOC)) {
+            $canReqDevMatDet = $row_requisicion_general_devolucion["canReqDevMatDet"];
+            $fecCreTraReqDev = $row_requisicion_general_devolucion["fecCreTraReqDev"];
+            $correlativo = $row_requisicion_general_devolucion["codReqMat"];
+
+            $aux_encuadre_entrada = array(
+                "docEntSto" => $docEntSto,
+                "guiRem" => $guiRem,
+                "codEntSto" => $codEntSto,
+                "nomAlm" => $nomAlm,
+                "codProd" => $codProd,
+                "codProd2" => $codProd2,
+                "nomProd" => $nomProd,
+                "simMed" => $simMed,
+                "codLotProd" => $codLotProd,
+                "numope" => $correlativo,
+                "fecVenEntSto" => "",
+                "fecEntSto" => $fecCreTraReqDev,
+                "fecSalSto" => "",
+                "motOpe" => "DV-R.GENERAL",
+                "canTotEnt" => $canReqDevMatDet,
+                "canSalSto" => "",
+                "canTotDis" => ""
+            );
+            array_push($result["data"], $aux_encuadre_entrada);
+        }
+
+        // ---- encuadre entrada (trazabilidad_entrada_operacion_encuadre_detalle) ----
+        $sql_encuadre_entrada =
+            "SELECT
+        pc.codLotProd,
+        teoed.canEntOpeEncDet,
+        DATE(teoed.fecCreTraEntOpeEncDet) AS fecCreTraEntOpeEncDet
+        FROM trazabilidad_entrada_operacion_encuadre_detalle AS teoed
+        JOIN operacion_encuadre_detalle AS oed ON oed.id = teoed.idOpeEncDet
+        LEFT JOIN produccion AS pc ON pc.id = oed.idProdc
+        WHERE teoed.idEntSto = ?";
+        $stmt_encuadre_entrada = $pdo->prepare($sql_encuadre_entrada);
+        $stmt_encuadre_entrada->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_encuadre_entrada->execute();
+
+        while ($row_encuadre_entrada = $stmt_encuadre_entrada->fetch(PDO::FETCH_ASSOC)) {
+            $codLotProd = $row_encuadre_entrada["codLotProd"];
+            $canEntOpeEncDet = $row_encuadre_entrada["canEntOpeEncDet"];
+            $fecCreTraEntOpeEncDet = $row_encuadre_entrada["fecCreTraEntOpeEncDet"];
+            $correlativo = "ENCUADRE ENTRADA";
+
+            $aux_encuadre_entrada = array(
+                "docEntSto" => $docEntSto,
+                "guiRem" => $guiRem,
+                "codEntSto" => $codEntSto,
+                "nomAlm" => $nomAlm,
+                "codProd" => $codProd,
+                "codProd2" => $codProd2,
+                "nomProd" => $nomProd,
+                "simMed" => $simMed,
+                "codLotProd" => $codLotProd,
+                "numope" => $correlativo,
+                "fecVenEntSto" => "",
+                "fecEntSto" => $fecCreTraEntOpeEncDet,
+                "fecSalSto" => "",
+                "motOpe" => "DV-ENCUADRE",
+                "canTotEnt" => $canEntOpeEncDet,
+                "canSalSto" => "",
+                "canTotDis" => ""
+            );
+            array_push($result["data"], $aux_encuadre_entrada);
+        }
     }
 
     // Crear el libro de trabajo
@@ -509,7 +588,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         $row++;
     }
-
 
     // Guardar el archivo Excel
     $writer = new Xlsx($spreadsheet);
