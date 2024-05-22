@@ -93,7 +93,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $canTotDis = $row_entrada["canTotDis"]; // cantidad disponible
         $desEntStoTip = $row_entrada["desEntStoTip"]; // tipo de entrada
 
-        // $auxEnt = [$docEntSto, $guiRem, $codEntSto, $nomAlm, $codProd, $codProd2, $nomProd, $simMed, "", "", $fecVenEntSto, $fecEntSto, "", "Entrada", $canTotEnt, "", $canTotDis];
         $auxEnt = array(
             "docEntSto" => $docEntSto,
             "guiRem" => $guiRem,
@@ -139,7 +138,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $numop = $row_salida["numop"]; // numero de operacion
             $desReqTip = $row_salida["desReqTip"];
 
-            // $aux_salida = [$docEntSto, $guiRem, $codEntSto, $nomAlm, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $numop, $fecVenEntSto, "", $fecSalStoReq, "Salida", "", $canSalStoReq, ""];
             $aux_salida = array(
                 "docEntSto" => $docEntSto,
                 "guiRem" => $guiRem,
@@ -187,7 +185,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $desProdAgrMot = $row_agregacion["desProdAgrMot"]; // motivo agregacion
             $numopAgr = $row_agregacion["correlativo"]; // numero operacion agregacion
 
-            // $aux_agregacion = [$docEntSto, $guiRem, $codEntSto, $nomAlm, $codProd, $codProd2, $nomProd, $simMed, $codLotProd, $numopAgr, $fecVenEntSto, "", $fecSalStoReq, "AG - " . $desProdAgrMot, "", $canSalStoReq, ""];
             $aux_agregacion = array(
                 "docEntSto" => $docEntSto,
                 "guiRem" => $guiRem,
@@ -380,6 +377,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "canTotDis" => ""
             );
             array_push($result["data"], $aux_salida_encuadre);
+        }
+
+        // salida de venta
+        $sql_salida_venta = 
+        "SELECT
+        msf.canMovOpeFac,
+        DATE(msf.fecCreMovOpeFac) AS fecCreMovOpeFac,
+        of.invSerFac,
+        of.invNumFac
+        FROM movimiento_operacion_facturacion AS msf
+        JOIN operacion_facturacion AS of ON of.id = msf.idOpeFac
+        WHERE msf.idEntSto = ?";
+        $stmt_salida_venta = $pdo->prepare($sql_salida_venta);
+        $stmt_salida_venta->bindParam(1, $idEntSto, PDO::PARAM_INT);
+        $stmt_salida_venta->execute();
+
+        while($row_salida_venta = $stmt_salida_venta->fetch(PDO::FETCH_ASSOC)){
+            $canMovOpeFac = $row_salida_venta["canMovOpeFac"];
+            $fecCreMovOpeFac = $row_salida_venta["fecCreMovOpeFac"];
+            $correlativo = $row_salida_venta["invSerFac"] . " - " . $row_salida_venta["invNumFac"];
+
+            $aux_salida_venta = array(
+                "docEntSto" => $docEntSto,
+                "guiRem" => $guiRem,
+                "codEntSto" => $codEntSto,
+                "nomAlm" => $nomAlm,
+                "codProd" => $codProd,
+                "codProd2" => $codProd2,
+                "nomProd" => $nomProd,
+                "simMed" => $simMed,
+                "codLotProd" => "",
+                "numope" => $correlativo,
+                "fecVenEntSto" => $fecVenEntSto,
+                "fecEntSto" => "",
+                "fecSalSto" => $fecCreMovOpeFac,
+                "motOpe" => "SL-MOVIMIENTO VENTA",
+                "canTotEnt" => "",
+                "canSalSto" => $canMovOpeFac,
+                "canTotDis" => ""
+            );
+            array_push($result["data"], $aux_salida_venta);
         }
 
         // devoluciones realizadas
