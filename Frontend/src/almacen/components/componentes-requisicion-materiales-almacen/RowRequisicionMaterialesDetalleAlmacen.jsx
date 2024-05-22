@@ -2,10 +2,11 @@ import React from 'react'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
-import { SearchCreationLoteProduccionDestino } from '../../../components/CommonComponents/LoteProduccion/SearchCreationLoteProduccionDestino'
 import { CustomDialogUpdateOperation } from '../../../components/CustomComponents/CustomDialogUpdateOperation'
 import { CustomDialogDeleteOperation } from '../../../components/CustomComponents/CustomDialogDeleteOperation'
 import { CustomDialogConfirmOperation } from '../../../components/CustomComponents/CustomDialogConfirmOperation'
+import { BuscarLoteProductoFinal } from '../../../components/CommonComponents/buscadores/BuscarLoteProductoFinal'
+import { BuscarLoteProduccion } from '../../../components/CommonComponents/buscadores/BuscarLoteProduccion'
 
 export const RowRequisicionMaterialesDetalleAlmacen = ({
   detalle,
@@ -14,7 +15,7 @@ export const RowRequisicionMaterialesDetalleAlmacen = ({
   onCreateSalida,
   onChangeLoteProduccion
 }) => {
-  const { idProdc, codLotProd, fecVenLotProd } = detalle
+  const { idProdc, codLotProd, fecVenLotProd, esProFin } = detalle
   const parseLote = idProdc === null ? 'Sin lote' : `${codLotProd} - ${mostrarMesYAnio(fecVenLotProd)}`
 
   const auxChangeLoteProduccion = (index, data) => {
@@ -25,7 +26,16 @@ export const RowRequisicionMaterialesDetalleAlmacen = ({
     <TableRow>
       <TableCell>
         {parseLote}
-        <SearchCreationLoteProduccionDestino dataDetalle={detalle} handleConfirm={auxChangeLoteProduccion}/>
+        {esProFin === 1
+          ? (<BuscarLoteProductoFinal
+            dataDetalle={detalle}
+            handleConfirm={auxChangeLoteProduccion}
+          />)
+          : (<BuscarLoteProduccion
+            dataDetalle={detalle}
+            handleConfirm={auxChangeLoteProduccion}
+          />) }
+        {/* <SearchCreationLoteProduccionDestino dataDetalle={detalle} handleConfirm={auxChangeLoteProduccion}/> */}
       </TableCell>
       <TableCell>{detalle.nomProd}</TableCell>
       <TableCell>

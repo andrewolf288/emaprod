@@ -74,7 +74,7 @@ export function useCreateRequisicionGeneralMateriales () {
       const { message_error, description_error, result } = resultPeticion
 
       if (message_error.length === 0) {
-        const { id, codProd, codProd2, desCla, desSubCla, nomProd, simMed } =
+        const { id, codProd, codProd2, desCla, desSubCla, nomProd, simMed, esProFin } =
               result[0]
         // GENERAMOS NUESTRO DETALLE DE FORMULA DE MATERIA PRIMA
         const detalleFormulaMateriaPrima = {
@@ -88,6 +88,7 @@ export function useCreateRequisicionGeneralMateriales () {
           desSubCla,
           nomProd,
           simMed,
+          esProFin,
           canMatPriFor: formatCantidad
         }
 

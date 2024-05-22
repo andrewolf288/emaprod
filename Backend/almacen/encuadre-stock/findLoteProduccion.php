@@ -48,7 +48,7 @@ function findLoteProduccion(string $codLotProd, string $fecVenLotProd, string $c
                         FROM producto 
                         WHERE id = ? LIMIT 1";
                     $stmt_select_origen_irradiaco = $pdo->prepare($sql_select_origen_irradiado);
-                    $stmt_select_origen_irradiaco->bindParam(1, $idProdt, PDO::PARAM_INT);
+                    $stmt_select_origen_irradiaco->bindParam(1, $proRef, PDO::PARAM_INT);
                     $stmt_select_origen_irradiaco->execute();
                     $row_producto_origen = $stmt_select_origen_irradiaco->fetch(PDO::FETCH_ASSOC);
 

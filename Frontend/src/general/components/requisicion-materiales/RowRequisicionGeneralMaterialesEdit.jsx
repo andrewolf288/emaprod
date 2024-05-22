@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { mostrarMesYAnio } from '../../../utils/functions/FormatDate'
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
 import { BuscarLoteProductoFinal } from '../../../components/CommonComponents/buscadores/BuscarLoteProductoFinal'
+import { BuscarLoteProduccion } from '../../../components/CommonComponents/buscadores/BuscarLoteProduccion'
 
 export const RowRequisicionGeneralMaterialesEdit = ({
   item,
@@ -14,7 +15,7 @@ export const RowRequisicionGeneralMaterialesEdit = ({
 }) => {
   const [disabledInput, setdisabledInput] = useState(true)
 
-  const { codLotProd, fecVenLotProd, idProdc } = item
+  const { codLotProd, fecVenLotProd, idProdc, esProFin } = item
   const textInfoLote = idProdc
     ? `${codLotProd} - ${mostrarMesYAnio(fecVenLotProd)}`
     : 'No asignado'
@@ -33,12 +34,17 @@ export const RowRequisicionGeneralMaterialesEdit = ({
         <span className='me-2'>{textInfoLote}</span>
         {
           idProdc === null
-            ? (
-              <BuscarLoteProductoFinal
+            ? esProFin === 1
+              ? (
+                <BuscarLoteProductoFinal
+                  dataDetalle={item}
+                  handleConfirm={auxAgregarLoteProduccion}
+                />
+              )
+              : <BuscarLoteProduccion
                 dataDetalle={item}
                 handleConfirm={auxAgregarLoteProduccion}
               />
-            )
             : (
               <IconButton
                 color="error"

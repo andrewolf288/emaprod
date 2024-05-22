@@ -111,6 +111,7 @@ export const BuscarLoteProductoFinal = ({ dataDetalle, handleConfirm }) => {
         idProdt: dataDetalle.idProdt,
         ...dataProduccion
       }
+      console.log(formatData)
       const resultPeticion = await searchLoteProductoFinal(formatData)
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
