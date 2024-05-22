@@ -2,14 +2,14 @@
 
 function getPDO()
 {
-    $user = "root";
-    $dbName = "emaprod_dev";
-    $password = "";
-    $database = new PDO('mysql:host=localhost;dbname=' . $dbName, $user, $password);
-    // $user = "sistemasR";
-    // $dbName = "emaprod";
-    // $password = "@5pn2W2m1";
-    // $database = new PDO('mysql:host=45.32.170.27;dbname=' . $dbName, $user, $password);
+    // $user = "root";
+    // $dbName = "emaprod_dev";
+    // $password = "";
+    // $database = new PDO('mysql:host=localhost;dbname=' . $dbName, $user, $password);
+    $user = "sistemasR";
+    $dbName = "emaprod";
+    $password = "@5pn2W2m1";
+    $database = new PDO('mysql:host=45.32.170.27;dbname=' . $dbName, $user, $password);
     // $user = "emafact";
     // $dbName = "emaprod";
     // $password = "emafactpass";
