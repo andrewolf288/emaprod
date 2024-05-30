@@ -1,5 +1,5 @@
 import { AgregarEntradaStockV2 } from './AgregarEntradaStockV2'
-import ListEntradaStock from './ListEntradaStock'
+import { ListEntradaStock } from './ListEntradasStock'
 import { ViewEntradaStock } from './ViewEntradaStock'
 
 export const RouterAlmacenEntradaStock = [

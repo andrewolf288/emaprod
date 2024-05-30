@@ -6,33 +6,37 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { TextField } from '@mui/material'
+import { Button, TextField } from '@mui/material'
 // import Checkbox from '@mui/material/Checkbox'
 import { Link } from 'react-router-dom'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import IconButton from '@mui/material/IconButton'
 import { CustomFilterDateRange } from '../../../components/CustomComponents/CustomFilterDateRange'
-import { useCreateEntradaStock } from '../../hooks/entrada-stock/useCreateEntradaStock'
 import { CustomLoading } from '../../../components/CustomComponents/CustomLoading'
-import { FilterAllProductosDynamic } from '../../../components/ReferencialesFilters/Producto/FilterAllProductosDynamic'
-import { FilterProveedorDynamic } from '../../../components/ReferencialesFilters/Proveedor/FilterProveedorDynamic'
-import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamic'
+import { useEntradasStock } from '../../hooks/entrada-stock/useEntradasStock'
+import CloseIcon from '@mui/icons-material/Close'
+import SearchIcon from '@mui/icons-material/Search'
+import { FilterAllProductosSelect } from '../../../components/ReferencialesFilters/Producto/FilterAllProductosSelect'
+import { FilterAlmacenDynamicSelect } from '../../../components/ReferencialesFilters/Almacen/FilterAlmacenDynamicSelect'
+import { FilterProveedorDynamicSelect } from '../../../components/ReferencialesFilters/Proveedor/FilterProveedorDynamicSelect'
 
-const ListEntradaStock = () => {
+export const ListEntradaStock = () => {
   const
     {
       loading,
       dateState,
       handleStartDateChange,
       handleEndDateChange,
-      dataEntSto,
+      dataEntStoTemp,
+      flagReset,
+      handledFilterData,
+      handledResetDataFilter,
       filterInputs,
       onChangeProducto,
       onChangeProveedor,
       onChangeAlmacen,
-      handleFormFilter,
-      cleanFilter
-    } = useCreateEntradaStock()
+      handleFormFilter
+    } = useEntradasStock()
 
   return (
     <>
@@ -44,12 +48,35 @@ const ListEntradaStock = () => {
             handleEndDateChange={handleEndDateChange}
           />
           <div className="col-6 d-flex justify-content-between align-items-center">
-            <button
-              className='btn btn-secondary col-2 me-4'
-              onClick={cleanFilter}
-            >
-              Borrar filtro
-            </button>
+            {flagReset
+              ? (
+                <Button
+                  startIcon={<CloseIcon />}
+                  sx={{
+                    textTransform: 'capitalize',
+                    borderRadius: '0px'
+                  }}
+                  color="error"
+                  variant="contained"
+                  onClick={handledResetDataFilter}
+                >
+                        Limpiar
+                </Button>
+              )
+              : (
+                <Button
+                  startIcon={<SearchIcon />}
+                  sx={{
+                    textTransform: 'capitalize',
+                    borderRadius: '0px'
+                  }}
+                  color="success"
+                  variant="contained"
+                  onClick={handledFilterData}
+                >
+                        Buscar
+                </Button>
+              )}
             <div className="col-3 me-4">
               <Link
                 to={'crear'}
@@ -91,9 +118,9 @@ const ListEntradaStock = () => {
                       }}
                     >
                       <b>Producto</b>
-                      <FilterAllProductosDynamic
+                      <FilterAllProductosSelect
+                        defaultValue={filterInputs.producto}
                         onNewInput={onChangeProducto}
-                        defaultValue={filterInputs.idProd}
                       />
                     </TableCell>
                     <TableCell
@@ -104,9 +131,9 @@ const ListEntradaStock = () => {
                       }}
                     >
                       <b>Proveedor</b>
-                      <FilterProveedorDynamic
+                      <FilterProveedorDynamicSelect
+                        defaultValue={filterInputs.proveedor}
                         onNewInput={onChangeProveedor}
-                        defaultValue={filterInputs.idProv}
                       />
                     </TableCell>
                     <TableCell
@@ -117,9 +144,9 @@ const ListEntradaStock = () => {
                       }}
                     >
                       <b>Almacen</b>
-                      <FilterAlmacenDynamic
+                      <FilterAlmacenDynamicSelect
+                        defaultValue={filterInputs.almacen}
                         onNewInput={onChangeAlmacen}
-                        defaultValue={filterInputs.idAlm}
                       />
                     </TableCell>
                     <TableCell align="left" width={80}>
@@ -240,19 +267,6 @@ const ListEntradaStock = () => {
                     </TableCell>
                     <TableCell align="left" width={50}>
                       <b>Merma</b>
-                      <TextField
-                        onChange={handleFormFilter}
-                        type="number"
-                        size="small"
-                        name="merTot"
-                        value={filterInputs.merTot}
-                        InputProps={{
-                          style: {
-                            color: 'black',
-                            background: 'white'
-                          }
-                        }}
-                      />
                     </TableCell>
                     <TableCell align="left" width={160}>
                       <b>Fecha entrada</b>
@@ -266,7 +280,7 @@ const ListEntradaStock = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataEntSto
+                  {dataEntStoTemp
                     .map((row, index) => (
                       <TableRow
                         key={index}
@@ -319,5 +333,3 @@ const ListEntradaStock = () => {
     </>
   )
 }
-
-export default ListEntradaStock
