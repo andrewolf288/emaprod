@@ -3,11 +3,11 @@ include_once "../../common/cors.php";
 header('Content-Type: application/json; charset=utf-8');
 require('../../common/conexion.php');
 require('../../common/conexion_emafact.php');
-
 require '../../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 $pdo = getPDO();
 $pdo_emafact = getPDOEMAFACT();
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result["columnWidths"] = [13, 13, 40, 67, 10, 17, 7, 14, 35, 20];
     $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "numero", "texto", "texto", "texto", "texto"];
 
-    $idProdc = 171;
+    $idProdc = 156;
 
     $sql_select_movimientos =
         "SELECT

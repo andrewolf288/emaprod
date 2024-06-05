@@ -6,9 +6,9 @@ import { CustomLoading } from '../../../components/CustomComponents/CustomLoadin
 const ENCABEZADO = {
   titulo: 'EVALUACION DE MATERIA PRIMA E INSUMOS',
   subtitulo1: 'EMACAL-F08',
-  subtitulo2: 'Emisión: 2023-01-02',
+  subtitulo2: 'Emisión: 02/01/2023',
   subtitulo3: 'Edición: 02',
-  subtitulo4: 'Revisión: 2024-03-04',
+  subtitulo4: 'Revisión: 04/03/2024',
   subtitulo5: 'Página 1 de 1'
 }
 
