@@ -61,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "numero", "texto", "texto", "texto", "texto"];
 
     $esDev = 0;
+    $esProFin = 1;
     $sql_select_movimientos =
         "SELECT
     mof.id,
@@ -78,10 +79,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     LEFT JOIN producto AS pt ON pt.id = mof.idProdt
     LEFT JOIN medida AS me ON me.id = pt.idMed
     LEFT JOIN produccion AS pc ON pc.id = mof.idProdc
-    WHERE mof.esDev = ? AND DATE(of.fecCreOpeFac) BETWEEN '$fechaDesde' AND '$fechaHasta'
+    WHERE mof.esDev = ? AND pt.esProFin = ? AND DATE(of.fecCreOpeFac) BETWEEN '$fechaDesde' AND '$fechaHasta'
     ORDER BY DATE(of.fecCreOpeFac) DESC";
     $stmt_select_movimientos = $pdo->prepare($sql_select_movimientos);
     $stmt_select_movimientos->bindParam(1, $esDev, PDO::PARAM_BOOL);
+    $stmt_select_movimientos->bindParam(2, $esProFin, PDO::PARAM_BOOL);
     $stmt_select_movimientos->execute();
     $movimientos_lote = $stmt_select_movimientos->fetchAll(PDO::FETCH_ASSOC);
 
