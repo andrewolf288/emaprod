@@ -38,6 +38,7 @@ const FechaPickerYearAndMonthDynamic = ({
         value={value}
         inputFormat="YYYY/MM"
         views={['year', 'month']}
+        openTo="year"
         onChange={formatFechaMYSQL}
         renderInput={(params) => (
           <TextField size="small" {...params} onKeyDown={handleKeyDown} />

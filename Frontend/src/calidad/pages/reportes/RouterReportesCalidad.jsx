@@ -5,6 +5,7 @@ import { ReporteF05 } from './ReporteF05'
 import { ReporteF08 } from './ReporteF08'
 import { ReporteF09 } from './ReporteF09'
 import { ReporteF25 } from './ReporteF25'
+import { RoporteTrazabilidadLote } from './RoporteTrazabilidadLote'
 
 export const RouterReportesCalidad = [
   {
@@ -30,5 +31,9 @@ export const RouterReportesCalidad = [
   {
     path: 'reporteF25',
     element: <ReporteF25 />
+  },
+  {
+    path: 'reporte-trazabilidad-lote',
+    element: <RoporteTrazabilidadLote />
   }
 ]

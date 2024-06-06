@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    $idLotProd = $data["idLotProd"];
+    $idLotProd = $data["idProdc"];
 
     $spreadsheet = new Spreadsheet();
     // generamos hoja de calculo de datos de produccion
@@ -238,9 +238,12 @@ function sheetDatosRequerimientosEnvEncProduccion(PDO $pdo, int $idLotProd, Spre
         "tipoDato" => [],
         "data" => []
     );
-    $result["header"] = ["ID", "Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Cantidad", "Fecha salida"];
-    $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "numero", "texto"];
-    $result["columnWidths"] = [10, 25, 12, 80, 10, 15, 12, 20];
+    // $result["header"] = ["ID", "Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Cantidad", "Fecha salida"];
+    // $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "numero", "texto"];
+    // $result["columnWidths"] = [10, 25, 12, 80, 10, 15, 12, 20];
+    $result["header"] = ["ID", "Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Fecha salida"];
+    $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "texto"];
+    $result["columnWidths"] = [10, 25, 12, 80, 10, 15, 20];
 
     $requisicion_envasado = array();
     $requisicion_encajado = array();
@@ -258,24 +261,8 @@ function sheetDatosRequerimientosEnvEncProduccion(PDO $pdo, int $idLotProd, Spre
     while ($row_requisicion = $stmt_select_requisiciones_produccion->fetch(PDO::FETCH_ASSOC)) {
         $idReq = $row_requisicion["id"];
         $idAre = $row_requisicion["idAre"];
-        // $sql_requisicion_detalle =
-        //     "SELECT
-        // rd.idProdFin,
-        // pt.codProd2,
-        // pt.nomProd,
-        // me.simMed,
-        // rde.desReqDetEst,
-        // rd.canReqDet,
-        // rd.fecCreReqDet
-        // FROM requisicion_detalle AS rd
-        // JOIN producto AS pt ON pt.id = rd.idProdt
-        // JOIN medida AS me ON me.id = pt.idMed
-        // JOIN requisicion_detalle_estado AS rde ON rde.id = rd.idReqDetEst
-        // WHERE rd.idReq = ?";
-        // $stmt_requisicion_detalle = $pdo->prepare($sql_requisicion_detalle);
-        // $stmt_requisicion_detalle->bindParam(1, $idReq, PDO::PARAM_INT);
-        // $stmt_requisicion_detalle->execute();
 
+        $idAlmacenPrincipal = 1;
         $sql_requisicion_detalle = 
         "SELECT
         rd.idProdFin,
@@ -284,7 +271,7 @@ function sheetDatosRequerimientosEnvEncProduccion(PDO $pdo, int $idLotProd, Spre
         p.nomProd,
         me.simMed,
         rde.desReqDetEst,
-        ss.canSalStoReq,
+        -- ss.canSalStoReq,
         ss.fecSalStoReq
         FROM salida_stock AS ss
         JOIN entrada_stock AS es ON es.id = ss.idEntSto
@@ -292,9 +279,10 @@ function sheetDatosRequerimientosEnvEncProduccion(PDO $pdo, int $idLotProd, Spre
         JOIN medida AS me ON me.id = p.idMed
         JOIN requisicion_detalle AS rd ON rd.id = ss.idReqDet
         JOIN requisicion_detalle_estado AS rde ON rde.id = rd.idReqDetEst
-        WHERE ss.idReq = ?";
+        WHERE ss.idReq = ? AND es.idAlm = ?";
         $stmt_requisicion_detalle = $pdo->prepare($sql_requisicion_detalle);
         $stmt_requisicion_detalle->bindParam(1, $idReq, PDO::PARAM_INT);
+        $stmt_requisicion_detalle->bindParam(2, $idAlmacenPrincipal, PDO::PARAM_INT);
         $stmt_requisicion_detalle->execute();
 
         if ($idAre == 5) {
@@ -595,31 +583,10 @@ function sheetDatosDevolucionesProduccion(PDO $pdo, int $idLotProd, Spreadsheet 
             "tipoDato" => [],
             "data" => []
         );
-        $resultRequisicionDetalle["header"] = ["ID", "Cod. Entrada", "Motivo", "EMAPROD", "Producto", "Medida", "Cantidad", "Completo", "Fecha creación"];
-        $resultRequisicionDetalle["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "numero", "texto", "texto"];
-
-        // $sql_select_requisicion_devolucion_detalle =
-        //     "SELECT
-        // $idProdFin AS idProdFin,
-        // pdm.desProdDevMot,
-        // pt.codProd2,
-        // pt.nomProd,
-        // me.simMed,
-        // rdd.canReqDevDet,
-        // CASE 
-        //     WHEN rdd.esComReqDevDet = 0 THEN 'NO'
-        //     ELSE 'SI'
-        // END AS esComReqDevDet,
-        // rdd.fecCreReqDevDet
-        // FROM requisicion_devolucion_detalle AS rdd
-        // JOIN produccion_devolucion_motivo AS pdm ON pdm.id = rdd.idMotDev
-        // JOIN producto AS pt ON pt.id = rdd.idProdt
-        // JOIN medida AS me ON me.id = pt.idMed
-        // WHERE rdd.idReqDev = ?";
-        // $stmt_select_requisicion_devolucion_detalle = $pdo->prepare($sql_select_requisicion_devolucion_detalle);
-        // $stmt_select_requisicion_devolucion_detalle->bindParam(1, $idReqDev, PDO::PARAM_INT);
-        // $stmt_select_requisicion_devolucion_detalle->execute();
-        // $resultRequisicionDetalle["data"] = $stmt_select_requisicion_devolucion_detalle->fetchAll(PDO::FETCH_ASSOC);
+        // $resultRequisicionDetalle["header"] = ["ID", "Cod. Entrada", "Motivo", "EMAPROD", "Producto", "Medida", "Cantidad", "Completo", "Fecha creación"];
+        // $resultRequisicionDetalle["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "numero", "texto", "texto"];
+        $resultRequisicionDetalle["header"] = ["ID", "Cod. Entrada", "Motivo", "EMAPROD", "Producto", "Medida", "Completo", "Fecha creación"];
+        $resultRequisicionDetalle["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto"];
 
         $sql_select_requisicion_devolucion_detalle = 
         "SELECT
@@ -629,7 +596,7 @@ function sheetDatosDevolucionesProduccion(PDO $pdo, int $idLotProd, Spreadsheet 
         pt.codProd2,
         pt.nomProd,
         me.simMed,
-        rdd.canReqDevDet,
+        -- rdd.canReqDevDet,
         CASE 
             WHEN rdd.esComReqDevDet = 0 THEN 'NO'
             ELSE 'SI'
@@ -656,7 +623,7 @@ function sheetDatosDevolucionesProduccion(PDO $pdo, int $idLotProd, Spreadsheet 
         pt.codProd2,
         pt.nomProd,
         me.simMed,
-        rdd.canReqDevDet,
+        -- rdd.canReqDevDet,
         CASE 
             WHEN rdd.esComReqDevDet = 0 THEN 'NO'
             ELSE 'SI'
@@ -816,31 +783,10 @@ function sheetDatosAgregacionesProduccion(PDO $pdo, int $idLotProd, Spreadsheet 
             "tipoDato" => [],
             "data" => []
         );
-        $resultRequisicionDetalle["header"] = ["ID", "Cod. Entrada", "Motivo", "SIIGO", "EMAPROD", "Producto", "Medida", "Cantidad", "Completo", "Fecha creación"];
-        $resultRequisicionDetalle["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "texto", "numero", "texto", "texto"];
-
-        // $sql_select_requisicion_agregacion_detalle =
-        //     "SELECT
-        // $idProdFin AS idProdFin,
-        // '$desProdAgrMot' AS desProdAgrMot,
-        // pt.codProd,
-        // pt.codProd2,
-        // pt.nomProd,
-        // me.simMed,
-        // rad.canReqAgrDet,
-        // CASE 
-        //     WHEN rad.esComReqAgrDet = 0 THEN 'NO'
-        //     ELSE 'SI'
-        // END AS esComReqAgrDet,
-        // rad.fecCreReqAgrDet
-        // FROM requisicion_agregacion_detalle AS rad
-        // JOIN producto AS pt ON pt.id = rad.idProdt
-        // JOIN medida AS me ON me.id = pt.idMed
-        // WHERE rad.idReqAgr = ?";
-        // $stmt_select_requisicion_agregacion_detalle = $pdo->prepare($sql_select_requisicion_agregacion_detalle);
-        // $stmt_select_requisicion_agregacion_detalle->bindParam(1, $idReqAgr, PDO::PARAM_INT);
-        // $stmt_select_requisicion_agregacion_detalle->execute();
-        // $resultRequisicionDetalle["data"] = $stmt_select_requisicion_agregacion_detalle->fetchAll(PDO::FETCH_ASSOC);
+        // $resultRequisicionDetalle["header"] = ["ID", "Cod. Entrada", "Motivo", "SIIGO", "EMAPROD", "Producto", "Medida", "Cantidad", "Completo", "Fecha creación"];
+        // $resultRequisicionDetalle["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "texto", "numero", "texto", "texto"];
+        $resultRequisicionDetalle["header"] = ["ID", "Cod. Entrada", "Motivo", "SIIGO", "EMAPROD", "Producto", "Medida", "Completo", "Fecha creación"];
+        $resultRequisicionDetalle["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto", "texto"];
 
         $sql_select_requisicion_agregacion_detalle =
             "SELECT
@@ -851,7 +797,7 @@ function sheetDatosAgregacionesProduccion(PDO $pdo, int $idLotProd, Spreadsheet 
         pt.codProd2,
         pt.nomProd,
         me.simMed,
-        rad.canReqAgrDet,
+        -- rad.canReqAgrDet,
         CASE 
             WHEN rad.esComReqAgrDet = 0 THEN 'NO'
             ELSE 'SI'
@@ -907,6 +853,7 @@ function sheetDatosAgregacionesProduccion(PDO $pdo, int $idLotProd, Spreadsheet 
         $INDEX = $row_detalle + 1;
     }
 }
+
 // funcion para mostrar detalle de salida de materia prima
 function sheetDatosRequisicionMateriasPrimas(PDO $pdo, int $idLotProd, Spreadsheet $spreadsheet)
 {
@@ -921,9 +868,12 @@ function sheetDatosRequisicionMateriasPrimas(PDO $pdo, int $idLotProd, Spreadshe
         "tipoDato" => [],
         "data" => []
     );
-    $result["header"] = ["Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Cantidad", "Fecha salida"];
-    $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "numero", "texto"];
-    $result["columnWidths"] = [25, 12, 80, 10, 15, 12, 20];
+    // $result["header"] = ["Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Cantidad", "Fecha salida"];
+    // $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "numero", "texto"];
+    // $result["columnWidths"] = [25, 12, 80, 10, 15, 12, 20];
+    $result["header"] = ["Cod. Entrada", "EMAPROD", "Producto", "Medida", "Estado", "Fecha salida"];
+    $result["tipoDato"] = ["texto", "texto", "texto", "texto", "texto", "texto"];
+    $result["columnWidths"] = [25, 12, 80, 10, 15, 20];
 
     $sql_select_produccion = 
     "SELECT idReqLot FROM produccion
@@ -934,6 +884,10 @@ function sheetDatosRequisicionMateriasPrimas(PDO $pdo, int $idLotProd, Spreadshe
 
     $row_requisicion_lote = $stmt_select_produccion->fetch(PDO::FETCH_ASSOC);
 
+    $codProdAA = "000001";
+    $codProdBB = "000002";
+    $codProdCC = "000003";
+    $codProdDD = "000004";
     $detalle_salidas = array();
     $sql_salida_stock = 
     "SELECT
@@ -942,7 +896,7 @@ function sheetDatosRequisicionMateriasPrimas(PDO $pdo, int $idLotProd, Spreadshe
     p.nomProd,
     me.simMed,
     rde.desReqDetEst,
-    ss.canSalStoReq,
+    -- ss.canSalStoReq,
     ss.fecSalStoReq
     FROM salida_stock AS ss
     JOIN entrada_stock AS es ON es.id = ss.idEntSto
@@ -950,12 +904,15 @@ function sheetDatosRequisicionMateriasPrimas(PDO $pdo, int $idLotProd, Spreadshe
     JOIN medida AS me ON me.id = p.idMed
     JOIN requisicion_detalle AS rd ON rd.id = ss.idReqDet
     JOIN requisicion_detalle_estado AS rde ON rde.id = rd.idReqDetEst
-    WHERE ss.idReq = ?";
+    WHERE ss.idReq = ? AND (p.codProd2 <> ? AND p.codProd2 <> ? AND p.codProd2 <> ? AND p.codProd2 <> ?)";
     $stmt_salida_stock = $pdo->prepare($sql_salida_stock);
     $stmt_salida_stock->bindParam(1, $row_requisicion_lote["idReqLot"], PDO::PARAM_INT);
+    $stmt_salida_stock->bindParam(2, $codProdAA, PDO::PARAM_STR);
+    $stmt_salida_stock->bindParam(3, $codProdBB, PDO::PARAM_STR);
+    $stmt_salida_stock->bindParam(4, $codProdCC, PDO::PARAM_STR);
+    $stmt_salida_stock->bindParam(5, $codProdDD, PDO::PARAM_STR);
     $stmt_salida_stock->execute();
     $detalle_salidas = $stmt_salida_stock->fetchAll(PDO::FETCH_ASSOC);
-    // print_r($detalle_salidas);
 
     // ---ESTABLECEMOS EL ANCHO DE LAS COLUMNAS---
     foreach ($result["columnWidths"] as $columnIndex => $width) {
