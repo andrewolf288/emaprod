@@ -1,84 +1,109 @@
 <?php
+header('Content-Type: application/json; charset=utf-8');
 include_once "../../common/cors.php";
 include_once "../../common/conexion_integracion.php";
+include_once "../../common/conexion.php";
 
-$pdo = getPDO();
+$pdoCONTANET = getPDOContanet();
+$pdoEMAPROD = getPDO();
 $message_error = "";
 $description_error = "";
 $result = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    if ($pdo) {
+    if ($pdoCONTANET && $pdoEMAPROD) {
         try {
+            $sql_productos_contanet = 
+            "SELECT 
+            Cd_Prod,  
+            Nombre1,
+            CodCo1_ 
+            FROM dbo.Producto2";
+            $stmt_producto_contanet = $pdoCONTANET->prepare($sql_productos_contanet);
+            $stmt_producto_contanet->execute();
+            $productos_CONTANET = $stmt_producto_contanet->fetchAll(PDO::FETCH_ASSOC);
 
-            // AQUI SE DEBEN DEFINIR 2 ASPECTOS
-            /*
-            - fechas en las que se deben filtrar
-            - estado de la orden de compra
-            */
+            $sql_productos_emaprod = 
+            "SELECT nomProd, codProd2
+            FROM producto";
+            $stmt_productos_emaprod = $pdoEMAPROD->prepare($sql_productos_emaprod);
+            $stmt_productos_emaprod->execute();
+            $productos_EMAPROD = $stmt_productos_emaprod->fetchAll(PDO::FETCH_ASSOC);
 
-            $sql_orden_compra =
-                "SELECT 
-                Cd_OC,
-                NroOc AS numero_orden_compra,
-                CAST(FecEmi AS date) AS fecha_emision,
-                CAST(FecEnt AS date) AS fecha_entrega,
-                CAST(FecPag AS date) AS fecha_pago,
-                Cd_Mda AS codigo_moneda,
-                CamMda AS cambio_moneda,
-                Cd_Prv AS codigo_proveedor,
-                Proveedor AS proveedor,
-                ValorTotal AS valor_total,
-                Igv AS igv,
-                Total AS total,
-                C_IGV_TASA AS igv_tasa,
-                C_IB_CERRADO_ATENCION_PARCIAL AS atencion_parcial,
-                C_PENDIENTE_CANCELADO AS pendiente
-                 FROM OrdCompra2
-            WHERE CAST(FecEmi AS date) >= '2023-02-21' AND CAST(FecEmi AS date) <= '2023-02-21'";
+            // Normalizar y crear arreglos de nombres de productos para facilitar la comparación
+            $nombres_CONTANET = array_map(function($producto) {
+                return strtolower(trim($producto['Nombre1']));
+            }, $productos_CONTANET);
 
-            $stmt_orden_compra = $pdo->prepare($sql_orden_compra);
-            $stmt_orden_compra->execute();
+            $nombres_EMAPROD = array_map(function($producto) {
+                return strtolower(trim($producto['nomProd']));
+            }, $productos_EMAPROD);
 
-            while ($row = $stmt_orden_compra->fetch(PDO::FETCH_ASSOC)) {
-                $row["ordComDet"] = [];
-                $Cd_Oc = $row["Cd_OC"];
+            // Encuentra aquellos productos en EMAPROD cuyos nombres no estén en CONTANET
+            $productos_no_coinciden = array_filter($productos_EMAPROD, function($producto) use ($nombres_CONTANET) {
+                return !in_array(strtolower(trim($producto['nomProd'])), $nombres_CONTANET);
+            });
 
-                $sql_orden_compra_detalle =
-                    "SELECT
-                    Cd_OC,
-                    Item AS item,
-                    Cd_Prod AS codigo_producto,
-                    Descrip AS descripcion,
-                    ValorUni AS valor_unitario,
-                    IgvUni AS igv_unitario,
-                    PrecioUni AS precio_unidad,
-                    CONVERT(decimal(20,2), Cant) AS cantidad,
-                    ValorTotal AS valor_total,
-                    Igv AS igv,
-                    Total AS total,
-                    CAST(FecEnt AS date) AS fecha_entrega
-                    FROM OrdCompraDet2 WHERE Cd_OC = ?";
-                $stmt_orden_compra_detalle = $pdo->prepare($sql_orden_compra_detalle);
-                $stmt_orden_compra_detalle->bindParam(1, $Cd_Oc, PDO::PARAM_STR);
+            // Imprime los productos que no coinciden
+            print_r($productos_no_coinciden);
 
-                $stmt_orden_compra_detalle->execute();
-                while ($row_detalle = $stmt_orden_compra_detalle->fetch(PDO::FETCH_ASSOC)) {
-                    array_push($row["ordComDet"], $row_detalle);
-                }
-                array_push($result, $row);
-            }
         } catch (PDOException $e) {
             $message_error = "ERROR INTERNO SERVER";
             $description_error = $e->getMessage();
         }
     } else {
-        $message_error = "Error con la conexion a la base de datos";
-        $description_error = "Error con la conexion a la base de datos a traves de PDO";
+        $message_error = "Error con la conexión a la base de datos";
+        $description_error = "Error con la conexión a la base de datos a través de PDO";
     }
     $return['message_error'] = $message_error;
     $return['description_error'] = $description_error;
     $return['result'] = $result;
     echo json_encode($return);
 }
+
+
+// if ($_SERVER["REQUEST_METHOD"] == "POST") {
+//     if ($pdoCONTANET && $pdoEMAPROD) {
+//         try {
+//             // Consulta para obtener productos de EMAPROD
+//             $sql_productos_emaprod = 
+//             "SELECT nomProd, codProd2 
+//             FROM producto
+//             WHERE codProd2 IS NOT NULL";
+//             $stmt_productos_emaprod = $pdoEMAPROD->prepare($sql_productos_emaprod);
+//             $stmt_productos_emaprod->execute();
+//             $productos_emaprod = $stmt_productos_emaprod->fetchAll(PDO::FETCH_ASSOC);
+
+//             foreach($productos_emaprod as $producto) {
+//                 $nomProd = $producto['nomProd'];
+//                 $codProd2 = $producto['codProd2'];
+
+//                 // Consulta para buscar productos en Contanet
+//                 $sql_producto_contanet = 
+//                 "SELECT Nombre1
+//                 FROM dbo.Producto2
+//                 WHERE Nombre1 = '$nomProd'";
+//                 $stmt_producto_contanet = $pdoCONTANET->prepare($sql_producto_contanet);
+//                 $stmt_producto_contanet->execute();
+//                 if($stmt_producto_contanet->rowCount() > 0) {
+//                     $producto_contanet = $stmt_producto_contanet->fetch(PDO::FETCH_ASSOC);
+//                     print($producto_contanet['Nombre1']);
+//                 } else {
+//                     $result[] = "No se encontró el producto con nombre: $nomProd";
+//                 }
+//             }
+
+//         } catch (PDOException $e) {
+//             $message_error = "ERROR INTERNO SERVER";
+//             $description_error = $e->getMessage();
+//         }
+//     } else {
+//         $message_error = "Error con la conexión a la base de datos";
+//         $description_error = "Error con la conexión a la base de datos a través de PDO";
+//     }
+//     $return['message_error'] = $message_error;
+//     $return['description_error'] = $description_error;
+//     $return['result'] = $result;
+//     echo json_encode($return);
+// }
+?>
