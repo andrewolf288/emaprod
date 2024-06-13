@@ -56,8 +56,9 @@ export function useCreateEntradaStock () {
 
   // INPUT CODIGO ALMACEN
   const onAddCodAlm = ({ value, id }) => {
-    console.log(value)
-    setEntrada({ ...entrada, codAlm: value, idAlm: id })
+    const valueA = id === 8 ? '' : entrada.Cd_Com
+    const valueB = id === 8 ? '' : entrada.FecED
+    setEntrada({ ...entrada, codAlm: value, idAlm: id, Cd_Com: valueA, FecED: valueB })
   }
 
   // SET VALOR DE FECHA DE entrada
@@ -96,12 +97,20 @@ export function useCreateEntradaStock () {
   }
 
   const onSearchRegistroCompraContanet = async (data) => {
-    if (entrada.docProv.length === 0) {
-      alertWarning('Falta informacion del proveedor')
+    let handledError = ''
+    if (entrada.docProv.length === 0 || entrada.codProd.length === 0) {
+      if (entrada.docProv.length === 0) {
+        handledError += '- Falta informacion del proveedor\n'
+      }
+      if (entrada.codProd.length === 0) {
+        handledError += '- Falta informacion del producto\n'
+      }
+      alertWarning(handledError)
     } else {
       const formatData = {
         ...data,
-        documento: entrada.docProv
+        documento: entrada.docProv,
+        producto: entrada.codProd
       }
       const resultPeticion = await searchRegistroCompra(formatData)
       const { message_error, description_error, result } = resultPeticion
@@ -110,7 +119,8 @@ export function useCreateEntradaStock () {
           ...entrada,
           Cd_Com: result.Cd_Com,
           FecED: result.FecED,
-          ordCom: `${result.NroSre}-${result.NroDoc}`
+          ordCom: `${result.NroSre}-${result.NroDoc}`,
+          canTotCom: result.cantidad ? parseFloat(result.cantidad).toFixed(3) : 0
         })
       } else {
         alertError(description_error)
@@ -130,7 +140,8 @@ export function useCreateEntradaStock () {
         entrada.idAlm === 0 ||
         entrada.docEntSto.length === 0 ||
         entrada.canTotEnt <= 0 ||
-        entrada.canTotCom <= 0) {
+        entrada.canTotCom <= 0 ||
+        (entrada.Cd_Com.length === 0 && entrada.idAlm === 1)) {
       if (entrada.idProd === 0) {
         advertenciaFormularioIncompleto +=
           '- Falta llenar informacion del producto\n'
@@ -155,7 +166,7 @@ export function useCreateEntradaStock () {
         advertenciaFormularioIncompleto +=
           '- Asegurarse de ingresar la cantidad de entrada\n'
       }
-      if (entrada.Cd_Com.length === 0) {
+      if (entrada.Cd_Com.length === 0 && entrada.idAlm === 1) {
         advertenciaFormularioIncompleto +=
         '- Debe buscar la compra correspondiente\n'
       }

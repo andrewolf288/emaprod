@@ -17,14 +17,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "SELECT 
             Cd_Prod,  
             Nombre1,
-            CodCo1_ 
+            CodCo2_ 
             FROM dbo.Producto2";
             $stmt_producto_contanet = $pdoCONTANET->prepare($sql_productos_contanet);
             $stmt_producto_contanet->execute();
             $productos_CONTANET = $stmt_producto_contanet->fetchAll(PDO::FETCH_ASSOC);
 
             $sql_productos_emaprod = 
-            "SELECT nomProd, codProd2
+            "SELECT nomProd, codProd2, codProd
             FROM producto";
             $stmt_productos_emaprod = $pdoEMAPROD->prepare($sql_productos_emaprod);
             $stmt_productos_emaprod->execute();
@@ -32,16 +32,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Normalizar y crear arreglos de nombres de productos para facilitar la comparación
             $nombres_CONTANET = array_map(function($producto) {
-                return strtolower(trim($producto['Nombre1']));
+                return strtolower(trim($producto['CodCo2_']));
             }, $productos_CONTANET);
 
             $nombres_EMAPROD = array_map(function($producto) {
-                return strtolower(trim($producto['nomProd']));
+                return strtolower(trim($producto['codProd2']));
             }, $productos_EMAPROD);
 
             // Encuentra aquellos productos en EMAPROD cuyos nombres no estén en CONTANET
             $productos_no_coinciden = array_filter($productos_EMAPROD, function($producto) use ($nombres_CONTANET) {
-                return !in_array(strtolower(trim($producto['nomProd'])), $nombres_CONTANET);
+                return !in_array(strtolower(trim($producto['codProd2'])), $nombres_CONTANET);
             });
 
             // Imprime los productos que no coinciden

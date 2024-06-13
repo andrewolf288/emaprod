@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $serie = $data["serie"];
     $numero = $data["numero"];
     $documento = $data["documento"];
+    $producto = $data["producto"];
 
     # consulta para obtener la informacion de la orden de compra
     $sql_consult_orden_compra =
@@ -37,6 +38,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $row_orden_compra = $stmt_consult_orden_compra->fetch(PDO::FETCH_ASSOC);
     
     if($row_orden_compra){
+        $Cd_Com = $row_orden_compra["Cd_Com"];
+        $sql_compra_detalle = 
+        "SELECT
+        cmd.Cant
+        FROM dbo.CompraDet2 AS cmd
+        JOIN dbo.Producto2 AS prd ON prd.Cd_Prod = cmd.Cd_Prod
+        WHERE cmd.Cd_Com = ? AND prd.CodCo2_ = ?";
+        $stmt_compra_detalle = $pdo->prepare($sql_compra_detalle);
+        $stmt_compra_detalle->bindParam(1, $Cd_Com, PDO::PARAM_STR);
+        $stmt_compra_detalle->bindParam(2, $producto, PDO::PARAM_STR);
+        $stmt_compra_detalle->execute();
+        $row_compra_detalle = $stmt_compra_detalle->fetch(PDO::FETCH_ASSOC);
+
+        if($row_compra_detalle){
+            $cantidad = $row_compra_detalle['Cant'];
+            $row_orden_compra["cantidad"] = $cantidad;
+        }
+
         $result = $row_orden_compra;
     } else {
         $message_error = "No se encontraron resultados";

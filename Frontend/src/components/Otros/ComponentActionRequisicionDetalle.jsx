@@ -83,7 +83,6 @@ export const ComponentActionRequisicionDetalle = ({
       {/* Boton para consultar stock */}
       <DialogConsultarStock
         detalle={detalle}
-        disabled={detalle.idReqDetEst !== 1}
       />
       {/* Menu options de otras opciones */}
       <div>
@@ -578,7 +577,7 @@ const DialogTerminarSalidaParcial = ({
 }
 
 // Dialogo de consulta de stock
-const DialogConsultarStock = ({ detalle, disabled }) => {
+const DialogConsultarStock = ({ detalle }) => {
   const [open, setOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [stockAlmacen, setStockAlmacen] = React.useState({
@@ -613,7 +612,6 @@ const DialogConsultarStock = ({ detalle, disabled }) => {
         className="btn btn-secondary me-2"
         title="Stock almacenes"
         onClick={handleClickOpen}
-        disabled={disabled}
       >
         <img
           alt="boton stock almacenes"
@@ -646,16 +644,6 @@ const DialogConsultarStock = ({ detalle, disabled }) => {
         <DialogActions>
           <Button autoFocus onClick={handleClose}>
             Cerrar
-          </Button>
-          <Button
-            color="error"
-            autoFocus
-            onClick={() => {
-              // cerramos el cuadro de dialogo
-              handleClose()
-            }}
-          >
-            Aceptar
           </Button>
         </DialogActions>
       </BootstrapDialog>

@@ -101,7 +101,7 @@ export const AgregarEntradaStockV2 = () => {
               </div>
 
               {/* COMPRA */}
-              <div className="mb-3 row">
+              {entrada.idAlm === 1 && (<div className="mb-3 row">
                 <label className="col-sm-2 col-form-label">
                   Compra
                 </label>
@@ -118,7 +118,7 @@ export const AgregarEntradaStockV2 = () => {
                     onSearchCompra={onSearchRegistroCompraContanet}
                   />
                 </div>
-              </div>
+              </div>)}
 
               {/* FECHA DE LA formState */}
               <div className="mb-3 row">
