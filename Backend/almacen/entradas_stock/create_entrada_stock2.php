@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $canVar = $data["canVar"]; // cantidad variacion
     $codProd = $data["codProd"]; // codigo de producto
     $codProv = $data["codProv"]; // codigo de proveedor
+    $codComCon = $data["Cd_Com"]; // codigo de compra contanet
     $diaJulEntSto = $data["diaJulEntSto"]; // dia juliano
     $docEntSto = $data["docEntSto"]; // documento de entrada
     $esSel = $data["esSel"]; // es para seleccionar
@@ -96,8 +97,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             fecEntSto,
             ordCom,
             guiRem,
-            idEntStoTip)
-            VALUES (?,?,?,?,?,?,?,?,?,$canSel, $canPorSel, $merTot, $canTotCom, $canTotEnt, $canTotDis, $canVar, ?, ?, ?, ?, ?)";
+            idEntStoTip,
+            codComCon)
+            VALUES (?,?,?,?,?,?,?,?,?,$canSel, $canPorSel, $merTot, $canTotCom, $canTotEnt, $canTotDis, $canVar, ?, ?, ?, ?, ?, ?)";
 
             //Preparamos la consulta
             $stmt = $pdo->prepare($sql);
@@ -115,6 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(12, $ordCom, PDO::PARAM_STR); // fecha de vencimiento
             $stmt->bindParam(13, $guiRem, PDO::PARAM_STR); // fecha de entrada
             $stmt->bindParam(14, $idEntStoTip, PDO::PARAM_INT); // tipo de entrada (compra)
+            $stmt->bindParam(15, $codComCon, PDO::PARAM_STR); // tipo de entrada (compra)
 
             $stmt->execute(); // ejecutamos
             $lastInsertionEntradaStock = $pdo->lastInsertId();

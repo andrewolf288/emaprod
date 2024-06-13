@@ -21,6 +21,10 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 
+import iconStockAlmacenes from '../../assets/icons/stock-almacenes.png'
+import { getStockAlmacenes } from '../../almacen/helpers/consult-stock/getStockAlmacenes'
+import { alertError } from '../../utils/alerts/alertsCustoms'
+
 const ITEM_HEIGHT = 48
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -75,6 +79,11 @@ export const ComponentActionRequisicionDetalle = ({
           detalle.salParc.length === 0 ||
           detalle.salMixAlm === 1
         }
+      />
+      {/* Boton para consultar stock */}
+      <DialogConsultarStock
+        detalle={detalle}
+        disabled={detalle.idReqDetEst !== 1}
       />
       {/* Menu options de otras opciones */}
       <div>
@@ -556,6 +565,92 @@ const DialogTerminarSalidaParcial = ({
             onClick={() => {
               // terminamos de procesar el termino de la salida parcial
               onTerminarSalidaParcial(detalle)
+              // cerramos el cuadro de dialogo
+              handleClose()
+            }}
+          >
+            Aceptar
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+    </div>
+  )
+}
+
+// Dialogo de consulta de stock
+const DialogConsultarStock = ({ detalle, disabled }) => {
+  const [open, setOpen] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+  const [stockAlmacen, setStockAlmacen] = React.useState({
+    almacenPrincipal: null,
+    almacenAuxiliar: null
+  })
+  const { almacenPrincipal, almacenAuxiliar } = stockAlmacen
+
+  const handleClickOpen = async () => {
+    setLoading(true)
+    // hacemos una consulta de stock
+    const resultPeticion = await getStockAlmacenes(detalle.idProdt)
+    const { message_error, description_error, result } = resultPeticion
+    if (message_error.length === 0) {
+      setStockAlmacen({
+        almacenAuxiliar: result.auxiliar[0],
+        almacenPrincipal: result.principal[0]
+      })
+      setOpen(true)
+    } else {
+      alertError(description_error)
+    }
+    setLoading(false)
+  }
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  return (
+    <div>
+      <button
+        className="btn btn-secondary me-2"
+        title="Stock almacenes"
+        onClick={handleClickOpen}
+        disabled={disabled}
+      >
+        <img
+          alt="boton stock almacenes"
+          src={iconStockAlmacenes}
+          height={25}
+          width={25}
+        />
+      </button>
+      <BootstrapDialog
+        maxWidth={'lg'}
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Stock almacenes
+        </DialogTitle>
+        {loading
+          ? <DialogContent dividers>Cargando ...</DialogContent>
+          : <DialogContent dividers>
+            <p className='d-flex flex-row'>
+              <strong className='me-2'>Almacen principal:</strong>
+              <span>{almacenPrincipal !== null ? `${almacenPrincipal} ${detalle.simMed}` : 'Sin datos'}</span>
+            </p>
+            <p className='d-flex flex-row'>
+              <strong className='me-2'>Almacen auxiliar:</strong>
+              <span>{almacenAuxiliar !== null ? `${almacenAuxiliar} ${detalle.simMed}` : 'Sin datos'}</span>
+            </p>
+          </DialogContent>}
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Cerrar
+          </Button>
+          <Button
+            color="error"
+            autoFocus
+            onClick={() => {
               // cerramos el cuadro de dialogo
               handleClose()
             }}

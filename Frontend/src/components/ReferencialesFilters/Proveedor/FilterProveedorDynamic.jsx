@@ -7,6 +7,7 @@ import { getProveedores } from '../../../helpers/Referenciales/proveedor/getProv
 const defaultOption = {
   value: 0,
   label: 'Selecciona un proveedor',
+  docProv: '',
   id: 0
 }
 
@@ -22,7 +23,8 @@ export const FilterProveedorDynamic = ({ defaultValue = null, onNewInput }) => {
         return {
           value: element.codProv,
           label: `${element.codProv} - ${element.nomProv} ${element.apeProv}`,
-          id: element.id
+          id: element.id,
+          docProv: element.docProv
         }
       })
     ]

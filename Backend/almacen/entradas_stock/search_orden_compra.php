@@ -22,10 +22,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     # consulta para obtener la informacion de la orden de compra
     $sql_consult_orden_compra =
     "SELECT 
-    Cd_Com, 
-    CONVERT(VARCHAR, FecED, 103) AS FecED,
-    Ejer, 
-    Prdo
+    cm.Cd_Com, 
+    CONVERT(VARCHAR, cm.FecED, 103) AS FecED,
+    cm.NroSre, 
+    cm.NroDoc
     FROM dbo.Compra2 AS cm
     JOIN dbo.Proveedor2 AS pv ON pv.Cd_Prv = cm.Cd_Prv
     WHERE cm.NroSre = ? AND cm.NroDoc = ? AND pv.NDoc = ?";
