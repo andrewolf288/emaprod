@@ -6,7 +6,7 @@ import { FilterAlmacenDynamic } from '../../../components/ReferencialesFilters/A
 import { FilterProveedorDynamic } from '../../../components/ReferencialesFilters/Proveedor/FilterProveedorDynamic'
 import { FilterAllProductosDynamic } from '../../../components/ReferencialesFilters/Producto/FilterAllProductosDynamic'
 import { useCreateEntradaStock } from '../../hooks/entrada-stock/useCreateEntradaStock'
-import { SearchCompraContanet } from '../../components/componentes-entradasStock/SearchCompraContanet'
+// import { SearchCompraContanet } from '../../components/componentes-entradasStock/SearchCompraContanet'
 
 export const AgregarEntradaStockV2 = () => {
   const {
@@ -18,8 +18,8 @@ export const AgregarEntradaStockV2 = () => {
     onAddCodProv,
     onAddFecEntSto,
     onNavigateBack,
-    onSubmitEntradaStock,
-    onSearchRegistroCompraContanet
+    onSubmitEntradaStock
+    // onSearchRegistroCompraContanet
   } = useCreateEntradaStock()
   return (
     <>
@@ -101,13 +101,13 @@ export const AgregarEntradaStockV2 = () => {
               </div>
 
               {/* COMPRA */}
-              {entrada.idAlm === 1 && (<div className="mb-3 row">
+              {/* {entrada.idAlm === 1 && (<div className="mb-3 row">
                 <label className="col-sm-2 col-form-label">
                   Compra
                 </label>
                 <div className="col-md-3">
                   <input
-                    value={entrada.Cd_Com.length !== 0 ? `${entrada.Cd_Com} - ${entrada.FecED}` : ''}
+                    value={entrada.Cd_Com !== null ? `${entrada.Cd_Com} - ${entrada.FecED}` : ''}
                     readOnly
                     type="text"
                     className="form-control"
@@ -118,7 +118,7 @@ export const AgregarEntradaStockV2 = () => {
                     onSearchCompra={onSearchRegistroCompraContanet}
                   />
                 </div>
-              </div>)}
+              </div>)} */}
 
               {/* FECHA DE LA formState */}
               <div className="mb-3 row">

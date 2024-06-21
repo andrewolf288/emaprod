@@ -124,6 +124,9 @@ export const ListRetornoVenta = () => {
                     <TableCell align="left" width={50}>
                       <b>Numero</b>
                     </TableCell>
+                    <TableCell align="left" width={100}>
+                      <b>Numero</b>
+                    </TableCell>
                     <TableCell align="center" width={50}>
                       <b>Estado</b>
                     </TableCell>
@@ -150,6 +153,7 @@ export const ListRetornoVenta = () => {
                       >
                         <TableCell align="left">{row.invSerFac}</TableCell>
                         <TableCell align="left">{row.invNumFac}</TableCell>
+                        <TableCell align="left">{row.customer}</TableCell>
                         <TableCell align="center">
                           {row.idReqEst === 1
                             ? (

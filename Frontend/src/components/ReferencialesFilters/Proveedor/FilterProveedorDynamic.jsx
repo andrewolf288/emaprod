@@ -22,7 +22,7 @@ export const FilterProveedorDynamic = ({ defaultValue = null, onNewInput }) => {
       ...result.map((element) => {
         return {
           value: element.codProv,
-          label: `${element.codProv} - ${element.nomProv} ${element.apeProv}`,
+          label: `${element.docProv} - ${element.nomProv} ${element.apeProv}`,
           id: element.id,
           docProv: element.docProv
         }

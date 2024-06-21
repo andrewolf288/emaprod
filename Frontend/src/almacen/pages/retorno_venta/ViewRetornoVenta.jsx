@@ -35,6 +35,7 @@ export const ViewRetornoVenta = () => {
     invNumFac: '',
     idOpeFacMot: 0,
     desOpeFacMot: '',
+    customer: '',
     esOpeFacExi: 0,
     esRet: 0,
     fecCreOpeDev: '',
@@ -49,6 +50,7 @@ export const ViewRetornoVenta = () => {
     fecCreOpeDev,
     esOpeFacExi,
     esRet,
+    customer,
     detOpeDev
   } = dataRetornoVenta
 
@@ -226,6 +228,19 @@ export const ViewRetornoVenta = () => {
                       ? 'Sin trazabilidad'
                       : 'Existe trazabilidad'}
                   </p>
+                </div>
+              </div>
+              <div className="mb-3 row">
+                <div className="col-md-8">
+                  <label htmlFor="nombre" className="form-label">
+                    <b>Cliente</b>
+                  </label>
+                  <input
+                    type="text"
+                    disabled={true}
+                    value={customer}
+                    className="form-control"
+                  />
                 </div>
               </div>
             </div>

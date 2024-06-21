@@ -40,6 +40,9 @@ export const AuthProvider = ({ children }) => {
       case 10:
         navigate('/ventas', { replace: true })
         break
+      case 11:
+        navigate('/costeo', { replace: true })
+        break
       }
     }, 100)
   }

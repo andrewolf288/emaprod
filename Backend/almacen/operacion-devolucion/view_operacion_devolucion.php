@@ -2,9 +2,12 @@
 include_once "../../common/cors.php";
 header('Content-Type: application/json; charset=utf-8');
 require('../../common/conexion.php');
+require('../../common/conexion_emafact.php');
 require_once('../../common/utils.php');
 
 $pdo = getPDO();
+$pdoEmafact = getPDOEMAFACT();
+
 $message_error = "";
 $description_error = "";
 $result = array();
@@ -40,9 +43,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_select_operacion_devolucion = $pdo->prepare($sql_select_operacion_devolucion);
             $stmt_select_operacion_devolucion->bindParam(1, $idOpeDev, PDO::PARAM_INT);
             $stmt_select_operacion_devolucion->execute();
-            $row_operacion_devolucion = $stmt_select_operacion_devolucion->fetch(PDO::FETCH_ASSOC);
 
-            if ($row_operacion_devolucion) {
+            while ($row_operacion_devolucion = $stmt_select_operacion_devolucion->fetch(PDO::FETCH_ASSOC)) {
+                $row_operacion_devolucion["detOpeDev"] =  [];
+                $idGuiRem = $row_operacion_devolucion["idGuiRem"];
+
+                $sql_select_referral_guide =
+                    "SELECT 
+                rg.customer_id,
+                cu.contact
+                FROM referral_guides AS rg
+                LEFT JOIN customers AS cu ON cu.id = rg.customer_id
+                WHERE rg.id = ?";
+                $stmt_select_referral_guide = $pdoEmafact->prepare($sql_select_referral_guide);
+                $stmt_select_referral_guide->bindParam(1, $idGuiRem, PDO::PARAM_INT);
+                $stmt_select_referral_guide->execute();
+                $row_referral_guide = $stmt_select_referral_guide->fetch(PDO::FETCH_ASSOC);
+
+                if ($row_referral_guide) {
+                    $row_operacion_devolucion["customer"] = $row_referral_guide["contact"];
+                } else {
+                    $row_operacion_devolucion["customer"] = "SIN CLIENTE";
+                }
+
                 $sql_select_operacion_devolucion_detalle =
                     "SELECT
                 odd.id,

@@ -26,6 +26,8 @@ import { ProtectedLayoutProduccion } from './components/ProtectedLayoutProduccio
 import { ProtectedLayoutFrescos } from './components/ProtectedLayoutFrescos'
 import { RouterVentas } from './ventas/router/router'
 import { ProtectedLayoutVentas } from './components/ProtectedLayoutVentas'
+import { ProtectedLayoutCosteo } from './components/ProtectedLayoutCosteo'
+import { RouterCosteo } from './costeo/router/router'
 
 export const router = createBrowserRouter([
   {
@@ -74,6 +76,11 @@ export const router = createBrowserRouter([
         path: '/ventas',
         element: <ProtectedLayoutVentas />,
         children: RouterVentas
+      },
+      {
+        path: '/costeo',
+        element: <ProtectedLayoutCosteo />,
+        children: RouterCosteo
       }
     ]
   }

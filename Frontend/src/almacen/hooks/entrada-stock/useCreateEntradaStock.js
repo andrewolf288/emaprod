@@ -112,12 +112,13 @@ export function useCreateEntradaStock () {
         documento: entrada.docProv,
         producto: entrada.codProd
       }
+      console.log(formatData)
       const resultPeticion = await searchRegistroCompra(formatData)
       const { message_error, description_error, result } = resultPeticion
       if (message_error.length === 0) {
         setEntrada({
           ...entrada,
-          Cd_Com: result.Cd_Com,
+          Cd_Com: result.RegCtb,
           FecED: result.FecED,
           ordCom: `${result.NroSre}-${result.NroDoc}`,
           canTotCom: result.cantidad ? parseFloat(result.cantidad).toFixed(3) : 0
@@ -140,8 +141,8 @@ export function useCreateEntradaStock () {
         entrada.idAlm === 0 ||
         entrada.docEntSto.length === 0 ||
         entrada.canTotEnt <= 0 ||
-        entrada.canTotCom <= 0 ||
-        (entrada.Cd_Com.length === 0 && entrada.idAlm === 1)) {
+        entrada.canTotCom <= 0) {
+      // (entrada.Cd_Com.length === 0 && entrada.idAlm === 1)) {
       if (entrada.idProd === 0) {
         advertenciaFormularioIncompleto +=
           '- Falta llenar informacion del producto\n'
@@ -166,10 +167,10 @@ export function useCreateEntradaStock () {
         advertenciaFormularioIncompleto +=
           '- Asegurarse de ingresar la cantidad de entrada\n'
       }
-      if (entrada.Cd_Com.length === 0 && entrada.idAlm === 1) {
-        advertenciaFormularioIncompleto +=
-        '- Debe buscar la compra correspondiente\n'
-      }
+      // if (entrada.Cd_Com.length === 0 && entrada.idAlm === 1) {
+      //   advertenciaFormularioIncompleto +=
+      //   '- Debe buscar la compra correspondiente\n'
+      // }
 
       // mostramos el error recepcionado del backend
       alertWarning(advertenciaFormularioIncompleto)
